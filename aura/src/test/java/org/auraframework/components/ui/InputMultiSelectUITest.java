@@ -85,7 +85,7 @@ public class InputMultiSelectUITest extends WebDriverTestCase {
             }
         }
         if (!found && isSelected) {
-            fail("");
+            fail("Option '" + optionLabel + "' is not found in list");
         }
     }
 
