@@ -15,24 +15,11 @@
  */
 package org.auraframework.test;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.PrintWriter;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.io.*;
+import java.lang.annotation.*;
 import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.Set;
+import java.net.*;
+import java.util.*;
 import java.util.logging.Logger;
 
 import junit.framework.AssertionFailedError;
@@ -42,30 +29,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
-import org.auraframework.def.ApplicationDef;
-import org.auraframework.def.ComponentDef;
-import org.auraframework.def.DefDescriptor;
-import org.auraframework.def.DefDescriptor.DefType;
-import org.auraframework.system.AuraContext.Mode;
-import org.auraframework.test.WebDriverUtil.BrowserType;
-import org.auraframework.test.annotation.FreshBrowserInstance;
-import org.auraframework.test.annotation.WebDriverTest;
-import org.auraframework.util.AuraUtil;
-import org.auraframework.util.json.JsonReader;
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.remote.ScreenshotException;
-import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.WebDriverWait;
-import org.auraframework.def.ApplicationDef;
-import org.auraframework.def.ComponentDef;
-import org.auraframework.def.DefDescriptor;
+import org.auraframework.def.*;
 import org.auraframework.def.DefDescriptor.DefType;
 import org.auraframework.impl.source.StringSourceLoader;
 import org.auraframework.system.AuraContext.Mode;
@@ -73,11 +37,16 @@ import org.auraframework.test.WebDriverUtil.BrowserType;
 import org.auraframework.test.annotation.FreshBrowserInstance;
 import org.auraframework.test.annotation.WebDriverTest;
 import org.auraframework.util.AuraUtil;
+import org.auraframework.util.json.JsonReader;
+import org.openqa.selenium.*;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.ScreenshotException;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.google.common.base.Function;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
+import com.google.common.collect.*;
 
 /**
  * Base class for Aura WebDriver tests.
@@ -488,11 +457,11 @@ public abstract class WebDriverTestCase extends IntegrationTestCase {
     
     /**
      * Return the default Aura Mode based on the browser type. IPAD and Android browsers return
-     * {@link org.auraframework.system.AuraContext.Mode#PTEST} in order to disable fast click.
+     * {@link org.auraframework.system.AuraContext.Mode#CADENCE} in order to disable fast click.
      */
     protected Mode getAuraModeForCurrentBrowser(){
     	if(browsersForPtestMode.contains(currentBrowserType)){
-    		return Mode.PTEST;
+    		return Mode.CADENCE;
         } else {
     		return Mode.SELENIUM;
     	}
