@@ -41,7 +41,6 @@ import org.auraframework.util.json.JsonReader;
 /**
  */
 public class AuraContextFilter implements Filter {
-
     public static final EnumParam<AuraContext.Mode> mode = new EnumParam<AuraContext.Mode>(
         AuraServlet.AURA_PREFIX + "mode", false, AuraContext.Mode.class);
 
@@ -55,9 +54,33 @@ public class AuraContextFilter implements Filter {
     private static final StringParam num = new StringParam(AuraServlet.AURA_PREFIX +"num", 0, false);
     private static final StringParam contextConfig = new StringParam(AuraServlet.AURA_PREFIX + "context", 0, false);
 
+	public EnumParam<AuraContext.Mode> getModeParam(){
+		return mode;
+	}
+	
+	protected EnumParam<Format> getFormatParam(){
+		return format;
+	}
+
+	protected EnumParam<Access> getAccessParam(){
+		return access;
+	}	
+
+	protected StringParam getAppParam(){
+		return app;
+	}	
+	
+	protected StringParam getNumParam(){
+		return num;
+	}	
+
+	protected StringParam getContextConfigParam(){
+		return contextConfig;
+	}	
+	
+	
     private String componentDir = null;
-
-
+    
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws ServletException,
             IOException {
@@ -91,8 +114,8 @@ public class AuraContextFilter implements Filter {
         ServletException {
         HttpServletRequest request = (HttpServletRequest)req;
 
-        Format f = format.get(request, Format.JSON);
-        Access a = access.get(request, Access.AUTHENTICATED);
+        Format f = getFormatParam().get(request, Format.JSON);
+        Access a = getAccessParam().get(request, Access.AUTHENTICATED);
 
         Map<String, Object> configMap = getConfigMap(request);
         Mode m = getMode(request, configMap);
@@ -104,7 +127,7 @@ public class AuraContextFilter implements Filter {
         }
         AuraContext context = Aura.getContextService().startContext(m, f, a, appDesc);
         context.setContextPath(request.getContextPath());
-        context.setNum(num.get(request));
+        context.setNum(getNumParam().get(request));
         context.setRequestedLocales(Collections.list(request.getLocales()));
         context.setClient(new Client(request.getHeader("User-Agent")));
 
@@ -126,7 +149,7 @@ public class AuraContextFilter implements Filter {
     @SuppressWarnings("unchecked")
     private Map<String, Object> getConfigMap(HttpServletRequest request) {
         Map<String, Object> configMap = null;
-        String config = contextConfig.get(request);
+        String config = getContextConfigParam().get(request);
         if (!AuraTextUtil.isNullEmptyOrWhitespace(config)) {
             configMap = (Map<String, Object>)new JsonReader().read(config);
         }
@@ -137,7 +160,7 @@ public class AuraContextFilter implements Filter {
         // Get the passed in mode param.
         // Check the aura.mode param first then fall back to the mode value embedded in the aura.context param
         Mode m = null;
-        m = mode.get(request);
+        m = getModeParam().get(request);
         if (m == null && configMap != null && configMap.containsKey("mode")) {
             m = Mode.valueOf((String)configMap.get("mode"));
         }
@@ -172,7 +195,7 @@ public class AuraContextFilter implements Filter {
         // I'm not sure why we need to get this off the request. W-
         // We generally set this from the initial get request with the 'tag'.
         //
-        appName = app.get(request, null);
+        appName = getAppParam().get(request, null);
         if (appName == null && configMap != null) {
             appName = (String)configMap.get("app");
             if(appName == null) {
