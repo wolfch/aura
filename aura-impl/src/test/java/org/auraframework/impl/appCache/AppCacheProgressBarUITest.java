@@ -16,12 +16,11 @@
 package org.auraframework.impl.appCache;
 
 import org.auraframework.system.AuraContext.Mode;
-import org.auraframework.test.WebDriverTestCase;
+import org.auraframework.test.*;
 import org.auraframework.test.WebDriverTestCase.TargetBrowsers;
 import org.auraframework.test.WebDriverUtil.BrowserType;
 import org.auraframework.test.annotation.FreshBrowserInstance;
 import org.auraframework.test.annotation.ThreadHostileTest;
-
 import org.openqa.selenium.By;
 /**
  * UI automation for AppCache implementation. ThreadHostile because simultaneous loads of the testApp will interfere
@@ -31,7 +30,7 @@ import org.openqa.selenium.By;
  * @since 0.0.224
  */
 @ThreadHostileTest
-@TargetBrowsers({BrowserType.GOOGLECHROME, BrowserType.SAFARI, BrowserType.IPAD, BrowserType.IPHONE, BrowserType.ANDROID_PHONE, BrowserType.ANDROID_TABLET})
+@TargetBrowsers({BrowserType.GOOGLECHROME, BrowserType.ANDROID_PHONE, BrowserType.ANDROID_TABLET})
 public class AppCacheProgressBarUITest extends WebDriverTestCase {
     private final String PROGRESSEVENTSCRIPT = "var evt = new ProgressEvent('%s', {%s});"
             + "window.applicationCache.dispatchEvent(evt);";
@@ -64,7 +63,6 @@ public class AppCacheProgressBarUITest extends WebDriverTestCase {
      * 
      * @throws Exception
      */
-    @ExcludeBrowsers({BrowserType.SAFARI, BrowserType.IPAD, BrowserType.IPHONE})
     public void testProgressBarBySimulatingProgressEvents() throws Exception{
         open("/appCache/testApp.app", Mode.DEV);
         waitForElementAbsent("Progress bar for appCache is visible even after aura is ready.",
@@ -91,7 +89,6 @@ public class AppCacheProgressBarUITest extends WebDriverTestCase {
      * 
      * @throws Exception
      */
-    @ExcludeBrowsers({BrowserType.SAFARI, BrowserType.IPAD, BrowserType.IPHONE})
     public void testNoUpdateBySimulatingEvents() throws Exception{
         open("/appCache/testApp.app", Mode.DEV);
 
@@ -112,7 +109,6 @@ public class AppCacheProgressBarUITest extends WebDriverTestCase {
      * @throws Exception
      */
     @FreshBrowserInstance
-    @ExcludeBrowsers({BrowserType.SAFARI, BrowserType.IPAD, BrowserType.IPHONE})
     public void testProgressbarNotVisibleInPRODMode()throws Exception{
         openNoAura("/appCache/testApp.app?aura.mode=PROD");
         assertFalse("Progress bar for appCache should not show up in PROD mode.", findDomElement(appCacheProgressDiv)
