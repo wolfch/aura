@@ -17,28 +17,19 @@ package org.auraframework.http;
 
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
-import org.auraframework.def.ApplicationDef;
-import org.auraframework.def.ComponentDef;
-import org.auraframework.def.DefDescriptor;
+import org.auraframework.def.*;
 import org.auraframework.system.AuraContext.Mode;
 import org.auraframework.test.AuraHttpTestCase;
 import org.auraframework.test.client.UserAgent;
 import org.auraframework.util.AuraTextUtil;
-import org.auraframework.util.json.JsFunction;
-import org.auraframework.util.json.Json;
-import org.auraframework.util.json.JsonReader;
-import org.joda.time.DateTime;
+import org.auraframework.util.json.*;
 
 /**
  * Automation to verify the handling of AuraServlet requests.
@@ -248,29 +239,31 @@ public class AuraServletHttpTest extends AuraHttpTestCase {
         //Expect the get request to be set for long cache
         assertResponseSetToLongCache(get);
     }
-    private void assertResponseSetToLongCache(HttpMethod request) throws Exception{
-        DateTime expected = new DateTime(System.currentTimeMillis() + AuraBaseServlet.LONG_EXPIRE);
+
+    private void assertResponseSetToLongCache(HttpMethod request) throws Exception {
+        final long WIGGLE_FACTOR = 60000; // it's going to expire far off, so factor in some wiggle due to client latency timing
+        Date expected = new Date(System.currentTimeMillis() + AuraBaseServlet.LONG_EXPIRE - WIGGLE_FACTOR);
         getHttpClient().executeMethod(request);
-        assertEquals("Failed to execute request successfully.",HttpStatus.SC_OK, request.getStatusCode());
-        
-        assertEquals("Expected response to be marked for long cache", String.format("max-age=%s, public", AuraBaseServlet.LONG_EXPIRE / 1000), 
+        assertEquals("Failed to execute request successfully.", HttpStatus.SC_OK, request.getStatusCode());
+
+        assertEquals("Expected response to be marked for long cache",
+                String.format("max-age=%s, public", AuraBaseServlet.LONG_EXPIRE / 1000),
                 request.getResponseHeader("Cache-Control").getValue());
-        DateTime expires = new DateTime(new SimpleDateFormat("EEE, dd MMM yyyy hh:mm:ss z").parse(request.getResponseHeader("Expires").getValue()));
-        assertTrue("Expires header in response is set to an earlier date than expected.", 
-                expires.toLocalDate().compareTo(expected.toLocalDate())>=0);
-        
+        Date expires = new SimpleDateFormat("EEE, dd MMM yyyy hh:mm:ss z", Locale.ENGLISH).parse(request
+                .getResponseHeader("Expires").getValue());
+        assertTrue("Expires header in response is set to an earlier date than expected.", expires.after(expected));
     }
-    private void assertResponseSetToNoCache(HttpMethod request) throws Exception{
+    
+    private void assertResponseSetToNoCache(HttpMethod request) throws Exception {
         Date expected = new Date(System.currentTimeMillis());
         getHttpClient().executeMethod(request);
-        assertEquals("Failed to execute request successfully.",HttpStatus.SC_OK, request.getStatusCode());
-        
-        assertEquals("Expected response to be marked for no-cache", 
-                "no-cache, no-store", request.getResponseHeader("Cache-Control").getValue());
+        assertEquals("Failed to execute request successfully.", HttpStatus.SC_OK, request.getStatusCode());
+
+        assertEquals("Expected response to be marked for no-cache", "no-cache, no-store",
+                request.getResponseHeader("Cache-Control").getValue());
         assertEquals("no-cache", request.getResponseHeader("Pragma").getValue());
-        Date expires = new SimpleDateFormat("EEE, dd MMM yyyy hh:mm:ss z", Locale.ENGLISH).parse(request.getResponseHeader("Expires").getValue());
-        assertTrue("Expires header in response should be set to a date in the past.", 
-                expires.compareTo(expected)<0);
-        
+        Date expires = new SimpleDateFormat("EEE, dd MMM yyyy hh:mm:ss z", Locale.ENGLISH).parse(request
+                .getResponseHeader("Expires").getValue());
+        assertTrue("Expires header in response should be set to a date in the past.", expires.before(expected));
     }
 }
