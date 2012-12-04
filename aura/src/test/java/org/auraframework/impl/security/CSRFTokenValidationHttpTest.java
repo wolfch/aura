@@ -88,7 +88,7 @@ public class CSRFTokenValidationHttpTest extends AuraHttpTestCase {
                                                                  ).get("message"));
         Object f = json.get("defaultHandler");
         assertEquals(JsFunction.class, f.getClass());
-        assertEquals("$A.error('unknown error');", ((JsFunction)f).getBody());
+        assertEquals("try{$A.error('unknown error');}catch(e){$L.error('unknown error');};", ((JsFunction)f).getBody());
     }
 
     /**

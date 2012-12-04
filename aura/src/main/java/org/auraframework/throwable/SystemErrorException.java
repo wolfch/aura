@@ -52,7 +52,7 @@ public class SystemErrorException extends ClientSideEventException {
 
     @Override
     public JsFunction getDefaultHandler() {
-        return new JsFunction(ImmutableList.<String>of(), "$A.error('unknown error');");
+        return new JsFunction(ImmutableList.<String>of(), "try{$A.error('unknown error');}catch(e){$L.error('unknown error');};");
     }
 
     @Override
