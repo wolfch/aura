@@ -410,6 +410,9 @@ public abstract class AuraBaseServlet extends HttpServlet {
         long appLastMod = -1, preloadsLastMod = -1;
         boolean useCache = (Aura.getConfigAdapter().isProduction() || (mode == Mode.PROD || mode == Mode.PTEST || mode == Mode.CADENCE));
 
+        if (useCache || mode == Mode.PRODDEBUG) {
+            return Aura.getConfigAdapter().getBuildTimestamp();
+        }
         if (app != null) {
             if (useCache) {
                 Long tmp = lastModMap.get(app.getQualifiedName());

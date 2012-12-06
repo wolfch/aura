@@ -228,6 +228,7 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
     // Can't run on iOS because PROD modes will just cache components so changes are not picked up
     @TargetBrowsers({ BrowserType.GOOGLECHROME })
     @UnAdaptableTest
+    @Ignore("Not valid with release timestamp")
     public void testComponentMarkupChange()throws Exception{
         List<Request> logs = loadMonitorAndValidateApp(TOKEN, TOKEN, TOKEN, TOKEN);
         assertRequests(expectedInitialRequests, logs);
