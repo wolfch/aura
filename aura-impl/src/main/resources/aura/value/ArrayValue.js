@@ -86,8 +86,10 @@ ArrayValue.prototype.get = function(i) {
  * Returns the length of the array.
  */
 ArrayValue.prototype.getLength = function() {
-	if (this.getArray()) {
-		return this.getArray().length;
+	var arr = this.getArray();
+	
+	if (arr) {
+		return arr.length;
 	}
 	return 0;
 };
