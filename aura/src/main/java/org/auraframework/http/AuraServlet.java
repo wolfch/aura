@@ -62,7 +62,7 @@ public class AuraServlet extends AuraBaseServlet {
     public static final String DISABLE_APPCACHE_PROPERTY = "aura.noappcache";
 
     protected final static StringParam tag = new StringParam(AURA_PREFIX + "tag", 128, true);
-    private static final EnumParam<DefType> defTypeParam = new EnumParam<DefType>(AURA_PREFIX + "deftype", false, DefType.class);
+    protected static final EnumParam<DefType> defTypeParam = new EnumParam<DefType>(AURA_PREFIX + "deftype", false, DefType.class);
     private final static StringParam messageParam = new StringParam("message", 0, false);
 
     // FIXME: is this really a good idea?
@@ -108,8 +108,8 @@ public class AuraServlet extends AuraBaseServlet {
             return;
         }
         try {
-            tagName = tag.get(request);
-            defType = defTypeParam.get(request, DefType.COMPONENT);
+            tagName = getTagName(request);
+            defType = getDefType(request);
 
             //
             // FIXME: this should disappear!!!!! -GPO
@@ -531,5 +531,13 @@ public class AuraServlet extends AuraBaseServlet {
 
     protected void sendPost404(HttpServletRequest request, HttpServletResponse response) {
         throw new NoAccessException("Missing required perms, or tried to access inaccessible namespace.");
+    }
+    
+    protected String getTagName(HttpServletRequest request){
+    	return tag.get(request);
+    }
+
+    protected DefType getDefType(HttpServletRequest request){
+    	return defTypeParam.get(request, DefType.COMPONENT);
     }
 }
