@@ -250,7 +250,8 @@ public class AuraServletHttpTest extends AuraHttpTestCase {
                 request.getResponseHeader("Cache-Control").getValue());
         Date expires = new SimpleDateFormat("EEE, dd MMM yyyy hh:mm:ss z", Locale.ENGLISH).parse(request
                 .getResponseHeader("Expires").getValue());
-        assertTrue("Expires header in response is set to an earlier date than expected.", expires.after(expected));
+        assertTrue("Expires header in response is set to an earlier date than expected. expires = "+expires.getTime()
+                   +",expected = "+expected.getTime(), expires.after(expected));
     }
     
     private void assertResponseSetToNoCache(HttpMethod request) throws Exception {
