@@ -44,6 +44,8 @@ import org.auraframework.throwable.AuraRuntimeException;
 import org.auraframework.throwable.AuraUnhandledException;
 import org.auraframework.throwable.NoAccessException;
 import org.auraframework.throwable.quickfix.QuickFixException;
+
+import org.auraframework.util.AuraTextUtil;
 import org.auraframework.util.json.Json;
 
 @SuppressWarnings("serial")
@@ -341,18 +343,10 @@ public abstract class AuraBaseServlet extends HttpServlet {
         return null;
     }
 
-    public static void addManifestCookie(HttpServletResponse response, String value, long expiry) {
+    private static void addManifestCookie(HttpServletResponse response, String value, long expiry) {
         String cookieName = getManifestCookieName();
         if(cookieName != null){
             addCookie(response, cookieName, value, expiry);
-        }
-    }
-
-    public static void addManifestCookie(HttpServletResponse response, long expiry) {
-        try {
-            addManifestCookie(response, Long.toString(getManifestLastMod()), expiry);
-        } catch (QuickFixException e) {
-            throw new AuraRuntimeException(e);
         }
     }
 
@@ -360,8 +354,84 @@ public abstract class AuraBaseServlet extends HttpServlet {
         addManifestCookie(response, MANIFEST_ERROR, SHORT_EXPIRE_SECONDS);
     }
 
-    public static void addManifestCookie(HttpServletResponse response) {
-        addManifestCookie(response, SHORT_EXPIRE_SECONDS);
+    private static int MAX_MANIFEST_COUNT = 5;                  // how many requests.
+    private static int MAX_MANIFEST_TIME = 60*1000;             // 60 seconds.
+
+    /**
+     * Check a manifest cookie and update.
+     *
+     * This routine will check and update a manifest cookie value to ensure
+     * that we are not looping. If the incoming cookie is null, it simply
+     * initializes, othewise, it parses the cookie and returns null if it
+     * requires a reset.
+     *
+     * @param incoming the cookie from the client.
+     * @return either an updated cookie, or null if it was invalid.
+     */
+    public static String updateManifestCookieValue(String incoming) {
+        int manifestRequestCount = 0;
+        long now = System.currentTimeMillis();
+        long cookieTime = now;
+
+        if (MANIFEST_ERROR.equals(incoming)) {
+            return null;
+        } else {
+            List<String> parts = AuraTextUtil.splitSimple(":", incoming, 2);
+                
+            if (parts != null && parts.size() == 2) {
+                String count = parts.get(0);
+                String date = parts.get(1);
+                try {
+                    manifestRequestCount = Integer.parseInt(count);
+                    cookieTime = Long.parseLong(date);
+                    if (now - cookieTime > MAX_MANIFEST_TIME) {
+                        //
+                        // If we have gone off by more than 60 seconds,
+                        // reset everything to start the counter.
+                        //
+                        manifestRequestCount = 0;
+                        cookieTime = now;
+                    }
+                    if (manifestRequestCount >= MAX_MANIFEST_COUNT) {
+                        // We have had 5 requests in 60 seconds. bolt.
+                        return null;
+                    }
+                } catch (NumberFormatException e) {
+                    //
+                    // Bad cookie!
+                    // This should actually be very hard to have happen,
+                    // since it requires a cookie to have a ':' in it,
+                    // and also to have unparseable numbers, so just punt
+                    //
+                    return null;
+                }
+            }
+        }
+        manifestRequestCount += 1;
+        return manifestRequestCount+":"+cookieTime;
+    }
+
+    /**
+     * Check the manifest cookie.
+     *
+     * @param request the request (for the incoming cookie).
+     * @param response the response (for the outgoing cookie).
+     * @return false if the caller should send a 404 and bolt.
+     */
+    public static boolean checkManifestCookie(HttpServletRequest request, HttpServletResponse response) {
+        Cookie cookie = getManifestCookie(request);
+        String cookieString = null;
+
+        if(cookie != null) {
+            cookieString = cookie.getValue();
+        }
+        cookieString = updateManifestCookieValue(cookieString);
+        if (cookieString == null) {
+            deleteManifestCookie(response);
+            return false;
+        }
+        addManifestCookie(response, cookieString, SHORT_EXPIRE_SECONDS);
+        return true;
     }
 
     public static void deleteManifestCookie(HttpServletResponse response) {

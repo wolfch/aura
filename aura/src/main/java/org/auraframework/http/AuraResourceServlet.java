@@ -31,7 +31,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -56,7 +55,6 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 public class AuraResourceServlet extends AuraBaseServlet {
-
     private static final long serialVersionUID = -3642790050433142397L;
     public static final String ORIG_REQUEST_URI = "aura.origRequestURI";
 
@@ -148,7 +146,7 @@ public class AuraResourceServlet extends AuraBaseServlet {
                 return;
             }
         	
-        	setPreloads();
+            setPreloads();
 
             String originalPath = (String)request.getAttribute(AuraResourceServlet.ORIG_REQUEST_URI);
             if(originalPath != null){
@@ -161,15 +159,10 @@ public class AuraResourceServlet extends AuraBaseServlet {
             }
 
             String serverLastMod = Long.toString(getManifestLastMod());
-            Cookie cookie = getManifestCookie(request);
-            if(cookie != null){
-                if (MANIFEST_ERROR.equals(cookie.getValue())) {
-                    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                    deleteManifestCookie(response);
-                    return;
-                }
+            if (!checkManifestCookie(request, response)) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return;
             }
-
             Map<String, Object> attribs = Maps.newHashMap();
             attribs.put("lastMod", serverLastMod);
             StringWriter sw = new StringWriter();

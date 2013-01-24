@@ -93,6 +93,11 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
         ServletConfigController.setAppCacheDisabled(originalAppCacheConfig);
         super.tearDown();
     }
+    
+    @Override
+    public void perBrowserTearDown() {
+    	getDriver().manage().deleteAllCookies();
+    }
 
     /**
      * Opening cached app will only query server for the manifest and the component load.
@@ -100,6 +105,7 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
     @TestLabels("auraSanity")
     public void testNoChanges() throws Exception {
         List<Request> logs = loadMonitorAndValidateApp(TOKEN, TOKEN, TOKEN, TOKEN);
+    	getDriver().manage().deleteAllCookies();
         assertRequests(expectedInitialRequests, logs);
         assertAppCacheStatus(Status.IDLE);
         // Cookie cookie = getDriver().manage().getCookieNamed(COOKIE_NAME);
@@ -119,6 +125,7 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
      */
     public void testCacheError() throws Exception {
         List<Request> logs = loadMonitorAndValidateApp(TOKEN, TOKEN, TOKEN, TOKEN);
+    	getDriver().manage().deleteAllCookies();
 
         assertRequests(expectedInitialRequests, logs);
         assertAppCacheStatus(Status.IDLE);
@@ -128,10 +135,6 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
         getDriver().manage().addCookie(new Cookie(cookieName, "error", null, "/", expiry));
         loadMonitorAndValidateApp(TOKEN, TOKEN, TOKEN, TOKEN);
         assertAppCacheStatus(Status.IDLE);
-
-        // There may be a varying number of requests, depending on when the initial manifest response is received.
-        Cookie cookie = getDriver().manage().getCookieNamed(cookieName);
-        assertNull("Manifest cookie was not deleted", cookie);
     }
 
     /**
@@ -157,6 +160,7 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
     @UnAdaptableTest
     public void testComponentCssChange() throws Exception{
         List<Request> logs = loadMonitorAndValidateApp(TOKEN, TOKEN, TOKEN, TOKEN);
+    	getDriver().manage().deleteAllCookies();
         assertRequests(expectedInitialRequests, logs);
         assertAppCacheStatus(Status.IDLE);
 
@@ -190,6 +194,7 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
     @UnAdaptableTest
     public void testComponentJsChange()throws Exception{
         List<Request> logs = loadMonitorAndValidateApp(TOKEN, TOKEN, TOKEN, TOKEN);
+    	getDriver().manage().deleteAllCookies();
         assertRequests(expectedInitialRequests, logs);
         assertAppCacheStatus(Status.IDLE);
 
@@ -231,6 +236,7 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
     @Ignore("Not valid with release timestamp")
     public void testComponentMarkupChange()throws Exception{
         List<Request> logs = loadMonitorAndValidateApp(TOKEN, TOKEN, TOKEN, TOKEN);
+    	getDriver().manage().deleteAllCookies();
         assertRequests(expectedInitialRequests, logs);
         assertAppCacheStatus(Status.IDLE);
 
@@ -264,6 +270,7 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
     @Ignore("Not valid when running from jars, which is most times, because framework js timestamp never changes then")
     public void testFrameworkJsChange()throws Exception{
         List<Request> logs = loadMonitorAndValidateApp(TOKEN, TOKEN, TOKEN, TOKEN);
+    	getDriver().manage().deleteAllCookies();
         assertRequests(expectedInitialRequests, logs);
         assertAppCacheStatus(Status.IDLE);
 
