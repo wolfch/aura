@@ -135,10 +135,6 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
         getDriver().manage().addCookie(new Cookie(cookieName, "error", null, "/", expiry));
         loadMonitorAndValidateApp(TOKEN, TOKEN, TOKEN, TOKEN);
         assertAppCacheStatus(Status.IDLE);
-
-        // There may be a varying number of requests, depending on when the initial manifest response is received.
-        Cookie cookie = getDriver().manage().getCookieNamed(cookieName);
-        assertNull("Manifest cookie was not deleted", cookie);
     }
 
     /**
