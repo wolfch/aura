@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 markup://test:layoutNoLayout : iGtVroNixEz4gmdHysx52A
+=======
+markup://test:layoutNoLayout : GhCakzcTFabFGZpoBhVYUA
+>>>>>>> 1525c91... Aura framework changes to support transactions using Jiffy Transaction API
 aura://ComponentController : null
 css://aura.placeholder : FOJqLhWeXd4r-vgf-c0XtQ
 java://org.auraframework.renderer.ComponentRenderer : null
@@ -8,8 +12,12 @@ java://org.auraframework.renderer.TextRenderer : null
 js://aura.component : rJFsrXr4XU9CTW4t_VRG0g
 js://aura.expression : WOBdtoGe4e4ecIPHBs1N8g
 js://aura.expression : -8iXXGeM5b3IYIbYYr7I3w
+<<<<<<< HEAD
 js://aura.html : SHIWB5yt6m2iSn0MM9NTzQ
 js://aura.html : HLYQHJv7L9HrroCJPqJNdQ
+=======
+js://aura.html : 7RglE_R9v3yPuhO7bh6BYg
+>>>>>>> 1525c91... Aura framework changes to support transactions using Jiffy Transaction API
 js://aura.placeholder : 2XT9xQ9u4aoFm7bDHXhrpA
 js://aura.text : KldblTnXTBHS0To9pis_ig
 markup://aura : no-hash-value
