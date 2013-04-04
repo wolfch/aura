@@ -583,9 +583,8 @@ $A.ns.Aura.prototype.run = function(func) {
 	$A.assert(func && $A.util.isFunction(func), "The parameter 'func' for $A.run() must be a function!");
 	
     $A.services.event.startFiring("$A.run()");
-    var ret = func();
+    func();
     $A.services.event.finishFiring("$A.run()");
-    return ret;
 };
 
 /**

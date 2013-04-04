@@ -20,7 +20,6 @@
             additionalProperties(a);
         }
         a.runAfter(a);
-        return a;
     },
     findAndSetText:function(cmp, targetCmpId, msg){
         cmp.find(targetCmpId).getElement().innerHTML = msg;
