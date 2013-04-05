@@ -375,6 +375,14 @@ var AuraClientService = function() {
          */
         isConnected : function() {
             return !priv.isDisconnected;
+        },
+
+        /**
+         * Inform Aura that the the environment is offline. One source of data
+         * is native code. Immediate and future communication with the server may fail.
+         */
+        setConnectedFalse : function() {
+            priv.setConnectedFalse();
         }
 
 

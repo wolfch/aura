@@ -17,6 +17,10 @@
     setHost : function(component, event, helper) {
         $A.clientService.initHost(component.get("v.host"));
     },
+    
+    setConnectedFalse : function( component, event, helper) {
+        $A.clientService.setConnectedFalse();
+    },
 
     testConnection: function(component, event, helper) {
         component.getValue("v.actionStatus").setValue("");
