@@ -95,14 +95,6 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
     }
 
     @Override
-    public void perBrowserSetUp() {
-        super.perBrowserSetUp();
-        WebDriver driver = getDriver();
-        driver.get("/auraFW/resources/aura/s.gif");
-        driver.manage().deleteAllCookies();
-    }
-
-    @Override
     public void setUp() throws Exception {
         super.setUp();
         originalAppCacheConfig = ServletConfigController.setAppCacheDisabled(false);
@@ -173,9 +165,6 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
         List<Request> logs = loadMonitorAndValidateApp(TOKEN, TOKEN, TOKEN, TOKEN);
         assertRequests(getExpectedInitialRequests(), logs);
         assertAppCacheStatus(Status.IDLE);
-        // Cookie cookie = getDriver().manage().getCookieNamed(COOKIE_NAME);
-        // assertEquals("Unexpected manifest cookie value", "" +
-        // getLastMod(Mode.SELENIUM), cookie.getValue());
 
         // only expect a fetch for the manifest and the initAsync component load
         logs = loadMonitorAndValidateApp(TOKEN, TOKEN, TOKEN, TOKEN);
@@ -206,8 +195,7 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
         assertRequests(expectedChange, logs);
         assertAppCacheStatus(Status.IDLE);
 
-        // There may be a varying number of requests, depending on when the
-        // initial manifest response is received.
+        // There may be a varying number of requests, depending on when the initial manifest response is received.
         Cookie cookie = getDriver().manage().getCookieNamed(cookieName);
         assertFalse("Manifest cookie was not changed " + cookie.getValue(), "error".equals(cookie.getValue()));
     }
@@ -216,8 +204,7 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
      * Opening uncached app that had a prior cache error will have limited caching.
      */
     public void testCacheErrorWithEmptyCache() throws Exception {
-        openNoAura("/aura/application.app"); // just need a domain page to set
-        // cookie from
+        openNoAura("/aura/application.app"); // just need a domain page to set cookie from
         Date expiry = new Date(System.currentTimeMillis() + 60000);
         String cookieName = getManifestCookieName();
         getDriver().manage().addCookie(new Cookie(cookieName, "error", null, "/", expiry));
@@ -231,8 +218,7 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
         assertRequests(expectedChange, logs);
         assertAppCacheStatus(Status.UNCACHED);
 
-        // There may be a varying number of requests, depending on when the
-        // initial manifest response is received.
+        // There may be a varying number of requests, depending on when the initial manifest response is received.
         Cookie cookie = getDriver().manage().getCookieNamed(cookieName);
         assertNull("No manifest cookie should be present", cookie);
     }
@@ -265,8 +251,7 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
     /**
      * Opening cached app after namespace style change will trigger cache update.
      */
-    // Can't run on iOS because PROD modes will just cache components so changes
-    // are not picked up
+    // Can't run on iOS because PROD modes will just cache components so changes are not picked up
     @TargetBrowsers({ BrowserType.GOOGLECHROME })
     public void testComponentCssChange() throws Exception {
         List<Request> logs = loadMonitorAndValidateApp(TOKEN, TOKEN, TOKEN, TOKEN);
@@ -290,8 +275,7 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
     /**
      * Opening cached app after namespace controller change will trigger cache update.
      */
-    // Can't run on iOS because PROD modes will just cache components so changes
-    // are not picked up
+    // Can't run on iOS because PROD modes will just cache components so changes are not picked up
     @TargetBrowsers({ BrowserType.GOOGLECHROME })
     public void testComponentJsChange() throws Exception {
         List<Request> logs = loadMonitorAndValidateApp(TOKEN, TOKEN, TOKEN, TOKEN);
@@ -322,8 +306,7 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
     /**
      * Opening cached app after component markup change will trigger cache update.
      */
-    // Can't run on iOS because PROD modes will just cache components so changes
-    // are not picked up
+    // Can't run on iOS because PROD modes will just cache components so changes are not picked up
     @TargetBrowsers({ BrowserType.GOOGLECHROME })
     public void testComponentMarkupChange() throws Exception {
         List<Request> logs = loadMonitorAndValidateApp(TOKEN, TOKEN, TOKEN, TOKEN);
@@ -347,8 +330,7 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
     /**
      * Opening cached app after framework javascript change will trigger cache update.
      */
-    // Can't run on iOS because PROD modes will just cache components so changes
-    // are not picked up
+    // Can't run on iOS because PROD modes will just cache components so changes are not picked up
     @TargetBrowsers({ BrowserType.GOOGLECHROME })
     @UnAdaptableTest
     @Ignore("Not valid when running from jars, which is most times, because framework js timestamp never changes then")
@@ -490,6 +472,7 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
             String fwToken) throws Exception {
         TestLoggingAdapterController.beginCapture();
         open(String.format("/%s/%s.app", namespace, appName));
+        Thread.sleep(500);
         auraUITestingUtil.waitForAppCacheReady();
         WebElement elem = auraUITestingUtil.waitUntil(new Function<WebDriver, WebElement>() {
             @Override
@@ -540,6 +523,7 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
                 try {
                     status = Integer.parseInt((String) log.get("httpStatus"));
                 } catch (NumberFormatException nfe) {
+                    System.err.println("FAILED getting http status for: " + log.get("httpStatus"));
                 }
             }
             Request toAdd = new Request(log.get("auraRequestURI").toString(), null, null, null, status);
