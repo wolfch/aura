@@ -13,6 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-({
-    parentDialog : ""
-})
+{
+	showDialog: function(cmp, event) {
+		var msg = cmp.find('modal');
+		var open = $A.get("e.ui:openDialog");
+		open.setParams({
+			dialog : msg,
+			//triggerEvent is optional, unless when the trigger is a ui:press event
+			triggerEvent : event
+		});
+		open.fire();
+	}
+}
