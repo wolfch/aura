@@ -33,6 +33,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import org.auraframework.test.TestInventory.Type;
 import org.auraframework.test.annotation.HybridContainerTest;
 import org.auraframework.test.annotation.IntegrationTest;
 import org.auraframework.test.annotation.UnitTest;
@@ -45,8 +46,8 @@ import com.google.common.collect.Sets;
 public class TestInventory {
     public final static String TEST_CLASS_SUFFIX = "Test";
     private final static String CLASS_SUFFIX = ".class";
-    public static final EnumSet<Type> CONTAINER_TYPE_TESTS = EnumSet.of(Type.HYBRID_CONTAINER);
-    public static final EnumSet<Type> CONTAINERLESS_TYPE_TESTS = EnumSet.complementOf(CONTAINER_TYPE_TESTS);
+	public static final EnumSet<Type> CONTAINER_TYPE_TESTS = EnumSet.of(Type.HYBRID_CONTAINER);
+	public static final EnumSet<Type> CONTAINERLESS_TYPE_TESTS = EnumSet.complementOf(CONTAINER_TYPE_TESTS);
 
     public enum Type {
         UNIT, WEB, INTEGRATION, IGNORED, HYBRID_CONTAINER;
@@ -187,8 +188,8 @@ public class TestInventory {
     }
 
     /**
-     * Check if class might be a valid test case. Must be public, non-abstract, named "*Test" and extend from
-     * {@link Test}.
+     * Check if class might be a valid test case. Must be public, non-abstract,
+     * named "*Test" and extend from {@link Test}.
      */
     private static Class<? extends Test> getTestClass(String className) {
         if (!className.endsWith(TEST_CLASS_SUFFIX)) {

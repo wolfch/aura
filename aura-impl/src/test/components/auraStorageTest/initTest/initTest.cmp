@@ -35,7 +35,6 @@
     <div aura:id="refreshEnd"/>
     <aura:handler event="auraStorage:modified" action="{!c.storageModified}"/>
     StorageModifiedAt:<div aura:id="storageModified"/>
-    <div>Callback counter: <span aura:id="callbackCounter">0</span></div>
     
     <!-- attributes & handlers for mocking online/offline in AuraStorage  -->
     <aura:attribute name="host" type="String" default=""/>
@@ -53,4 +52,5 @@
     <aura:if isTrue="{!v.dupNamedStorage}">
         <auraStorage:init name="dupNamedStorage" maxSize="6666" aura:id="dupNamedStorage2"/>
     </aura:if>                      
+    
 </aura:component>

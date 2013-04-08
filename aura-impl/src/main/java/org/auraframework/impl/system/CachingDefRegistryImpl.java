@@ -22,6 +22,7 @@ import org.auraframework.Aura;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.DefDescriptor.DefType;
 import org.auraframework.def.Definition;
+import org.auraframework.system.AuraContext;
 import org.auraframework.system.CacheableDefFactory;
 import org.auraframework.system.SourceListener;
 import org.auraframework.throwable.quickfix.QuickFixException;
@@ -75,6 +76,10 @@ public class CachingDefRegistryImpl<T extends Definition> extends NonCachingDefR
                 return null;
             }
         }
+        if (def != null && isStale(def)) {
+            defs.invalidate(descriptor);
+            def = null;
+        }
         if (def == null) {
             def = CachingDefRegistryImpl.super.getDef(descriptor);
         }
@@ -89,6 +94,29 @@ public class CachingDefRegistryImpl<T extends Definition> extends NonCachingDefR
     public void markValid(DefDescriptor<T> descriptor, T def) {
         super.markValid(descriptor, def);
         defs.put(descriptor, Optional.of(def));
+    }
+
+    /**
+     * Check if the giving def is stale. Some registries don't support stale
+     * checks. Will only check a def once per request
+     * 
+     * TODO: this has to take things that depend on this def into account
+     * #W-689590
+     * 
+     * This should really be done elsewhere, and will be soon enough....
+     * 
+     * @return true if this def is stale
+     */
+    private boolean isStale(T def) {
+        AuraContext context = Aura.getContextService().getCurrentContext();
+        @SuppressWarnings("unchecked")
+        DefDescriptor<T> descriptor = (DefDescriptor<T>) def.getDescriptor();
+        if (!context.hasChecked(descriptor)) {
+            boolean stale = getLastMod(descriptor) > def.getLocation().getLastModified();
+            context.setStaleCheck(descriptor);
+            return stale;
+        }
+        return false;
     }
 
     protected long getLastMod(DefDescriptor<T> descriptor) {
