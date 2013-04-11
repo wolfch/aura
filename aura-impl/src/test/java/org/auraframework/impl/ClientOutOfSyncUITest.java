@@ -17,24 +17,11 @@ package org.auraframework.impl;
 
 import org.apache.commons.lang.StringUtils;
 import org.auraframework.Aura;
-import org.auraframework.def.ApplicationDef;
-import org.auraframework.def.ComponentDef;
-import org.auraframework.def.ControllerDef;
-import org.auraframework.def.DefDescriptor;
-import org.auraframework.def.EventDef;
-import org.auraframework.def.HelperDef;
-import org.auraframework.def.InterfaceDef;
-import org.auraframework.def.LayoutsDef;
-import org.auraframework.def.NamespaceDef;
-import org.auraframework.def.ProviderDef;
-import org.auraframework.def.RendererDef;
-import org.auraframework.def.ThemeDef;
+import org.auraframework.def.*;
 import org.auraframework.impl.source.StringSourceLoader;
 import org.auraframework.system.Source;
 import org.auraframework.test.WebDriverTestCase;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 
 import com.google.common.base.Function;
@@ -82,7 +69,7 @@ public class ClientOutOfSyncUITest extends WebDriverTestCase {
 		openNoAura(url);
 		assertEquals("hi", getText(By.cssSelector("body")));
 		updateStringSource(cmpDesc, String.format(baseComponentTag, "", "bye"));
-		openNoAura(url);
+		refreshPage();
 		assertEquals("bye", getText(By.cssSelector("body")));
 	}
 
@@ -276,7 +263,7 @@ public class ClientOutOfSyncUITest extends WebDriverTestCase {
 		updateStringSource(
 				interfaceDesc,
 				"<aura:interface support='GA' description=''><aura:attribute name='entrance' type='String' default='secret'/></aura:interface>");
-		openNoAura(url);
+		refreshPage();
 		assertEquals("secret", getText(By.cssSelector("body")));
 	}
 

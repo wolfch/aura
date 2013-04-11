@@ -15,24 +15,11 @@
  */
 package org.auraframework.test;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.PrintWriter;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.io.*;
+import java.lang.annotation.*;
 import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Scanner;
-import java.util.Set;
+import java.net.*;
+import java.util.*;
 import java.util.logging.Logger;
 
 import junit.framework.AssertionFailedError;
@@ -41,21 +28,15 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
-import org.auraframework.def.ApplicationDef;
-import org.auraframework.def.BaseComponentDef;
-import org.auraframework.def.ComponentDef;
-import org.auraframework.def.DefDescriptor;
+import org.auraframework.def.*;
 import org.auraframework.system.AuraContext.Mode;
 import org.auraframework.test.WebDriverUtil.BrowserType;
 import org.auraframework.test.annotation.FreshBrowserInstance;
 import org.auraframework.test.annotation.WebDriverTest;
 import org.auraframework.util.AuraUITestingUtil;
 import org.auraframework.util.AuraUtil;
-import org.openqa.selenium.By;
+import org.openqa.selenium.*;
 import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.ScreenshotException;
 import org.openqa.selenium.support.ui.ExpectedCondition;
@@ -464,7 +445,7 @@ public abstract class WebDriverTestCase extends IntegrationTestCase {
     protected void openNoAura(String url) throws MalformedURLException, URISyntaxException {
         open(url, getAuraModeForCurrentBrowser(), false);
     }
-
+    
     /**
      * Open a Aura URL with the default mode provided by {@link WebDriverTestCase#getAuraModeForCurrentBrowser()} and
      * wait for intialization as defined by {@link WebDriverTestCase#waitForAuraInit()}.
@@ -531,6 +512,10 @@ public abstract class WebDriverTestCase extends IntegrationTestCase {
 
     public void waitForAuraFrameworkReady() {
         auraUITestingUtil.waitForAuraFrameworkReady(getExceptionsAllowedDuringInit());
+    }
+    
+    protected void refreshPage() {
+        getDriver().navigate().refresh();
     }
     
     protected Set<String> getExceptionsAllowedDuringInit() {
