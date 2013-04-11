@@ -25,7 +25,7 @@ import org.auraframework.util.text.GlobMatcher;
 
 import com.google.common.collect.Lists;
 
-public class DescriptorFilter {
+public class DescriptorFilter implements Comparable {
     private static final List<DefType> componentType = Collections.unmodifiableList(Arrays
             .asList(new DefType[] { DefType.COMPONENT }));
     private final List<DefType> defTypes;
@@ -139,5 +139,21 @@ public class DescriptorFilter {
      */
     public GlobMatcher getNameMatch() {
         return this.nameMatch;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.toString().hashCode();
+    }
+
+    @Override
+    public int compareTo(Object arg0) {
+        return this.toString().compareTo(arg0.toString());
+    }
+
+    @Override
+    public boolean equals(Object arg0) {
+        int res = compareTo(arg0);
+        return res == 0;
     }
 }
