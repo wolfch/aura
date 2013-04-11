@@ -28,7 +28,6 @@ public class GatedModelController {
             return;
         }
         String lock = GatedModel.pending.remove(waitId);
-        ;
         if (lock != null) {
             synchronized (lock) {
                 lock.notifyAll();
