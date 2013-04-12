@@ -35,6 +35,13 @@ public class ClientOutOfSyncUITest extends WebDriverTestCase {
 		super(name);
 	}
 
+	@Override
+    public void perBrowserSetUp() {
+	    super.perBrowserSetUp();
+	    // these tests trigger server recompilation which can take a bit of time
+	    auraUITestingUtil.setTimeoutInSecs(60);
+	}
+	
 	private void updateStringSource(DefDescriptor<?> desc, String content) {
 		Source<?> src = StringSourceLoader.getInstance().getSource(desc);
 		src.addOrUpdate(content);
@@ -69,8 +76,8 @@ public class ClientOutOfSyncUITest extends WebDriverTestCase {
 		openNoAura(url);
 		assertEquals("hi", getText(By.cssSelector("body")));
 		updateStringSource(cmpDesc, String.format(baseComponentTag, "", "bye"));
-		refreshPage();
-		assertEquals("bye", getText(By.cssSelector("body")));
+		openNoAura(url);
+		auraUITestingUtil.waitForElementText(By.cssSelector("body"), "bye", true);
 	}
 
 	public void testGetClientRenderingAfterThemeChange() throws Exception {
@@ -263,8 +270,8 @@ public class ClientOutOfSyncUITest extends WebDriverTestCase {
 		updateStringSource(
 				interfaceDesc,
 				"<aura:interface support='GA' description=''><aura:attribute name='entrance' type='String' default='secret'/></aura:interface>");
-		refreshPage();
-		assertEquals("secret", getText(By.cssSelector("body")));
+		openNoAura(url);
+        auraUITestingUtil.waitForElementText(By.cssSelector("body"), "secret", true);
 	}
 
 	public void testGetClientRenderingAfterLayoutChange() throws Exception {
