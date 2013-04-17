@@ -74,11 +74,7 @@ Action.prototype.getNextGlobalId = function() {
 
 /**
  * Gets the ActionDef object. Shorthand: get("def")
-<<<<<<< HEAD
  *
-=======
- *
->>>>>>> 1525c91... Aura framework changes to support transactions using Jiffy Transaction API
  * @returns {ActionDef}
  */
 Action.prototype.getDef = function() {
@@ -87,14 +83,9 @@ Action.prototype.getDef = function() {
 
 /**
  * Sets parameters for the Action. Maps key in paramDefs to config.
-<<<<<<< HEAD
  *
  * @param {Object}
  *            config The parameters for the Action.
-=======
- *
- * @param {Object} config The parameters for the Action.
->>>>>>> 1525c91... Aura framework changes to support transactions using Jiffy Transaction API
  */
 Action.prototype.setParams = function(config) {
     var paramDefs = this.paramDefs;
@@ -105,14 +96,9 @@ Action.prototype.setParams = function(config) {
 
 /**
  * Gets an Action parameter.
-<<<<<<< HEAD
  *
  * @param {String}
  *            name The name of the Action parameter.
-=======
- *
- * @param {String} name The name of the Action parameter.
->>>>>>> 1525c91... Aura framework changes to support transactions using Jiffy Transaction API
  * @returns {Array}
  */
 Action.prototype.getParam = function(name) {
@@ -121,11 +107,7 @@ Action.prototype.getParam = function(name) {
 
 /**
  * Gets the collection of parameters for this Action.
-<<<<<<< HEAD
  *
-=======
- *
->>>>>>> 1525c91... Aura framework changes to support transactions using Jiffy Transaction API
  * @returns {Object}
  */
 Action.prototype.getParams = function() {
@@ -134,11 +116,7 @@ Action.prototype.getParams = function() {
 
 /**
  * Gets the component for this Action.
-<<<<<<< HEAD
  *
-=======
- *
->>>>>>> 1525c91... Aura framework changes to support transactions using Jiffy Transaction API
  * @private
  */
 Action.prototype.getComponent = function() {
@@ -146,7 +124,6 @@ Action.prototype.getComponent = function() {
 };
 
 /**
-<<<<<<< HEAD
  * Sets the callback function that is executed after the server-side Action
  * returns.<br/> Call a server-side controller from a client-side controller
  * using callback.<br/>
@@ -155,13 +132,6 @@ Action.prototype.getComponent = function() {
  *            scope The scope in which the function is executed.
  * @param {Function}
  *            callback The callback function to run for each controller.
-=======
- * Sets the callback function that is executed after the server-side Action returns.<br/> Call a server-side controller
- * from a client-side controller using callback.<br/>
- *
- * @param {Object} scope The scope in which the function is executed.
- * @param {Function} callback The callback function to run for each controller.
->>>>>>> 1525c91... Aura framework changes to support transactions using Jiffy Transaction API
  */
 Action.prototype.setCallback = function(scope, callback) {
     this.callbackScope = scope;
@@ -169,7 +139,6 @@ Action.prototype.setCallback = function(scope, callback) {
 };
 
 /**
-<<<<<<< HEAD
  * Runs the Action. Checks that the event is client-side before running.<br/>
  * For server-side Actions, use runAfter() instead.<br/>
  *
@@ -197,33 +166,6 @@ Action.prototype.run = function(evt) {
  * Gets the current state of the Action. Possible values are "NEW", "RUNNING",
  * and "FAILURE". <br/>
  *
-=======
- * Runs the Action. Checks that the event is client-side before running.<br/> For server-side Actions, use runAfter()
- * instead.<br/>
- *
- * @param {Event} evt The event that calls the Action.
- */
-Action.prototype.run = function(evt) {
-    $A.assert(this.def.isClientAction(), "Run() cannot be called on a server action. Use runAfter() on a server action instead.");
-    this.state = "RUNNING";
-    var finished = false;
-    try {
-        var helper = this.cmp.getDef().getHelper();
-        this.meth.call(this, this.cmp, evt, helper);
-        finished = true;
-    } catch (e) {
-        $A.log("Action failed: " + this.cmp.getDef().getDescriptor().getQualifiedName() + " -> " + this.getDef().getName(), e);
-    } finally {
-        if (!finished) {
-            this.state = "FAILURE";
-        }
-    }
-};
-
-/**
- * Gets the current state of the Action. Possible values are "NEW", "RUNNING", and "FAILURE". <br/>
- *
->>>>>>> 1525c91... Aura framework changes to support transactions using Jiffy Transaction API
  * @returns {String}
  */
 Action.prototype.getState = function() {
@@ -231,26 +173,17 @@ Action.prototype.getState = function() {
 };
 
 /**
-<<<<<<< HEAD
  * Gets the return value of the Action. A server-side Action can return any
  * object containing serializable JSON data.<br/>
-=======
- * Gets the return value of the Action. A server-side Action can return any object containing serializable JSON data.<br/>
->>>>>>> 1525c91... Aura framework changes to support transactions using Jiffy Transaction API
  */
 Action.prototype.getReturnValue = function() {
     return this.returnValue;
 };
 
 /**
-<<<<<<< HEAD
  * Returns an error object with a message field, or in development modes, a
  * stack field. For server-side Action only.
  *
-=======
- * Returns an error object with a message field, or in development modes, a stack field. For server-side Action only.
- *
->>>>>>> 1525c91... Aura framework changes to support transactions using Jiffy Transaction API
  * @public
  */
 Action.prototype.getError = function() {
@@ -258,19 +191,12 @@ Action.prototype.getError = function() {
 };
 
 /**
-<<<<<<< HEAD
  * Adds the server-side action to the queue. Checks that the event is
  * server-side before enqueuing.<br/> For client-side Action, use run()
  * instead.<br/>
  *
  * @param {Action}
  *            action The action to run after the function.
-=======
- * Adds the server-side action to the queue. Checks that the event is server-side before enqueuing.<br/> For
- * client-side Action, use run() instead.<br/>
- *
- * @param {Action} action The action to run after the function.
->>>>>>> 1525c91... Aura framework changes to support transactions using Jiffy Transaction API
  */
 Action.prototype.runAfter = function(action) {
     $A.assert(action.def.isServerAction(), "RunAfter() cannot be called on a client action. Use run() on a client action instead.");
@@ -279,17 +205,12 @@ Action.prototype.runAfter = function(action) {
 
 /**
  * Returns a response function if the Action is complete.
-<<<<<<< HEAD
  *
-=======
- *
->>>>>>> 1525c91... Aura framework changes to support transactions using Jiffy Transaction API
  * @private
  * @param {Object}
  *            response
  */
 Action.prototype.complete = function(response) {
-<<<<<<< HEAD
     this.sanitizeStoredResponse(response);
 
     this.state = response["state"];
@@ -369,67 +290,6 @@ Action.prototype.complete = function(response) {
     } finally {
         context.setCurrentAction(previous);
     }
-=======
-    this.sanitizeStoredResponse(response);
-
-    this.state = response["state"];
-    this.returnValue = response.returnValue;
-    this.error = response.error;
-    this.storage = response["storage"];
-
-    var context = $A.getContext();
-    var previous = context.setCurrentAction(this);
-    try {
-        // Add in any Action scoped components /or partial configs
-        var components = response["components"];
-        if (components) {
-            context.joinComponentConfigs(components);
-        }
-
-        if (this.callback && (this.cmp === undefined || this.cmp.isValid())) {
-            this.callback.call(this.callbackScope, this);
-        }
-
-        var storage = this.getStorage();
-        if (storage && this._isStorable() && this.getState() === "SUCCESS") {
-            var storageName = storage.getName();
-            var key = this.getStorageKey();
-            if (!this.storage) {
-                // Rewrite any embedded ComponentDef from object to descriptor only
-                for ( var globalId in components) {
-                    var c = components[globalId];
-                    if (c) {
-                        var def = c["componentDef"];
-                        c["componentDef"] = {
-                            "descriptor" : def["descriptor"]
-                        };
-                    }
-                }
-
-                var stored = {
-                    "returnValue" : response.returnValue,
-                    "components" : components,
-                    "state" : "SUCCESS",
-                    "storage" : {
-                        "name" : storageName,
-                        "created" : new Date().getTime()
-                    }
-                };
-
-                storage.put(key, stored);
-            } else {
-                // DCHASMAN TODO Just update the last accessed timestamp for the item
-                // storage.log("Updating last accessed timestamp for action in " + storageName + " storage adapter",
-                // key);
-
-                // Initiate auto refresh if configured to do so
-                this.refresh();
-            }
-        }
-    } finally {
-        context.setCurrentAction(previous);
-    }
->>>>>>> 1525c91... Aura framework changes to support transactions using Jiffy Transaction API
 };
 
 /**
@@ -441,11 +301,7 @@ Action.prototype.setAbortable = function() {
 
 /**
  * Checks if the function is abortable. For server-side Action only.
-<<<<<<< HEAD
  *
-=======
- *
->>>>>>> 1525c91... Aura framework changes to support transactions using Jiffy Transaction API
  * @returns {Boolean} The function is abortable (true), or false otherwise.
  */
 Action.prototype.isAbortable = function() {
@@ -453,19 +309,12 @@ Action.prototype.isAbortable = function() {
 };
 
 /**
-<<<<<<< HEAD
  * An exclusive Action is processed on an XMLHttpRequest of its own.
  * a.setExclusive(true) and a.setExclusive() are the same. <br/> For server-side
  * Action only.
  *
  * @param {Object}
  *            val
-=======
- * An exclusive Action is processed on an XMLHttpRequest of its own. a.setExclusive(true) and a.setExclusive() are the
- * same. <br/> For server-side Action only.
- *
- * @param {Object} val
->>>>>>> 1525c91... Aura framework changes to support transactions using Jiffy Transaction API
  * @returns {Boolean} The value is exclusive (true), or false otherwise.
  */
 Action.prototype.setExclusive = function(val) {
@@ -474,11 +323,7 @@ Action.prototype.setExclusive = function(val) {
 
 /**
  * Returns true if a given function is exclusive, or false otherwise.
-<<<<<<< HEAD
  *
-=======
- *
->>>>>>> 1525c91... Aura framework changes to support transactions using Jiffy Transaction API
  * @returns {Boolean}
  */
 Action.prototype.isExclusive = function() {
@@ -487,17 +332,11 @@ Action.prototype.isExclusive = function() {
 
 /**
  * Marks the Action as storable and abortable. For server-side Actions only.
-<<<<<<< HEAD
  *
  * @param {Object}
  *            config Optional. A set of key/value pairs that specify the storage
  *            options to set. You can set the following options: ignoreExisting
  *            and refresh.
-=======
- *
- * @param {Object} config Optional. A set of key/value pairs that specify the storage options to set. You can set the
- *        following options: ignoreExisting and refresh.
->>>>>>> 1525c91... Aura framework changes to support transactions using Jiffy Transaction API
  */
 Action.prototype.setStorable = function(config) {
     $A.assert(this.def.isServerAction(), "setStorable() cannot be called on a client action.");
@@ -572,7 +411,6 @@ Action.prototype.toJSON = function() {
 
 /**
  * Refreshes the Action. Used with storage.
-<<<<<<< HEAD
  *
  * @private
  */
