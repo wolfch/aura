@@ -272,7 +272,7 @@ AuraContext.prototype.joinGlobalValueProviders = function(gvps, doNotPersist) {
                 this.globalValueProviders[t] = gvp;
             } else {
                 var mergeMap = new MapValue(newGvp["values"]);
-                gvp.merge(mergeMap, false);
+                gvp.merge(mergeMap, true);
             }
 
             if (storage) {
