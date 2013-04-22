@@ -34,6 +34,9 @@ Component.prototype.auraType = "Component";
  * @public
  */
 Component.prototype.getDef = function() {
+    if (!this.priv) {
+        return null;
+    }
     return this.priv.componentDef;
 };
 
@@ -596,6 +599,9 @@ Component.prototype.getElement = function(){
  * Shorthand : get("v")
  */
 Component.prototype.getAttributes = function() {
+    if (!this.priv) {
+        return null;
+    }
     return this.priv.attributes;
 };
 
