@@ -41,7 +41,6 @@ public enum JavascriptGeneratorMode {
      */
     TESTING("test", true, CompressionLevel.CLOSURE_AURA_DEBUG),
 
-
     TESTINGDEBUG("testdebug", true, CompressionLevel.CLOSURE_AURA_DEBUG),
 
     AUTOTESTING("auto", false, CompressionLevel.CLOSURE_AURA_PROD),
@@ -52,11 +51,6 @@ public enum JavascriptGeneratorMode {
      * in production everything is compressed to reduce file size
      */
     PRODUCTION("prod", false, CompressionLevel.CLOSURE_AURA_PROD, true),
-    /**
-     * in ptest everything is compressed to reduce file size.
-     * This mode is used to conditionally include performance testing code.
-     */
-    PTEST("ptest", false, CompressionLevel.CLOSURE_AURA_PROD, true),
 
     PRODUCTIONDEBUG("proddebug", false, CompressionLevel.CLOSURE_AURA_PROD, true),
 
@@ -111,7 +105,7 @@ public enum JavascriptGeneratorMode {
      * There may be more than 1 mode used in production, this value should
      * control whether the file is even generated in production environment (but
      * it doesn't yet)
-     *
+     * 
      * @return true if the mode is used in production
      */
     public boolean allowedInProduction() {

@@ -25,15 +25,13 @@ import org.auraframework.util.text.GlobMatcher;
 
 import com.google.common.collect.Lists;
 
-public class DescriptorFilter implements Comparable<DescriptorFilter> {
+public class DescriptorFilter implements Comparable {
     private static final List<DefType> componentType = Collections.unmodifiableList(Arrays
-        .asList(new DefType[] { DefType.COMPONENT }));
-
+            .asList(new DefType[] { DefType.COMPONENT }));
     private final List<DefType> defTypes;
     private final GlobMatcher prefixMatch;
     private final GlobMatcher namespaceMatch;
     private final GlobMatcher nameMatch;
-    private final String stringValue;
 
     public DescriptorFilter(String matcher) {
         this(matcher, "*");
@@ -79,13 +77,10 @@ public class DescriptorFilter implements Comparable<DescriptorFilter> {
             for (String t : types) {
                 accum.add(DefType.valueOf(t));
             }
-            Collections.sort(accum);
             this.defTypes = Collections.unmodifiableList(accum);
         } else {
             this.defTypes = componentType;
         }
-        this.stringValue =  this.prefixMatch + "://" + this.namespaceMatch + ":" + this.nameMatch
-                + ((this.defTypes == null) ? "(any)" : this.defTypes.toString());
     }
 
     public boolean matchPrefix(String prefix) {
@@ -115,7 +110,8 @@ public class DescriptorFilter implements Comparable<DescriptorFilter> {
 
     @Override
     public String toString() {
-        return this.stringValue;
+        return this.prefixMatch + "://" + this.namespaceMatch + ":" + this.nameMatch
+                + ((this.defTypes == null) ? "(any)" : this.defTypes.toString());
     }
 
     /**
@@ -147,27 +143,20 @@ public class DescriptorFilter implements Comparable<DescriptorFilter> {
 
     @Override
     public int hashCode() {
-        return stringValue.hashCode();
+        return this.toString().hashCode();
     }
 
     @Override
-    public int compareTo(DescriptorFilter other) {
-        return stringValue.compareTo(other.stringValue);
+    public int compareTo(Object arg0) {
+        return this.toString().compareTo(arg0.toString());
     }
 
     @Override
-    public boolean equals(Object other) {
-        if (other == null) {
-            return false;
-        }
-        if (this == other) {
-            return true;
-        }
-        if (!(other instanceof DescriptorFilter)) {
-            return false;
-        }
-        DescriptorFilter odf = (DescriptorFilter)other;
-        return stringValue.equals(odf.stringValue);
+    public boolean equals(Object arg0) {
+        if(arg0 == null) return false;
+        if (this == arg0) return true;
+        if (!(arg0 instanceof DescriptorFilter)) return false;
+        int res = compareTo(arg0);
+        return res == 0;
     }
-
 }

@@ -16,9 +16,7 @@
 ({
     render : function(component, helper) {
         // Performance Marker
-        $A.mark("FullRender" + component);
-        $A.mark("AfterRender" + component);
-        $A.mark("SuperRender" + component);
+        $A.mark("startRender" + component);
 
         // Add AOP to common attributes
         helper.addObservers(component, helper.buildList, ["body", "items", "emptyText", "id", "class"]);
@@ -30,7 +28,7 @@
         var bodyElements = this.superRender();
 
         // Performance Marker
-        $A.endMark("SuperRender" + component);
+        $A.measure("endSuperRender" + component, "startRender" + component);
 
         // And away we go!,
         return bodyElements;
@@ -38,13 +36,13 @@
 
     rerender : function(component,helper){
         // Performance Marker
-        $A.mark("SuperRerender" + component);
+        $A.mark("startRerender" + component);
 
         // Rerender the chain
         this.superRerender();
 
         // Performance Marker
-        $A.endMark("SuperRerender" + component);
+        $A.measure("endSuperRerender" + component, "startRerender" + component);
     },
 
     afterRender: function(component) {
@@ -52,7 +50,7 @@
         this.superAfterRender();
 
         // DEBUG: Performance Marker
-        $A.endMark("AfterRender" + component);
+        $A.measure("endAfterRender" + component, "startRender" + component);
     }
 
 })

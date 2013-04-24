@@ -1,20 +1,19 @@
 ({
     render: function(component){
-        $A.mark("Rendering time for performanceTest:inheritance component");
-        $A.mark("Rerender time for performanceTest:inheritance component");
-        return this.superRender();
+    	$A.mark("performanceTest:inheritance Render Time");
+    	return this.superRender();
     },
 
     afterRender: function(component){
-        var ret = this.superAfterRender();
-        $A.endMark("Rendering time for performanceTest:inheritance component");
-        return ret;
+    	var ret = this.superAfterRender();
+    	$A.measure("Rendering time for performanceTest:inheritance component", "performanceTest:inheritance Render Time");
+    	return ret;
     },
 
     rerender: function(component){
-        $A.mark("performanceTest:inheritance Rerender Time");
-        var ret = this.superRerender();
-        $A.endMark("Rerender time for performanceTest:inheritance component");
-        return ret;
+    	$A.mark("performanceTest:inheritance Rerender Time");
+    	var ret = this.superRerender();
+    	$A.measure("Rerender time for performanceTest:inheritance component", "performanceTest:inheritance Rerender Time");
+    	return ret;
     }
 })

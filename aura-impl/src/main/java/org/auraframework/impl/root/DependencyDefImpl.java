@@ -26,37 +26,15 @@ import org.auraframework.def.DescriptorFilter;
 import org.auraframework.def.RootDefinition;
 import org.auraframework.impl.system.DefinitionImpl;
 import org.auraframework.system.MasterDefRegistry;
-import org.auraframework.system.SourceListener;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.json.Json;
-
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 
 /**
  * The definition of a declared dependency.
  */
 public final class DependencyDefImpl extends DefinitionImpl<DependencyDef> implements DependencyDef {
     private static final long serialVersionUID = -3245215240391599759L;
-
-    private static final int DEPENDENCY_CACHE_SIZE = 512;
-    private final static Cache<DescriptorFilter, Set<DefDescriptor<?>>> dependencyCache = CacheBuilder.newBuilder()
-            .initialCapacity(DEPENDENCY_CACHE_SIZE).maximumSize(DEPENDENCY_CACHE_SIZE).build();
-
-    private static final class CacheBlaster implements SourceListener {
-        public CacheBlaster() {
-            Aura.getDefinitionService().subscribeToChangeNotification(this);
-        }
-
-        @Override
-        public void onSourceChanged(DefDescriptor<?> source, SourceMonitorEvent event) {
-            dependencyCache.invalidateAll();
-        }
-    }
-    // This is protected because me must keep a reference, but we don't appear to use this.
-    protected static final CacheBlaster cb = new CacheBlaster();
-
     private final DefDescriptor<? extends RootDefinition> parentDescriptor;
     private final DescriptorFilter dependency;
     private final QuickFixException error;
@@ -99,20 +77,14 @@ public final class DependencyDefImpl extends DefinitionImpl<DependencyDef> imple
 
     @Override
     public void appendDependencies(Set<DefDescriptor<?>> dependencies) throws QuickFixException {
-        MasterDefRegistry mdr = Aura.getContextService().getCurrentContext().getDefRegistry();
-        Set<DefDescriptor<?>> found;
+        MasterDefRegistry mdf = Aura.getContextService().getCurrentContext().getDefRegistry();
+        Set<DefDescriptor<?>> found = mdf.find(this.dependency);
 
-        found = dependencyCache.getIfPresent(dependency);
-
-        if (found == null) {
-            found = mdr.find(dependency);
-            if (found.size() == 0) {
-                // TODO: QuickFix for broken dependency.
-                throw new InvalidDefinitionException("Invalid dependency " + this.dependency, getLocation());
-            }
-            dependencyCache.put(dependency, found);
-        }
         dependencies.addAll(found);
+        if (found.size() == 0) {
+            // TODO: QuickFix for broken dependency.
+            throw new InvalidDefinitionException("Invalid dependency " + this.dependency, getLocation());
+        }
     }
 
     /**

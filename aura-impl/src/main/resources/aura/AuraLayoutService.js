@@ -27,13 +27,13 @@ var AuraLayoutService = function(){
 
     var layoutService = {
         // Call this method to make use of the layoutHandler override and pass in params that override the existing URL params
-            /**
-             * Change the location with new URL and parameters.
-             * @param {Object} newLocation The new location set to the hash of the URL
-             * @param {Object} overrideParams The parameters that override the existing URL parameters
-             * @memberOf AuraLayoutService
-             * @public
-             */
+    		/**
+    		 * Change the location with new URL and parameters.
+    		 * @param {Object} newLocation The new location set to the hash of the URL
+    		 * @param {Object} overrideParams The parameters that override the existing URL parameters
+    		 * @memberOf AuraLayoutService
+    		 * @public
+    		 */
         changeLocation : function(newLocation, overrideParams) {
             var newHash = '#' + newLocation;
             if (!window.location || !window.location.hash || (newHash != window.location.hash)) {
@@ -73,14 +73,8 @@ var AuraLayoutService = function(){
             }
 
             // The presence of a semaphore in here makes me think a class-level markName might cause trouble, but...
-            $A.mark("LayoutService.handleLocationChange (" + token + ")");
-            $A.mark("Container Action Callback Initiated");
-          //  $A.mark("Container Action Callback Initiated: " + item.getContainer());
-            //$A.mark("Giving control to aura:layoutHandler (" + layoutHandler.toString() + ")");
-            $A.mark("Giving control to aura:layoutHandler");
-            $A.mark("Layout Actions Callback Complete");
-           // $A.mark("Container Layout Complete: "+ layoutItem.getContainer());
-            $A.mark("Container Layout Complete");
+            markName = "LayoutService.handleLocationChange (" + token + ")";
+            $A.mark(markName);
 
             var curr = priv.peek();
 
@@ -97,14 +91,14 @@ var AuraLayoutService = function(){
                     // The params are the same - we're already where we need to be.
                     $A.finishInit();
                     priv.fireOnload();
-                    $A.endMark("LayoutService.handleLocationChange (" + token + ")");
+                    $A.measure("No Change", markName);
                     return;
                 }
             }
 
             layoutService.layout(token, event.getParams());
         },
-
+        
        /**
         * Refresh the current layout.
         * @memberOf AuraLayoutService
@@ -118,7 +112,7 @@ var AuraLayoutService = function(){
         /**
          * Load the previous layout and update the history, or the default layout
          * @memberOf AuraLayoutService
-         * @public
+         * @public 
          */
         back : function(){
             // Is there something in the stack to go back to?
@@ -130,7 +124,7 @@ var AuraLayoutService = function(){
                 skipLocationChangeHandlerSemaphore++;
                 historyService.back();
             }else{
-                historyService.set(priv.layouts.getDefault().getName());
+            	historyService.set(priv.layouts.getDefault().getName());
             }
         },
 
@@ -182,17 +176,16 @@ var AuraLayoutService = function(){
                         container._layoutItem = item;
                         var defaultAction = function() {
                             var action = item.getAction(cmp);
-
+                            
                             action.setStorable();
-
+                            
                             //Only set params for actions specified in the layouts file.  components requests will already have the params set properly.
                             if(!item.getBody() || item.getBody().length === 0){
                                 action.setParams(params);
                             }
 
                             action.setCallback(this, function(a){
-                                //$A.endMark("Container Action Callback Initiated: " + item.getContainer());
-                                $A.endMark("Container Action Callback Initiated");
+                                $A.measure("Container Action Callback Initiated: " + item.getContainer(), markName);
                                 if (a.getState() === "SUCCESS") {
                                     var ret = a.getReturnValue();
                                     layoutService.layoutCallback(ret ? componentService.newComponent(ret, null, false, true) : null, item, layout, params, noTrack);
@@ -225,8 +218,7 @@ var AuraLayoutService = function(){
                                 "defaultAction": defaultAction
                             });
 
-                            //$A.endMark("Giving control to aura:layoutHandler (" + layoutHandler.toString() + ")");
-                            $A.endMark("Giving control to aura:layoutHandler");
+                            $A.measure("Giving control to aura:layoutHandler (" + layoutHandler.toString() + ")", markName);
 
                             event.fire();
                         } else {
@@ -254,7 +246,7 @@ var AuraLayoutService = function(){
                     } else {
                         priv.fireLayoutChangeEvent();
                     }
-                    $A.endMark("Layout Actions Callback Complete");
+                    $A.measure("Layout Actions Callback Complete", markName);
 
                     $A.finishInit();
                     priv.fireOnload();
@@ -302,14 +294,13 @@ var AuraLayoutService = function(){
                 defaultAction();
             }
 
-            //$A.endMark("Container Layout Complete: "+ layoutItem.getContainer());
-            $A.endMark("Container Layout Complete");
+            $A.measure("Container Layout Complete: "+ layoutItem.getContainer(), markName);
         },
 
         /**
          * Set the current layout title.
          * @param {Object} title The title of the layout
-         * @description Example:
+         * @description Example: 
          * $A.layoutService.setCurrentLayoutTitle(label.getValue())
          * @memberOf AuraLayoutService
          * @public

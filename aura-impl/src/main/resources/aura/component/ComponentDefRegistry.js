@@ -28,17 +28,17 @@ ComponentDefRegistry.prototype.auraType = "ComponentDefRegistry";
 ComponentDefRegistry.prototype.cacheName = "componetDefRegistry.catalog";
 
 ComponentDefRegistry.prototype.isLocalStorageAvailable= (function() {
-    if (window.localStorage) {
-        // Now actually try a test write because private browsing and use of local when not authorized by the user will only fail on writes
-        try {
-            window.localStorage.setItem("test", "test");
-            window.localStorage.removeItem("test");
-            return true;
-        } catch(e) {
-        }
-    }
-
-    return false;
+	if (window.localStorage) {
+		// Now actually try a test write because private browsing and use of local when not authorized by the user will only fail on writes
+		try {
+			window.localStorage.setItem("test", "test");
+			window.localStorage.removeItem("test");
+			return true;
+		} catch(e) {
+		}
+	}
+	
+	return false;
 })();
 
 /**
@@ -60,10 +60,10 @@ ComponentDefRegistry.prototype.getDef = function(config, noInit) {
     var ret = this.componentDefs[descriptor];
     if ((!noInit) && !ret) {
         var useLocalStorage = this.useLocalCache(descriptor);
+        var mark;
         if (useLocalStorage) {
-            $A.mark("ComponentDefRegistry.localStorageCache");
-            $A.mark("Cleared localStorage (out of space) ");
-            $A.mark("Wrote " + descriptor);
+            mark = "ComponentDefRegistry.localStorageCache";
+            $A.mark(mark);
 
             // Try to load from cache
             var cachedConfig = this.getConfigFromLocalCache(descriptor);
@@ -72,7 +72,7 @@ ComponentDefRegistry.prototype.getDef = function(config, noInit) {
                 useLocalStorage = false;
             }
 
-            $A.endMark("ComponentDefRegistry.localStorageCache");
+            $A.measure("Cache " + (cachedConfig ? "hit" : "miss") + " " + descriptor, mark);
         }
 
         ret = new ComponentDef(config);
@@ -85,12 +85,12 @@ ComponentDefRegistry.prototype.getDef = function(config, noInit) {
             } catch (e) {
                 // Clear localStorage and try one more time to write through
                 localStorage.clear();
-                $A.endMark("Cleared localStorage (out of space) ");
+                $A.measure("Cleared localStorage (out of space) ", mark);
 
                 try {
-                    this.writeToCache(descriptor, config, mark);
+                	this.writeToCache(descriptor, config, mark);
                 } catch(e2) {
-                    // Nothing we can do at this point - give up.
+                	// Nothing we can do at this point - give up.
                 }
             }
         }
@@ -139,16 +139,17 @@ ComponentDefRegistry.prototype.getConfigFromLocalCache = function(descriptor) {
  * @param {Object} mark
  */
 ComponentDefRegistry.prototype.writeToCache = function(descriptor, config, mark) {
-    if (this.isLocalStorageAvailable) {
-        // Update the catalog
-        var catalog = this.getLocalCacheCatalog();
-
-        catalog[descriptor] = true;
-        localStorage.setItem(this.cacheName, aura.util.json.encode(catalog));
-
-        // Write out the componentDef
-        localStorage.setItem(this.cacheName + "." + descriptor, aura.util.json.encode(config));
-
-        $A.endMark("Wrote " + descriptor);
-    }
+	if (this.isLocalStorageAvailable) {
+	    // Update the catalog
+	    var catalog = this.getLocalCacheCatalog();
+	
+	    catalog[descriptor] = true;
+	    localStorage.setItem(this.cacheName, aura.util.json.encode(catalog));
+	
+	    // Write out the componentDef
+	    localStorage.setItem(this.cacheName + "." + descriptor, aura.util.json.encode(config));
+	
+	    $A.measure("Wrote " + descriptor, mark);
+	}
 };
+

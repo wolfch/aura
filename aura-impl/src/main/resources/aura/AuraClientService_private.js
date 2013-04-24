@@ -24,10 +24,12 @@ var priv = {
     isOutdated : false,
     isUnloading : false,
     initDefsObservers : [],
-    isDisconnected : false,
+    isDisconnected: false,
 
     /**
-     * Take a json (hopefully) response and decode it. If the input is invalid JSON, we try to handle it gracefully.
+     * Take a json (hopefully) response and decode it.
+     *
+     * If the input is invalid JSON, we try to handle it gracefully.
      */
     checkAndDecodeResponse : function(response, noStrip) {
         if (priv.isUnloading) {
@@ -44,8 +46,7 @@ var priv = {
         }
 
         //
-        // If a disconnect event was previously fired, fire a connection
-        // restored event
+        // If a disconnect event was previously fired, fire a connection restored event
         // now that we have a response from a server.
         //
         if (priv.isDisconnected) {
@@ -78,8 +79,11 @@ var priv = {
         // we have further problems...
         //
         if ((response["status"] != 200)
-                || (text.length > 9 && text.charAt(text.length - 9) == "/" && text.charAt(text.length - 8) == "*" && text.charAt(text.length - 7) == "E" && text.charAt(text.length - 6) == "R" && text.charAt(text.length - 5) == "R"
-                        && text.charAt(text.length - 4) == "O" && text.charAt(text.length - 3) == "R" && text.charAt(text.length - 2) == "*" && text.charAt(text.length - 1) == "/")) {
+                || (text.length > 9 && text.charAt(text.length - 9) == "/" && text.charAt(text.length - 8) == "*"
+                        && text.charAt(text.length - 7) == "E" && text.charAt(text.length - 6) == "R"
+                        && text.charAt(text.length - 5) == "R" && text.charAt(text.length - 4) == "O"
+                        && text.charAt(text.length - 3) == "R" && text.charAt(text.length - 2) == "*" && text
+                        .charAt(text.length - 1) == "/")) {
             if (response["status"] == 200) {
                 // if we encountered an exception once the response was
                 // committed
@@ -96,12 +100,12 @@ var priv = {
             // if the error on the server is meant to trigger a client-side
             // event...
             if (aura.util.isUndefinedOrNull(resp)) {
-                //#if {"excludeModes" : ["PRODUCTION"]}
+                // #if {"excludeModes" : ["PRODUCTION"]}
                 aura.error("Communication error, invalid JSON: " + text);
-                //#end
-                //#if {"modes" : ["PRODUCTION"]}
+                // #end
+                // #if {"modes" : ["PRODUCTION"]}
                 aura.error("Communication error, please retry or reload the page");
-                //#end
+                // #end
                 return null;
             } else if (resp["exceptionEvent"] === true) {
                 this.throwExceptionEvent(resp);
@@ -119,20 +123,20 @@ var priv = {
                 // thing, but in a different way so that we get a real error
                 // message.
                 // !!!!!!!!!!HACK ALERT!!!!!!!!!!
-                //#if {"excludeModes" : ["PRODUCTION"]}
+                // #if {"excludeModes" : ["PRODUCTION"]}
                 if (resp["message"] && resp["stack"]) {
                     aura.error(resp["message"] + "\n" + resp["stack"]);
                 } else {
                     aura.error("Communication error, invalid JSON: " + text);
                 }
-                //#end
-                //#if {"modes" : ["PRODUCTION"]}
+                // #end
+                // #if {"modes" : ["PRODUCTION"]}
                 if (resp["message"]) {
                     aura.error(resp["message"]);
                 } else {
                     aura.error("Communication error, please retry or reload the page");
                 }
-                //#end
+                // #end
                 return null;
             }
         }
@@ -145,12 +149,12 @@ var priv = {
 
         var responseMessage = aura.util.json.decode(text, true);
         if (aura.util.isUndefinedOrNull(responseMessage)) {
-            //#if {"excludeModes" : ["PRODUCTION"]}
+            // #if {"excludeModes" : ["PRODUCTION"]}
             aura.error("Communication error, invalid JSON: " + text);
-            //#end
-            //#if {"modes" : ["PRODUCTION"]}
+            // #end
+            // #if {"modes" : ["PRODUCTION"]}
             aura.error("Communication error, please retry or reload the page");
-            //#end
+            // #end
             return null;
         }
         return responseMessage;
@@ -206,11 +210,11 @@ var priv = {
     },
 
     findGroupAndAction : function(actionGroups, actionId) {
-        for ( var i = 0; i < actionGroups.length; i++) {
+        for (var i = 0; i < actionGroups.length; i++) {
             actionGroup = actionGroups[i];
 
             var actions = actionGroup.actions;
-            for ( var j = 0; j < actions.length; j++) {
+            for (var j = 0; j < actions.length; j++) {
                 action = actions[j];
                 if (actionId === action.getId()) {
                     return {
@@ -237,40 +241,37 @@ var priv = {
 
             var ctx = responseMessage["context"];
             $A.getContext().join(ctx);
-
+            
             var events = responseMessage["events"];
             if (events) {
-                for ( var en = 0, len = events.length; en < len; en++) {
+                for (var en = 0, len = events.length; en < len; en++) {
                     priv.parseAndFireEvent(events[en]);
                 }
             }
-
+            
             var actionResponses = responseMessage["actions"];
 
-            for ( var r = 0; r < actionResponses.length; r++) {
+            for (var r = 0; r < actionResponses.length; r++) {
                 var actionResponse = actionResponses[r];
 
                 var actionGroupNumber;
                 var action;
                 if (actionResponse["storable"] === true) {
-                    // Create a client side action instance to go with the
-                    // server created action response
-                    var descriptor = actionResponse["action"];
-                    var actionDef = $A.services.component.getActionDef({
-                        descriptor : descriptor
-                    });
-                    action = actionDef.newInstance();
+                	// Create a client side action instance to go with the server created action response
+                	var descriptor = actionResponse["action"];
+                	var actionDef = $A.services.component.getActionDef({ descriptor: descriptor });
+                	action = actionDef.newInstance();
 
-                    action.setStorable();
-                    action.setParams(actionResponse["params"]);
-
-                    actionGroupNumber = this.newestAbortableGroup;
+                	action.setStorable();
+                	action.setParams(actionResponse["params"]);
+                	
+	                actionGroupNumber = this.newestAbortableGroup;
                 } else {
-                    var groupAndAction = this.findGroupAndAction(actionGroups, actionResponse.id);
-                    aura.assert(groupAndAction, "Unable to find action for action response " + actionResponse.id);
-
-                    actionGroupNumber = groupAndAction.group.number;
-                    action = groupAndAction.action;
+	                var groupAndAction = this.findGroupAndAction(actionGroups, actionResponse.id);
+	                aura.assert(groupAndAction, "Unable to find action for action response " + actionResponse.id);
+	
+	                actionGroupNumber = groupAndAction.group.number;
+	                action = groupAndAction.action;
                 }
 
                 try {
@@ -282,7 +283,7 @@ var priv = {
                 }
             }
 
-            for ( var i = 0; i < actionGroups.length; i++) {
+            for (var i = 0; i < actionGroups.length; i++) {
                 actionGroup = actionGroups[i];
 
                 actionGroup.callback.call(actionGroup.scope || window, {
@@ -292,10 +293,10 @@ var priv = {
                 actionGroup.status = "done";
             }
         } else if (priv.isDisconnectedOrCancelled(response) && !priv.isUnloading) {
-            for ( var n = 0; n < actionGroups.length; n++) {
+            for (var n = 0; n < actionGroups.length; n++) {
                 actionGroup = actionGroups[n];
                 actions = actionGroup.actions;
-                for ( var m = 0; m < actions.length; m++) {
+                for (var m = 0; m < actions.length; m++) {
                     try {
                         action = actions[m];
                         if (!action.isAbortable() || this.newestAbortableGroup === actionGroup.number) {
@@ -322,7 +323,7 @@ var priv = {
         var queueCopy = queue;
         queue = [];
 
-        for ( var p = 0; p < queueCopy.length; p++) {
+        for (var p = 0; p < queueCopy.length; p++) {
             actionGroup = queueCopy[p];
             if (actionGroup.status !== "done") {
                 queue.push(actionGroup);
@@ -331,29 +332,7 @@ var priv = {
 
         this.requestQueue = queue;
         var that = this;
-        $A.endMark("Completed Action Callback - XHR " + num);
-
-        //#if {"modes" : ["PTEST"]}
-        // if there are no more actions for a particular transaction and if
-        // onLoad has already been fired
-        if (queueCopy.length == 1 && $A.getContext().getTransaction() !== 0) {
-            // if the current action is a list, a subsequent action follows to
-            // fetch
-            // the detail, so skip this for next time
-            // a bit of a hack to capture the getDetail action as well
-            if (queueCopy[0].actions[0].getDef().name.indexOf("Overview") == -1 && (queueCopy[0].actions[0].getDef().name.indexOf("List") == -1 || queueCopy[0].actions[0].getDef().name.indexOf("RelatedList") !== -1)) {
-                // end the previously started transaction
-                $A.endTransaction($A.getContext().getTransaction());
-                console.log("end tr");
-                // set the transaction using #hashtag from the URL and the
-                // concatenated action names as the unique ID
-                var tokenJson = $A.historyService.get();
-                $A.updateTransaction("txn_" + $A.getContext().getTransaction(), "txn_" + tokenJson["token"] + $A.getContext().getTransactionName());
-                // update the vars and set the beaconData to piggyback on the next XHR call
-                $A.setBeaconData($A.toJson());
-            }
-        }
-        //#end
+        $A.measure("Completed Action Callback", "Sending XHR " + num);
         setTimeout(function() {
             that.doRequest();
         }, 1);
@@ -362,14 +341,14 @@ var priv = {
     actionGroupCounter : 0,
 
     /**
-     * Serialize requests to the aura server from this client. AuraContext.num needs to be synchronized across all
-     * requests, and pending a better fix, this works around that issue.
+     * Serialize requests to the aura server from this client.
+     *
+     * AuraContext.num needs to be synchronized across all requests, and pending
+     * a better fix, this works around that issue.
      */
     request : function(actions, scope, callback, exclusive) {
         $A.mark("AuraClientService.request");
-        $A.mark("Action Request Prepared");
         var actionGroup = this.actionGroupCounter++;
-        $A.mark("Action Group " + actionGroup + " enqueued");
 
         var fireDoneWaiting = false;
         var actionsToSend = [];
@@ -391,7 +370,7 @@ var priv = {
                 if (actionsToComplete.length > 0) {
                     var that = this;
                     setTimeout(function() {
-                        for ( var n = 0; n < actionsToComplete.length; n++) {
+                        for (var n = 0; n < actionsToComplete.length; n++) {
                             var info = actionsToComplete[n];
                             info.action.complete(info.response);
                         }
@@ -409,15 +388,16 @@ var priv = {
                         number : actionGroup,
                         exclusive : exclusive
                     });
-                    $A.endMark("Action Group " + actionGroup + " enqueued");
+                    $A.measure("Action Group " + actionGroup + " enqueued", "AuraClientService.request");
                     clientService.doRequest();
                 }
             }
         };
 
-        for ( var i = 0; i < actions.length; i++) {
+        for (var i = 0; i < actions.length; i++) {
             var action = actions[i];
-            $A.assert(action.def.isServerAction(), "RunAfter() cannot be called on a client action. Use run() on a client action instead.");
+            $A.assert(action.def.isServerAction(),
+                    "RunAfter() cannot be called on a client action. Use run() on a client action instead.");
 
             // For cacheable actions check the storage service to see if we
             // already have a viable cached action response we can complete
@@ -426,14 +406,16 @@ var priv = {
             if (action.isStorable() && storage) {
                 var key = action.getStorageKey();
 
-                storage.get(key, this.createResultCallback(action, scope, actionGroup, callback, actionsToComplete, actionsToSend, actionCollected));
+                storage.get(key, this.createResultCallback(action, scope, actionGroup, callback, actionsToComplete,
+                        actionsToSend, actionCollected));
             } else {
                 this.collectAction(action, scope, actionGroup, callback, actionsToSend, actionCollected);
             }
         }
     },
 
-    createResultCallback : function(action, scope, actionGroup, callback, actionsToComplete, actionsToSend, actionCollected) {
+    createResultCallback : function(action, scope, actionGroup, callback, actionsToComplete, actionsToSend,
+            actionCollected) {
         var that = this;
         return function(response) {
             if (response) {
@@ -456,9 +438,7 @@ var priv = {
 
         if (action.isExclusive()) {
             action.setExclusive(false);
-            this.request([
-                action
-            ], scope, callback, true);
+            this.request([ action ], scope, callback, true);
         } else {
             actionsToSend.push(action);
         }
@@ -475,7 +455,7 @@ var priv = {
             var actionsToRequest = [];
             var actionGroups = [];
 
-            for ( var j = 0; j < queue.length; j++) {
+            for (var j = 0; j < queue.length; j++) {
                 var actionGroup = queue[j];
 
                 var status = actionGroup.status;
@@ -484,7 +464,7 @@ var priv = {
                     var actions = actionGroup.actions;
                     var requestedActions = [];
                     var hasActionsToRequest = false;
-                    for ( var m = 0; m < actions.length; m++) {
+                    for (var m = 0; m < actions.length; m++) {
                         var action = actions[m];
                         if (!action.isAbortable() || this.newestAbortableGroup === actionGroup.number) {
                             hasActionsToRequest = true;
@@ -492,9 +472,6 @@ var priv = {
                             // Chained actions are transported and executed by
                             // custom code
                             if (!action.isChained()) {
-                             //#if {"modes" : ["PTEST"]}
-                                $A.getContext().updateTransactionName(action.getDef().name);
-                             //#end
                                 actionsToRequest.push(action);
                             }
                         }
@@ -506,6 +483,7 @@ var priv = {
                         break;
                     }
                 }
+
             }
             var requestConfig = {
                 "url" : priv.host + "/aura",
@@ -521,19 +499,10 @@ var priv = {
                     "aura.token" : priv.token,
                     "aura.context" : $A.getContext().encodeForServer(),
                     "aura.num" : num
-                    //#if {"modes" : ["PTEST"]}
-                    ,
-                    "beaconData" : $A.getBeaconData()
-                   //#end
                 }
             };
 
-            // clear the beaconData
-            //#if {"modes" : ["PTEST"]}
-            $A.clearBeaconData();
-            //#end
-
-            $A.endMark("Action Request Prepared");
+            $A.measure("Action Request Prepared", "AuraClientService.request");
             $A.util.transport.request(requestConfig);
             setTimeout(function() {
                 $A.get("e.aura:waiting").fire();
@@ -570,7 +539,7 @@ var priv = {
 
     flushLoadEventQueue : function() {
         if (priv.loadEventQueue) {
-            for ( var i = 0, len = priv.loadEventQueue.length; i < len; i++) {
+            for (var i = 0, len = priv.loadEventQueue.length; i < len; i++) {
                 var eventName = priv.loadEventQueue[i];
                 $A.get(eventName).fire();
             }
@@ -606,8 +575,9 @@ var priv = {
             // TODO IBOGDANOV Why are you checking in commented out code like
             // this???
             /*
-             * setTimeout( function(){ if(window.applicationCache.status === window.applicationCache.CHECKING){
-             * priv.showProgress(1); } }, 2000 );
+             * setTimeout( function(){ if(window.applicationCache.status ===
+             * window.applicationCache.CHECKING){ priv.showProgress(1); } },
+             * 2000 );
              */
         }
     },
@@ -635,7 +605,8 @@ var priv = {
         if (e.stopImmediatePropagation) {
             e.stopImmediatePropagation();
         }
-        if (window.applicationCache && (window.applicationCache.status === window.applicationCache.UNCACHED || window.applicationCache.status === window.applicationCache.OBSOLETE)) {
+        if (window.applicationCache
+                && (window.applicationCache.status === window.applicationCache.UNCACHED || window.applicationCache.status === window.applicationCache.OBSOLETE)) {
             return;
         }
         var manifestURL = priv.getManifestURL();
@@ -733,7 +704,7 @@ var priv = {
         }
         return false;
     },
-
+    
     setConnectedFalse: function() {
         if (priv.isDisconnected) {
             return;
@@ -747,6 +718,7 @@ var priv = {
             alert("Connection lost");
         }
     }
+
 };
 
 window.onbeforeunload = function(event) {
@@ -760,7 +732,7 @@ $A.ns.Util.prototype.on(window, "load", function(event) {
     // Lazy load data-src scripts
     var scripts = document.getElementsByTagName("script");
     if (scripts) {
-        for ( var i = 0, len = scripts.length; i < len; i++) {
+        for (var i = 0, len = scripts.length; i < len; i++) {
             var script = scripts[i];
             if (script.getAttribute("data-src") && !script.getAttribute("src")) {
                 script.src = script.getAttribute("data-src");
