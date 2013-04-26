@@ -15,7 +15,7 @@
  */
 /*jslint sub: true */
 /**
- * @class The Aura Rendering Service, accessible using $A.renderingService.  Renders components. 
+ * @class The Aura Rendering Service, accessible using $A.renderingService.  Renders components.
  * The default behaviors can be customized in a client-side renderer.
  * @constructor
  */
@@ -23,12 +23,14 @@ var AuraRenderingService = function AuraRenderingService(){
     //#include aura.AuraRenderingService_private
 
     var renderingService = {
-    		/**
-    		 * @private
-    		 */
+            /**
+             * @private
+             */
         rerenderDirty : function(){
             if (priv.needsCleaning) {
-                $A.mark("RenderingService.rerenderDirty");
+                var num = aura.getContext().incrementRender();
+                $A.mark("Rerendering: " + num);
+                $A.mark("Fired aura:doneRendering event");
                 priv.needsCleaning = false;
 
                 var cmps = [];
@@ -55,14 +57,14 @@ var AuraRenderingService = function AuraRenderingService(){
                 }
                 this.rerender(cmps);
 
-                $A.measure("Finished rerendering", "RenderingService.rerenderDirty");
+                $A.endMark("Rerendering: " + num);
                 $A.get("e.aura:doneRendering").fire();
-                $A.measure("Fired aura:doneRendering event", "RenderingService.rerenderDirty");
+                $A.endMark("Fired aura:doneRendering event");
             }
         },
 
         /**
-         * Renders a component by calling its renderer. 
+         * Renders a component by calling its renderer.
          * @param {Component} component
          * 				The component to be rendered
          * @param {Component} parent
@@ -168,7 +170,7 @@ var AuraRenderingService = function AuraRenderingService(){
             }
 
             if (component.auraType === "Value" && component.toString() === "ArrayValue"){
-            	component.unrender();
+                component.unrender();
             }
 
             var array = priv.getArray(component);

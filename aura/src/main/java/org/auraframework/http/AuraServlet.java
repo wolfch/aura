@@ -57,13 +57,17 @@ import org.auraframework.throwable.ClientOutOfSyncException;
 import org.auraframework.throwable.NoAccessException;
 import org.auraframework.throwable.SystemErrorException;
 import org.auraframework.throwable.quickfix.QuickFixException;
+import org.auraframework.util.AuraTextUtil;
 import org.auraframework.util.json.Json;
+import org.auraframework.util.json.JsonReader;
+import org.auraframework.util.json.JsonStreamReader.JsonParseException;
 
 import com.google.common.collect.Maps;
 
 // DCHASMAN TODO Move this into its own aura-heroku module
-/*import javax.servlet.ServletException;
- import org.eclipse.jetty.webapp.*;*/
+/*
+ * import javax.servlet.ServletException; import org.eclipse.jetty.webapp.*;
+ */
 
 /**
  * The servlet for initialization and actions in Aura.
@@ -109,6 +113,7 @@ public class AuraServlet extends AuraBaseServlet {
     private static final EnumParam<DefType> defTypeParam = new EnumParam<DefType>(AURA_PREFIX + "deftype", false,
             DefType.class);
     private final static StringParam messageParam = new StringParam("message", 0, false);
+    private final static StringParam beaconParam = new StringParam("beaconData", 0, false);
 
     // FIXME: is this really a good idea?
     private final static StringParam nocacheParam = new StringParam("nocache", 0, false);
@@ -141,9 +146,7 @@ public class AuraServlet extends AuraBaseServlet {
         // before we do any checks at all.
         //
         String nocache = nocacheParam.get(request);
-        if (nocache == null || nocache.isEmpty()) {
-            return false;
-        }
+        if (nocache == null || nocache.isEmpty()) { return false; }
         response.setContentType("text/plain");
         response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
 
@@ -213,16 +216,12 @@ public class AuraServlet extends AuraBaseServlet {
             // TODO: this should disappear!!!!! -GPO
             // Verify why it is here.
             //
-            if (handle404(request, response, tagName, defType)) {
-                return;
-            }
+            if (handle404(request, response, tagName, defType)) { return; }
 
             //
             // TODO: evaluate this for security.
             //
-            if (handleNoCacheRedirect(request, response)) {
-                return;
-            }
+            if (handleNoCacheRedirect(request, response)) { return; }
 
             DefinitionService definitionService = Aura.getDefinitionService();
             DefDescriptor<? extends BaseComponentDef> defDescriptor = definitionService.getDefDescriptor(tagName,
@@ -307,7 +306,7 @@ public class AuraServlet extends AuraBaseServlet {
                 Application app = instanceService.getInstance(tagName, ApplicationDef.class, attributes);
                 component = app;
             } else if (defType == DefType.COMPONENT) {
-                component = (Component) instanceService.getInstance(tagName, ComponentDef.class, attributes);
+                component = (Component)instanceService.getInstance(tagName, ComponentDef.class, attributes);
             }
             Map<String, Object> map = Maps.newHashMap();
             map.put("token", getToken());
@@ -387,9 +386,8 @@ public class AuraServlet extends AuraBaseServlet {
         boolean written = false;
 
         try {
-            if (context.getFormat() != Format.JSON) {
-                throw new AuraRuntimeException("Invalid request, post must use JSON");
-            }
+            if (context.getFormat() != Format.JSON) { throw new AuraRuntimeException(
+                    "Invalid request, post must use JSON"); }
 
             String fwUID = Aura.getConfigAdapter().getAuraFrameworkNonce();
             if (!fwUID.equals(context.getFrameworkUID())) {
@@ -403,9 +401,7 @@ public class AuraServlet extends AuraBaseServlet {
             response.setContentType(getContentType(context.getFormat()));
             String msg = messageParam.get(request);
 
-            if (msg == null) {
-                throw new AuraRuntimeException("Invalid request, no message");
-            }
+            if (msg == null) { throw new AuraRuntimeException("Invalid request, no message"); }
 
             loggingService.startTimer(LoggingService.TIMER_DESERIALIZATION);
             try {
@@ -421,8 +417,8 @@ public class AuraServlet extends AuraBaseServlet {
                 Action action = message.getActions().get(0);
                 String name = action.getDescriptor().getQualifiedName();
                 if (name.equals("aura://ComponentController/ACTION$getApplication")
-                        || (name.equals("aura://ComponentController/ACTION$getComponent")
-                        && !isProductionMode(context.getMode()))) {
+                        || (name.equals("aura://ComponentController/ACTION$getComponent") && !isProductionMode(context
+                                .getMode()))) {
                     isBootstrapAction = true;
                 }
             }
@@ -441,6 +437,12 @@ public class AuraServlet extends AuraBaseServlet {
                     // a client out of sync exception, since the UID will not match.
                     //
                 }
+            }
+
+            // handle transaction beacon JSON data
+            String beaconData = beaconParam.get(request);
+            if (!"undefined".equals(beaconData) && !AuraTextUtil.isNullEmptyOrWhitespace(beaconData)) {
+                loggingService.setValue(LoggingService.BEACON_DATA, new JsonReader().read(beaconData));
             }
 
             Message<?> result = serverService.run(message, context);
@@ -471,6 +473,8 @@ public class AuraServlet extends AuraBaseServlet {
         } catch (RequestParam.MissingParamException mpe) {
             handleServletException(new SystemErrorException(mpe), false, context, request, response, false);
             return;
+        } catch (JsonParseException jpe) {
+            handleServletException(new SystemErrorException(jpe), false, context, request, response, false);
         } catch (Exception e) {
             handleServletException(e, false, context, request, response, written);
         }
