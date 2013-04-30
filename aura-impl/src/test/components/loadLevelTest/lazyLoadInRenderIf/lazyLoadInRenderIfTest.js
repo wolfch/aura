@@ -17,25 +17,29 @@
     testRenderIf: {
         attributes:{flip:true},
         test: [function(cmp){
-                // Verify that both renderIf and else sections are
-                $A.test.assertEquals("placeholder", cmp.find("lazyrenderIf").getDef().getDescriptor().getName(), "Placeholder missing for lazy component.");
-                $A.test.assertEquals("placeholder", cmp.find("lazyelse").getDef().getDescriptor().getName(), "Placeholder missing for lazy component.");
+			$A.test.setTestTimeout(30000);
+
+            // Verify that both renderIf and else sections are
+            $A.test.assertEquals("placeholder", cmp.find("lazyrenderIf").getDef().getDescriptor().getName(), "Placeholder missing for lazy component.");
+            $A.test.assertEquals("placeholder", cmp.find("lazyelse").getDef().getDescriptor().getName(), "Placeholder missing for lazy component.");
+            $A.test.assertTrue(cmp.find('nonLazyRenderIfDiv').isRendered(), "renderIf section is not rendered");
+            $A.test.assertFalse(cmp.find('nonLazyElseDiv').isRendered(), "else section is rendered");
+
+            $A.test.addWaitFor(true, $A.test.isActionPending,
+                    function(){$A.test.callServerAction(cmp.get("c.resumeAll"), true);});
+
+            // Wait till lazy component is loaded from server
+            $A.test.addWaitFor("serverComponent", function(){
+                return cmp.find("lazyrenderIf").getDef().getDescriptor().getName();
+            },function(){
+                // Else section still hasn't been replaced by actual component
+                $A.test.assertEquals("placeholder", cmp.find("lazyelse").getDef().getDescriptor().getName());
                 $A.test.assertTrue(cmp.find('nonLazyRenderIfDiv').isRendered(), "renderIf section is not rendered");
                 $A.test.assertFalse(cmp.find('nonLazyElseDiv').isRendered(), "else section is rendered");
-
-                $A.test.addWaitFor(true, $A.test.isActionPending,
-                        function(){$A.test.callServerAction(cmp.get("c.resumeAll"), true);});
-
-                // Wait till lazy component is loaded from server
-                $A.test.addWaitFor("serverComponent", function(){
-                    return cmp.find("lazyrenderIf").getDef().getDescriptor().getName();
-                },function(){
-                    // Else section still hasn't been replaced by actual component
-                    $A.test.assertEquals("placeholder", cmp.find("lazyelse").getDef().getDescriptor().getName());
-                    $A.test.assertTrue(cmp.find('nonLazyRenderIfDiv').isRendered(), "renderIf section is not rendered");
-                    $A.test.assertFalse(cmp.find('nonLazyElseDiv').isRendered(), "else section is rendered");
-                });
+            });
         }, function(cmp){
+			$A.test.setTestTimeout(30000);
+        	
             // Flip the renderIf flag to lazy load components in else section
             $A.services.event.startFiring(true);
             cmp.getAttributes().setValue('flip', false);
