@@ -73,6 +73,7 @@ var Transport = function() {
             /** config{url,method,callback,scope,params} */
 
             var request = createHttpRequest();
+            var processed = false;
             var method = config["method"] || "GET";
             var qs;
             if (config["params"]) {
@@ -86,6 +87,21 @@ var Transport = function() {
             request["open"](method, url, true);
             request["onreadystatechange"] = function() {
                 if (request["readyState"] == 4) {
+                    //
+                    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    // Danger Will Robinson!!! Danger Will Robinson!!!
+                    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    // Browsers are _not_ guaranteed to call this routine
+                    // once per request per ready state. You may end up
+                    // with more than one call, and the steps leading to
+                    // this are not at all obvious. So we carefully guard
+                    // ourselves here. Do not take this out!!!!
+                    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    //
+                    if (processed === true) {
+                        return;
+                    }
+                    processed = true;
                     var aura_num = config["params"]["aura.num"];
                     $A.endMark("Received Response - XHR " + aura_num);
                     config["callback"].call(config["scope"] || window, request);
