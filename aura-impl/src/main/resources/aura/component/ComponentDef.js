@@ -95,7 +95,7 @@ function ComponentDef(config){
     var subDefs = config["subDefs"];
     if (subDefs) {
         for(var k=0;k<subDefs.length;k++){
-            componentService.addDef(subDefs[k]);
+            componentService.getDef(subDefs[k]);
         }
     }
 
@@ -367,11 +367,9 @@ ComponentDef.prototype.getLayouts = function(){
  */
 ComponentDef.prototype.initSuperDef = function(config){
     if (config) {
-    	$A.componentService.addDef(config);
-    	return $A.componentService.getDef(config);
-    } else {
-    	return null;
+        return $A.componentService.getDef(config);
     }
+    return null;
 };
 
 /**
