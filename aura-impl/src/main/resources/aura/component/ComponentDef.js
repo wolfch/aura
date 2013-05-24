@@ -368,7 +368,7 @@ ComponentDef.prototype.getLayouts = function(){
 ComponentDef.prototype.initSuperDef = function(config){
     if (config) {
     	$A.componentService.addDef(config);
-    	return $A.componentService.getDef(config["descriptor"]);
+    	return $A.componentService.getDef(config);
     } else {
     	return null;
     }

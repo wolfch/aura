@@ -115,11 +115,14 @@ var AuraComponentService = function(){
                 config["attributes"]["valueProvider"] = attributeValueProvider;
             }
 
-            var rawDef = config["componentDef"];
-            var desc = rawDef && rawDef["descriptor"] ? rawDef["descriptor"] : rawDef;
-            var def = that.getDef(desc, true);
-
+            var def;
+            var desc;
             var load;
+
+
+            def = that.getDef(config["componentDef"], true);
+
+
             if(doForce !== true && !config["globalId"]){
                 if(def && !def.hasRemoteDependencies() ){
                     localCreation = true;
@@ -129,6 +132,12 @@ var AuraComponentService = function(){
                 }else{
                     load = config["load"];
                 }
+            }
+
+            if(def){
+                desc = def.getDescriptor().toString();
+            }else{
+                desc = config["componentDef"]["descriptor"]?config["componentDef"]["descriptor"]:config["componentDef"];
             }
 
             if(desc === "markup://aura:placeholder"){
@@ -189,15 +198,6 @@ var AuraComponentService = function(){
             return priv.registry.addDef(config);
         },
         
-        /**
-         * Ask the component registry to complete any pending registrations.
-         * @memberOf AuraComponentService
-         * @private
-         */
-        registerPending: function(config){
-            return priv.registry.registerPending();
-        },
-
         /**
          * Get the component's controller definition from the registry.
          * @private
