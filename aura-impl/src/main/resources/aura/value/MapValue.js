@@ -391,15 +391,17 @@ MapValue.prototype.put = function(k, v){
  * @private
  */
 MapValue.prototype.remove = function(k, doDestroy) {
-	if (this.value.hasOwnProperty(k)) {
-		if (doDestroy) {
-			this.value[k].destroy();
-		} else {
-			this.value[k].destroyHandlers();
-		}
-		delete this.value[k];
-		delete this.keys[k.toLowerCase()];
-	}
+    if (this.value.hasOwnProperty(k)) {
+        if (doDestroy) {
+            this.value[k].destroy();
+        } else if (this.value[k].destroyHandlers) {
+            for (var globalId in this.value[k].handlers) {
+                this.value[k].destroyHandlers(globalId);
+            }
+        }
+        delete this.value[k];
+        delete this.keys[k.toLowerCase()];
+    }
 };
 
 /**
@@ -442,7 +444,9 @@ MapValue.prototype.destroyHandlers = function(globalId){
     var keys = this.keys;
     for(var k in values){
         var v = values[k];
-        v.destroyHandlers(globalId);
+        if (v.destroyHandlers) {
+            v.destroyHandlers(globalId);
+        }
     }
 };
 
