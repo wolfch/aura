@@ -20,7 +20,7 @@
     testEmptyValue:{
         attributes : {value: ''},
         test: function(component){
-            aura.test.assertEquals('', $A.test.getText(component.find('link').getElement()), "When value is initialized to an empty string, nothing should be shown.");
+        aura.test.assertTrue($A.util.isUndefinedOrNull(component.find('link').getElement()), "When value is initialized to an empty string, componenet should not have DOM elements.");
         }
     },
 
