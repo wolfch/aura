@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 /*jslint sub: true */
+
 /**
  * @class A value object wrapper for a map. Each value in the map is a value object rather than a JavaScript literal
  * value. A value object is a thin wrapper around the actual data. The wrapper layer around the literal JavaScript
