@@ -283,19 +283,21 @@
 		// Add onload listener to all <img> elements in the content to detect
 		// async size changes from images loading after
 		// the scroller has initialized
-		var content = component.find("scrollContent").getElement();
-		if (content) {
-			var images = content.getElementsByTagName("img");
-			var that = this;
-			if (images.length > 0) {
-				var imageLoadTimeoutCallback = $A.util.createTimeoutCallback(function() {
-				    if (component.isValid()) {
-				        that.refreshScroller(component);
-				    }
-				}, 400);
-
-				for ( var n = 0; n < images.length; n++) {
-					$A.util.on(images[n], "load", imageLoadTimeoutCallback);
+		if(component.isValid()){
+			var content = component.find("scrollContent").getElement();
+			if (content) {
+				var images = content.getElementsByTagName("img");
+				var that = this;
+				if (images.length > 0) {
+					var imageLoadTimeoutCallback = $A.util.createTimeoutCallback(function() {
+					    if (component.isValid()) {
+					        that.refreshScroller(component);
+					    }
+					}, 400);
+	
+					for ( var n = 0; n < images.length; n++) {
+						$A.util.on(images[n], "load", imageLoadTimeoutCallback);
+					}
 				}
 			}
 		}
