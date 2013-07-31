@@ -171,7 +171,7 @@ $A.ns.ActionCollector.prototype.findActionAndClear = function(id) {
         if (action !== undefined && action.getId() === id) {
             this.actionsFinished[id] = action;
             //
-            // Oh, how I love hacks. We put chained actions in the queue
+            // Workaround. We put chained actions in the queue
             // at the wrong place.
             //
             if (!action.isChained()) {

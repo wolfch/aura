@@ -137,7 +137,7 @@ public class ComponentDefRefHandler<P extends RootDefinition> extends ParentedTa
             setBody(body);
         }
 
-        // hacky. if there is an interface, grab that descriptor too
+        // Need better workaround. if there is an interface, grab that descriptor too
         DefDescriptor<InterfaceDef> id = DefDescriptorImpl.getInstance(builder.getDescriptor().getQualifiedName(),
                 InterfaceDef.class);
         if (id.exists()) {

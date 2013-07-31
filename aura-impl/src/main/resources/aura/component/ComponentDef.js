@@ -293,7 +293,7 @@ $A.ns.ComponentDef.prototype.getEventDef = function(name, includeValueEvents) {
  * Get an event name by descriptor qualified name.
  *
  * This is only used in the case of an action firing a component event.
- * It is a bit of a hack, but will give back the name of the event that
+ * It is a bit of a workaround, but will give back the name of the event that
  * corresponds to the descriptor.
  *
  * @param {String} descriptor a descriptor qualified name.

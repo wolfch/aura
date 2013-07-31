@@ -94,9 +94,9 @@ public class AuraResourceServlet extends AuraBaseServlet {
     }
 
     /**
-     * A very hackish internal filter.
+     * Provide a better way of distinguishing templates from styles..
      * 
-     * This is used to apply the style definition filter for 'templates', which appears to be quite bogus, but is
+     * This is used to apply the style definition filter for 'templates', but is
      * getting rather further embedded in code.
      * 
      * TODO: W-1486762
