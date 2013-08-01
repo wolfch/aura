@@ -65,7 +65,7 @@ public interface Action extends Instance<ActionDef> {
             // could be slow. To summarize, we should:
             // 1) add Serializer caching
             // 2) add shouldSerializeNulls hook
-            // 3) get rid of this hacky workaround
+            // 3) come up with better workaround
             // Hoo-rah.
             Object returnValue = action.getReturnValue();
             if (returnValue == null) {

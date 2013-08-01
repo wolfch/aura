@@ -538,7 +538,7 @@ public abstract class WebDriverTestCase extends IntegrationTestCase {
         	openAndWait(url,waitForInit);
         }
         catch(TimeoutException e){
-        	//Adding hack to avoid timeout issue for ie7 and ie8 
+        	//Adding workaround to avoid timeout issue for ie7 and ie8 
         	//seems like IE7 and IE8 test fails for the first time when we run the test in new vm session
         	if(currentBrowserType == BrowserType.IE7 || currentBrowserType == BrowserType.IE8){
         		openAndWait(url,waitForInit);

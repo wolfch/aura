@@ -18,7 +18,7 @@
         if (events != undefined) {
             var dispatcher=component.getEventDispatcher();
             for (var x in events) {
-                // TODO: AURA: HACK: Need a way to copy events properly.
+                // TODO: workaround: Need a way to copy events properly.
                 if (events.hasOwnProperty(x))dispatcher[x]=events[x];
             }
         }
@@ -397,7 +397,7 @@
     },
 
     getEvents:function(component){
-        // TODO: AURA: HACK: Need a way to copy events properly.
+        // TODO: workaround: Need a way to copy events properly.
         var eventMap={};
         var events=component.getDef().getAllEvents();
         var dispatcher= component.getEventDispatcher();

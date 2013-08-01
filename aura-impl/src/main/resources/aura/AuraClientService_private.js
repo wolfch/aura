@@ -160,13 +160,13 @@ var priv = {
                 this.throwExceptionEvent(resp);
                 return null;
             } else {
-                // !!!!!!!!!!HACK ALERT!!!!!!!!!!
+                // !!!!!!!!!!workaround!!!!!!!!!!
                 // The server side actually returns a response with 'message' and 'stack' defined
                 // when there was a server side exception. Unfortunately, we don't really know what
                 // we have... the code in aura.error has checks for those, but if they are not
                 // there the error message will be meaningless. This code thu does much the same
                 // thing, but in a different way so that we get a real error message.
-                // !!!!!!!!!!HACK ALERT!!!!!!!!!!
+                // !!!!!!!!!!workaround!!!!!!!!!!
                 // #if {"excludeModes" : ["PRODUCTION"]}
                 if (resp["message"] && resp["stack"]) {
                     aura.error(resp["message"] + "\n" + resp["stack"]);
@@ -346,7 +346,7 @@ var priv = {
                             // Hmm, we got a missing action. We allow this in the case that we have
                             // a storable action from the server (i.e. we are faking an action from the
                             // server to store data on the client. This is only used in priming, and is
-                            // more than a bit of a hack.
+                            // more than a bit of a workaround.
                             //
                             // Create a client side action instance to go with the server created action response
                             //

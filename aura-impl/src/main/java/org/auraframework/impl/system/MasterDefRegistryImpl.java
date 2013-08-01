@@ -449,7 +449,6 @@ public class MasterDefRegistryImpl implements MasterDefRegistry {
 
         // cc.loggingService.incrementNum(LoggingService.DEF_COUNT);
         // FIXME: setting the current namespace on the context seems
-        // extremely hackish
         context.setCurrentNamespace(canonical.getNamespace());
         compiling.def.validateDefinition();
         compiling.built = true;
@@ -556,7 +555,7 @@ public class MasterDefRegistryImpl implements MasterDefRegistry {
         // Now validate our references.
         //
         for (CompilingDef<?> cd : compiling) {
-            // FIXME: setting the current namespace on the context seems extremely hackish
+            // FIXME: setting the current namespace on the context should be changed
             context.setCurrentNamespace(cd.descriptor.getNamespace());
             if (cd.built) {
                 // FIXME: this may be incorrect, we may need to validate references even when we did

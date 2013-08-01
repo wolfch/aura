@@ -141,7 +141,7 @@ public class TestInventory {
                 suite.addTest(newSuite);
             }
         } else if (test instanceof JUnit4TestAdapter) {
-            // This is a hack because this inventory is not actually complaint
+            // This is a workaround because this inventory is not actually complaint
             // with the JUnit specification. All of the
             // tests in the suite will appear to the runner as a single test.
             TestSuite newSuite = new TestSuite(test.toString() + "JUnit4TestAdapterHack");
