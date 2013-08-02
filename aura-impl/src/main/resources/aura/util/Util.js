@@ -1289,7 +1289,10 @@ $A.ns.Util.prototype.getText = function(node) {
 
 };
 
+$A.ns.Util.prototype.errorBasedOnMode = function(msg) {
+	$A.error(msg);
 
+};
 
 
 
