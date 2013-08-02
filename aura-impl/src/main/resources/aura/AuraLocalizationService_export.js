@@ -52,6 +52,7 @@ exp(localizationService,
     "parseDateTimeISO8601", localizationService.parseDateTimeISO8601,
     "parseDateTimeUTC", localizationService.parseDateTimeUTC,
     "startOf", localizationService.startOf,
+    "toISOString", localizationService.toISOString,
     "WallTimeToUTC", localizationService.WallTimeToUTC,
     "UTCToWallTime", localizationService.UTCToWallTime
 );
