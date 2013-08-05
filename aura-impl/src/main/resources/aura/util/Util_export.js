@@ -66,6 +66,7 @@ exp(p,
     "setDebugToolWindow", p.setDebugToolWindow,
     "getDebugToolsAuraInstance",  p.getDebugToolsAuraInstance,
     "getUrl", p.getUrl,
-    "getText", p.getText
+    "getText", p.getText,
+    "errorBasedOnMode", p.errorBasedOnMode
     //#end
 );
