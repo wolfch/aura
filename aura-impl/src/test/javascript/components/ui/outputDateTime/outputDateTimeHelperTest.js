@@ -142,7 +142,13 @@ Test.Ui.OutputDateTime.HelperTest = function(){
 			var helper={	
 				displayDateTime:function(component, displayValue){
 					actual = displayValue;					
-				}				
+				},
+				getFormat:function(component){
+				    return component.get("v.format");
+				},
+				getTimeZone:function(component) {
+                    return component.get("v.timezone");
+                }			
 			};	
 			
 			var concreteComponent={
@@ -200,7 +206,13 @@ Test.Ui.OutputDateTime.HelperTest = function(){
 			var helper={	
 				displayDateTime:function(component, displayValue){
 					actual = displayValue;					
-				}				
+				},
+				getFormat:function(component){
+				    return component.get("v.format");
+				},
+				getTimeZone:function(component) {
+                    return component.get("v.timezone");
+                }		
 			};	
 			
 			var concreteComponent={
