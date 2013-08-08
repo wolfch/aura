@@ -189,8 +189,8 @@ public class IntegrationServiceImplUITest extends WebDriverTestCase {
                                 cmpToInject.getName()), ControllerDef.class);
         addSourceAutoCleanup(jsControllerdesc, 
                 "{" + 
-                        "clickHndlr:function(cmp, evt){var e = cmp.getEvent('press');e.setParams({'domEvent': event});e.fire();}," +
-                        "changeHndlr:function(cmp, evt){var e = cmp.getEvent('change');e.fire();}"+
+                        "clickHndlr:function(cmp, evt){ var e = cmp.getEvent('press');e.setParams({'domEvent': evt});e.fire();}," +
+                        "changeHndlr:function(cmp, evt){ var e = cmp.getEvent('change');e.fire();}"+
         		"}");
         
         DefDescriptor<ComponentDef> customStub = addSourceAutoCleanup(
