@@ -664,29 +664,6 @@ var AuraDevToolService = function() {
         	    }
         	    return true;
         	},
-        	
-                /**
-                 * Method looks at the given arrays for anchor statements that are the empty string
-                 * @param   anchors - The anchor tags in the document
-                 * @returns Array - Returns an array of all erroneous values
-                 */
-                checkAnchorHasInnerText : function (anchors){
-    	        	var errArray = [];
-    	        	var anchor = null;
-    	        	var text = "";
-    	        	var accessAideFuncs = $A.devToolService.accessbilityAide;
-    	        	for(var index = 0; index<anchors.length; index++){
-    	        	    anchor = anchors[index];
-    	        	    
-    	        	    //Text should not be undefined or null at any point since $A.test.getText will always return something
-    	        	    text = $A.util.getText(anchor).replace(/[\s\t\r\n]/g,'');
-    	        	    
-    	        	    if(text === "" && accessAideFuncs.anchrDoesNotHaveImgWithAlt(anchor)){
-    	        		errArray.push(anchor);
-    	        	    }
-    	        	}
-    	        	return errArray;
-                },
                 /**
                  * Method grabs everything from the given array and finds all tags that are erroneous
                  * @param   inputTags - radio and checkbox inputs
@@ -805,18 +782,6 @@ var AuraDevToolService = function() {
                    return accessAideFuncs.formatOutput(headerErrMsg, errArray);
                
              },
-               /**
-                * Function that will find all anchors and make sure that they have text in them
-                * @returns String - Returns a string representation of the errors
-                */
-               checkAnchorHasText : function(){
-                      var anchorErrMsg = "Anchor tag should contain proper link text and tell what the link is about. For a graphical link, uses ui:image instead,"+
-                   		      " or uses a span tag with assistiveText class to include the link text; uses ui:button if it's a button.";
-                      var accessAideFuncs = $A.devToolService.accessbilityAide;
-                      var anchors = document.getElementsByTagName("a");
-                      return accessAideFuncs.formatOutput(anchorErrMsg, accessAideFuncs.checkAnchorHasInnerText(anchors));
-                  
-                },
                 /**
                  * Function that will find all ths and make sure that they have scope in them, and that they are equal to row, col, rowgroup, colgroup
                  * @returns String - Returns a string representation of the errors

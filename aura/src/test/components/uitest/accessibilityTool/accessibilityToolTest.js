@@ -51,44 +51,6 @@
 			$A.test.assertEquals(expected, actual , "Unexpected return from CheckAccessibility, should not return errornous string. output: \n"+output);
 		}
     },
-    testAnchorWithInnerText:{
-		attributes : {caseToRender : 'anchorWInnerText'},
-		test: function(cmp){
-			var expected = "";
-			var output    = $A.devToolService.checkAccessibility();
-			var actual   =  output.split("\n")[0];
-			$A.test.assertEquals(expected, actual , "Unexpected return from CheckAccessibility, should not return errornous string. output: \n"+output);
-		}
-    },
-    
-    testAnchorWithOutInnerText:{
-		attributes : {caseToRender : 'anchorWOInnerText'},
-		test: function(cmp){
-			var expected = "Total Number of Errors found: 1";
-			var output    = $A.devToolService.checkAccessibility();
-			var actual   =  output.split("\n")[0];
-			$A.test.assertEquals(expected, actual , "Unexpected return from CheckAccessibility, should return string with 1 errors. output: \n"+output);
-		}
-    },
-
-    testAnchorInOutputURLInfo:{
-		attributes : {caseToRender : 'anchorInOutputURLInfo'},
-		test: function(cmp){
-			var expected = "Total Number of Errors found: 1";
-			var output    = $A.devToolService.checkAccessibility();
-			var actual   =  output.split("\n")[0];
-			$A.test.assertEquals(expected, actual , "Unexpected return from CheckAccessibility, should return string with 1 errors. output: \n"+output);
-		}
-    },
-    testAnchorInOutputURLDeco:{
-		attributes : {caseToRender : 'anchorInOutputURLDeco'},
-		test: function(cmp){
-			var expected = "Total Number of Errors found: 2";
-			var output    = $A.devToolService.checkAccessibility();
-			var actual   =  output.split("\n")[0];
-			$A.test.assertEquals(expected, actual , "Unexpected return from CheckAccessibility, should return string with 2 errors. output: \n"+output);
-		}
-    },
     testRadioIsInFieldSetError:{
 		attributes : {caseToRender : 'RadioErrors'},
 		test: function(cmp){
