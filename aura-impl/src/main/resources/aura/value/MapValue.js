@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 /*jslint sub: true */
-
 /**
  * @class A value object wrapper for a map. Each value in the map is a value object rather than a JavaScript literal
  * value. A value object is a thin wrapper around the actual data. The wrapper layer around the literal JavaScript
@@ -29,6 +27,7 @@ function MapValue(config, def, component){
     this.value = {};
     this.keys = {};
     this.owner = component;
+
     var k;
     // attributes can come through here but have no way of knowing the member keys
     // models have getMembers
@@ -92,6 +91,7 @@ MapValue.prototype.getValue = function(k){
  * @param {Object} newMap The new map.
  */
 MapValue.prototype.setValue = function(newMap) {
+    var oldMap = this.value;  // Held to test for dirty replaced subobjects
     this.value = {};
     this.keys = {};
     this.makeDirty();
@@ -127,7 +127,7 @@ MapValue.prototype.setValue = function(newMap) {
         if (copyKeys && copyKeys[k]) {
             key = copyKeys[k];
         }
-        this.add(key, copyMap);
+        this.add(key, copyMap, k in oldMap);
     }
 };
 
@@ -305,10 +305,12 @@ MapValue.prototype.unwrap = function(){
  * wraps the value in a simple or map value and adds to this map.
  *
  * The use of config allows null or undefined to be passed in as the value.
+ * The subDirty flag can be used to force the new subkey to be dirty; an
+ * added key is normally clean.
  *
  * @private
  */
-MapValue.prototype.add = function(k, config) {
+MapValue.prototype.add = function(k, config, subDirty) {
     var key = k.toLowerCase();
     var v = config[k];
 
@@ -320,6 +322,9 @@ MapValue.prototype.add = function(k, config) {
     }
 
     this.makeDirty();
+    if (value.makeDirty && subDirty) {
+        value.makeDirty();
+    }
 
     var handlers = this.handlers;
     if (handlers) {
@@ -354,24 +359,6 @@ MapValue.prototype.put = function(k, v){
         this.add(k, config);
     }
     this.makeDirty();
-};
-
-/**
- * Removes an entry from the map.
- * @private
- */
-MapValue.prototype.remove = function(k, doDestroy) {
-    if (this.value.hasOwnProperty(k)) {
-        if (doDestroy) {
-            this.value[k].destroy();
-        } else if (this.value[k].destroyHandlers) {
-            for (var globalId in this.value[k].handlers) {
-                this.value[k].destroyHandlers(globalId);
-            }
-        }
-        delete this.value[k];
-        delete this.keys[k.toLowerCase()];
-    }
 };
 
 /**
