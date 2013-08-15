@@ -1262,6 +1262,7 @@ Test.Aura.AuraLocalizationServiceTest = function(){
             // Assert
             Assert.Equal(expected, actual);
         }   
+
     }    
     
     [Fixture]
