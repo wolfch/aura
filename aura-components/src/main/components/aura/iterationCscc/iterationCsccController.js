@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 ({
-    provide : function IterationProvider(component, localCreation) {
-        var realbody = component.getDef().getHelper().createRealBody(component, !localCreation);
+    rangeChange: function(cmp, evt, helper) {
+        helper.rerenderEverything(cmp);
+    },
 
-        return {
-            attributes: {
-                "realbody": realbody
-            }
-        };
+    itemsChange: function(cmp, evt, helper) {
+        var v = evt.getParam("value");
+        if (v === cmp.getValue("v.items")) {
+            helper.rerenderEverything(cmp);
+        }
+    },
+
+    firstRender: function(cmp, evt, helper) {
+        helper.rerenderEverything(cmp);
     }
 })
-
