@@ -33,6 +33,44 @@
                                                    }
                                                  });
     },
+    /**
+     * Create a component with localId set in config.
+     */
+    createCmpWithLocalId : function(cmp, evt, helper){
+        helper.createComponentAndPushToBody(cmp, {componentDef: "markup://aura:text",
+                                                   localId: "userLocalId",
+                                                   attributes:{
+                                                       values:{ truncate:6,
+                                                                value:"TextComponent"
+                                                       }
+                                                   }
+                                                 });
+    },
+    createCmpWithServerDependeciesAndLocalId : function(cmp, evt,helper){
+        helper.createComponentAndPushToBody(cmp, {componentDef: "markup://loadLevelTest:serverComponent",
+                                                    localId: "userLocalId",
+                                                    attributes:{
+                                                        values:{stringAttribute:'creatingComponentWithServerDependecies'}
+                                                    }
+                                                });
+    },
+    // Component with server dependencies
+    createCmpWithPropertyReference : function(cmp, evt,helper){
+        helper.createComponentAndPushToBody(cmp, {componentDef: "markup://loadLevelTest:serverComponent",
+                                                    attributes:{
+                                                        values:{stringAttribute:'v.testAttr'}
+                                                    }
+                                                });
+    },
+    // Component with no server dependencies
+    createCmpWithPropertyReference2 : function(cmp, evt,helper){
+        helper.createComponentAndPushToBody(cmp, {componentDef: "markup://ui:outputNumber",
+                                                   attributes:{
+                                                       values:{ value: "v.testAttr2"
+                                                       }
+                                                   }
+                                                 });
+    },
     createCmpWithComplexAttributes: function(cmp, evt, helper){
         helper.createComponentAndPushToBody(cmp, 
         		{componentDef: "markup://loadLevelTest:displayStringArray",

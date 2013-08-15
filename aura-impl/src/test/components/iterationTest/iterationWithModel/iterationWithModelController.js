@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 ({
-    testIteratingThroughAuraComponentArray:{
-        test:function(cmp){
-            $A.log(cmp);
-        }
+    addRow : function(cmp, event) {
+        var sl = cmp.getValue("m.stringList");
+        sl.push("new!");
+    },
+
+    removeRow : function(cmp, event) {
+        var sl = cmp.getValue("m.stringList");
+        sl.remove(0);
     }
 })
