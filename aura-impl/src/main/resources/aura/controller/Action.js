@@ -471,7 +471,7 @@ Action.prototype.finishAction = function(context) {
 
 		if (this.cmp === undefined || this.cmp.isValid()) {
 			if (this.events.length > 0) {
-				for ( var x in this.events) {
+				for (var x = 0; x < this.events.length; x++) {
 					this.parseAndFireEvent(this.events[x], this.cmp);
 				}
 			}
@@ -652,8 +652,10 @@ Action.prototype.toJSON = function() {
  */
 Action.prototype.incomplete = function(context) {
 	this.state = "INCOMPLETE";
+	if (!this.error || !(this.error instanceof Array)) {
+		this.error = [ { message : "Disconnected or Canceled" } ];
+	}
 	this.finishAction(context);
-	this.state = "NEW";
 };
 
 /**
