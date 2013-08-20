@@ -260,9 +260,9 @@ public class SecurityProviderHttpTest extends AuraHttpTestCase {
         DefDescriptor<ApplicationDef> appDesc = addSourceAutoCleanup(
                 ApplicationDef.class,
                 "<aura:application securityProvider='org.auraframework.components.security.SecurityProviderAlwaysAllows'>%s</aura:application>");
-        verifyGetAccessAllowed(DefType.APPLICATION,
+        verifyGetAccessDenied(DefType.APPLICATION,
                 "securityProvider='org.auraframework.components.security.SecurityProviderAlwaysDenies'",
-                String.format("{'app':'%s'}", appDesc.getQualifiedName()));
+                String.format("{'app':'%s'}", appDesc.getQualifiedName()), null);
     }
 
     /**
@@ -274,9 +274,9 @@ public class SecurityProviderHttpTest extends AuraHttpTestCase {
         DefDescriptor<ApplicationDef> appDesc = addSourceAutoCleanup(
                 ApplicationDef.class,
                 "<aura:application securityProvider='org.auraframework.components.security.SecurityProviderAlwaysDenies'>%s</aura:application>");
-        verifyGetAccessDenied(DefType.APPLICATION,
+        verifyGetAccessAllowed(DefType.APPLICATION,
                 "securityProvider='org.auraframework.components.security.SecurityProviderAlwaysAllows'",
-                String.format("{'app':'%s'}", appDesc.getQualifiedName()), null);
+                String.format("{'app':'%s'}", appDesc.getQualifiedName()));
     }
 
     /**
