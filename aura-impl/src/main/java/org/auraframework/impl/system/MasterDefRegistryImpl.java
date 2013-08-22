@@ -179,6 +179,7 @@ public class MasterDefRegistryImpl implements MasterDefRegistry {
     private final Set<DefDescriptor<?>> accessCache = Sets.newLinkedHashSet();
 
     private SecurityProviderDef securityProvider;
+	private DefDescriptor<? extends BaseComponentDef> lastRootDesc;
 
     public MasterDefRegistryImpl(DefRegistry<?>... registries) {
         delegateRegistries = new RegistryTrie(registries);
@@ -732,12 +733,7 @@ public class MasterDefRegistryImpl implements MasterDefRegistry {
 
             de = new DependencyEntry(uid, Sets.newTreeSet(dds.keySet()), lmt);
             depsCache.put(makeGlobalKey(de.uid, descriptor), de);
-            //
-            // FIXME: W-1791871 this needs to have a check to see than no registries have
-            // user dependencies, so then we can safely cache things. For the moment
-            // there are no user dependencies.
-            //
-            depsCache.put(key, de);
+
             // See localDependencies comment
             localDependencies.put(de.uid, de);
             localDependencies.put(key, de);
@@ -1004,9 +1000,9 @@ public class MasterDefRegistryImpl implements MasterDefRegistry {
      * @throws QuickFixException if there was a problem compiling.
      */
     private SecurityProviderDef getSecurityProvider() throws QuickFixException {
-        if (securityProvider == null) {
-            DefDescriptor<? extends BaseComponentDef> rootDesc = Aura.getContextService().getCurrentContext()
-                    .getApplicationDescriptor();
+        DefDescriptor<? extends BaseComponentDef> rootDesc = Aura.getContextService().getCurrentContext()
+                .getApplicationDescriptor();
+        if (securityProvider == null || !lastRootDesc.equals(rootDesc)) {
             SecurityProviderDef securityProviderDef = null;
             if (rootDesc != null && rootDesc.getDefType().equals(DefType.APPLICATION)) {
                 ApplicationDef root = (ApplicationDef) getDef(rootDesc);
@@ -1017,8 +1013,11 @@ public class MasterDefRegistryImpl implements MasterDefRegistry {
                     }
                 }
             }
+            
             securityProvider = securityProviderDef;
+            lastRootDesc = rootDesc;
         }
+        
         return securityProvider;
     }
 
@@ -1129,6 +1128,7 @@ public class MasterDefRegistryImpl implements MasterDefRegistry {
         localDependencies.clear();
         accessCache.clear();
         securityProvider = null;
+        lastRootDesc = null;
         depsCache.invalidateAll();
         defsCache.invalidateAll();
         existsCache.invalidateAll();
