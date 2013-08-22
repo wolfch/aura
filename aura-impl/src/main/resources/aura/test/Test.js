@@ -1212,7 +1212,7 @@ var Test = function(){
          */
         getAuraErrorMessage: function(){
             return aura.test.getText($A.util.getElement("auraErrorMessage"));
-        }
+        }    
     };
 
     //#include aura.test.Test_export
