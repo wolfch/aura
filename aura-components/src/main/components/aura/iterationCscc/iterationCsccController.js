@@ -26,6 +26,9 @@
     },
 
     firstRender: function(cmp, evt, helper) {
+        if (cmp.getValue("v.realbody").unwrap().length === 0) {
+            helper.rerenderEverything(cmp);
+        }
         helper.rerenderEverything(cmp);
     }
 })
