@@ -167,7 +167,7 @@
     },
 
     createRealBodyServer: function(cmp, doForce) {
-        realbody = [];
+        var realbody = [];
         var atts = cmp.getAttributes();
         var items = atts.getValue("items");
         var varName = atts.get("var");
