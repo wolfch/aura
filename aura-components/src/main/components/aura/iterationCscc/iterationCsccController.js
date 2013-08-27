@@ -29,6 +29,5 @@
         if (cmp.getValue("v.realbody").unwrap().length === 0) {
             helper.rerenderEverything(cmp);
         }
-        helper.rerenderEverything(cmp);
     }
 })
