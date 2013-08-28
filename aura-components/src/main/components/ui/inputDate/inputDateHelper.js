@@ -56,7 +56,9 @@
             var format = component.get("v.format");
             var langLocale = component.get("v.langLocale");
             var d = $A.localizationService.parseDateTimeUTC(value, format, langLocale);
-            ret = $A.localizationService.formatDateUTC(d, "YYYY-MM-DD");
+            if (d) {
+                ret = $A.localizationService.formatDateUTC(d, "YYYY-MM-DD");
+            }
         }
         component.setValue("v.value", ret);
     },
