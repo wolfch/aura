@@ -98,6 +98,7 @@
 					var vScroll = attributes.getValue("vscroll").getBooleanValue();
 					var showScrollbars = attributes.getValue("showscrollbars").getBooleanValue();
 					var useTransform = attributes.getValue("useTransform").getBooleanValue();
+					var useTransition = attributes.getValue("useTransition").getBooleanValue();
                     var checkDOMChanges = attributes.getValue("checkDOMChanges").getBooleanValue();
                     var bindEventsToScroller = attributes.getValue("bindEventsToScroller").getBooleanValue();
 
@@ -174,7 +175,7 @@
 						fadeScrollbar : true,
 
 						useTransform : useTransform,
-						useTransition : false,
+						useTransition : useTransition,
 
 						topOffset : pullDownOffset,
 
@@ -530,6 +531,7 @@
 					// Snap
 					snap : false,
 					snapThreshold : 1,
+					snapTime : 300,
 
 					// Events
 					onRefresh : null,
@@ -1359,7 +1361,7 @@
 					return {
 						x : x,
 						y : y,
-						time : 600
+						time : that.options.snapTime
 					};
 				},
 
