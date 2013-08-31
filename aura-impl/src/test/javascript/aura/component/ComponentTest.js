@@ -15,51 +15,87 @@
  */
 Function.RegisterNamespace("Test.Aura.Component");
 
-[Fixture]
-Test.Aura.Component.ComponentTest=function(){
-	// Mock the exp() function defined in Aura.js, this is originally used for exposing members using a export.js file
+[ Fixture ]
+Test.Aura.Component.ComponentTest = function() {
+	// Mock the exp() function defined in Aura.js, this is originally used for
+	// exposing members using a export.js file
 	Mocks.GetMock(Object.Global(), "exp", function() {
 	})(function() {
 		// #import aura.component.Component
+		// #import aura.component.InvalidComponent
 	});
 
-    [Fixture]
-    function GetDef(){
-      [Fact]
-      function ReturnsNullForInvalidComponent(){
-	  //Arrange
-	  var target = null;
-	  var mockPriv = Mocks.GetMock(Object.Global(), "ComponentPriv" , function(){});
-	  mockPriv(function(){
-	      target = new Component();
-	      target.assertValid = function(){return false};
-	  });
-	  
-	  //Act
-	  var actual = target.getDef();
-	  
-	  //Assert
-	  Assert.Null(actual);
-      }
-      
-      [Fact]
-      function ReturnsComponentDef(){
-	  //Arrange
-	  var expected = "Expected ComponentDef";
-	  var target = null;
-	  var mockPriv = Mocks.GetMock(Object.Global(), "ComponentPriv" , function(){});
-	  mockPriv(function(){
-	      target = new Component();
-	      target.assertValid = function(){return true};
-	      target.priv.componentDef = expected;
-	  });
-	  
-	  //Act
-	  var actual = target.getDef();
-	  
-	  //Assert
-	  Assert.Equal(expected, actual);
-      }
-    }
-      
+	[ Fixture ]
+	function GetDef() {
+		[ Fact ]
+		function ReturnsNullForInvalidComponent() {
+			// Arrange
+			var target = null;
+
+			var renderingServiceMock = Mocks.GetMock(Object.Global(), "$A",
+					Stubs.GetObject({}, {
+						componentService : {
+							deIndex : function() {
+							}
+						},
+
+						renderingService : {
+							unrender : function() {
+							}
+						},
+
+						util : {
+							apply : function(baseObject, members) {
+								for (prop in members) {
+									baseObject[prop] = members[prop];
+								}
+							}
+						}
+					}));
+
+			var mockPriv = Mocks.GetMock(Object.Global(), "ComponentPriv",
+					function() {
+					});
+			
+			renderingServiceMock(function() {
+				mockPriv(function() {
+					ComponentPriv.prototype.deIndex = function() {
+					};
+
+					ComponentPriv.prototype.getEventDispatcher = function() {
+					};
+
+					target = new Component();
+					target.destroy();
+				});
+			});
+
+			// Act
+			var actual = target.getDef();
+
+			// Assert
+			Assert.Null(actual);
+		}
+
+		[ Fact ]
+		function ReturnsComponentDef() {
+			// Arrange
+			var expected = "Expected ComponentDef";
+			var target = null;
+			var mockPriv = Mocks.GetMock(Object.Global(), "ComponentPriv",
+					function() {
+					});
+			mockPriv(function() {
+				target = new Component();
+				target.priv.componentDef = expected;
+			});
+
+			// Act
+			var actual = target.getDef();
+
+			// Assert
+			Assert.Equal(expected, actual);
+		}
+	}
+
 }
