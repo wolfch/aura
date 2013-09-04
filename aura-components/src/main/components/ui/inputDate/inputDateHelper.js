@@ -30,7 +30,7 @@
             }
         }
         var elem = component.find("inputText").getElement();
-        elem.value = displayValue ? displayValue : '';
+        elem.value = displayValue ? $A.localizationService.translateToLocalizedDigits(displayValue) : '';
     },
     
     displayDatePicker: function(component) {
@@ -51,11 +51,12 @@
      *
      */
     doUpdate : function(component, value) {
-        var ret = value;
+        var v = $A.localizationService.translateFromLocalizedDigits(value);
+        var ret = v;
         if (value) {
             var format = component.get("v.format");
             var langLocale = component.get("v.langLocale");
-            var d = $A.localizationService.parseDateTimeUTC(value, format, langLocale);
+            var d = $A.localizationService.parseDateTimeUTC(v, format, langLocale);
             if (d) {
                 ret = $A.localizationService.formatDateUTC(d, "YYYY-MM-DD");
             }
