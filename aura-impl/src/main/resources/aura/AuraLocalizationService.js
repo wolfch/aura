@@ -23,6 +23,8 @@ var AuraLocalizationService = function AuraLocalizationService() {
     var numberFormat, percentFormat, currencyFormat;
     // moment.js and walltime-js must be loaded before we can use date/time related APIs
     var localizationService = {
+        ZERO : "0",
+        
         cache : {
             format : {},
             langLocale : {}
@@ -524,6 +526,93 @@ var AuraLocalizationService = function AuraLocalizationService() {
             } else {
                 return date;
             }
+        },
+        
+        /**
+         * Translate the localized digit string to a string with Arabic digits if there is any.
+         * @param {String} input a string with localized digits.
+         * @return {String} a string with Arabic digits.
+         * @memberOf AuraLocalizationService
+         * @public
+         */
+        translateFromLocalizedDigits : function(input) {
+            if (!input) {
+                return input;
+            }
+            
+            var localizedZero = $A.get("$Locale.zero");
+            var zeroCharCodeOffset = localizedZero.charCodeAt(0) - this.ZERO.charCodeAt(0);
+            if (!zeroCharCodeOffset) {
+                return input;
+            }
+            
+            var charArray = input.split("");
+            for (var i = 0; i < charArray.length; i++) {
+                var charCode = charArray[i].charCodeAt(0);
+                if (charCode <= localizedZero.charCodeAt(0) + 9 && charCode >= localizedZero.charCodeAt(0)) {
+                    charArray[i] = String.fromCharCode(charCode - zeroCharCodeOffset);
+                }
+            }
+            return charArray.join("");
+        },
+        
+        /**
+         * Translate the input date from other calendar system (for example, Buddhist calendar) to Gregorian calendar 
+         * based on the locale.
+         * @param {Date} date a Date Object.
+         * @return {Date} an updated Date object.
+         * @memberOf AuraLocalizationService
+         * @public
+         */
+        translateFromOtherCalendar : function(date) {
+            var userLocaleLang = $A.getGlobalValueProviders().get("$Locale.userLocaleLang");
+            if ('th' === userLocaleLang) { // Buddhist year
+                date.setFullYear(date.getFullYear() - 543);
+            }
+            return date;
+        },
+        
+        /**
+         * Translate the input string to a string with localized digits (different from Arabic) if there is any.
+         * @param {String} input a string with Arabic digits.
+         * @return {String} a string with localized digits.
+         * @memberOf AuraLocalizationService
+         * @public
+         */
+        translateToLocalizedDigits : function(input) {
+            if (!input) {
+                return input;
+            }
+            
+            var localizedZero = $A.get("$Locale.zero");
+            var zeroCharCodeOffset = localizedZero.charCodeAt(0) - this.ZERO.charCodeAt(0);
+            if (!zeroCharCodeOffset) {
+                return input;
+            }
+            
+            var charArray = input.split("");
+            for (var i = 0; i < charArray.length; i++) {
+                var charCode = charArray[i].charCodeAt(0);
+                if (charCode <= "9".charCodeAt(0) && charCode >= "0".charCodeAt(0)) {
+                    charArray[i] = String.fromCharCode(charCode + zeroCharCodeOffset);
+                }
+            }
+            return charArray.join("");
+        },
+        
+        /**
+         * Translate the input date to a date in other calendar system, for example, Buddhist calendar based on the locale.
+         * @param {Date} date a Date Object.
+         * @return {Date} an updated Date object.
+         * @memberOf AuraLocalizationService
+         * @public
+         */
+        translateToOtherCalendar : function(date) {
+            var userLocaleLang = $A.getGlobalValueProviders().get("$Locale.userLocaleLang");
+            if ('th' === userLocaleLang) { // Buddhist year
+                date.setFullYear(date.getFullYear() + 543);
+            }
+            return date;
         },
         
         /**

@@ -39,7 +39,7 @@
         var outputCmp = component.find("inputText");
         var elem = outputCmp ? outputCmp.getElement() : null;
         if (elem) {
-            elem.value = displayValue;
+            elem.value = $A.localizationService.translateToLocalizedDigits(displayValue);
         }
     },
     
@@ -48,14 +48,16 @@
      *
      */
     doUpdate : function(component, value) {
-        var ret = value;
+        var v = $A.localizationService.translateFromLocalizedDigits(value);
+        var ret = v;
         if (value) {
             var format = component.get("v.format");
             var langLocale = component.get("v.langLocale");
-            var d = $A.localizationService.parseDateTimeUTC(value, format, langLocale);
+            var d = $A.localizationService.parseDateTimeUTC(v, format, langLocale);
             if (d) {
                 var timezone = component.get("v.timezone");
                 $A.localizationService.WallTimeToUTC(d, timezone, function(utcDate) {
+                    utcDate = $A.localizationService.translateFromOtherCalendar(utcDate);
                     component.setValue("v.value", $A.localizationService.toISOString(utcDate));
                 });
             } else {
@@ -79,6 +81,7 @@
             var timezone = component.get("v.timezone");
             $A.localizationService.UTCToWallTime(d, timezone, function(walltime) {
                 try {
+                    walltime = $A.localizationService.translateToOtherCalendar(walltime);
                     var displayValue = $A.localizationService.formatDateTimeUTC(walltime, format, langLocale);
                     _helper.displayDateTime(concreteCmp, displayValue);
                 } catch (e) {
