@@ -120,6 +120,8 @@ public class IntegrationServiceImplUITest extends WebDriverTestCase {
     /**
      * Verify use of integration service to inject a component and initialize various types of attributes.
      */
+    //Disabled in chrome because only this test fails with chromedriver 2.2 with a "unknown error: Maximum call stack size exceeded"
+    //exception. It works fine in firefox, IE9.
     @ExcludeBrowsers({ BrowserType.IPAD, BrowserType.IPHONE, BrowserType.GOOGLECHROME })
     public void testAttributesInitialization() throws Exception {
         String attributeMarkup = "<aura:attribute name='strAttr' type='String'/>"
