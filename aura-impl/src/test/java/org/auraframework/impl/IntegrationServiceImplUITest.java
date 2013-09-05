@@ -120,6 +120,7 @@ public class IntegrationServiceImplUITest extends WebDriverTestCase {
     /**
      * Verify use of integration service to inject a component and initialize various types of attributes.
      */
+    @ExcludeBrowsers({ BrowserType.IPAD, BrowserType.IPHONE, BrowserType.GOOGLECHROME })
     public void testAttributesInitialization() throws Exception {
         String attributeMarkup = "<aura:attribute name='strAttr' type='String'/>"
                 + "<aura:attribute name='booleanAttr' type='Boolean'/>"
