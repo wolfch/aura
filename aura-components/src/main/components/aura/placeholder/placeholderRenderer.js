@@ -22,42 +22,64 @@
         var action = $A.get("c.aura://ComponentController.getComponent");
         var attributes = cmp.getValue("v.attributes");
         var atts = {};
-        var avp = cmp.getAttributes().getValueProvider();
+
+        var compServ = $A.services.component;
 
         if(attributes.each){
             attributes.each(function(key, value){
-                atts[key] = $A.componentService.computeValue(value, avp, true);
+                if(value.isLiteral()){
+                    atts[key] = value.unwrap();
+                } else {
+                    atts[key] = $A.expressionService.get(cmp.getAttributes().getValueProvider(), value);
+                }
             });
         }
+
+//        //
+//        // Note to self, these attributes are _not_ Aura Values. They are instead either
+//        // a literal string or a (generic object) map.
+//        //
+//        for (key in attributes) { 
+//            var value = attributes[key]["value"];
+//            // no def or component here, because we don't have one. 
+//            var auraValue = valueFactory.create(value);
+//            if(auraValue.isLiteral()){
+//                atts[key] = value.unwrap();
+//            } else {
+//                var resolved = $A.expressionService.get(avp, auraValue);
+//                if (resolved) {
+//                    // If we got a value, use that.
+//                    atts[key] = resolved;
+//                } else {
+//                    // try to give the server a version it can use.
+//                    atts[key] = auraValue.getValue();
+//                }
+//            }
+//        }
         
         action.setCallback(this, function(a){
-
             var newBody;
-            if (a.getState() === "SUCCESS"){
-                newBody = $A.newCmpDeprecated(a.getReturnValue(), avp);
-                newBody.getAttributes().merge(attributes, true);
-            } else {
-                var errors = a.getError();
+            if(a.getState() === "ERROR"){
                 newBody = $A.newCmpDeprecated("markup://aura:text");
-                if (errors) {
-                    newBody.getValue("v.value").setValue(errors[0].message);
-                } else {
-                    newBody.getValue("v.value").setValue('unknown error');
-                }
+                newBody.getValue("v.value").setValue(a.getError()[0].message);
+            }else{
+                newBody = $A.newCmpDeprecated(a.getReturnValue(), cmp.getAttributes().getValueProvider());
+                newBody.getAttributes().merge(attributes, true);
             }
             var body = cmp.getValue("v.body");
 
             body.destroy();
             body.setValue(newBody);
 
+
             $A.rerender(cmp);
 
             //reindex
             var localId = cmp.getLocalId();
             if(localId){
-                var cvp = cmp.getAttributes().getComponentValueProvider();
-                cvp.deIndex(localId, cmp.getGlobalId());
-                cvp.index(localId, newBody.getGlobalId());
+                var avp = cmp.getAttributes().getComponentValueProvider();
+                avp.deIndex(localId, cmp.getGlobalId());
+                avp.index(localId, newBody.getGlobalId());
             }
         });
         var desc = cmp.get("v.refDescriptor");
@@ -65,7 +87,6 @@
             "name" : desc,
             "attributes" : atts
         });
-
         action.setExclusive(cmp.getValue("v.exclusive").getBooleanValue());
         cmp.getValue("v.loaded").setValue(true);
         $A.enqueueAction(action);
