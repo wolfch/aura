@@ -598,7 +598,7 @@ ArrayValue.prototype.rerender = function(suppliedReferenceNode, appendChild, ins
     var prevRendered = this.rendered || {};
     var rendered = {};
     if (!this.isEmpty()) {
-        var referenceNode = appendChild || !this.referenceNode ? suppliedReferenceNode : this.referenceNode;
+        var referenceNode = (appendChild || !this.referenceNode) ? suppliedReferenceNode : this.referenceNode;
 
         var renderer;
         var array = this.getArray();
@@ -626,7 +626,10 @@ ArrayValue.prototype.rerender = function(suppliedReferenceNode, appendChild, ins
                     ret.push(itemReferenceNode);
                 }
 
-                insertElements(ret, referenceNode, !appendChild);
+                // When adding children and index is zero, referenceNode still points to parent, 
+                // and we need to call insertFist(), not appendChild()
+                var asFirst = appendChild && (j === 0);
+                insertElements(ret, referenceNode, !appendChild, asFirst);
 
                 $A.afterRender(item);
             } else {
