@@ -21,17 +21,21 @@
     },
     
     scrollToTop : function(cmp, event, helper) {
-    	var scrollEvt = cmp.find("scrollToYTest").getEvent("scrollTo");  	
-    	helper.handleScrollTo(scrollEvt, "top", 500);
+        var scrollEvt = cmp.find("scrollToYTest").getEvent("scrollTo");      
+        helper.handleScrollTo(scrollEvt, "top", 500);
     },
     
     scrollToBottom : function(cmp, event, helper) {
-    	var scrollEvt = cmp.find("scrollToYTest").getEvent("scrollTo");
-    	helper.handleScrollTo(scrollEvt, "bottom", 500);
+        var scrollEvt = cmp.find("scrollToYTest").getEvent("scrollTo");
+        helper.handleScrollTo(scrollEvt, "bottom", 500);
     },
     
     scrollDown : function(cmp, event, helper) {
-    	var scrollEvt = cmp.find("scrollToYTest").getEvent("scrollBy");
-    	helper.handleScrollBy(scrollEvt, 15, 15, 500);
+        var scrollEvt = cmp.find("scrollToYTest").getEvent("scrollBy");
+        helper.handleScrollBy(scrollEvt, 15, 15, 500);
+    },
+    
+    scrollToBottomUpdate : function (cmp, event, helper) {
+        $A.test.select(".updateAfterScroll")[0].innerText = "What";
     }
 })
