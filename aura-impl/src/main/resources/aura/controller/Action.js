@@ -407,16 +407,17 @@ Action.prototype.updateFromResponse = function(response) {
 		this.error = newErrors;
 	} else if (this.originalResponse && this.state === "SUCCESS") {
 		// Compare the refresh response with the original response and return false if they are equal (no update)
-		var originalValue = $A.util.json.encode(this.originalResponse["returnValue"]);
-		var refreshedValue = $A.util.json.encode(response["returnValue"]);
+		var originalValue = this.sanitizeStoredResponse($A.util.json.encode(this.originalResponse["returnValue"]));
+		var refreshedValue = this.sanitizeStoredResponse($A.util.json.encode(response["returnValue"]));
 		if (refreshedValue === originalValue) {
-			var originalComponents = $A.util.json.encode(this.originalResponse["components"]);
-			var refreshedComponents = $A.util.json.encode(response["components"]);
+			var originalComponents = this.sanitizeStoredResponse($A.util.json.encode(this.originalResponse["components"]));
+			var refreshedComponents = this.sanitizeStoredResponse($A.util.json.encode(response["components"]));
 			if (refreshedComponents === originalComponents) {
 				return false;
 			}
 		}
 	}
+	
 	return true;
 };
 
@@ -720,6 +721,8 @@ Action.prototype.sanitizeStoredResponse = function(response) {
 			returnValue["globalId"] = globalId.substr(0, globalId.indexOf(":") + 1) + suffix;
 		}
 	}
+	
+	return response;
 };
 
 /**
@@ -772,3 +775,4 @@ Action.prototype.fireRefreshEvent = function(event) {
 	}
 };
 // #include aura.controller.Action_export
+
