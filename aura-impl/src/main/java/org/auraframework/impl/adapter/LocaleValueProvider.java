@@ -33,6 +33,7 @@ import com.google.common.collect.ImmutableMap.Builder;
 
 public class LocaleValueProvider implements GlobalValueProvider {
     public static String USER_LOCALE_LANGUAGE = "userLocaleLang";
+    public static String USER_LOCALE_COUNTRY = "userLocaleCountry";
     
     public static String LANGUAGE = "language";
     public static String COUNTRY = "country";
@@ -72,6 +73,7 @@ public class LocaleValueProvider implements GlobalValueProvider {
         Locale dateLocale = al.getDateLocale();
         
         builder.put(USER_LOCALE_LANGUAGE, userLocale.getLanguage());
+        builder.put(USER_LOCALE_COUNTRY, userLocale.getCountry());
         builder.put(LANGUAGE, lang.getLanguage());
         builder.put(COUNTRY, lang.getCountry());
         builder.put(VARIANT, lang.getVariant());
