@@ -9,18 +9,25 @@
     },
     executeAction:function(cmp, actionName, actionParam, additionalProperties){
         var a = cmp.get(actionName);
-        if(actionParam) a.setParams(actionParam);
+        if (actionParam) {
+        	a.setParams(actionParam);
+        }
+        
+        var helper = this;
         a.setCallback(cmp, function(a){
             var returnValue = a.getReturnValue();
-            cmp.getDef().getHelper().findAndSetText(cmp, "staticCounter", returnValue.Counter); 
-            cmp.getDef().getHelper().findAndSetText(cmp, "responseData", returnValue.Data);
-            cmp.getDef().getHelper().findAndSetText(cmp, "isFromStorage", a.isFromStorage());
-            cmp.getDef().getHelper().findAndSetText(cmp, "callbackCounter", parseInt(cmp.find("callbackCounter").getElement().innerHTML)+1);
+            helper.findAndSetText(cmp, "staticCounter", returnValue.Counter); 
+            helper.findAndSetText(cmp, "responseData", returnValue.Data);
+            helper.findAndSetText(cmp, "isFromStorage", a.isFromStorage());
+            helper.findAndSetText(cmp, "callbackCounter", parseInt(cmp.find("callbackCounter").getElement().innerHTML) + 1);
         });
+        
         if(additionalProperties){
             additionalProperties(a);
         }
+        
         $A.enqueueAction(a);
+        
         return a;
     },
     findAndSetText:function(cmp, targetCmpId, msg){

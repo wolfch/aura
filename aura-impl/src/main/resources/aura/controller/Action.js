@@ -417,6 +417,7 @@ Action.prototype.updateFromResponse = function(response) {
 			}
 		}
 	}
+	
 	return true;
 };
 
