@@ -226,9 +226,12 @@
 		//need to update size width if carousel width and height is not explicitly set
 		if (pages.length > 0 && (!(width  && height) || force)) {
 			var carouselSize = this.getCarouselSize(cmp);
-			 	
-			this.updateCarouselSize(cmp, pages, carouselSize);
-			this.updatePageSize(cmp, pages, carouselSize);
+
+            // Do not update the carousel if the width is 0
+			if (carouselSize.width > 0) {
+    			this.updateCarouselSize(cmp, pages, carouselSize);
+    			this.updatePageSize(cmp, pages, carouselSize);
+            }
 		}
 	},
 	
