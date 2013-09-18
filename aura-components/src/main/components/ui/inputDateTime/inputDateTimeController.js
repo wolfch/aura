@@ -42,14 +42,10 @@
         var value = elem ? elem.value : null;
         var format = component.get("v.format");
         var langLocale = component.get("v.langLocale");
-        //var hours = 0;
-        //var mins = 0;
         var secs = 0;
         var ms = 0;
         if (value) {
             var currDate = $A.localizationService.parseDateTimeUTC(value, format, langLocale); 
-            //hours = currDate.getUTCHours();
-            //mins = currDate.getUTCMinutes();
             secs = currDate.getUTCSeconds();
             ms = currDate.getUTCMilliseconds();
         }
