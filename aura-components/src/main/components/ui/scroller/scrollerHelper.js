@@ -14,19 +14,38 @@
  * limitations under the License.
  */
 ({
-	refresh : function(component) {
-		if (!$A.util.isUndefined(component._scroller)) {
-			this.refreshScroller(component);
+    refresh : function(component) {
+        if (!$A.util.isUndefined(component._scroller)) {
+            this.refreshScroller(component);
 
-			// if there are images in the scroller content, refresh scroller
-			// again after images are loaded
-			this.initImageOnload(component);
-		}
-	},
+            // if there are images in the scroller content, refresh scroller
+            // again after images are loaded
+            this.initImageOnload(component);
+        }
+    },
 
-	refreshScroller : function(component) {
-		var width = component.get("v.width");
-		if (width) {
+    refreshScroller : function(component) {
+        // avoid short lived refreshes by refreshing at most once per 1/2 second
+        if (!component._refreshTimeout) {
+            var that = this;
+            component._refreshTimeout = window.setTimeout(function(){
+            	that._doRefreshScroller(component);
+        	}, 400);
+        }
+    },
+    
+    _doRefreshScroller : function(component) {
+        if (!component.isValid()) {
+            return;
+        }
+        
+        if (component._refreshTimeout != null) {
+            window.clearTimeout(component._refreshTimeout);
+            component._refreshTimeout = null;
+        }
+        
+        var width = component.get("v.width");
+        if (width) {
 			component.find("scrollContent").getElement().style.width = width;
 		}
 
@@ -36,16 +55,10 @@
 			var scroller = component._scroller;
 			if (!$A.util.isUndefined(scroller)) {
 				scroller.unbindTransientHandlers();
-				
 				scroller.refresh();
 								
 				var compEvents = component.getEvent("refreshed");						
 				compEvents.fire();
-				
-				// Goose the x position to insure that onScrollEnd() fires with the correct page fully revealed
-//				if (component.get("v.snap")) {
-//					scroller.scrollTo(scroller.maxScrollX, 0, 0);
-//				}
 			}
 
 			component._refreshing = false;
