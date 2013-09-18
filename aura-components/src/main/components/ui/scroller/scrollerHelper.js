@@ -29,9 +29,7 @@
         if (!component._refreshTimeout) {
             var that = this;
             component._refreshTimeout = window.setTimeout(function(){
-            	$A.run(function() {
-	            	that._doRefreshScroller(component);
-            	});
+            	that._doRefreshScroller(component);
         	}, 400);
         }
     },
@@ -57,16 +55,10 @@
 			var scroller = component._scroller;
 			if (!$A.util.isUndefined(scroller)) {
 				scroller.unbindTransientHandlers();
-				
 				scroller.refresh();
 								
 				var compEvents = component.getEvent("refreshed");						
 				compEvents.fire();
-				
-				// Goose the x position to insure that onScrollEnd() fires with the correct page fully revealed
-//				if (component.get("v.snap")) {
-//					scroller.scrollTo(scroller.maxScrollX, 0, 0);
-//				}
 			}
 
 			component._refreshing = false;
