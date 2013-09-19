@@ -28,11 +28,7 @@
         // avoid short lived refreshes by refreshing at most once per 1/2 second
         if (!component._refreshTimeout) {
             var that = this;
-            component._refreshTimeout = window.setTimeout(function(){
-            	$A.run(function() {
-	            	that._doRefreshScroller(component);
-            	});
-        	}, 400);
+            component._refreshTimeout = window.setTimeout(function(){that._doRefreshScroller(component);},500);
         }
     },
     
@@ -40,7 +36,6 @@
         if (!component.isValid()) {
             return;
         }
-        
         if (component._refreshTimeout != null) {
             window.clearTimeout(component._refreshTimeout);
             component._refreshTimeout = null;
