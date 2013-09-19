@@ -82,7 +82,7 @@ public class InputDateTimeLocaleHttpTest extends AuraHttpTestCase{
         //Grab the object you are looking for from the json tree
         Map<String, Object> context = (Map<String, Object>) json.get("context");
         Map<String, Object> components = (Map<String, Object>) context.get("components");
-        Map<String, Object>  num11= (Map<String, Object>) components.get("11");
+        Map<String, Object>  num11= (Map<String, Object>) components.get(components.keySet().toArray()[1]);
         Map<String, Object>  valueMap = (Map<String, Object>) num11.get("value"); 
         Map<String, Object> model = (Map<String, Object>) valueMap.get("model");
         ArrayList<Map<String, Object>> monthLabels = (ArrayList<Map<String, Object>>) model.get("monthLabels"); 
