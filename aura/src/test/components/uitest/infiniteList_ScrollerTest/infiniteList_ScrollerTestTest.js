@@ -16,8 +16,6 @@
 
 // Excluding ie8 and 7 browsers due to lack of support for addEventListener function
 ({
-    
-    
    /*
     * Testing to make sure that when pullToRefresh and PullToShowMore are not present,
     * that there isn't a spacer div. This appears when the amount of data on the screen
@@ -26,9 +24,12 @@
    testNoPullToRefreshNoDivSpace: {
        browsers: ["-IE7","-IE8"],
         test: function(cmp) {
-            var scrlrDiv = cmp.find("scroller3").getElements()[1];
-            var divChildren = scrlrDiv.children[0].children.length;
-            $A.test.assertFalse(divChildren > 1, "There should not be children relating to a spacer");
+        	var count = 0;
+        	$A.test.runAfterIf(function() { return count++ > 0; }, function() {
+	            var scrlrDiv = cmp.find("scroller3").getElement();
+	            var divChildren = scrlrDiv.children[0].children.length;
+	            $A.test.assertFalse(divChildren > 1, "There should not be children relating to a spacer");
+        	}, 1000);
         }
     },
     /*
@@ -38,10 +39,13 @@
     testDivSpacerSizeForFewItems: {
 	browsers: ["-IE7","-IE8"],
         test: function(cmp) {
-            var scrlrDiv = cmp.find("scroller2").getElements()[1];
-            var cssText = scrlrDiv.children[0].children[2].style.cssText;
-            var height = cssText.match( /\d+/g )[0];
-            $A.test.assertTrue(height > 0, "height should be greater than zero for spacing, since there is not enough information");
+        	var count = 0;
+        	$A.test.runAfterIf(function() { return count++ > 0; }, function() {
+	            var scrlrDiv = cmp.find("scroller2").getElement();
+	            var cssText = scrlrDiv.children[0].children[2].style.cssText;
+	            var height = cssText.match( /\d+/g )[0];
+	            $A.test.assertTrue(height > 0, "height should be greater than zero for spacing, since there is not enough information");
+        	}, 1000);
         }
     },
     /*
@@ -51,10 +55,13 @@
     testDivSpacerSizeForMaxItems: {
 	browsers: ["-IE7","-IE8"],
         test: function(cmp) {
-            var scrlrDiv = cmp.find("scroller1").getElements()[1];
-            var cssText = scrlrDiv.children[0].children[2].style.cssText;
-            var height = cssText.match( /\d+/g )[0];
-            $A.test.assertTrue(height == 0, "height should be equal to zero, since there is more than enough information");
+        	var count = 0;
+        	$A.test.runAfterIf(function() { return count++ > 0; }, function() {
+	            var scrlrDiv = cmp.find("scroller1").getElement();
+	            var cssText = scrlrDiv.children[0].children[2].style.cssText;
+	            var height = cssText.match( /\d+/g )[0];
+	            $A.test.assertTrue(height == 0, "height should be equal to zero, since there is more than enough information");
+        	}, 1000);
         }
-    }
+    } 
 })
