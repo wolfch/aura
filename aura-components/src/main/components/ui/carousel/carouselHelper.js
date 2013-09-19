@@ -230,14 +230,17 @@
             // Do not update the carousel if the width is 0
 			if (carouselSize.width > 0) {
     			this.updateCarouselSize(cmp, pages, carouselSize);
-    			this.updatePageSize(cmp, pages, carouselSize);
             }
 		}
 	},
 	
-	updateCarouselSize: function(cmp, pages, carouselSize) {		
-		cmp.getValue('v.priv_carouselStyle').setValue(this.getSizeStyle(carouselSize.width, carouselSize.height));		
-		cmp.getValue('v.priv_scrollerWidth').setValue(carouselSize.width * pages.length + 'px'); 
+	updateCarouselSize: function(cmp, pages, carouselSize) {
+		var cStyle = this.getSizeStyle(carouselSize.width, carouselSize.height);		
+		if (cStyle !== cmp.get('v.priv_carouselStyle')) {
+			cmp.getValue('v.priv_carouselStyle').setValue(cStyle);
+			cmp.getValue('v.priv_scrollerWidth').setValue(carouselSize.width * pages.length + 'px');
+			this.updatePageSize(cmp, pages, carouselSize);
+		}
 	},
 	
 	updatePageSize: function(cmp, pages, carouselSize) {		 
