@@ -27,8 +27,17 @@
         var outputCmp = component.find("inputText");
         var elem = outputCmp ? outputCmp.getElement() : null;
         var value = elem ? elem.value : null;
+
         var format = component.get("v.format");
+        if (!format) {
+            format = $A.getGlobalValueProviders().get("$Locale.datetimeformat");
+        }
+
         var langLocale = component.get("v.langLocale");
+        if (!langLocale) {
+            langLocale = $A.getGlobalValueProviders().get("$Locale.langLocale");
+        }
+
         if (value) {
             var d = $A.localizationService.parseDateTimeUTC(value, format, langLocale);
             if (d) {
@@ -58,7 +67,13 @@
         var ret = v;
         if (value) {
             var format = component.get("v.format");
+            if (!format) {
+                format = $A.getGlobalValueProviders().get("$Locale.datetimeformat");
+            }
             var langLocale = component.get("v.langLocale");
+            if (!langLocale) {
+                langLocale = $A.getGlobalValueProviders().get("$Locale.langLocale");
+            }
             var d = $A.localizationService.parseDateTimeUTC(v, format, langLocale);
             if (d) {
                 var timezone = component.get("v.timezone");
