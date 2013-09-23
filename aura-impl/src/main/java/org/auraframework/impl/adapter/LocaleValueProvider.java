@@ -16,8 +16,7 @@
 package org.auraframework.impl.adapter;
 
 import java.text.*;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 import org.auraframework.Aura;
 import org.auraframework.def.DefDescriptor;
@@ -26,7 +25,6 @@ import org.auraframework.expression.PropertyReference;
 import org.auraframework.impl.system.DefDescriptorImpl;
 import org.auraframework.instance.GlobalValueProvider;
 import org.auraframework.instance.ValueProviderType;
-import org.auraframework.throwable.AuraRuntimeException;
 import org.auraframework.throwable.quickfix.InvalidExpressionException;
 import org.auraframework.util.AuraLocale;
 
@@ -34,6 +32,9 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
 public class LocaleValueProvider implements GlobalValueProvider {
+    public static String USER_LOCALE_LANGUAGE = "userLocaleLang";
+    public static String USER_LOCALE_COUNTRY = "userLocaleCountry";
+    
     public static String LANGUAGE = "language";
     public static String COUNTRY = "country";
     public static String VARIANT = "variant";
@@ -67,9 +68,12 @@ public class LocaleValueProvider implements GlobalValueProvider {
         
         AuraLocale al = Aura.getLocalizationAdapter().getAuraLocale();
         
+        Locale userLocale = al.getLocale();
         Locale lang = al.getLanguageLocale();
         Locale dateLocale = al.getDateLocale();
         
+        builder.put(USER_LOCALE_LANGUAGE, userLocale.getLanguage());
+        builder.put(USER_LOCALE_COUNTRY, userLocale.getCountry());
         builder.put(LANGUAGE, lang.getLanguage());
         builder.put(COUNTRY, lang.getCountry());
         builder.put(VARIANT, lang.getVariant());
@@ -132,7 +136,8 @@ public class LocaleValueProvider implements GlobalValueProvider {
             DecimalFormat cf = (DecimalFormat) nf;
             builder.put(CURRENCY_FORMAT, cf.toPattern());
             DecimalFormatSymbols cdfs = cf.getDecimalFormatSymbols();
-            builder.put(CURRENCY_CODE, cdfs.getCurrency().getCurrencyCode());
+            Currency cur = cdfs.getCurrency();
+            builder.put(CURRENCY_CODE, cur != null ? cur.getCurrencyCode() : "");
             builder.put(CURRENCY, cdfs.getCurrencySymbol());
         }
 

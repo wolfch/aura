@@ -21,7 +21,7 @@
     <aura:handler name="showMore" action="{!c.showMore}"/>
 
 	<ul class="{!v.class}">
-	<aura:iterationCscc items="{!v.items}" var="{!v.itemVar}" body="{!v.itemTemplate}">
+	<aura:iterationCscc items="{!v.items}" var="{!v.itemVar}" body="{!v.itemTemplate}" rerenderComplete="{!c.rerenderComplete}">
 		
 	</aura:iterationCscc>
 	</ul>

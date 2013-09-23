@@ -17,12 +17,27 @@
     displayDatePicker: function(component) {
         var now = new Date(); // local date
         // Later on, we will use getUTC... methods to get year/month/date
-        var currentDate = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
+        var currentDate = new Date(Date.UTC(now.getFullYear(), 
+                                            now.getMonth(), 
+                                            now.getDate(), 
+                                            now.getHours(), 
+                                            now.getMinutes(), 
+                                            now.getSeconds(), 
+                                            now.getMilliseconds()));
         var outputCmp = component.find("inputText");
         var elem = outputCmp ? outputCmp.getElement() : null;
         var value = elem ? elem.value : null;
+
         var format = component.get("v.format");
+        if (!format) {
+            format = $A.getGlobalValueProviders().get("$Locale.datetimeformat");
+        }
+
         var langLocale = component.get("v.langLocale");
+        if (!langLocale) {
+            langLocale = $A.getGlobalValueProviders().get("$Locale.langLocale");
+        }
+
         if (value) {
             var d = $A.localizationService.parseDateTimeUTC(value, format, langLocale);
             if (d) {
@@ -39,7 +54,7 @@
         var outputCmp = component.find("inputText");
         var elem = outputCmp ? outputCmp.getElement() : null;
         if (elem) {
-            elem.value = displayValue;
+            elem.value = $A.localizationService.translateToLocalizedDigits(displayValue);
         }
     },
     
@@ -48,14 +63,22 @@
      *
      */
     doUpdate : function(component, value) {
-        var ret = value;
+        var v = $A.localizationService.translateFromLocalizedDigits(value);
+        var ret = v;
         if (value) {
             var format = component.get("v.format");
+            if (!format) {
+                format = $A.getGlobalValueProviders().get("$Locale.datetimeformat");
+            }
             var langLocale = component.get("v.langLocale");
-            var d = $A.localizationService.parseDateTimeUTC(value, format, langLocale);
+            if (!langLocale) {
+                langLocale = $A.getGlobalValueProviders().get("$Locale.langLocale");
+            }
+            var d = $A.localizationService.parseDateTimeUTC(v, format, langLocale);
             if (d) {
                 var timezone = component.get("v.timezone");
                 $A.localizationService.WallTimeToUTC(d, timezone, function(utcDate) {
+                    utcDate = $A.localizationService.translateFromOtherCalendar(utcDate);
                     component.setValue("v.value", $A.localizationService.toISOString(utcDate));
                 });
             } else {
@@ -73,17 +96,22 @@
             return;
         }
         var d = $A.localizationService.parseDateTimeISO8601(value);
-        var format = component.get("v.format");
-        var langLocale = component.get("v.langLocale");
-        var timezone = component.get("v.timezone");
-        $A.localizationService.UTCToWallTime(d, timezone, function(walltime) {
-            try {
-                var displayValue = $A.localizationService.formatDateTimeUTC(walltime, format, langLocale);
-                _helper.displayDateTime(concreteCmp, displayValue);
-            } catch (e) {
-                _helper.displayDateTime(concreteCmp, e.message);
-            }
-        });
+        if (d) {
+            var format = component.get("v.format");
+            var langLocale = component.get("v.langLocale");
+            var timezone = component.get("v.timezone");
+            $A.localizationService.UTCToWallTime(d, timezone, function(walltime) {
+                try {
+                    walltime = $A.localizationService.translateToOtherCalendar(walltime);
+                    var displayValue = $A.localizationService.formatDateTimeUTC(walltime, format, langLocale);
+                    _helper.displayDateTime(concreteCmp, displayValue);
+                } catch (e) {
+                    _helper.displayDateTime(concreteCmp, e.message);
+                }
+            });
+        } else {
+            _helper.displayDateTime(component, value);
+        }
     },
     
     getDateString: function(date) {
@@ -94,9 +122,20 @@
         return date.getUTCFullYear() + "-" + (date.getUTCMonth() + 1) + "-" + date.getUTCDate();
     },
     
+    is24HourFormat: function(component) {
+        var format = component.get("v.format");
+        if (!format) {
+            format = $A.getGlobalValueProviders().get("$Locale.datetimeformat");
+        }
+        return !($A.localizationService.isPeriodTimeView(format));
+    },
+    
     popUpDatePicker: function(component, date) {
         var datePicker = component.find("datePicker");
         datePicker.setValue("v.value", this.getUTCDateString(date));
+        datePicker.setValue("v.hours", date.getUTCHours());
+        datePicker.setValue("v.minutes", date.getUTCMinutes());
+        datePicker.setValue("v.is24HourFormat", this.is24HourFormat(component));
         datePicker.setValue("v.visible", true);
     }
 })

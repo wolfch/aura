@@ -67,6 +67,7 @@
         }
         var ivp;
         var len = body.getLength();
+        var forceServer = cmp.getAttributes().getValue("forceServer").getValue();
         //
         // Take off our index, but add the number of components that we will create.
         //
@@ -77,7 +78,7 @@
                 ivp = $A.expressionService.createPassthroughValue(extraProviders, cdr.valueProvider || atts.getValueProvider());
             }
             ret[j] = null;
-            $A.componentService.newComponentAsync(this, this.createAddComponentCallback(indexCollector, j), cdr, ivp);
+            $A.componentService.newComponentAsync(this, this.createAddComponentCallback(indexCollector, j), cdr, ivp, false, false, forceServer);
         }
         return len;
     },
@@ -167,7 +168,7 @@
     },
 
     createRealBodyServer: function(cmp, doForce) {
-        realbody = [];
+        var realbody = [];
         var atts = cmp.getAttributes();
         var items = atts.getValue("items");
         var varName = atts.get("var");
@@ -206,6 +207,7 @@
                 var realbody = cmp.getValue("v.realbody");
                 realbody.destroy();
                 realbody.setValue(newBody);
+            	cmp.getEvent("rerenderComplete").fire();
             }
         });
     },

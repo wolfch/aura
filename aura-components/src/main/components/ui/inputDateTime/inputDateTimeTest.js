@@ -47,7 +47,7 @@
         test: function(cmp){
         	aura.test.addWaitFor(true, function(){return cmp.find("inputText").getElement().value.length > 0;},function(){
 				var inputDateStr  = cmp.find("inputText").getElement().value;		        
-	    		aura.test.assertEquals('Invalid date time value', inputDateStr, "Value must be an ISO8601-formatted string or a number of milliseconds from Epoch.");
+	    		aura.test.assertEquals('cornholio', inputDateStr, "Value must be an ISO8601-formatted string or a number of milliseconds from Epoch.");
 			});            
         }
     },     
@@ -55,7 +55,7 @@
     /**
      * Verify behavior when 'timezone' attribute is assigned a garbage value.
      */
-    testInvalidTimeZone:{
+    _testInvalidTimeZone:{
 	attributes : {displayDatePicker:'true', timezone: 'dummy', format:'MMM dd, yyyy h:mm:ss a'},
 	test: function(cmp){
 	        cmp.find("datePicker").get('c.selectToday').runDeprecated();
@@ -92,7 +92,7 @@
     /**
      * Verify behavior when 'timezone' is assigned a empty string.
      */
-    testEmptyStringTimeZone:{
+    _testEmptyStringTimeZone:{
 	attributes : {displayDatePicker:'true', timezone: '', format:'MMM dd, yyyy h:mm:ss a'},
 	test: function(cmp){
 	        cmp.find("datePicker").get('c.selectToday').runDeprecated();
@@ -172,7 +172,7 @@
     /**
      * Verify Today in default time zone.
      */
-    testTodayInGMT:{
+    _testTodayInGMT:{
 	attributes : {displayDatePicker:'true', timezone: 'GMT', format:'MMM dd, yyyy h:mm:ss a'},
 	test: function(cmp){				
 	        cmp.find("datePicker").get('c.selectToday').runDeprecated();
@@ -185,7 +185,7 @@
     /**
      * Verify Today in LA time zone.
      */
-    testTodayInLosAngeles:{
+    _testTodayInLosAngeles:{
 	attributes : {displayDatePicker:'true', format:'MMM dd, yyyy h:mm:ss a'},
 	test: function(cmp){
 	        cmp.find("datePicker").get('c.selectToday').runDeprecated();
@@ -200,7 +200,7 @@
     /**
      * Verify Today in NY time zone.
      */
-    testTodayInNewYork:{
+    _testTodayInNewYork:{
 	attributes : {displayDatePicker:'true', timezone: 'America/New_York', format:'MMM dd, yyyy h:mm:ss a'},
 	test: function(cmp){
 	        cmp.find("datePicker").get('c.selectToday').runDeprecated();	        

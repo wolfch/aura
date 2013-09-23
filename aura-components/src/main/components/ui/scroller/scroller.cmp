@@ -22,6 +22,7 @@
     <aura:attribute name="showScrollbars" type="Boolean" default="true" description="Shows or hides scroll bars. Default value is &quot;true&quot;, which shows the scroll bars."/>
     <aura:attribute name="enabled" type="Boolean" default="true" description="Displays the scroller in an enabled state. Default value is &quot;true&quot;."/>
     <aura:attribute name="useTransform" type="Boolean" default="true" description="Denotes whether to use transform scrollers and usually used with nested scrollers. Default value is &quot;true&quot;."/>
+    <aura:attribute name="useTransition" type="Boolean" default="true" description="Denotes whether to use css transition. Default value is &quot;false&quot;."/>
     <aura:attribute name="snap" type="String" description="The CSS style used to display the snap area. Locks the scroller to predefined positions."/>
     <aura:attribute name="width" type="String" description="The width of the scroll area in pixels (px) or percentage (%). Default value is &quot;100px&quot;."/>
     <aura:attribute name="class" type="String" description="A CSS style to be attached to the scroll area. This style is added in addition to base styles output by the component."/>
@@ -30,7 +31,10 @@
     <aura:attribute name="onScrollStart" type="Aura.Action" description="The action invoked when the user starts scrolling."/>
     <aura:attribute name="onScrollEnd" type="Aura.Action" description="The action invoked when the user stops scrolling."/>
     <aura:attribute name="onScrollMove" type="Aura.Action" description="The action invoked when the user is scrolling."/>
-    
+
+    <aura:attribute name="onScrollToBottom" type="Aura.Action" description="The action invoked when the user has reached the end of the scrolling area."/>
+    <aura:attribute name="scrollToBottomThreshold" type="Integer" default="10" description="When the user scrolls to this many pixels from the bottom of the scrollable area, the onScrollToBottom action is called."/>
+
     <aura:attribute name="onPullToShowMore" type="Aura.Action" description="The action invoked when the user pulls from the bottom to load more.  The spacebar or Enter key also triggers a refresh."/>
     <aura:attribute name="pullToShowMorePull" type="String" default="Pull up to show more..." description="The text to display in the bottom cell before the user pulls to show more content. Default value is &quot;Pull up to show more...&quot;."/>
     <aura:attribute name="pullToShowMoreRelease" type="String" default="Release to show more..." description="The text to display in the revealed area below the scroller contents when the user pulls to show more content in the scroller area, but has not yet released the pull. Default value is &quot;Release to show more...&quot;."/>

@@ -18,7 +18,17 @@
         $A.test.assertTrue(undefined !== component._log, "change handler not invoked");
         $A.test.assertEquals(1, component._log.length, "unexpected number of change events recorded");
         $A.test.assertEquals(index, component._log[0].index, "unexpected index of change");
-        $A.test.assertEquals(value, component._log[0].value.unwrap(), "unexpected value of change");
+        if (value instanceof Array) {
+        	var actual = component._log[0].value.unwrap();
+        	$A.test.assertEquals(value.length, actual.length, "Unexpected value of change length mismatch");
+        	for (var i = 0; i < value.length; i++) {
+        		// Deal with nested-array support if and when we need it.
+        		$A.test.assertEquals(value[i], actual[i], "Unexpected value of change at index " + i);
+        	}
+        } else {
+        	// We punt on map support until we need it.
+            $A.test.assertEquals(value, component._log[0].value.unwrap(), "unexpected value of change");
+        }
         component._log = undefined; // reset log
     },
 
@@ -349,6 +359,12 @@
             val.setValue("Sarah Lee");
             this.assertNoChangeEvent(component);
 
+            // Map.put of map and array tests, don't fire.
+            map.put("submap", { one: 1 });
+            this.assertChangeEvent(component, "one", 1);
+            map.put("subarray", [ 1 ]);
+            this.assertChangeEvent(component, "subarray", [ 1 ]);
+
             // MapValue
             //var newMap = $A.expressionService.create(null, {"Banana":"Del Monte"});
             //$A.log("for merging new map");
@@ -384,14 +400,24 @@
             });
         }, function(component) {
             var map = component.getValue("m.map");
-            map.setValue({"subkey": "set"});
+            map.setValue({"subKey": "set"});
             // Insert a pause for re-rendering.  SetValue leaves DIRTY child
-            // objecst (W-1678810), so it does re-render:
+            // objects (W-1678810), so it does re-render.  Note that this also
+            // tests our case-insensitivity.
             $A.test.addWaitFor("set", function() {
                 var output = component.find("outputText");
                 return $A.test.getText(output.getElement());
             });
-        },
+        }, function(component) {
+            // Checks case insensitivity
+            var otherMap = $A.expressionService.create(null, { 'subkey' : "second" });
+            var map = component.getValue("m.map");
+            map.setValue(otherMap);
+            $A.test.addWaitFor("second", function() {
+                var output = component.find("outputText");
+                return $A.test.getText(output.getElement());
+            });
+        }
         ]
     },
 
@@ -403,7 +429,6 @@
         test: function(component){
             var mockGlobalId = 0;
             var leafCounts = { 'simple': 0, 'map': 0, 'array': 0 };
-
             var simval = $A.expressionService.create(null, 180);
             simval.addHandler({'eventName': 'change',
                     'method': function(e) { leafCounts['simple']++; },

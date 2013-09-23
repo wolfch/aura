@@ -18,7 +18,7 @@
         
         var realbody = [];
         if (!localCreation) {
-            var realbody = component.getDef().getHelper().createRealBodyServer(component, !localCreation);
+            realbody = component.getDef().getHelper().createRealBodyServer(component, !localCreation);
         }
         return { attributes: { "realbody":realbody } };
     }

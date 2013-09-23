@@ -36,10 +36,13 @@
                 }
             );
 
-            var p = document.getElementsByTagName("p");
-            var cmpText = $A.util.getText(p[0]);
-            $A.test.assertEquals("one stringtwo stringred stringblue string", cmpText,
+            $A.test.addWaitFor(true, $A.test.allActionsComplete, function() {
+                var p = document.getElementsByTagName("p");
+                var cmpText = $A.util.getText(p[0]);
+                $A.test.assertEquals("one stringtwo stringred stringblue string", cmpText,
                     "Newly created component not showing up in DOM.");
+            });
+
         }
     },
     /**
@@ -95,10 +98,13 @@
                 }
             );
 
-            var p = document.getElementsByTagName("p");
-            var cmpText = $A.util.getText(p[0]);
-            $A.test.assertEquals("one stringtwo stringred stringblue string", cmpText,
+
+            $A.test.addWaitFor(true, $A.test.allActionsComplete, function() {
+                var p = document.getElementsByTagName("p");
+                var cmpText = $A.util.getText(p[0]);
+                $A.test.assertEquals("one stringtwo stringred stringblue string", cmpText,
                     "Newly created component not showing up in DOM.");
+            });
         }
     },
     /**

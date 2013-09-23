@@ -457,24 +457,41 @@ var AuraDevToolService = function() {
             },
             /**
              * Function that goes through all labels and check for either the for attribute and the label id, or if a parent tag is a label
+             * This function skips over several input types: submit, reset, image, hidden, and button. All of these have labels associated
+             * with them in different ways 
+             * 
              * @param   lbls       - All of the labels to
              * @param   inputTags  - The attribute that is being sought (for, id, title, etc)
              * @returns array     - All errornous tags
              */
             inputLabelAide : function(lbls, inputTags){
         	var errorArray = [];
-	        var lblIsPres = true;
-	        var inputTag = null;
-  	        var accessAideFuncs = aura.devToolService.accessbilityAide;
+	        var lblIsPres  = true;
+	        var inputTag   = null;
+  	        var type       = null;
+  	        var inputTypes = "hidden button submit reset";
+	        var accessAideFuncs = aura.devToolService.accessbilityAide;
   	        
   	        var lblDict = accessAideFuncs.getDictFromTags(lbls, "for");
   	        
   	        for (var index = 0; index < inputTags.length; index++){
   	            inputTag = inputTags[index];
-  	            lblIsPres = ((inputTag.id in lblDict) || (accessAideFuncs.checkParentMatchesTag(inputTag, "LABEL")));
-  	            if(!lblIsPres){
-  	        	errorArray.push(inputTag);
-  	            }
+  	            type = inputTag.getAttribute("type");
+  	            if(!$A.util.isUndefinedOrNull(type) && inputTypes.indexOf(type)> -1){
+	        	continue;
+	            }
+	            else if (type == "image"){
+	        	var alt = inputTag.getAttribute("alt");
+	        	if($A.util.isUndefinedOrNull(alt) || alt.replace(/[\s\t\r\n]/g,'') === ""){
+	        	  errorArray.push(inputTag); 
+       		        }
+	            }
+	            else{  
+    	               lblIsPres = ((inputTag.id in lblDict) || (accessAideFuncs.checkParentMatchesTag(inputTag, "LABEL")));
+    	               if(!lblIsPres){
+    	        	   errorArray.push(inputTag);
+    	               }
+	            }
   	        }
   	        return errorArray;
             },
@@ -824,7 +841,7 @@ var AuraDevToolService = function() {
        		        return accessAideFuncs.findAllImgTags(imgError, infoMsg, decoMsg);
         	    },
         	    /**
-                     * Goes through all of the fieldsets tags and makes sure that each on has a legend
+                     * Goes through all of the fieldsets tags that do not have the display:none field set and makes sure that each one has a legend
                      * @returns String - Returns a string representation of the errors
                      */
         	    checkFieldSetForLegend : function(){
@@ -833,9 +850,15 @@ var AuraDevToolService = function() {
         		var fieldSets = document.getElementsByTagName('fieldset');
         		var legends = "";
         		var errorArray = [];
-        		
+        		var fieldSetSytle  = "";
         		for(var i=0; i<fieldSets.length; i++){
         		        legends = fieldSets[i].getElementsByTagName('legend');
+        		        fieldSetSytle = fieldSets[i].style.display;
+        		      
+        		        if(!$A.util.isUndefinedOrNull(fieldSetSytle) && fieldSetSytle == "none"){
+        		            continue;
+        		        }
+
         	        	if(legends.length === 0){
         	        	    errorArray.push(fieldSets[i]);
         	        	}
