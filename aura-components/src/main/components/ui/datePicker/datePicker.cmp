@@ -26,8 +26,8 @@
     <div aura:id="datePicker" class="{!v.class + (v.visible == true ? ' visible' : '')}">
         <aura:if isTrue="{!v.hasTime}">
             <div class="headerBar">
-                <a aura:id="cancel" onclick="{!c.cancel}" class="calCancel" href="javascript:void(0);">Cancel</a>
-                <a aura:id="set" onclick="{!c.set}" class="calSet" href="javascript:void(0);">Set</a>
+                <a aura:id="cancel" onclick="{!c.cancel}" class="calCancel button" href="javascript:void(0);">Cancel</a>
+                <a aura:id="set" onclick="{!c.set}" class="calSet button" href="javascript:void(0);">Set</a>
             </div>
         </aura:if>
         <div class="dateBar" ontouchstart="{!c.handleTouchStart}" ontouchmove="{!c.handleTouchMove}" ontouchend="{!c.handleTouchEnd}">
@@ -51,7 +51,7 @@
                 </a>
                 </aura:if>
             </div>
-            <h4 aria-live="assertive" aria-atomic="true" class="monthYear" aura:id="calTitle"/>
+            <h1 aria-live="assertive" aria-atomic="true" class="monthYear" aura:id="calTitle"/>
         </div>
         <ui:datePickerGrid aura:id="grid" hasTime ="{!v.hasTime}" weekDays="{!m.weekdayLabels}" hide="{!c.hide}" selectDate="{!c.selectDate}" updateCalendarTitle="{!c.updateCalendarTitle}"/>
         <aura:if isTrue="{!v.hasTime}">
