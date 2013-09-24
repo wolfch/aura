@@ -64,7 +64,7 @@
 			pageCmps = this.getPageComponents(cmp),			
 			isContinuousFlow = cmp.get('v.continuousFlow'), 
 			isVisible = isContinuousFlow || !this.SHOW_SELECTED_PAGE_ONLY,
-			page, snap = this.getSnap(cmp),	
+			page, pageSuper, snap = this.getSnap(cmp),	
 			pageHeight = this.getPageSize(cmp).height,
 			pages = [];	
 		
@@ -80,8 +80,10 @@
 			
 			for ( var i = 0; i < pageCmps.length; i++) {
 				page = pageCmps[i];
+				pageSuper = page.getSuper();
 				//append page components to page container body
 				if ($A.util.isComponent(page) && page.isInstanceOf("ui:carouselPage")) {
+					page = pageSuper.isInstanceOf('ui:carouselPage') ? pageSuper : page;
 					//page index starts with 1
 					page.getValue('v.pageIndex').setValue(i + 1);
 					page.getValue('v.parent').setValue([cmp]);
