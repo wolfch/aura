@@ -16,12 +16,9 @@
 {
 	afterRender: function(cmp, helper) {
 		helper.attachEvents(cmp);
-		
 		//update size in case carousel width is not specified
 		helper.updateSize(cmp);
-		
 		this.superAfterRender();
-		
 		helper.selectDefaultPage(cmp);
 	},
 	
@@ -35,10 +32,5 @@
 		}
 		
 		this.superRerender();
-	},
-	
-	unrender: function(cmp, helper) {
-		helper.unrender(cmp);
-		this.superUnrender();
 	}
 }
