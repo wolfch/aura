@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 ({
-    refresh: function(component, event, helper) {
+	refresh: function(component, event, helper) {
         helper.refresh(component);
     },
     
@@ -24,9 +24,11 @@
 			scroller.unbindTransientHandlers();
 		}    	
     },
+    
     scrollTo: function(component, event, helper) {
     	helper.handleScrollTo(component, event);
     },
+    
     scrollBy: function(component, event, helper) {
     	helper.handleScrollBy(component, event);
     }

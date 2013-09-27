@@ -16,42 +16,26 @@
 ({
 	refresh : function(component) {
 		if (!$A.util.isUndefined(component._scroller)) {
-			this.refreshScroller(component);
-
-			// if there are images in the scroller content, refresh scroller
-			// again after images are loaded
-			this.initImageOnload(component);
-		}
-	},
-
-	refreshScroller : function(component) {
-		var width = component.get("v.width");
-		if (width) {
-			component.find("scrollContent").getElement().style.width = width;
-		}
-
-		if (!component._refreshing) {
-			component._refreshing = true;
-
-			var scroller = component._scroller;
-			if (!$A.util.isUndefined(scroller)) {
-				scroller.unbindTransientHandlers();
-				
-				scroller.refresh();
-								
-				var compEvents = component.getEvent("refreshed");						
-				compEvents.fire();
-				
-				// Goose the x position to insure that onScrollEnd() fires with the correct page fully revealed
-//				if (component.get("v.snap")) {
-//					scroller.scrollTo(scroller.maxScrollX, 0, 0);
-//				}
+			var width = component.get("v.width");
+			if (width) {
+				component.find("scrollContent").getElement().style.width = width;
 			}
 
-			component._refreshing = false;
+			if (!component._refreshing) {
+				component._refreshing = true;
+
+				var scroller = component._scroller;
+				if (!$A.util.isUndefined(scroller)) {
+					scroller.unbindTransientHandlers();
+					
+					scroller.refresh();
+				}
+
+				component._refreshing = false;
+			}
 		}
 	},
-	
+
 	handleScrollTo : function(component, event) {
 		var scroller = component._scroller,
 			scrollWrapper = component.find("scrollWrapper").getElement(),
@@ -294,8 +278,10 @@
 								}, 50);
 							
 								// TODO: this could all possibly be more efficient
-								shim.style.height = "0"
-								var actualContentHeight = scroller.children[0].offsetHeight
+								shim.style.height = "0";
+									
+								var firstChild = scroller.children[0];
+								var actualContentHeight = firstChild ? firstChild.offsetHeight : 0;
 								
 								var leftoverSpace = scroller.offsetHeight - (actualContentHeight - pullUpOffset - pullDownOffset);
 								
@@ -318,10 +304,11 @@
 								
 								this.maxScrollY = this.bottomYWithoutPullUp;
 							}
+							
+							var compEvents = component.getEvent("refreshed");						
+							compEvents.fire();
 						}
 					});
-
-					this.initImageOnload(component);
 				}
 			} else {
 				this.deactivate(component);
@@ -342,30 +329,6 @@
 		}
 
 		this._activeInstances[component.getGlobalId()] = component;
-	},
-	
-	initImageOnload : function(component) {
-		// Add onload listener to all <img> elements in the content to detect
-		// async size changes from images loading after
-		// the scroller has initialized
-		if(component.isValid()){
-			var content = component.find("scrollContent").getElement();
-			if (content) {
-				var images = content.getElementsByTagName("img");
-				var that = this;
-				if (images.length > 0) {
-					var imageLoadTimeoutCallback = $A.util.createTimeoutCallback(function() {
-					    if (component.isValid()) {
-					        that.refreshScroller(component);
-					    }
-					}, 400);
-	
-					for ( var n = 0; n < images.length; n++) {
-						$A.util.on(images[n], "load", imageLoadTimeoutCallback);
-					}
-				}
-			}
-		}
 	},
 	
 	initWidth : function(component) {
@@ -667,8 +630,9 @@
 
 				_checkDOMChanges : function() {
 					if (this.moved || this.zoomed || this.animating
-							|| (this.scrollerW == this.scroller.offsetWidth * this.scale && this.scrollerH == this.scroller.offsetHeight * this.scale))
+							|| (this.scrollerW == this.scroller.offsetWidth * this.scale && (this.scrollerH + this.options.topOffset) == this.scroller.offsetHeight * this.scale)) {
 						return;
+					}
 
 					this.refresh();
 				},
@@ -678,9 +642,15 @@
 
 					if (!that[dir + 'Scrollbar']) {
 						if (that[dir + 'ScrollbarWrapper']) {
-							if (hasTransform)
+							if (hasTransform) {
 								that[dir + 'ScrollbarIndicator'].style[transform] = '';
-							that[dir + 'ScrollbarWrapper'].parentNode.removeChild(that[dir + 'ScrollbarWrapper']);
+							}
+							
+							var parentNode = that[dir + 'ScrollbarWrapper'].parentNode;
+							if (parentNode) {
+								parentNode.removeChild(that[dir + 'ScrollbarWrapper']);
+							}
+							
 							that[dir + 'ScrollbarWrapper'] = null;
 							that[dir + 'ScrollbarIndicator'] = null;
 						}

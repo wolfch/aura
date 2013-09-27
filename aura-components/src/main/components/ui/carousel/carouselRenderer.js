@@ -16,9 +16,12 @@
 {
 	afterRender: function(cmp, helper) {
 		helper.attachEvents(cmp);
+		
 		//update size in case carousel width is not specified
 		helper.updateSize(cmp);
+		
 		this.superAfterRender();
+		
 		helper.selectDefaultPage(cmp);
 	},
 	
@@ -27,14 +30,11 @@
 			height = cmp.getValue('v.height'),
 			pageCmps = cmp.getValue('v.pageComponents');
 		
-		if (pageCmps.isDirty()) {            
-            $A.get("e.ui:updateSize").fire();  
-		}
 		if (width.isDirty() || height.isDirty()) {
 			helper.updateSize(cmp, true);
 		}
 		
-		this.superRerender();		
+		this.superRerender();
 	},
 	
 	unrender: function(cmp, helper) {

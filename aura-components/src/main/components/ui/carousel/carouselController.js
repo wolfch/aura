@@ -94,7 +94,7 @@
     
     selectDefaultPage: function (cmp, evt, helper) {   	
     	if (cmp.isRendered()) {
-    		helper.selectDefaultPage(cmp, evt);
+    		helper.selectDefaultPage(cmp);
     	}
     }
 })
