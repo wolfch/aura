@@ -64,7 +64,7 @@
 			pageCmps = this.getPageComponents(cmp),			
 			isContinuousFlow = cmp.get('v.continuousFlow'), 
 			isVisible = isContinuousFlow || !this.SHOW_SELECTED_PAGE_ONLY,
-			page, pageSuper, snap = this.getSnap(cmp),	
+			page, pageSuper, pageTmp, snap = this.getSnap(cmp),	
 			pageHeight = this.getPageSize(cmp).height,
 			pages = [];	
 		
@@ -83,15 +83,15 @@
 				pageSuper = page.getSuper();
 				//append page components to page container body
 				if ($A.util.isComponent(page) && page.isInstanceOf("ui:carouselPage")) {
-					page = pageSuper.isInstanceOf('ui:carouselPage') ? pageSuper : page;
+					pageTmp = pageSuper.isInstanceOf('ui:carouselPage') ? pageSuper : page;
 					//page index starts with 1
-					page.getValue('v.pageIndex').setValue(i + 1);
-					page.getValue('v.parent').setValue([cmp]);
-					page.getValue('v.priv_width').setValue(cmp._width);
-					page.getValue('v.priv_height').setValue(pageHeight);
-					page.getValue('v.priv_visible').setValue(isVisible);
-					page.getValue('v.priv_snap').setValue(snap);					
-					page.getValue('v.priv_continuousFlow').setValue(isContinuousFlow);
+					pageTmp.getValue('v.pageIndex').setValue(i + 1);
+					pageTmp.getValue('v.parent').setValue([cmp]);
+					pageTmp.getValue('v.priv_width').setValue(cmp._width);
+					pageTmp.getValue('v.priv_height').setValue(pageHeight);
+					pageTmp.getValue('v.priv_visible').setValue(isVisible);
+					pageTmp.getValue('v.priv_snap').setValue(snap);					
+					pageTmp.getValue('v.priv_continuousFlow').setValue(isContinuousFlow);
 					pages.push(page);
 				}
 			}
@@ -540,10 +540,10 @@
 	},
 	
 	selectDefaultPage : function(cmp) {
-		var curPage = cmp.get('v.priv_currentPage');
-		
-		if (curPage > -1) {
-			//page already selected;
+		var curPage = cmp.get('v.priv_currentPage'),
+			scroller = this.getScroller(cmp);
+			
+		if (!scroller || curPage > -1) {
 			return;
 		}
 				
