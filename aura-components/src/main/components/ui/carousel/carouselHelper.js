@@ -64,7 +64,7 @@
 			pageCmps = this.getPageComponents(cmp),			
 			isContinuousFlow = cmp.get('v.continuousFlow'), 
 			isVisible = isContinuousFlow || !this.SHOW_SELECTED_PAGE_ONLY,
-			page, pageSuper, snap = this.getSnap(cmp),	
+			page, pageSuper, pageTmp, snap = this.getSnap(cmp),	
 			pageHeight = this.getPageSize(cmp).height,
 			pages = [];	
 		
@@ -83,15 +83,15 @@
 				pageSuper = page.getSuper();
 				//append page components to page container body
 				if ($A.util.isComponent(page) && page.isInstanceOf("ui:carouselPage")) {
-					page = pageSuper.isInstanceOf('ui:carouselPage') ? pageSuper : page;
+					pageTmp = pageSuper.isInstanceOf('ui:carouselPage') ? pageSuper : page;
 					//page index starts with 1
-					page.getValue('v.pageIndex').setValue(i + 1);
-					page.getValue('v.parent').setValue([cmp]);
-					page.getValue('v.priv_width').setValue(cmp._width);
-					page.getValue('v.priv_height').setValue(pageHeight);
-					page.getValue('v.priv_visible').setValue(isVisible);
-					page.getValue('v.priv_snap').setValue(snap);					
-					page.getValue('v.priv_continuousFlow').setValue(isContinuousFlow);
+					pageTmp.getValue('v.pageIndex').setValue(i + 1);
+					pageTmp.getValue('v.parent').setValue([cmp]);
+					pageTmp.getValue('v.priv_width').setValue(cmp._width);
+					pageTmp.getValue('v.priv_height').setValue(pageHeight);
+					pageTmp.getValue('v.priv_visible').setValue(isVisible);
+					pageTmp.getValue('v.priv_snap').setValue(snap);					
+					pageTmp.getValue('v.priv_continuousFlow').setValue(isContinuousFlow);
 					pages.push(page);
 				}
 			}
@@ -427,24 +427,22 @@
 		var curPageCmp = this.getPageComponentFromIndex(cmp, pageIndex);
 		if (curPageCmp && curPageCmp.isRendered()) {
 			var prePageCmp = this.getPageComponentFromIndex(cmp, prevSelectedPage);
-			cmp._selectedPage = pageIndex;
+			this.setSelectedPage(cmp, pageIndex);
 
 			cmp.getAttributes().setValue('priv_currentPage', pageIndex);			
 			me.firePageSelectedEventToPage(prePageCmp, pageIndex);
 			me.firePageSelectedEventToPage(curPageCmp, pageIndex);
 			
-			var e = cmp.get('e.loadPage');    			
-			e.setParams({pageComponent: me.getPageComponentFromIndex(cmp, pageIndex), pageModel: me.getPageModelFromIndex(cmp, pageIndex), pageIndex: pageIndex});    			
+			var e = cmp.get('e.loadPage');
+			var pageModel = me.getPageModelFromIndex(cmp, pageIndex);
+			
+			e.setParams({pageComponent: curPageCmp, pageModel: pageModel, pageIndex: pageIndex});    			
 			e.fire();	
 
 			me.firePageSelectedEventToPageIndicator(cmp, curPageCmp, pageIndex);
-//			this.hideAllUnselectedPages(cmp);
-			
-			if (!cmp._hideAllPagesTimer) {
-				cmp._hideAllPagesTimer = me.createTimer(me.hideAllUnselectedPages, me, [cmp], pageIndex);				
-			}
-			
-			cmp._hideAllPagesTimer.start(500, pageIndex);
+			me.delayHideAllUnselectedPages(cmp);
+			//Fire pageSelected to let any sub-components that are handling it know the change has been done. 
+			cmp.get("e.pageSelected").setParams({pageComponent: curPageCmp, "pageModel" : pageModel, pageIndex: pageIndex}).fire();			
 		}
 	},
 	
@@ -475,12 +473,22 @@
 	},
 	
 	hideAllUnselectedPages: function(cmp) {
-		if (!cmp.isValid() || cmp._isMoving || cmp.isValid() && cmp.get('v.continuousFlow')) {
+		if (!cmp.isValid() || cmp.isValid() && cmp.get('v.continuousFlow')) {
 			return;
+		}
+				
+		if (cmp._delayHidePagesTimer) {
+			window.clearTimeout(cmp._delayHidePagesTimer);
+			cmp._delayHidePagesTimer = null;
+		}
+		
+		if (cmp._isMoving) {
+			this.delayHideAllUnselectedPages(cmp);
+			return;			
 		}
 		
 		var pages = this.getPageComponents(cmp),
-			selectedPage = cmp._selectedPage || cmp.get('v.priv_currentPage');
+			selectedPage = this.getSelectedPage(cmp);
 
 		for (var i=1; i<= pages.length; i++) {			
 			if (i != selectedPage) {
@@ -522,7 +530,7 @@
 			//show all pages in between before scrolling for better UI experience			
 			var from = (prevSelectedPage < pageIndex ? ++prevSelectedPage : --prevSelectedPage);
 			//save the pageIndex, so that it won't be hide by the callback in the timer, which could cause flickering and performance issue
-			cmp._selectedPage = pageIndex;
+			this.setSelectedPage(cmp, pageIndex);
 			this.showPages(cmp, from, pageIndex);
 			
 			scroller = this.getScroller(cmp);
@@ -532,10 +540,10 @@
 	},
 	
 	selectDefaultPage : function(cmp) {
-		var curPage = cmp.get('v.priv_currentPage');
-		
-		if (curPage > -1) {
-			//page already selected;
+		var curPage = cmp.get('v.priv_currentPage'),
+			scroller = this.getScroller(cmp);
+			
+		if (!scroller || curPage > -1) {
 			return;
 		}
 				
@@ -608,29 +616,11 @@
 	/**
 	 * Buffer the execution of the function, if during the time interval, the function is call again, the previous execution will be canceled 
 	 */
-	createTimer : function (fn, scope, args) {
-		return function() {
-		    var me = this, id,
-		        callback = function() {
-		    		clearInterval(id);
-		            id = null;
-		            fn.apply(scope, args || []);
-		        };
-		        
-		    me.cancel = function(){
-		        if (id) {
-		        	 clearInterval(id);
-		            id = null;
-		        }
-		    };
-		    
-		    me.start = function(delay) {
-		        me.cancel();		       
-		        id = setInterval(callback, delay);
-		    };
-		    
-		    return me;
-		}();
+	delayHideAllUnselectedPages : function(cmp) {
+		if (!cmp._delayHidePagesTimer) {
+			var that = this;
+			cmp._delayHidePagesTimer = window.setTimeout(function(){that.hideAllUnselectedPages(cmp)}, 500);
+		}
 	},
 	
 	/**
@@ -658,7 +648,12 @@
 		}
     },
     
-    unrender: function(cmp) {
-    	delete cmp._delayHideAllPages;
+    setSelectedPage: function(cmp, selectedPage) {    	
+    	cmp._selectedPage = selectedPage; 
+    },
+    
+    getSelectedPage: function(cmp) {    	
+    	return cmp._selectedPage || cmp.get('v.priv_currentPage');
     }
+    
 })

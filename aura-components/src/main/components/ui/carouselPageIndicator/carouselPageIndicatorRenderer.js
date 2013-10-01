@@ -15,25 +15,10 @@
  */
 
 {
-	render: function(cmp, helper) {		
-		helper.setVisibility(cmp);
-		return this.superRender();
-	},
-	
-	afterRender: function(cmp, helper) {		
-		helper.updateSize(cmp);
-		helper.setDefaultAttributes(cmp);
-		this.superAfterRender();
-	},
-	
 	rerender: function(cmp) {
-		var pStyle = cmp.getValue('v.priv_pageStyle'),
-			cssClass = cmp.getValue('v.class'),
-			snap = cmp.getValue('v.priv_snap');
-		
-		//call super rerender only if necessary, to avoid triggering unnecessary rerendering for contained child components
-		if (pStyle.isDirty() || cssClass.isDirty() || snap.isDirty()) {			
+		var pageCmp = cmp.getValue('v.pageComponents');
+		if (pageCmp.isDirty()) {
 			this.superRerender();
 		}
-	}
+	}	
 }

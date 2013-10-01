@@ -16,29 +16,28 @@
 {
 	afterRender: function(cmp, helper) {
 		helper.attachEvents(cmp);
-		
 		//update size in case carousel width is not specified
 		helper.updateSize(cmp);
-		
 		this.superAfterRender();
-		
 		helper.selectDefaultPage(cmp);
 	},
 	
 	rerender: function(cmp, helper) {
-		var width = cmp.getValue('v.width'),
+		var shouldRerender = false,
+			width = cmp.getValue('v.width'),
 			height = cmp.getValue('v.height'),
 			pageCmps = cmp.getValue('v.pageComponents');
 		
 		if (width.isDirty() || height.isDirty()) {
 			helper.updateSize(cmp, true);
+			shouldRerender = true;
+		}
+		if (pageCmps.isDirty()) {
+			shouldRerender = true;
 		}
 		
-		this.superRerender();
-	},
-	
-	unrender: function(cmp, helper) {
-		helper.unrender(cmp);
-		this.superUnrender();
+		if (shouldRerender) {
+			this.superRerender();
+		}
 	}
 }
