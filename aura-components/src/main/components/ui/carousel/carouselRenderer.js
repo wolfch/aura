@@ -32,8 +32,10 @@
 			helper.updateSize(cmp, true);
 			shouldRerender = true;
 		}
+		
 		if (pageCmps.isDirty()) {
 			shouldRerender = true;
+			$A.get("e.ui:updateSize").fire();
 		}
 		
 		if (shouldRerender) {
