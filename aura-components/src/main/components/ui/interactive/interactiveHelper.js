@@ -43,12 +43,13 @@
      * - no need to track event->handler function mappings for later removal
      */
     domEventHandler : function (event) {
-        var element = event.target;
+    	var element = event.target;
         var htmlCmp = $A.componentService.getRenderingComponentForElement(element);
         var component = htmlCmp.getAttributes().getComponentValueProvider().getConcreteComponent();
         var helper = component.getDef().getHelper();
         
         if (!helper || component._recentlyClicked) {
+        	debugger;
             return;
         }
         
