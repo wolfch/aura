@@ -16,26 +16,41 @@
 ({
 	refresh : function(component) {
 		if (!$A.util.isUndefined(component._scroller)) {
-			var width = component.get("v.width");
-			if (width) {
-				component.find("scrollContent").getElement().style.width = width;
-			}
+			this.refreshScroller(component);
 
-			if (!component._refreshing) {
-				component._refreshing = true;
-
-				var scroller = component._scroller;
-				if (!$A.util.isUndefined(scroller)) {
-					scroller.unbindTransientHandlers();
-					
-					scroller.refresh();
-				}
-
-				component._refreshing = false;
-			}
+			// if there are images in the scroller content, refresh scroller
+			// again after images are loaded
+			this.initImageOnload(component);
 		}
 	},
 
+    refreshScroller : function(component) {
+        if (!component.isValid()) {
+            return;
+        }
+        
+		var width = component.get("v.width");
+		if (width) {
+			component.find("scrollContent").getElement().style.width = width;
+		}
+
+		if (!component._refreshing) {
+			component._refreshing = true;
+
+			var scroller = component._scroller;
+			if (!$A.util.isUndefined(scroller)) {
+				scroller.unbindTransientHandlers();
+				
+				scroller.refresh();
+								
+				var compEvents = component.getEvent("refreshed");						
+				compEvents.fire();
+			}
+
+			component._refreshing = false;
+		}
+	},
+	
 	handleScrollTo : function(component, event) {
 		var scroller = component._scroller,
 			scrollWrapper = component.find("scrollWrapper").getElement(),
@@ -304,11 +319,10 @@
 								
 								this.maxScrollY = this.bottomYWithoutPullUp;
 							}
-							
-							var compEvents = component.getEvent("refreshed");						
-							compEvents.fire();
 						}
 					});
+
+					this.initImageOnload(component);
 				}
 			} else {
 				this.deactivate(component);
@@ -329,6 +343,30 @@
 		}
 
 		this._activeInstances[component.getGlobalId()] = component;
+	},
+	
+	initImageOnload : function(component) {
+		// Add onload listener to all <img> elements in the content to detect
+		// async size changes from images loading after
+		// the scroller has initialized
+		if(component.isValid()){
+			var content = component.find("scrollContent").getElement();
+			if (content) {
+				var images = content.getElementsByTagName("img");
+				var that = this;
+				if (images.length > 0) {
+					var imageLoadTimeoutCallback = $A.util.createTimeoutCallback(function() {
+					    if (component.isValid()) {
+					        that.refreshScroller(component);
+					    }
+					}, 400);
+	
+					for ( var n = 0; n < images.length; n++) {
+						$A.util.on(images[n], "load", imageLoadTimeoutCallback);
+					}
+				}
+			}
+		}
 	},
 	
 	initWidth : function(component) {
@@ -1399,6 +1437,26 @@
 				},
 
 				refresh : function(doNotAnimate) {
+					if (doNotAnimate) {
+						// Do not animates need to be handled immediatelty
+						this._doRefresh(true);
+					} else {
+						// avoid short lived refreshes by refreshing at most once per 400 ms
+				        if (!this._refreshTimeout) {
+				            var that = this;
+				            this._refreshTimeout = window.setTimeout(function(){
+				            	that._doRefresh();
+			            	}, 400);
+				        }
+					}
+				},
+				
+				_doRefresh : function(doNotAnimate) {
+					if (this._refreshTimeout != null) {
+			            window.clearTimeout(this._refreshTimeout);
+			            this._refreshTimeout = null;
+			        }
+					
 					var that = this, offset, i, l, els, pos = 0, page = 0;
 
 					if (that.scale < that.options.zoomMin)
