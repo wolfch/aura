@@ -14,14 +14,25 @@
  * limitations under the License.
  */
 div.THIS {
-    background-color: #FFF;    
+    background-color: #FFF;   
     border-radius: 8px 8px 0 0;
-    display: none;    
+    display: none;
     position: absolute;
-    z-index: 100;
+    z-index: 9999;
     box-shadow: 0 2px 8px rgba(0, 0, 0, .25);
 }
 
+div.THIS.phone {
+    position: fixed;
+    top: 0;
+    width: 100%;
+}
+    
+div.THIS.phone .scroller {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overflow: scroll;
+}
  
 @if (IE7){
     div.THIS {
@@ -190,11 +201,7 @@ div.THIS {
     background-color: #f0f1f2;
 }
 
-@media only screen and (max-width: 999px) and (orientation: portrait) {
-    div.THIS {
-        width: 100%;
-    }
-    
+@media only screen and (max-width: 999px) and (orientation: portrait) {    
     .THIS .dateBar .navLink.prevMonth {
 	    background: url('/auraFW/resources/aura/images/arrow-left.png') no-repeat;
 	    background-size: 12px 14px;
