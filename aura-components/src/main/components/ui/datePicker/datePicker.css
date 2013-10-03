@@ -178,15 +178,15 @@ div.THIS.phone .scroller {
     line-height: 24px !important;
 }
 
-.THIS .buttonBar {
-    height: 23px;
-    line-height: 13px;
+.THIS .buttonBar {    
     text-align: center;
+    padding: 7px;
 }
 
 .THIS .buttonBar .calToday {
     color: #0085C7;
-    font-size: 13px;
+    font-size: 18px;
+	line-height: 24px !important;
 }
 
 .THIS .buttonBar .calToday:hover,
