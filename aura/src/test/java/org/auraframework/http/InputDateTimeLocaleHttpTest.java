@@ -102,7 +102,7 @@ public class InputDateTimeLocaleHttpTest extends AuraHttpTestCase{
 	 */
 	public void testCheckLocaleForDatePicker() throws Exception{
 		
-		Map<String, String> urlAuraParameters = ImmutableMap.of("aura.tag", "uiTest:datePickerTest", "aura.context",
+		Map<String, String> urlAuraParameters = ImmutableMap.of("aura.tag", "uiTest:inputDate_Test", "aura.context",
                 "{'mode':'DEV'}", "visible","true");
         
         getValueByLocale(locale, dayOfWeek, month, urlAuraParameters);
