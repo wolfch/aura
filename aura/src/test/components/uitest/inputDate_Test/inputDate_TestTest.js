@@ -52,7 +52,114 @@
   			$A.test.assertEquals("2013-09-18", dateValue.toString(), "Clicking on one week prior to todays date did not render the correct result.");
 		}]
     },
-	
+    /**
+     * Testing that all 12 months, appear in the correct order
+     */
+    testValidateMonths :{
+        attributes : {value: "2245-01-01", format: "MM-dd-yyyy"},
+        test : [function(cmp) {
+  			this.openDatePicker(cmp);
+		},function(cmp) {
+
+		    var actual = "";
+	            var expected = "";
+	            var datePicker = cmp.find("datePickerTestCmp").get('datePicker');
+	            
+	            for(var i = 0; i<12; i++){
+	        	expected = this.convertMonth(i) + " 2245";
+	        	actual   = $A.util.getText(datePicker.get('calTitle').getElement());	                
+	        	$A.test.assertEquals(expected, actual, "Month year Combo incorrect incorrect");
+	        	datePicker.get('c.goToNextMonth').runDeprecated({});
+	            }
+	            
+	            expected = "January 2246";
+	            actual   = $A.util.getText(datePicker.get('calTitle').getElement());	 
+	            $A.test.assertEquals(expected, actual, "Month year Combo incorrect incorrect");
+	            
+	    }] 
+    }, 
+
+    /**
+     * Testing arrow combination of increasing month, and decreasing year
+     */
+    testDecreaseMonthAndIncreaseYear :{
+        attributes : {value: "2012-09-10", format: "MM-dd-yyyy"},
+        test : [function(cmp) {
+		  this.openDatePicker(cmp);
+		},function(cmp) {
+	            var expected = "February 2017"
+	            var datePicker = cmp.find("datePickerTestCmp").get('datePicker');
+	            
+	            this.iterateCal(7, 5, datePicker.get('c.goToPrevMonth'), datePicker.get('c.goToNextYear'));
+	            var actual   = $A.util.getText(datePicker.get('calTitle').getElement());
+	                
+	            $A.test.assertEquals(expected, actual, "Month year combo incorrect");       
+	    }] 
+    },
+    /**
+     * Testing arrow combination of decrease month, and increasing year
+     */
+    testDecreaseMonthAndDecreaseYear :{
+        attributes : {value: "2012-09-10", format: "MM-dd-yyyy"},
+        test : [function(cmp) {
+    		this.openDatePicker(cmp);
+    		},function(cmp) {
+	            var expected = "February 1997"
+	                var datePicker = cmp.find("datePickerTestCmp").get('datePicker');
+	                this.iterateCal(7, 15, datePicker.get('c.goToPrevMonth'), datePicker.get('c.goToPrevYear'));
+	                var actual   = $A.util.getText(datePicker.get('calTitle').getElement());
+	                
+	                $A.test.assertEquals(expected, actual, "Initial value incorrect");       
+	            
+	    }] 
+    },
+    /**
+     * Testing arrow combination of increasing month, and  decrease year
+     */
+    testIncreaseMonthAndDecreaseYear :{
+        attributes : {value: "2038-09-10", format: "MM-dd-yyyy"},
+        test : [function(cmp) {
+			this.openDatePicker(cmp);
+		},function(cmp) {
+	            var expected = "September 2029"
+	                var datePicker = cmp.find("datePickerTestCmp").get('datePicker');
+	                this.iterateCal(12, 10, datePicker.get('c.goToNextMonth'), datePicker.get('c.goToPrevYear'));
+	                var actual   = $A.util.getText(datePicker.get('calTitle').getElement());
+	                
+	                $A.test.assertEquals(expected, actual, "Initial value incorrect");       
+	            
+	    }] 
+    },
+    /**
+     * Testing arrow combination of increasing month, and year
+     */
+    testIncreaseMonthAndYear :{
+        attributes : {value: "2012-09-10", format: "MM-dd-yyyy"},
+        test : [function(cmp) {
+    			this.openDatePicker(cmp);
+    		},function(cmp) {
+	            var expected = "September 2023"
+	                var datePicker = cmp.find("datePickerTestCmp").get('datePicker');
+	                this.iterateCal(12, 10, datePicker.get('c.goToNextMonth'), datePicker.get('c.goToNextYear'));
+	                var actual   = $A.util.getText(datePicker.get('calTitle').getElement());
+	                
+	                $A.test.assertEquals(expected, actual, "Initial value incorrect");       
+	            
+	    }]
+	    
+    },
+      
+    iterateCal : function(monthIter, yearIter, monthButton, yearButton){
+          var i;
+          for(i = 0; i< monthIter; i++){
+              monthButton.runDeprecated({});
+          }
+          
+          for(i = 0; i< yearIter; i++){
+             yearButton.runDeprecated({});
+          }
+          
+    },
 	openDatePicker : function(cmp) {
     	var opener = cmp.find("datePickerTestCmp").find("datePickerOpener").getElement();
 		var inputBox = cmp.find("datePickerTestCmp").find("inputText").getElement();
@@ -66,7 +173,7 @@
     },
     
     convertMonth : function(intMonth) {
-    	if (!intMonth) {
+    	if ($A.util.isUndefinedOrNull(intMonth)) {
     		return intMonth;
     	}
     	
