@@ -22,7 +22,10 @@ import java.util.GregorianCalendar;
 
 import org.auraframework.test.WebDriverTestCase;
 import org.auraframework.test.WebDriverUtil.BrowserType;
-import org.openqa.selenium.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 
 public class InputDateWithLabelUITest extends WebDriverTestCase {
 
@@ -31,10 +34,6 @@ public class InputDateWithLabelUITest extends WebDriverTestCase {
     public String URL = "/uitest/inputDate_Test.cmp";
     private final String DATE_FORMAT_STR = "yyyy-MM-dd";
     private final String TEST_DATE_TO_USE = "2013-04-15";
-    private final int YEAR_TO_USE = 2013;
-    private final int MONTH_TO_USE = Calendar.APRIL;
-    private final int DAY_TO_USE = 28;
-    private final String MONTH_YEAR_FORMAT = "MMMMMMMMM yyyy";
 
     private final String DATE_INPUT_BOX_SEL = "input[class*='date_input_box']";
     private final String DATE_ICON_SEL = "a[class*='datePicker-openIcon']";
@@ -97,58 +96,7 @@ public class InputDateWithLabelUITest extends WebDriverTestCase {
         return element.getAttribute("value");
     }
 
-    private String iterateCal(int monthIter, int yearIter, String monthSel, String yearSel) {
-        // Start at specific date
-        WebElement element = findDomElement(By.cssSelector(DATE_INPUT_BOX_SEL));
-        element.clear();
-        element.click();
-        element.sendKeys(TEST_DATE_TO_USE);
-
-        // Clicking on the the textbox to gain focus
-        element = findDomElement(By.cssSelector(DATE_ICON_SEL));
-        element.click();
-
-        // Finding either the increasing or decreasing month arrow
-        element = findDomElement(By.cssSelector(monthSel));
-
-        // Increasing or decreasing the month
-        for (int i = 0; i < monthIter; i++) {
-            element.click();
-            element = findDomElement(By.cssSelector(monthSel));
-            assertTrue("Page up/down could not find aria-selected='true'", element != null);
-        }
-
-        // Finding either the increasing or decreasing year arrow
-        element = findDomElement(By.cssSelector(yearSel));
-
-        // Increasing or decreasing the year
-        for (int i = 0; i < yearIter; i++) {
-            element.click();
-            element = findDomElement(By.cssSelector(yearSel));
-            assertTrue("Shift + Page up/down could not find aria-selected='true'", element != null);
-        }
-
-        /*
-         * Returning a Boolean value, whether the label in the calendar matches the month and year that we were
-         * expecting
-         */
-        return findDomElement(By.cssSelector("h4[class*='monthYear']")).getText();
-    }
-
-    // Method to modify calendar
-    private String modCal(int month, int year) {
-
-        // Getting the current date so all tests start from the same area
-        GregorianCalendar cal = new GregorianCalendar(YEAR_TO_USE, MONTH_TO_USE, DAY_TO_USE);
-        // Formatting the calendar in the format that we expect
-        SimpleDateFormat dtFormat = new SimpleDateFormat(MONTH_YEAR_FORMAT);
-
-        // Modifying calendar by either positive or negative months/years
-        cal.add(Calendar.MONTH, month);
-        cal.add(Calendar.YEAR, year);
-        return dtFormat.format(cal.getTime());
-    }
-
+   
     private String homeEndButtonHelper(String initDate, Keys buttonToPress)
     {
         // Getting the input box, making sure it is clear, and sending in the the starting date
@@ -499,51 +447,5 @@ public class InputDateWithLabelUITest extends WebDriverTestCase {
         element = findDomElement(By.cssSelector(DATE_INPUT_BOX_SEL));
         assertEquals("Moving dates using arrows has not brought us to todays date", TEST_DATE_TO_USE,
                 element.getAttribute("value"));
-    }
-
-    // Testing functionality of arrows button on calendar by intercombining them and making them go through months and
-    // year
-    @ExcludeBrowsers({ BrowserType.ANDROID_PHONE, BrowserType.ANDROID_TABLET, BrowserType.IPAD, BrowserType.IPHONE })
-    public void _testMonthYearByArrowsButtons() throws Exception {
-        String nextMonth = "a[class*='navLink nextMonth']";
-        String nextYear = "a[class*='navLink nextYear']";
-        String prevMonth = "a[class*='navLink prevMonth']";
-        String prevYear = "a[class*='navLink prevYear']";
-
-        open(URL);
-
-        // Increases month and year
-        String result = iterateCal(7, 5, nextMonth, nextYear);
-
-        // Get correct date
-        String fmt = modCal(7, 5);
-
-        assertEquals("Date using Month and Year buttons both increasing found incorrectly", fmt, result);
-
-        // Increase month and Decrease year
-        result = iterateCal(7, 10, nextMonth, prevYear);
-
-        // Get correct date
-        fmt = modCal(7, -10);
-        assertEquals(
-                "Date using Month and Year buttons, with Month increasing and Year Decreasing, found  incorrectly",
-                fmt, result);
-
-        // Decrease month and Increases year
-        result = iterateCal(12, 10, prevMonth, nextYear);
-
-        // Get correct date
-        fmt = modCal(-12, 10);
-
-        assertEquals("Date using Month and Year buttons, with Month Decreasing and Year increasing found incorrectly",
-                fmt, result);
-
-        // Decrease month and year
-        result = iterateCal(12, 10, prevMonth, prevYear);
-
-        // Get correct date
-        fmt = modCal(-12, -10);
-
-        assertEquals("Date using Month and Year buttons both increasing found incorrectly", fmt, result);
     }
 }
