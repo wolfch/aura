@@ -238,7 +238,7 @@ public class InputDateWithLabelUITest extends WebDriverTestCase {
     // Do Not run with Safari. Safari does not handle tabs normally
     @ExcludeBrowsers({ BrowserType.SAFARI, BrowserType.ANDROID_PHONE, BrowserType.ANDROID_TABLET, BrowserType.IPAD,
             BrowserType.IPHONE })
-    public void _testTab() throws Exception {
+    public void testTab() throws Exception {
         open(URL);
 
         // Tab test Begins
@@ -264,7 +264,7 @@ public class InputDateWithLabelUITest extends WebDriverTestCase {
 
         // Clicking on the today link
         classOfActiveElem = "" + auraUITestingUtil.getEval(CLASSNAME);
-        element = findDomElement(By.cssSelector("a[class*='" + classOfActiveElem + "']"));
+        element = findDomElement(By.cssSelector("button[class*='" + classOfActiveElem + "']"));
         assertEquals("Tabbing through every buttong did not take us to the today button", "calToday",
                 element.getAttribute("class"));
     }
@@ -272,7 +272,7 @@ public class InputDateWithLabelUITest extends WebDriverTestCase {
     // Checking functionality of the shift tab button
     @ExcludeBrowsers({ BrowserType.IE9, BrowserType.IE10, BrowserType.SAFARI, BrowserType.ANDROID_PHONE,
             BrowserType.ANDROID_TABLET, BrowserType.IPAD, BrowserType.IPHONE })
-    public void _testShiftTab() throws Exception {
+    public void testShiftTab() throws Exception {
         open(URL);
 
         WebDriver driver = getDriver();
@@ -296,7 +296,9 @@ public class InputDateWithLabelUITest extends WebDriverTestCase {
         String shftTab = Keys.SHIFT + "" + Keys.TAB;
 
         // Going from Today hyperlink, back to SELECTED_DATE
-        gotToNextElem(driver, shftTab);
+        //gotToNextElem(driver, shftTab);
+        String classOfActiveElemButton = "button[class*='" + auraUITestingUtil.getEval(CLASSNAME) + "']";
+        findDomElement(By.cssSelector(classOfActiveElemButton)).sendKeys(shftTab);
 
         // Going from SELECTED_DATE to next-year
         gotToNextElem(driver, shftTab);
