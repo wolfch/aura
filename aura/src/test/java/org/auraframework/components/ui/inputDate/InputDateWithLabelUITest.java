@@ -22,10 +22,7 @@ import java.util.GregorianCalendar;
 
 import org.auraframework.test.WebDriverTestCase;
 import org.auraframework.test.WebDriverUtil.BrowserType;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 
 public class InputDateWithLabelUITest extends WebDriverTestCase {
 
@@ -241,7 +238,7 @@ public class InputDateWithLabelUITest extends WebDriverTestCase {
     // Do Not run with Safari. Safari does not handle tabs normally
     @ExcludeBrowsers({ BrowserType.SAFARI, BrowserType.ANDROID_PHONE, BrowserType.ANDROID_TABLET, BrowserType.IPAD,
             BrowserType.IPHONE })
-    public void testTab() throws Exception {
+    public void _testTab() throws Exception {
         open(URL);
 
         // Tab test Begins
@@ -275,7 +272,7 @@ public class InputDateWithLabelUITest extends WebDriverTestCase {
     // Checking functionality of the shift tab button
     @ExcludeBrowsers({ BrowserType.IE9, BrowserType.IE10, BrowserType.SAFARI, BrowserType.ANDROID_PHONE,
             BrowserType.ANDROID_TABLET, BrowserType.IPAD, BrowserType.IPHONE })
-    public void testShiftTab() throws Exception {
+    public void _testShiftTab() throws Exception {
         open(URL);
 
         WebDriver driver = getDriver();
