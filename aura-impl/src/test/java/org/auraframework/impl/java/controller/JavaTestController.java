@@ -85,6 +85,16 @@ public class JavaTestController {
     	return myList;
     }
 
+    @AuraEnabled
+    public static String getLoggableString(@Key(value = "param", loggable = true) String param) throws Exception {
+        return param;
+    }
+
+    @AuraEnabled
+    public static int getLoggableInt(@Key(value = "param", loggable = true) int param) throws Exception {
+        return param;
+    }
+
     /**
      * Note: these cases are pretty specific to js://test.testActionExceptions
      * 
