@@ -49,7 +49,6 @@
         var helper = component.getDef().getHelper();
         
         if (!helper || component._recentlyClicked) {
-        	debugger;
             return;
         }
         
