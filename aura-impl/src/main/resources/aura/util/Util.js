@@ -1043,21 +1043,37 @@ if (!!Array.prototype.indexOf) {
  * Schedules the specified component to be asynchronously destroyed.
  * @param {cmp} element The component to be destroyed.
  */
-$A.ns.Util.prototype.destroyAsync = function(cmp) {
-    this.trashedComponentQueue.push(cmp);
-
-    if (!this.componentGCPending) {
-        this.componentGCPending = true;
-
-        var mode = $A.getContext().getMode();
-        if (mode !== "SELENIUM" && mode !== "SELENIUMDEBUG") {
-            // Async when not testing to not confuse component stats verification tests
-            var that = this;
-            setTimeout(function() { that.emptyComponentTrash(); }, 3000);
-        } else {
-            // Synchronous when not testing
-            this.emptyComponentTrash();
+$A.ns.Util.prototype.destroyAsync = function(cmp) {    
+	if (this.componentGCProcessing) {
+		// We're in the middle of emptying the component trash and something just async to destroy another 
+		// component async so finish the destroy now
+		if (cmp && cmp.finishDestroy) {
+        	cmp.finishDestroy();
         }
+	} else {
+        this.trashedComponentQueue.push(cmp);
+
+        if (!this.componentGCPending) {
+	        var mode = $A.getContext().getMode();
+	        if (mode !== "SELENIUM" && mode !== "SELENIUMDEBUG") {
+	            this.componentGCPending = true;
+
+	            // Async when not testing to not confuse component stats verification tests
+	            var that = this;
+	            setTimeout(function() { 
+	            	try {
+		            	that.componentGCProcessing = true;
+
+		            	that.emptyComponentTrash();
+	            	} finally {
+	            		that.componentGCProcessing = false;
+	            	}
+	        	}, 3000);
+	        } else {
+	            // Synchronous when not testing
+	            this.emptyComponentTrash();
+	        }
+	    }
     }
 };
 
@@ -1114,16 +1130,11 @@ $A.ns.Util.prototype.instanceOf = function(instance, constructor) {
  */
 $A.ns.Util.prototype.emptyComponentTrash = function() {
     var length = this.trashedComponentQueue.length;
-    if (length > 0) {
-        var reaped = [];
-
-        for (var i = 0, len = this.trashedComponentQueue.length; i < len; i++){
+    if (length > 0) {    	
+        for (var i = 0; i < length; i++){
             var cmp = this.trashedComponentQueue[i];
-            if(cmp && cmp.finishDestroy){
-                var gid = cmp.finishDestroy();
-                if (gid !== null) {
-                    reaped.push(gid);
-                }
+            if (cmp && cmp.finishDestroy) {
+            	cmp.finishDestroy();
             }
         }
 
