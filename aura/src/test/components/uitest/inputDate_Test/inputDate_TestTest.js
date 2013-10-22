@@ -148,6 +148,37 @@
 	    }]
 	    
     },
+    
+    /**
+     * On mobile there should be a inputSelect to choose year.
+     */
+    testYearSelectorOnMobile : {
+    	browsers : ["IPHONE"],
+    	attributes : {value: "2012-12-10"},
+    	test : function(cmp) {
+    		var yearTitle = cmp.find("datePickerTestCmp").get('datePicker').find("yearTitle");
+    		$A.test.assertFalse($A.util.isUndefinedOrNull(yearTitle), 
+    			"year input select not fond");
+    	}
+    },
+    
+    /**
+     * On mobile incrementing month past December increments year selector to next year.
+     */
+    // TODO : @ctatlah - uncomment after bug W-1903593 fixed.
+    _testYearSelectorGoToNextYear : {
+    	browsers : ["IPHONE"],
+    	attributes : {value: "2012-12-10"},
+    	test : function(cmp) {
+    		var datePicker = cmp.find("datePickerTestCmp").get('datePicker');
+	        var yearTitle = cmp.find("datePickerTestCmp").get('datePicker').find("yearTitle");
+	        this.iterateCal(1, 0, datePicker.get('c.goToNextMonth'), datePicker.get('c.goToNextYear'));
+	        var actualGirdValue = datePicker.find("grid").get("v.year");        
+	        var actualSelectValue = yearTitle.get("v.value");
+	        $A.test.assertEquals("2013", actualGirdValue, "Grid value incorrect");     
+	        $A.test.assertEquals("2013", actualSelectValue, "Year select value incorrect");    
+    	}
+    },
       
     iterateCal : function(monthIter, yearIter, monthButton, yearButton){
           var i;
