@@ -165,8 +165,7 @@
     /**
      * On mobile incrementing month past December increments year selector to next year.
      */
-    // TODO : @ctatlah - uncomment after bug W-1903593 fixed.
-    _testYearSelectorGoToNextYear : {
+    testYearSelectorGoToNextYear : {
     	browsers : ["IPHONE"],
     	attributes : {value: "2012-12-10"},
     	test : function(cmp) {
