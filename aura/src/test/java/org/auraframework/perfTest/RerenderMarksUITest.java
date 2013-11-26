@@ -75,6 +75,8 @@ public class RerenderMarksUITest extends PerfMetricsTestCase {
         WebElement button = getDriver().findElement(By.cssSelector("button[class~='bkgColor']"));
         button.click();
         waitForElementPresent(getDriver().findElement(By.cssSelector("tr[class~='grey']")));
+        //Wait for 3 seconds so all Jiffy measurements are recorded.
+        waitFor(3);
 
         logStats.putAll(getJiffyStats(Lists.newArrayList("Rerendering-3: ['markup://performanceTest:perfApp']")));
         assertFalse("Rerender of root component not marked in Jiffy. \n"+ getJiffyStats(null),
@@ -84,6 +86,7 @@ public class RerenderMarksUITest extends PerfMetricsTestCase {
         //Make a value change to cause multiple component rerender, the jiffy mark should have qualified names of the components
         WebElement innerButton = getDriver().findElement(By.cssSelector("button[class~='changeIteratonIndex']"));
         innerButton.click();
+        waitFor(3);
         logStats.putAll(getJiffyStats(Lists.newArrayList("Rerendering-4: ['markup://performanceTest:perfApp','markup://aura:iteration','markup://aura:iteration','markup://aura:iteration']")));
         assertFalse("Multiple component Rerender should be marked with all componentNames.",
                 logStats.isEmpty());
