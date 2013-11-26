@@ -65,8 +65,7 @@
             $A.test.assertNotNull(testCmp);
             $A.test.assertEquals('Some text from server with blacklisted tags', $A.test.getText(testCmp.find('div').getElement()), "Failed to display richtext from Java model");
             $A.test.assertEquals(0, testCmp.find('div').getElement().getElementsByTagName("script").length, "script tag should not be there");
-            // Uncomment when bug is fixed.
-            //$A.test.assertEquals(0, testCmp.find('div').getElement().getElementsByTagName("style").length, "style tag should not be there");
+            $A.test.assertEquals(0, testCmp.find('div').getElement().getElementsByTagName("style").length, "style tag should not be there");
         }
     },
 	
@@ -96,9 +95,8 @@
             $A.test.assertNotNull(testCmp);
             $A.test.assertEquals('Some text from server with nested blacklisted tags in div', $A.test.getText(testCmp.find('div').getElement()).trim(), "Failed to display richtext from Java model");
             $A.test.assertEquals(1, testCmp.find('div').getElement().getElementsByTagName("div").length, "Div tag should not be there");
-            // Uncomment when bug is fixed.
-            //$A.test.assertEquals(0, testCmp.find('div').getElement().getElementsByTagName("script").length, "script tag should not be there");
-            //$A.test.assertEquals(0, testCmp.find('div').getElement().getElementsByTagName("style").length, "style tag should not be there");            
+            $A.test.assertEquals(0, testCmp.find('div').getElement().getElementsByTagName("script").length, "script tag should not be there");
+            $A.test.assertEquals(0, testCmp.find('div').getElement().getElementsByTagName("style").length, "style tag should not be there");            
         }
     },
     
