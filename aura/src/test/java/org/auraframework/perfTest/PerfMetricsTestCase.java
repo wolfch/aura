@@ -54,7 +54,7 @@ public class PerfMetricsTestCase extends WebDriverTestCase {
         @SuppressWarnings("unchecked")
         ArrayList<HashMap<?, ?>> measures = (ArrayList<HashMap<?, ?>>) message.get("measures");
         for (HashMap<?, ?> marks : measures) {
-            if (!transactionsToGather.isEmpty()) {
+            if (transactionsToGather!= null && !transactionsToGather.isEmpty()) {
                 if (!transactionsToGather.contains(marks.get("measure"))) {
                     continue;
                 }

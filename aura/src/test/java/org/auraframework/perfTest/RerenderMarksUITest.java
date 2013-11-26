@@ -66,7 +66,7 @@ public class RerenderMarksUITest extends PerfMetricsTestCase {
      * 
      * Re-enable after bug W-1935316 is fixed
      */
-    public void _testRerenderMarksHaveAllComponentNames() throws Exception{
+    public void testRerenderMarksHaveAllComponentNames() throws Exception{
         Map<String, String> logStats = Maps.newHashMap();
         open("/performanceTest/perfApp.app", Mode.CADENCE);
         clearStats();
@@ -77,7 +77,7 @@ public class RerenderMarksUITest extends PerfMetricsTestCase {
         waitForElementPresent(getDriver().findElement(By.cssSelector("tr[class~='grey']")));
 
         logStats.putAll(getJiffyStats(Lists.newArrayList("Rerendering-3: ['markup://performanceTest:perfApp']")));
-        assertFalse("Rerender of root component not marked in Jiffy.",
+        assertFalse("Rerender of root component not marked in Jiffy. \n"+ getJiffyStats(null),
                 logStats.isEmpty());
         logStats.clear();
         
