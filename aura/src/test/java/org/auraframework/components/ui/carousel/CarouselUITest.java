@@ -25,6 +25,7 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 
 /**
  * Tests to verify ui:carousel keyboard interactions and UI.
@@ -51,8 +52,7 @@ public class CarouselUITest extends WebDriverTestCase {
     /**
      * Able to tab into a page on the carousel.
      */
-    //TODO: Renable after W-1851013 is fixed. Currently this test flaps.
-    public void _testTabIntoCarouselPage() throws Exception {
+    public void testTabIntoCarouselPage() throws Exception {
         open(URL);
         WebDriver driver = getDriver();
         WebElement carousel = getCarousel(driver, 1);
@@ -63,6 +63,7 @@ public class CarouselUITest extends WebDriverTestCase {
         navElement.click();
         assertEquals("Navigation bar element should be in focus.",
                 navElement.getAttribute(AURA_RENDERED_BY_ID), auraUITestingUtil.getUniqueIdOfFocusedElement());
+        waitForCarouselPageSelected(page);
 
         // tab into carousel page
         auraUITestingUtil.pressTab(navElement);
@@ -277,4 +278,13 @@ public class CarouselUITest extends WebDriverTestCase {
         return pageItems.get(--entityNum).findElement(By.tagName("a")); // return tab-able element
     }
 
+    public void waitForCarouselPageSelected(final WebElement page) {
+        auraUITestingUtil.waitUntil(new ExpectedCondition<Boolean>() {
+            @Override
+            public Boolean apply(WebDriver d) {
+                String cssClass = page.getAttribute("class");
+                return cssClass.contains("carousel-page-selected");
+            }
+        }, timeoutInSecs);
+    }
 }
