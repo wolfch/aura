@@ -59,6 +59,7 @@ public class CarouselUITest extends WebDriverTestCase {
         WebElement page = getPageOnCarousel(carousel, 2);
 
         // setup
+        waitForCarouselPageSelected(page);
         WebElement navElement = getNavigationItemSelected(carousel);
         navElement.click();
         assertEquals("Navigation bar element should be in focus.",
