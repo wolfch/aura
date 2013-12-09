@@ -37,6 +37,7 @@ import org.auraframework.Aura;
 import org.auraframework.adapter.ConfigAdapter;
 import org.auraframework.impl.javascript.AuraJavascriptGroup;
 import org.auraframework.impl.source.AuraResourcesHashingGroup;
+import org.auraframework.impl.source.file.FileSourceLoader;
 import org.auraframework.impl.util.AuraImplFiles;
 import org.auraframework.impl.util.BrowserInfo;
 import org.auraframework.system.AuraContext;
@@ -140,6 +141,11 @@ public class ConfigAdapterImpl implements ConfigAdapter {
         String validateCssString = config.getProperty(VALIDATE_CSS_CONFIG);
         validateCss = AuraTextUtil.isNullEmptyOrWhitespace(validateCssString)
                 || Boolean.parseBoolean(validateCssString.trim());
+
+        // only start monitor when not production
+        if (!isProduction()) {
+            FileSourceLoader.startMonitor();
+        }
 
     }
 
