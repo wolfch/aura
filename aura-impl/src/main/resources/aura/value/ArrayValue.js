@@ -391,7 +391,7 @@ ArrayValue.prototype.destroy = function(async) {
         if (len > 0) {
             if (this.referenceNode) {
                 // We need to inject a replacement reference node because our current one is about to be destroyed
-                var referenceNode = this.createLocator(" array locator (from destroy) " + this.owner);
+                var referenceNode = this.createLocator(" array locator (from destroy) " + this.owner.toText());
                 $A.util.insertBefore(referenceNode, this.referenceNode);
                 this.setReferenceNode(referenceNode);
             }

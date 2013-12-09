@@ -378,64 +378,77 @@ $A.ns.Util.prototype.appendChild = function(newEl, referenceEl) {
  * deconstruct our tree from the bottom up. If we reverse this, we might be
  * able to add optimizations.
  *
- * @param {Object} element The element to be removed.
+ * @param {Element} element The element to be removed.
  */
 $A.ns.Util.prototype.removeElement = function(element) {
-    if (element && !(element.parentNode === this.trashcan)) {
-        if (element.parentNode) {
-            //
-            // We do a check to ensure that we don't try to add the element
-            // to the trashcan more than once. Though the check above _should_
-            // catch all cases, there are odd boundary conditions where people
-            // holding references could re-re-parent elements. That is very
-            // bad, so we yell early here. Note that long lived references
-            // might get past this as well, but they are likely to blow up
-            // on use. Not having this code allows things to break much later
-            // in an inobvious way. See W-1462733
-            //
-            // Note that we carefully protect aura_deleted from the compiler, so
-            // that we don't accidentally conflict with the element namespace,
-            // the property should never live longer than the delay between this
-            // reparenting and the gc below.
-            //
-            if (element.nodeType !== 3 && element.nodeType !== 8) {
-                $A.assert(this.isUndefined(element["aura_deleted"]), "Element was reused after delete");
-                element["aura_deleted"] = true;
+    if (element) {
+
+        var inTrash = false;
+        var elementParent = false;
+        try {
+            elementParent = element.parentNode;
+            inTrash = elementParent === this.trashcan;
+        } catch (e) {
+            $A.log("Abandoned element");
+            $A.log(element);
+        }
+
+        if (!inTrash) {
+            if (elementParent) {
+                //
+                // We do a check to ensure that we don't try to add the element
+                // to the trashcan more than once. Though the check above _should_
+                // catch all cases, there are odd boundary conditions where people
+                // holding references could re-re-parent elements. That is very
+                // bad, so we yell early here. Note that long lived references
+                // might get past this as well, but they are likely to blow up
+                // on use. Not having this code allows things to break much later
+                // in an inobvious way. See W-1462733
+                //
+                // Note that we carefully protect aura_deleted from the compiler, so
+                // that we don't accidentally conflict with the element namespace,
+                // the property should never live longer than the delay between this
+                // reparenting and the gc below.
+                //
+                if (element.nodeType !== 3 && element.nodeType !== 8) {
+                    $A.assert(this.isUndefined(element["aura_deleted"]), "Element was reused after delete");
+                    element["aura_deleted"] = true;
+                }
+
+                this.trashcan.appendChild(element);
+            } else{
+                this.trash.push(element);
             }
 
-            this.trashcan.appendChild(element);
-        } else{
-            this.trash.push(element);
-        }
-        
-        if (!this.gcPending) {
-            this.gcPending = true;
-            var that = this;
-            setTimeout(function() {
-                var trashcan = that.trashcan;
-                while (trashcan.hasChildNodes()) {
-                    var node = trashcan.lastChild;
-                    
-                    if (node.nodeType !== 3 && node.nodeType !== 8) {
-                    	try{
-                    		delete node["aura_deleted"];
-                    	}
-                    	catch(e){
-                    		//IE7 having issue with delete
-                    		node.removeAttribute("aura_deleted");
-                    	}
-                    }
-                    
-                    trashcan.removeChild(node);
-                }
+            if (!this.gcPending) {
+                this.gcPending = true;
+                var that = this;
+                setTimeout(function() {
+                    var trashcan = that.trashcan;
+                    while (trashcan.hasChildNodes()) {
+                        var node = trashcan.lastChild;
 
-                for (var i = 0, len = that.trash.length; i < len; i++){
-                    that.trash[i] = null;
-                }
-                
-                that.trash = [];
-                that.gcPending = false;
-            }, 1000);
+                        if (node.nodeType !== 3 && node.nodeType !== 8) {
+                            try{
+                                delete node["aura_deleted"];
+                            }
+                            catch(e){
+                                //IE7 having issue with delete
+                                node.removeAttribute("aura_deleted");
+                            }
+                        }
+
+                        trashcan.removeChild(node);
+                    }
+
+                    for (var i = 0, len = that.trash.length; i < len; i++){
+                        that.trash[i] = null;
+                    }
+
+                    that.trash = [];
+                    that.gcPending = false;
+                }, 1000);
+            }
         }
     }
 };

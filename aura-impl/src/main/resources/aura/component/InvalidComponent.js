@@ -305,6 +305,12 @@ InvalidComponent.prototype.toString = function(){
 };
 
 /**
+ * Used when destroying component. IE8 and earlier will not allow toString to be overridden
+ * @type {function(): ​!String}
+ */
+InvalidComponent.prototype.toText = InvalidComponent.prototype.toString;
+
+/**
  * @private
  */
 InvalidComponent.prototype.toJSON = function(){
