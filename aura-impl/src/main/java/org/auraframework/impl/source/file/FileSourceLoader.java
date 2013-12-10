@@ -63,6 +63,7 @@ public class FileSourceLoader extends BaseSourceLoader {
     private static FileSystemManager fileMonitorManager;
     private static DefaultFileMonitor fileMonitor;
     private static Set<String> monitoredDirs = new HashSet<String>();
+    private static boolean started = false;
 
     static {
         try {
@@ -72,7 +73,6 @@ public class FileSourceLoader extends BaseSourceLoader {
                     new FileSourceListener());
 
             // monitor the base and all child directories
-            fileMonitor.start();
         } catch (FileSystemException e) {
             fileMonitorManager = null;
             fileMonitor = null;
@@ -86,6 +86,14 @@ public class FileSourceLoader extends BaseSourceLoader {
         filters.put(DefType.LAYOUTS, new SourceFileFilter(DefType.LAYOUTS));
         filters.put(DefType.NAMESPACE, new SourceFileFilter(DefType.NAMESPACE));
         filters.put(DefType.THEME, new SourceFileFilter(DefType.THEME));
+    }
+
+    public static synchronized void startMonitor() {
+        if (!started) {
+            started = true;
+            fileMonitor.start();
+            logger.info("Aura file monitor started");
+        }
     }
 
     public FileSourceLoader(File base) {
