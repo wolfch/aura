@@ -36,7 +36,7 @@ public class PerfMetricsTestCase extends WebDriverTestCase {
     }
 
     protected void clearStats() {
-        auraUITestingUtil.getEval("Jiffy.removeStats()");
+        auraUITestingUtil.getEval("Perf.removeStats()");
     }
 
     protected Map<String, String> getJiffyStats(ArrayList<String> transactionsToGather) {
