@@ -359,7 +359,6 @@ var AuraDevToolService = function() {
         	getAllInnerText: function(anchor){
         		var childText = "";
         		var anchorChildren = anchor.children;
-        		console.log(anchorChildren);
         		if(anchorChildren.length === 0){
         			childText = $A.util.getText(anchor);
         		}
