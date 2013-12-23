@@ -16,12 +16,8 @@
 package org.auraframework.components.ui.inputRichText;
 
 import org.auraframework.test.WebDriverTestCase;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedCondition;
-
-import com.google.common.base.Function;
 
 public class InputRichTextUITest extends WebDriverTestCase {
 	private final String URL = "/uitest/inputRichText_Test.cmp";
@@ -40,11 +36,10 @@ public class InputRichTextUITest extends WebDriverTestCase {
 	 */
 	public void testRichTextTabing() throws Exception {
 		open(URL);
-		WebDriver driver = getDriver();
-		WebElement beforeLink =  driver.findElement(By.cssSelector(LINKBEFORE_LOCATOR));
-		WebElement ckEditor =  driver.findElement(By.cssSelector(CK_EDITOR_LOCATOR));
+		WebElement beforeLink =  auraUITestingUtil.findDomElement(By.cssSelector(LINKBEFORE_LOCATOR));
+		WebElement ckEditor =  auraUITestingUtil.findDomElement(By.cssSelector(CK_EDITOR_LOCATOR));
 		WebElement ckEditorInput =  ckEditor.findElement(By.tagName("iframe"));
-		WebElement submitBtn =  driver.findElement(By.cssSelector(SUBMIT_BUTTON_LOCATOR));
+		WebElement submitBtn =  auraUITestingUtil.findDomElement(By.cssSelector(SUBMIT_BUTTON_LOCATOR));
 
 		String inputText = "im here";
 		
@@ -60,7 +55,7 @@ public class InputRichTextUITest extends WebDriverTestCase {
         
         // click submit and see if text was entered into editor
         submitBtn.click();
-        assertOutputText(driver, inputText);
+        assertOutputText(inputText);
 	}
 	
 	/**
@@ -68,8 +63,7 @@ public class InputRichTextUITest extends WebDriverTestCase {
 	 */
 	public void testHtmlContentEscaped() throws Exception {
 		open(URL);
-		WebDriver driver = getDriver();
-		WebElement ckEditor =  driver.findElement(By.cssSelector(CK_EDITOR_LOCATOR));
+		WebElement ckEditor =  auraUITestingUtil.findDomElement(By.cssSelector(CK_EDITOR_LOCATOR));
 		WebElement ckEditorInput =  ckEditor.findElement(By.tagName("iframe"));
 		
 		String html = "</html>";
@@ -92,7 +86,7 @@ public class InputRichTextUITest extends WebDriverTestCase {
         });
 	}
 	
-	private void assertOutputText(WebDriver d, String expectedText) {
+	private void assertOutputText(String expectedText) {
 		auraUITestingUtil.waitForElementText(By.cssSelector(OUTPUT_LOCATOR), expectedText, true);
 	}
 }
