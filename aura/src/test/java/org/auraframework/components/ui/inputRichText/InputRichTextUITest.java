@@ -16,9 +16,14 @@
 package org.auraframework.components.ui.inputRichText;
 
 import org.auraframework.test.WebDriverTestCase;
+import org.auraframework.test.WebDriverTestCase.ExcludeBrowsers;
+import org.auraframework.test.WebDriverUtil.BrowserType;
+
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 
+/* Not running in Firefox because of W-1985839 */
+@ExcludeBrowsers({BrowserType.FIREFOX})
 public class InputRichTextUITest extends WebDriverTestCase {
 	private final String URL = "/uitest/inputRichText_Test.cmp";
 	private final String LINKBEFORE_LOCATOR = ".linkbefore";
