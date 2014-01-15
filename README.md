@@ -119,4 +119,3 @@ to access the documentation on your localhost.
 ### Explore the Aura Note Sample App
 
 Explore the capabilities of the Aura framework through the [Aura Note sample app](https://github.com/forcedotcom/aura-note). Aura Note is a note-taking app showcasing the simplicity of building apps on Aura.
-
