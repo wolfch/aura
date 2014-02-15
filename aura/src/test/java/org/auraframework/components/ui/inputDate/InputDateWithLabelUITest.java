@@ -22,6 +22,7 @@ import java.util.GregorianCalendar;
 
 import org.auraframework.test.WebDriverTestCase;
 import org.auraframework.test.WebDriverUtil.BrowserType;
+import org.auraframework.test.annotation.UnAdaptableTest;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
@@ -275,6 +276,7 @@ public class InputDateWithLabelUITest extends WebDriverTestCase {
     // Checking functionality of the shift tab button
     @ExcludeBrowsers({ BrowserType.IE9, BrowserType.IE10, BrowserType.SAFARI, BrowserType.ANDROID_PHONE,
             BrowserType.ANDROID_TABLET, BrowserType.IPAD, BrowserType.IPHONE })
+    @UnAdaptableTest
     public void testShiftTab() throws Exception {
         open(URL);
 
