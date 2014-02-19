@@ -24,14 +24,21 @@ var AuraHistoryService = function(){
 
     var historyService = {
 		/**
-	     * Sets the new location. For example, <code>$A.services.history.set("search")</code> sets the location to <code>#search</code>. 
+	     * Sets the new location. For example, <code>$A.services.history.set("search")</code> sets the location to <code>#search</code>.
 	     * Otherwise, use <code>$A.services.layout.changeLocation()</code> to override existing URL parameters.
 	     * @param {Object} token The provided token set to the current location hash
 	     * @memberOf AuraHistoryService
 	     * @public
 	     */
         set : function(token){
-            location.hash = '#' + token;
+        	// Check for HTML5 window.history.pushState support
+        	if ('pushState' in window.history) {
+            	history.pushState(null, null, '#' + token);
+        	} else {
+        		location.hash = '#' + token;
+        	}
+
+            priv.changeHandler();
         },
         
         /**
@@ -79,28 +86,37 @@ var AuraHistoryService = function(){
          * @private
          */
         init : function(){
-            //Checks for existence of event, and also ie8 in ie7 mode (misreports existence)
-            var docMode = document["documentMode"];
-            var hasEvent = 'onhashchange' in window && ( docMode === undefined || docMode > 7 );
-
-            if (hasEvent) {
-                window["onhashchange"] = function(){
+        	// Check for HTML5 window.history.pushState support
+        	if ('pushState' in window.history) {
+                window.addEventListener("popstate", function(e) {
                     priv.changeHandler();
-                };
-            }else{
-                var hash = location["hash"];
-                var watch = function(){
-                    setTimeout(function(){
-                        var newHash = location["hash"];
-                        if (newHash !== hash) {
-                            hash = newHash;
-                            priv.changeHandler(hash);
-                        }
-                        watch();
-                    }, 50);
-                };
-                watch();
-            }
+                });
+        	} else {
+	            //Checks for existence of event, and also ie8 in ie7 mode (misreports existence)
+	            var docMode = document["documentMode"];
+	            var hasOnHashChangeEvent = 'onhashchange' in window && (docMode === undefined || docMode > 7);
+
+	            if (hasOnHashChangeEvent) {
+	                window["onhashchange"] = function(){
+	                    priv.changeHandler();
+	                };
+	            }else{
+	                var hash = location["hash"];
+	                var watch = function(){
+	                    setTimeout(function(){
+	                        var newHash = location["hash"];
+	                        if (newHash !== hash) {
+	                            hash = newHash;
+	                            priv.changeHandler(hash);
+	                        }
+	                        watch();
+	                    }, 300);
+	                };
+
+	                watch();
+	            }
+        	}
+
             priv.changeHandler(location["hash"]);
             delete this.init;
         }
