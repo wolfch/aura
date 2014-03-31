@@ -818,7 +818,7 @@
                         <configuration>
                             <target>
                                 <propertyfile file="version.properties">
-                                    <entry key="aura.version" value="${project.version}${suffix}" />
+                                    <entry key="aura.version" value="${project.version}${suffix}"/>
                                 </propertyfile>
                             </target>
                         </configuration>
