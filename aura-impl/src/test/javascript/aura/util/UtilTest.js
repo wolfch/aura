@@ -355,6 +355,9 @@ Test.Aura.UtilTest=function(){
                                 return "NonBlacklistedMode";
                             }
                         }
+                    },
+                    get: function () {
+                        return false;
                     }
                 },
                 window: {
@@ -457,6 +460,9 @@ Test.Aura.UtilTest=function(){
                                 return "PTEST";
                             }
                         }
+                    },
+                    get: function () {
+                        return false;
                     }
                 },
                 window: {
