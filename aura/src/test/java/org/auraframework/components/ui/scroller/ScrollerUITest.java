@@ -113,7 +113,13 @@ public class ScrollerUITest extends WebDriverTestCase{
     }
     
     private void startFlick(int xOffset, int yOffset){
-		new TouchActions(driver).flick(xOffset, yOffset).build().perform();
+    	//for iPhone
+    	int yOffsetByDevice = yOffset;
+    	
+    	if(this.getBrowserType() == BrowserType.IPAD){
+    		yOffsetByDevice = yOffset * 2;
+    	}
+		new TouchActions(driver).flick(xOffset, yOffsetByDevice).build().perform();
 	}
     
     private void augmentDriver(){
@@ -132,10 +138,11 @@ public class ScrollerUITest extends WebDriverTestCase{
     
     private boolean verifyIfElementInViewport(String elementId){
     	String expressionFn = "window.isElementInViewport = function(el) {" +
-    	    "var rect = el.getBoundingClientRect();" +
-    	    "if(!rect) {" +
-    	    	"return false;" +
+    		"if(!el) {" +
+    	    	"return 'Element was not found in the DOM.';" +
     	    "}" +
+    		"var rect = el.getBoundingClientRect();" +
+    	    
     	    "return (" +
     	        "rect.top >= 0 &&" +
     	        "rect.left >= 0 &&"+
