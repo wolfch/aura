@@ -204,14 +204,18 @@
                   
                     //this rerender is necessary: we need dataPickerRenderer to updateGlobalEventListeners
                     $A.rerender(component);
+                    var isDocLevelHandlerEnabled = date_picker.getConcreteComponent()._clickStart.enabled;
+                    $A.test.assertTrue(isDocLevelHandlerEnabled, "Document level handler should be enabled");
                   
                     //date picker should disappear when click anywhere outside of it, like on the outputText
                     var output_text = document.getElementById("dlh_outputText");
-                  
+                    
                     //one event is enough to make date picker disappear, just to simulate mouse click, we have both here
                     $A.test.fireDomEvent(output_text, "mousedown");
                     $A.test.fireDomEvent(output_text, "mouseup");
                     $A.test.assertFalse(date_picker.get("v.visible"));
+                    isDocLevelHandlerEnabled = date_picker.getConcreteComponent()._clickStart.enabled;
+                    $A.test.assertFalse(isDocLevelHandlerEnabled, "Document level handler should be disabled");
         }
     },
     
