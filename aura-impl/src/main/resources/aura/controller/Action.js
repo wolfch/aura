@@ -1003,7 +1003,10 @@ Action.prototype.parseAndFireEvent = function(evtObj) {
 
     // If the current component has registered to fire the event,
     // then create the event object and associate it with this component(make it the source)
-    var evt = this.getComponent().getEventByDescriptor(descriptor);
+    var evt = null;
+    if (this.cmp) {
+        evt = this.cmp.getEventByDescriptor(descriptor);
+    }
     if (evt !== null) {
         if (evtObj["attributes"]) {
             evt.setParams(evtObj["attributes"]["values"]);
