@@ -1714,13 +1714,11 @@ Test.Aura.Controller.ActionTest = function() {
 				}
 			}
 			var target = new Action();
-			target.getComponent = function() {
-				return {
-					getEventByDescriptor : function() {
-						return evt;
-					}
-				}
-			}
+			target.cmp = {
+                            getEventByDescriptor : function() {
+                                    return evt;
+                            }
+			};
 			var actual = null;
 
 			// Act

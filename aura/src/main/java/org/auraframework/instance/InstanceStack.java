@@ -206,6 +206,11 @@ public class InstanceStack {
      *
      * This arguably does not belong here, but it does make some sense that it
      * is associated with the instance stack that has the paths for the components.
+     *
+     * WARNING: This function should not be directly called, it should only be used by
+     * the context, as critical accounting happens there.
+     *
+     * @param component the component to register
      */
     public void registerComponent(BaseComponent<?, ?> component) {
         if (componentRegistry == null) {
