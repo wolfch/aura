@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -45,9 +44,12 @@ import org.auraframework.instance.InstanceStack;
 import org.auraframework.instance.ValueProviderType;
 import org.auraframework.system.AuraContext;
 import org.auraframework.system.Client;
+
+import org.auraframework.system.LoggingContext.KeyValueLogger;
 import org.auraframework.system.MasterDefRegistry;
 import org.auraframework.test.TestContext;
 import org.auraframework.test.TestContextAdapter;
+import org.auraframework.throwable.AuraHandledException;
 import org.auraframework.throwable.quickfix.InvalidEventTypeException;
 import org.auraframework.util.json.BaseJsonSerializationContext;
 import org.auraframework.util.json.Json;
@@ -300,6 +302,9 @@ public class AuraContextImpl implements AuraContext {
     private InstanceStack fakeInstanceStack;
 
     private DefDescriptor<ThemeDef> overrideThemeDescriptor;
+
+    private static final int MAX_COMPONENT_COUNT        = 10000;
+    private int componentCount;
 
     public AuraContextImpl(Mode mode, MasterDefRegistry masterRegistry, Map<DefType, String> defaultPrefixes,
             Format format, Authentication access, JsonSerializationContext jsonContext,
@@ -650,8 +655,42 @@ public class AuraContextImpl implements AuraContext {
         }
     }
 
+    private static class SBKeyValueLogger implements KeyValueLogger {
+        private StringBuffer sb;
+        private String comma = "";
+
+        public SBKeyValueLogger(StringBuffer sb) {
+            this.sb = sb;
+        }
+
+        @Override
+        public void log(String key, String value) {
+            sb.append(comma);
+            sb.append(key);
+            sb.append("=");
+            sb.append(value);
+            comma = ",";
+        }
+    };
+
     @Override
     public void registerComponent(BaseComponent<?, ?> component) {
+        if (componentCount++ > MAX_COMPONENT_COUNT) {
+            //
+            // This is bad, try to give the poor user an idea of what happened.
+            //
+            Action tmp = getCurrentAction();
+            StringBuffer sb = new StringBuffer();
+            if (tmp != null) {
+                sb.append(tmp);
+                sb.append("(");
+                tmp.logParams(new SBKeyValueLogger(sb));
+                sb.append(")");
+            } else {
+                sb.append("request");
+            }
+            throw new AuraHandledException("Too many components for "+sb.toString());
+        }
         getInstanceStack().registerComponent(component);
     }
 
