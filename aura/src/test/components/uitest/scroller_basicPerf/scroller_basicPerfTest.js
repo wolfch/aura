@@ -15,7 +15,7 @@
  */
 ({
 	testScrollerPerf: {
-		attributes: {},
+		browsers: ["-IE7","-IE8"],
         test: function(component){
         	var destroyed,
         		totalScrollerComponentsInDOM,
