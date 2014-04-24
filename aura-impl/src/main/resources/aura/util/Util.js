@@ -1742,6 +1742,7 @@ $A.ns.Util.prototype.estimateSize = function(obj) {
 	    } else {
 	    	// chrome, safari, IE have this
 	        t = node.innerText;
+	        t = this.trim(t);
 
 			// FF & chrome with visibility set to false
 	        if (node.textContent !== undefined) {
