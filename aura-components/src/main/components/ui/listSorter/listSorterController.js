@@ -19,16 +19,26 @@
 	},
 	
 	handleDataChange : function(cmp, evt, helper) {
-		var value = evt.getParam('value');
-		if (value) {
-			var items = value.unwrap();
-			cmp.getValue('v.items').setValue(items);
-        	this.initSelectedItems(cmp, items);
+		cmp._dataProvided = true;
+		var data = evt.getParam('data');
+		if (data) {
+        	helper.initItems(cmp, data.columns, data.orderBy);
+        	if (cmp._openAfterDataProvided) {
+        		cmp._openAfterDataProvided = false;
+        		helper.handleOnOpen(cmp);
+        	}
 		}
 	},
 	
-	onOpen: function(cmp, evt, helper) {		
-		helper.handleOnOpen(cmp);
+	onOpen: function(cmp, evt, helper) {
+		var dataProvider = cmp.get('v.dataProvider');
+		if (dataProvider.length > 0 && (!cmp._dataProvided || cmp._needUpdate)) {
+			cmp._needUpdate = false;
+			cmp._openAfterDataProvided = true;
+			helper.triggerDataProvider(cmp);
+		} else {
+			helper.handleOnOpen(cmp);
+		}
 	},
 	
 	onCancel: function(cmp, evt, helper) {
@@ -66,5 +76,9 @@
 			helper.removeEventHandler(cmp);
 		}
 		helper.setVisible(cmp, visible);		
+	},
+	
+	refresh: function(cmp, evt, helper) {
+		cmp._needUpdate = true;
 	}
 })
