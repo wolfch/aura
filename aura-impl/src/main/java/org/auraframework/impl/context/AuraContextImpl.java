@@ -49,7 +49,7 @@ import org.auraframework.system.LoggingContext.KeyValueLogger;
 import org.auraframework.system.MasterDefRegistry;
 import org.auraframework.test.TestContext;
 import org.auraframework.test.TestContextAdapter;
-import org.auraframework.throwable.AuraHandledException;
+import org.auraframework.throwable.SystemErrorException;
 import org.auraframework.throwable.quickfix.InvalidEventTypeException;
 import org.auraframework.util.json.BaseJsonSerializationContext;
 import org.auraframework.util.json.Json;
@@ -390,11 +390,11 @@ public class AuraContextImpl implements AuraContext {
         return currentCaller;
     }
 
-	@Override
-	public String getCurrentNamespace() {
+    @Override
+    public String getCurrentNamespace() {
         DefDescriptor<?> caller = getCurrentCaller();
         return caller != null ? caller.getNamespace() : null;
-	}
+    }
 
     @Override
     public String getDefaultPrefix(DefType defType) {
@@ -675,23 +675,26 @@ public class AuraContextImpl implements AuraContext {
 
     @Override
     public void registerComponent(BaseComponent<?, ?> component) {
-        if (componentCount++ > MAX_COMPONENT_COUNT) {
-            //
-            // This is bad, try to give the poor user an idea of what happened.
-            //
-            Action tmp = getCurrentAction();
-            StringBuffer sb = new StringBuffer();
-            if (tmp != null) {
-                sb.append(tmp);
-                sb.append("(");
-                tmp.logParams(new SBKeyValueLogger(sb));
-                sb.append(")");
-            } else {
-                sb.append("request");
+        InstanceStack iStack = getInstanceStack();
+        if (iStack.isUnprivileged()) {
+            if (componentCount++ > MAX_COMPONENT_COUNT) {
+                //
+                // This is bad, try to give the poor user an idea of what happened.
+                //
+                Action tmp = getCurrentAction();
+                StringBuffer sb = new StringBuffer();
+                if (tmp != null) {
+                    sb.append(tmp);
+                    sb.append("(");
+                    tmp.logParams(new SBKeyValueLogger(sb));
+                    sb.append(")");
+                } else {
+                    sb.append("request");
+                }
+                throw new SystemErrorException("Too many components for "+sb.toString());
             }
-            throw new AuraHandledException("Too many components for "+sb.toString());
         }
-        getInstanceStack().registerComponent(component);
+        iStack.registerComponent(component);
     }
 
     @Override
@@ -711,8 +714,8 @@ public class AuraContextImpl implements AuraContext {
         this.overrideThemeDescriptor = themeDescriptor;
     }
 
-	@Override
-	public DefDescriptor<?> getCurrentDescriptor() {
+    @Override
+    public DefDescriptor<?> getCurrentDescriptor() {
         DefDescriptor<?> caller = getCurrentCaller();
         if (caller == null) {
             InstanceStack istack = getInstanceStack();
@@ -721,7 +724,7 @@ public class AuraContextImpl implements AuraContext {
                 caller = instance.getDescriptor();
             }
         }
-		
-		return caller;
-	}
+        
+        return caller;
+    }
 }

@@ -22,6 +22,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
+import org.auraframework.Aura;
+import org.auraframework.def.DefDescriptor;
 import org.auraframework.throwable.AuraRuntimeException;
 import org.auraframework.util.json.Json;
 
@@ -51,12 +53,18 @@ public class InstanceStack {
         setAttributeIndex(0);
         this.current.top = true;
         this.base = path.toString();
+        this.topUnprivileged = null;
     }
 
     /**
      * start processing a component.
      */
-    public void pushInstance(Instance<?> instance) {
+    public void pushInstance(Instance<?> instance, DefDescriptor<?> desc) {
+        if (topUnprivileged == null) {
+            if (!Aura.getConfigAdapter().isPrivilegedNamespace(desc.getNamespace())) {
+                topUnprivileged = instance;
+            }
+        }
         stack.add(current);
         current = new Entry(instance, path.length());
     }
@@ -67,6 +75,9 @@ public class InstanceStack {
     public void popInstance(Instance<?> instance) {
         if (current.instance != instance) {
             throw new AuraRuntimeException("mismatched instance pop");
+        }
+        if (topUnprivileged == instance) {
+            topUnprivileged = null;
         }
         current = stack.remove(stack.size() - 1);
         if (current.top) {
@@ -93,7 +104,7 @@ public class InstanceStack {
         } else {
             path.setLength(0);
             path.append(parent.getPath());
-            pushInstance(parent);
+            pushInstance(parent, parent.getDescriptor());
         }
     }
 
@@ -238,6 +249,15 @@ public class InstanceStack {
     }
 
     /**
+     * Is the stack currently in an unprivileged state?
+     *
+     * @return true if we have passed through an unprivileged namespace on the way here.
+     */
+    public boolean isUnprivileged() {
+        return topUnprivileged != null;
+    }
+
+    /**
      * A private class to sort by creation path.
      */
     private static class CreationPathSorter implements Comparator<BaseComponent<?, ?>> {
@@ -299,4 +319,5 @@ public class InstanceStack {
     private List<Entry> stack;
     private Entry current;
     private final String base;
+    private Instance<?> topUnprivileged;
 }
