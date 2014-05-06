@@ -15,35 +15,19 @@
  */
 package org.auraframework.impl.system;
 
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.locks.Lock;
 
 import org.apache.log4j.Logger;
 import org.auraframework.Aura;
 import org.auraframework.adapter.ConfigAdapter;
 import org.auraframework.cache.Cache;
-import org.auraframework.def.AttributeDef;
-import org.auraframework.def.BaseComponentDef;
-import org.auraframework.def.ClientLibraryDef;
-import org.auraframework.def.DefDescriptor;
+import org.auraframework.def.*;
 import org.auraframework.def.DefDescriptor.DefType;
-import org.auraframework.def.Definition;
-import org.auraframework.def.DefinitionAccess;
-import org.auraframework.def.DescriptorFilter;
-import org.auraframework.def.RootDefinition;
 import org.auraframework.impl.root.DependencyDefImpl;
 import org.auraframework.service.LoggingService;
-import org.auraframework.system.AuraContext;
+import org.auraframework.system.*;
 import org.auraframework.system.AuraContext.Mode;
-import org.auraframework.system.DefRegistry;
-import org.auraframework.system.DependencyEntry;
-import org.auraframework.system.Location;
-import org.auraframework.system.MasterDefRegistry;
-import org.auraframework.system.Source;
 import org.auraframework.throwable.AuraRuntimeException;
 import org.auraframework.throwable.NoAccessException;
 import org.auraframework.throwable.quickfix.DefinitionNotFoundException;
@@ -52,9 +36,7 @@ import org.auraframework.util.text.GlobMatcher;
 import org.auraframework.util.text.Hash;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
+import com.google.common.collect.*;
 
 /**
  * Overall Master definition registry implementation, there be dragons here.
@@ -75,6 +57,28 @@ public class MasterDefRegistryImpl implements MasterDefRegistry {
     private final Cache<String, DependencyEntry> depsCache= Aura.getCachingService().getDepsCache();
     private final Cache<String, String> stringsCache = Aura.getCachingService().getStringsCache();
     private final Cache<String, Set<DefDescriptor<?>>> descriptorFilterCache = Aura.getCachingService().getDescriptorFilterCache(); 
+    private static final ImmutableSortedSet<String> cacheDependencyExceptions = ImmutableSortedSet.of (
+            "apex://array",
+            "apex://aura.component",
+            "apex://blob",
+            "apex://boolean",
+            "apex://date",
+            "apex://datetime",
+            "apex://decimal",
+            "apex://double",
+            "apex://event",
+            "apex://id",
+            "apex://integer",
+            "apex://list",
+            "apex://long",
+            "apex://map",
+            "apex://object",
+            "apex://set",
+            "apex://string",
+            "apex://sobject",
+            "apex://time"
+            );
+
 
 
     private final static int ACCESS_CHECK_CACHE_SIZE = 4096;
@@ -144,7 +148,28 @@ public class MasterDefRegistryImpl implements MasterDefRegistry {
     private boolean isCacheable(DefRegistry<?> reg) {
         return useCache && reg.isCacheable();
     }
-
+    
+    private boolean isOkForDependencyCaching( DefDescriptor<?> descriptor) {
+        
+        //if compound, OK as these tests are also conducted on the compound's target
+        if (descriptor.getPrefix().equals("compound"))
+            return true;
+    
+        // test cacheDependencyExceptions (like static types in Apex)
+        String descriptorName = descriptor.getQualifiedName().toLowerCase();
+        
+        // truncate array markers
+        if (descriptorName.endsWith("[]")) {
+            descriptorName = descriptorName.substring(0,descriptorName.length() -2);
+        }
+        if (cacheDependencyExceptions.contains(descriptorName))
+            return true;
+    
+        return false;
+             
+    }
+        
+        
     @Override
     public Set<DefDescriptor<?>> find(DescriptorFilter matcher) {
         final String filterKey = matcher.toString();
@@ -299,7 +324,8 @@ public class MasterDefRegistryImpl implements MasterDefRegistry {
          * Is this def cacheable?
          */
         public boolean cacheable = false;
-
+        
+        
 
         /**
          * have we validated this def yet?
@@ -353,6 +379,9 @@ public class MasterDefRegistryImpl implements MasterDefRegistry {
         public final DefDescriptor<? extends Definition> topLevel;
         public int level;
 
+        /** Is this def's dependencies cacheable? */
+        public boolean shouldCacheDependencies;
+
         // TODO: remove preloads
         public boolean addedPreloads = false;
 
@@ -360,11 +389,13 @@ public class MasterDefRegistryImpl implements MasterDefRegistry {
             this.clientLibs = clientLibs;
             this.topLevel = topLevel;
             this.level = 0;
+            this.shouldCacheDependencies = true;
         }
 
         public CompileContext(DefDescriptor<? extends Definition> topLevel) {
             this.clientLibs = null;
             this.topLevel = topLevel;
+            this.shouldCacheDependencies = true;
         }
 
         public <D extends Definition> CompilingDef<D> getCompiling(DefDescriptor<D> descriptor) {
@@ -442,28 +473,41 @@ public class MasterDefRegistryImpl implements MasterDefRegistry {
         //
         // Now, check if we can cache the def later, as we won't have the registry to check at a later time.
         // If we can cache, look it up in the cache. If we find it, we have a built definition.
+        // isStatic will preclude attempting to cache the def, because static registries should act as their own cache
+        // Simultaneously, we invalidate caching of Dependencies 
+        // whenever a disqualifier is encountered within a nonStatic registry
         //
-        if (isCacheable(registry) && shouldCache(compiling.descriptor)) {
-            compiling.cacheable = true;
-
-            @SuppressWarnings("unchecked")
-            Optional<D> opt = (Optional<D>) defsCache.getIfPresent(compiling.descriptor);
-            if (opt != null) {
-                D cachedDef = opt.orNull();
-
-                if (cachedDef != null) {
+        if (!registry.isStatic()) {
+            if (isCacheable(registry) && shouldCache(compiling.descriptor)) {
+                    compiling.cacheable = true;
+        
                     @SuppressWarnings("unchecked")
-                    DefDescriptor<D> canonical = (DefDescriptor<D>) cachedDef.getDescriptor();
-
-                    compiling.def = cachedDef;
-                    compiling.descriptor = canonical;
-                    compiling.built = false;
-                    return true;
-                } else {
-                    return false;
+                    Optional<D> opt = (Optional<D>) defsCache.getIfPresent(compiling.descriptor);
+                    if (opt != null) {
+                        D cachedDef = opt.orNull();
+        
+                        if (cachedDef != null) {
+                            @SuppressWarnings("unchecked")
+                            DefDescriptor<D> canonical = (DefDescriptor<D>) cachedDef.getDescriptor();
+        
+                            compiling.def = cachedDef;
+                            compiling.descriptor = canonical;
+                            compiling.built = false;
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    }
+                }
+                // if not a cacheable registry or not shouldCache, test other exceptions that might still allow dependency caching
+                // (if it's from static registry, it can't affect our decision on depsCaching)
+                else {
+                    // test for special cases: compounds and static apex types 
+                    boolean qualified = isOkForDependencyCaching(compiling.descriptor); 
+        
+                    currentCC.shouldCacheDependencies = qualified;
                 }
             }
-        }
 
         //
         // The last case. This is our first compile or the def is uncacheable.
@@ -794,15 +838,15 @@ public class MasterDefRegistryImpl implements MasterDefRegistry {
 
                 // put unqualified descriptor key for dependency
 
-                // HACK - temporarily disable this new form of depsCache entry, 
-                // due to testDataBaseDefsProtectedByOrgPerm, testDeployAuraNote, testCreateAuraBundleWithoutNamespace
-                //depsCache.put(makeNonUidGlobalKey(descriptor), de);
+                if (cc.shouldCacheDependencies) {
+                    depsCache.put(makeNonUidGlobalKey(descriptor), de);
+                }
             }
 
             // See localDependencies comment
             localDependencies.put(de.uid, de);
             localDependencies.put(key, de);
-            // }
+
             return de;
         } catch (QuickFixException qfe) {
             // See localDependencies comment
