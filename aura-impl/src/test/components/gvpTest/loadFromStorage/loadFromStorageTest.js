@@ -1,12 +1,12 @@
 ({
     //
-    // see auratest:gvpLoadFromStorageTemplate for details of how the mock adapter works
+    // see gvptest:loadFromStorageTemplate for details of how the mock adapter works
     //
 
     testMockAdapterSelected : {
         test : function(cmp) {
             var storage = $A.storageService.getStorage("actions");
-            $A.test.assertEquals("mock", storage.getName(), "wrong storage adapter chosen. does aura now include with a persistent adapter?");
+            $A.test.assertEquals("mock", storage.getName(), "wrong storage adapter chosen. does aura now include a persistent adapter?");
         }
     },
 
