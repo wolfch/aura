@@ -45,7 +45,7 @@ public class JavaModel implements Model {
     public JavaModel(JavaModelDef modelDef) {
         this.modelDef = modelDef;
         InstanceStack iStack = Aura.getContextService().getCurrentContext().getInstanceStack();
-        iStack.pushInstance(this);
+        iStack.pushInstance(this, modelDef.getDescriptor());
         iStack.setAttributeName("m");
         this.path = iStack.getPath();
         Class<?> clazz = this.modelDef.getJavaType();
