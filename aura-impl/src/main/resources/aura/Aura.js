@@ -510,9 +510,8 @@ $A.ns.Aura.prototype.initAsync = function(config) {
             $A.initPriv(resp);
             $A.endMark("Component Load Complete");
         }, config["deftype"]);
+        $A.endMark("Component Load Initiated");
     });
-
-    $A.endMark("Component Load Initiated");
 };
 
 /**
