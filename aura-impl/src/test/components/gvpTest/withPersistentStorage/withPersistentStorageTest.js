@@ -3,7 +3,7 @@
     // TODO(W-1766465): Currently we hardcode the size of the websql database. This pops up a box in Safari(Desktop, Iphone & Ipad) that we
     //                  can't accept or override from the test. Once this bug is fixed, the below list of browsers can be enabled.
     // browsers:["GOOGLECHROME", "IPAD", "IPHONE", "ANDROID_PHONE", "ANDROID_TABLET"],
-	browsers:["GOOGLECHROME", "ANDROID_PHONE", "ANDROID_TABLET"],
+    browsers:["GOOGLECHROME", "ANDROID_PHONE", "ANDROID_TABLET"],
     setUp : function(cmp) {
         $A.test.overrideFunction($A.storageService, "selectAdapter", function() {
             return "websql";
@@ -29,7 +29,7 @@
                 $A.test.isActionPending,
                 function(){
                     //Verify that label is available
-                    $A.test.assertEquals("Today", gvp.get("$Label.Related_Lists.task_mode_today"), 
+                    $A.test.assertEquals("Today", gvp.get("$Label.Related_Lists.task_mode_today"),
                         "Failed to fetch label from server dynamically");
                     //Check for GVPs in Storage
                     var storage = $A.storageService.getStorage("actions");
@@ -43,7 +43,7 @@
                 }
             );
             $A.test.addWaitForWithFailureMessage(
-                true, 
+                true,
                 function(){return cmp._foundGvps},
                 "Failed to store global value providers in storage"
             );
@@ -51,9 +51,9 @@
         function(cmp){
             var gvp = $A.getGlobalValueProviders();
             //Force the loading of GVPs from storage service
-            gvp.loadFromStorage();
+            gvp.loadFromStorage(function() {});
             $A.test.addWaitForWithFailureMessage(
-                "Yesterday", 
+                "Yesterday",
                 function(){ return gvp.get("$Label.Related_Lists.task_mode_today")},
                 "Failed to load GVPs from storage"
             );
