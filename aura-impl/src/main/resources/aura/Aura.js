@@ -334,7 +334,7 @@ $A.ns.Aura = function() {
      * @param {Object} config
      * @param {Object} attributeValueProvider
      * @param {Boolean} localCreation
-     * @param {Boolean} doForce 
+     * @param {Boolean} doForce
      */
     this.newCmpDeprecated = function(config, attributeValueProvider, localCreation, doForce) {
         return this.componentService.newComponentDeprecated(config, attributeValueProvider, localCreation, doForce);
@@ -365,15 +365,15 @@ $A.ns.Aura = function() {
      * @public
      */
     this.pushCreationPath = function(creationPath) {
-    	var ctx = this.getContext();
-    	if (!ctx) {
+        var ctx = this.getContext();
+        if (!ctx) {
             return;
-    	}
-    	var act = ctx.getCurrentAction();
-    	if (!act) {
+        }
+        var act = ctx.getCurrentAction();
+        if (!act) {
             return;
-    	}
-    	act.pushCreationPath(creationPath);
+        }
+        act.pushCreationPath(creationPath);
     };
 
     /**
@@ -383,15 +383,15 @@ $A.ns.Aura = function() {
      * @public
      */
     this.popCreationPath = function(creationPath) {
-    	var ctx = this.getContext();
-    	if (!ctx) { 
+        var ctx = this.getContext();
+        if (!ctx) {
             return;
-    	}
-    	var act = ctx.getCurrentAction();
-    	if (!act) {
+        }
+        var act = ctx.getCurrentAction();
+        if (!act) {
             return;
-    	}
-    	act.popCreationPath(creationPath);
+        }
+        act.popCreationPath(creationPath);
     };
 
     /**
@@ -401,18 +401,18 @@ $A.ns.Aura = function() {
      * @public
      */
     this.setCreationPathIndex = function(idx) {
-    	var ctx = this.getContext();
-    	if (!ctx) {
+        var ctx = this.getContext();
+        if (!ctx) {
             return;
-    	}
-    	var act = ctx.getCurrentAction();
-    	if (!act) {
+        }
+        var act = ctx.getCurrentAction();
+        if (!act) {
             return;
-    	}
-    	act.setCreationPathIndex(idx);
+        }
+        act.setCreationPathIndex(idx);
     };
 
-    
+
     /**
      * Equivalent to <code>$A.eventService.newEvent()</code>.
      * <p>See Also: <a href="#reference?topic="AuraEventService">AuraEventService</a></p>
@@ -504,14 +504,14 @@ $A.ns.Aura.prototype.initAsync = function(config) {
     // we don't handle components that come back here. This is used in the case where there
     // are none.
     //
-    $A.context = new AuraContext(config["context"]);
-    clientService.initHost(config["host"]);
-    clientService.loadComponent(config["descriptor"], config["attributes"], function(resp) {
-        $A.initPriv(resp);
-        $A.endMark("Component Load Complete");
-    }, config["deftype"]);
-
-    $A.endMark("Component Load Initiated");
+    $A.context = new AuraContext(config["context"], function() {
+        clientService.initHost(config["host"]);
+        clientService.loadComponent(config["descriptor"], config["attributes"], function(resp) {
+            $A.initPriv(resp);
+            $A.endMark("Component Load Complete");
+        }, config["deftype"]);
+        $A.endMark("Component Load Initiated");
+    });
 };
 
 /**
@@ -530,6 +530,9 @@ $A.ns.Aura.prototype.initConfig = function(config, useExisting, doNotInitializeS
     if (!useExisting || $A.util.isUndefined($A.getContext())) {
         clientService.initHost(config["host"]);
 
+        // FIXME: AuraContext accepts a callback because its init is async (eg loading of the GVP
+        // from persistent storage). Only AIS uses this setup method and AIS doesn't use persistent
+        // storage with an async fetch (eg Smart Store Adapter).
         $A.context = new AuraContext(config["context"]);
         this.init(config["instance"], config["token"], config["context"],
             null, doNotInitializeServices, doNotCallUIPerfOnLoad);
@@ -640,7 +643,7 @@ $A.ns.Aura.prototype.finishInit = function(doNotCallUIPerfOnLoad) {
  * @description <p>Example:</p>
  * <pre>
  * testDuplicate : {
-   exceptionsAllowedDuringInit : ["Duplicate found!"], 
+   exceptionsAllowedDuringInit : ["Duplicate found!"],
      attributes : {
  *     dupCmp : true
  *   },
@@ -744,7 +747,7 @@ $A.ns.Aura.prototype.error = function(msg, e){
 $A.ns.Aura.prototype.warning = function(w, e) {
     $A.logInternal("Warning",w, e, this.getStackTrace(e));
     if ($A.test) {
-    	$A.test.auraWarning(w);
+        $A.test.auraWarning(w);
     }
 };
 
@@ -833,15 +836,15 @@ $A.ns.Aura.prototype.run = function(func, name) {
 
     $A.services.client.pushStack(name);
     try {
-    	//console.log("$A.run()", name);
-    	
+        //console.log("$A.run()", name);
+
         return func();
     } catch (e) {
         $A.error("Error while running "+name, e);
     } finally {
         $A.services.client.popStack(name);
     }
-    
+
     return undefined;
 };
 
@@ -966,7 +969,7 @@ $A.ns.Aura.prototype.logInternal = function(type, message, error, trace) {
             }
         }
     }
-    
+
     // sending logging info to debug tool if enabled
     if(!$A.util.isUndefinedOrNull($A.util.getDebugToolComponent())) {
         if ($A.util.isUndefinedOrNull(stringVersion)) {
@@ -975,9 +978,9 @@ $A.ns.Aura.prototype.logInternal = function(type, message, error, trace) {
             }
             stringVersion = this.stringVersion(logMsg, error, trace);
         }
-    	var debugLogEvent = $A.util.getDebugToolsAuraInstance().get("e.aura:debugLog");
-		debugLogEvent.setParams({"type" : type, "message" : stringVersion});
-    	debugLogEvent.fire();
+        var debugLogEvent = $A.util.getDebugToolsAuraInstance().get("e.aura:debugLog");
+        debugLogEvent.setParams({"type" : type, "message" : stringVersion});
+        debugLogEvent.fire();
     }
     //#end
 };
@@ -1121,7 +1124,7 @@ $A.ns.Aura.prototype.startTransaction = (function(name) {
     if (window["Perf"]) {
         return function(name) {
             window["Perf"]["startTransaction"](name);
-        	return window["Perf"]["mark"]("page-ready");
+            return window["Perf"]["mark"]("page-ready");
         };
     } else {
         return $A.ns.Aura.prototype.mark;
@@ -1153,7 +1156,7 @@ $A.ns.Aura.prototype.endTransaction = (function() {
 $A.ns.Aura.prototype.pageReady = (function() {
     if (window["Perf"]) {
         return function() {
-        	return window["Perf"]["endMark"]("page-ready");
+            return window["Perf"]["endMark"]("page-ready");
         };
     } else {
         return $A.ns.Aura.prototype.mark;
@@ -1267,7 +1270,7 @@ $A.ns.Aura.prototype.removeStats = (function() {
 
 /**
  * The levels for logging performance metrics
- * 
+ *
  * @enum {{name: !string, value: !number}}
  * @expose
  */
@@ -1316,13 +1319,13 @@ $A.ns.Aura.prototype.onLoadFired = (function() {
  * @type { !IPerf}
  */
 $A.ns.Aura.prototype.Perf = (function() {
-	if (window["Perf"]) {
-		//Planning to delete window.Perf, but can't until removing SFDC references to it
-		//var tmp = window["Perf"];
-		//delete window["Perf"];
-		return window["Perf"];
+    if (window["Perf"]) {
+        //Planning to delete window.Perf, but can't until removing SFDC references to it
+        //var tmp = window["Perf"];
+        //delete window["Perf"];
+        return window["Perf"];
     } else {
-        return ({          
+        return ({
              /**
               * @type {!window.typePerfLogLevel}
               * @expose
@@ -1421,7 +1424,7 @@ $A.ns.Aura.prototype.Perf = (function() {
              removeStats : function () {},
              /**
               * Add a performance measurement from the server.
-              * 
+              *
               * @param {!string} label
               * @param {!number} elapsedMillis
               * @return {!IPerf}
@@ -1469,7 +1472,7 @@ $A.ns.Aura.prototype.Perf = (function() {
               */
              updateTransaction : function (oldName, newName) { return Perf; },
              /**
-              * This method is used to figure if onLoad/page_ready has been fired or 
+              * This method is used to figure if onLoad/page_ready has been fired or
               * not
               *
               * @return {!boolean}
@@ -1496,7 +1499,7 @@ $A.ns.Aura.prototype.Perf = (function() {
                                                 }),
              /**
               * Whether the full Kylie framework is loaded, as opposed to just the stubs.
-              * 
+              *
               * @type {boolean}
               * @const
               */
