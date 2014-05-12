@@ -70,14 +70,14 @@ public class ScrollerUITest extends WebDriverTestCase{
         //if needed, you can assert if the items got correctly appended by 
         //querying div.items and looking for last four elements in it.
         this.startFlick(0, -50);
-        pause(900);
+        pause(2500);
         assertEquals("Seems like pull to show more did not work as expected", 
         		4, verifyPullToShowMoreData().size());
         //scroll down vertically to get to elements after pull to 
         //show more and ensure they are in viewport. we are
         //asserting for data item with id '4onPTL' to exist in viewport
         this.startFlick(0, -600);
-        pause(800);
+        pause(1000);
         assertTrue("Seems like vertical scrolling did not work", 
         		verifyIfElementInViewport("4onPTL"));
         
@@ -85,17 +85,17 @@ public class ScrollerUITest extends WebDriverTestCase{
         //test for scrollTo and scrollBy events
         //scrollTo top
         evaluateEventExpression("scrollTo","{destination:'top'}");
-        pause(800);
+        pause(1000);
         assertTrue("Seems like vertical scrolling did not work on firing scrollTo", 
         		verifyIfElementInViewport("1onPTR"));
         //scrollTo bottom
         evaluateEventExpression("scrollTo","{destination:'bottom'}");
-        pause(800);
+        pause(1000);
         assertTrue("Seems like vertical scrolling did not work", 
         verifyIfElementInViewport("4onPTL"));
         //scrollBy 
         evaluateEventExpression("scrollBy","{deltaX: 0, deltaY: 600, time: 0}");
-        pause(600);
+        pause(1000);
         assertTrue("Seems like vertical scrolling did not work", 
         verifyIfElementInViewport("r97"));
         
@@ -110,7 +110,6 @@ public class ScrollerUITest extends WebDriverTestCase{
         assertEquals("Seems like onScrollMove did not get fired", "1", getEventHandlerExecutionStatus("scrollMoveHandlerCalled"));
         //assert event onScrollEndStart fired
         assertEquals("Seems like onScrollEndStart did not get fired", "1", getEventHandlerExecutionStatus("scrollEndHandlerCalled"));
-
     }
     
     private void startFlick(int xOffset, int yOffset){
@@ -152,7 +151,6 @@ public class ScrollerUITest extends WebDriverTestCase{
     	    ");" +
     	"}";
     	String expression = "return window.isElementInViewport(document.getElementById('"+elementId+"'));";
-    	
     	auraUITestingUtil.getEval(expressionFn);
     	return (Boolean) auraUITestingUtil.getEval(expression);
     }
