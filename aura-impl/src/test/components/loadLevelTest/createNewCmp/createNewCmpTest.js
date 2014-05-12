@@ -219,8 +219,11 @@
     /**
      * Verify creation of an array of components returns components in the same order. The framework should be able to
      * handle a mixture of components available on the client and server-dependent component defs.
+     *
+     * TODO: this test only works with ComponentCreationContext. Otherwise, newCmpSync creates them synchronously.
+     * Re-enable if CCC is reused.
      */
-    testCreateArrayOfComponents:{
+    _testCreateArrayOfComponents:{
         test: function(cmp){
             $A.run(function(){
                 $A.newCmpAsync(
