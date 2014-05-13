@@ -2289,7 +2289,11 @@ Test.Aura.Iteration.HelperTest = function(){
     			},
     			getValue:function(att){
     				actual = true;
-    			}
+
+    			},
+                "get" : function(attr) {
+                    if(attr == 'v.forceClient') return false;
+                }
         	};   
         	
         	var mockMethod = Mocks.GetMock(targetHelper, "createRealBody", function(cmp, doForce, callback){       
@@ -2341,7 +2345,10 @@ Test.Aura.Iteration.HelperTest = function(){
     			},
     			getEvent:function(ev){
     				if(ev == 'rerenderComplete') return targetEvent;
-    			}
+    			},
+                "get" : function(attr) {
+                    if(attr == 'v.forceClient') return false;
+                }
         	};   
         	
         	var mockMethod = Mocks.GetMock(targetHelper, "createRealBody", function(cmp, doForce, callback){       
@@ -2393,7 +2400,7 @@ Test.Aura.Iteration.HelperTest = function(){
         		getValue:function(att){
         			if(att=="items") return targetItems;
         			if(att=="realbody") return targetRealBody; 
-        			if(att=="body") return targetBody;        			
+        			if(att=="body") return targetBody;
         		}
         	};        	        	        	        	
         	
