@@ -262,14 +262,27 @@
     },
     
     rerenderEverything: function(cmp) {
-        this.createRealBody(cmp, false, function(newBody) {
-            if (cmp.isValid()) {
-                var realbody = cmp.getValue("v.realbody");
-                realbody.destroy();
-                realbody.setValue(newBody);
-                cmp.getEvent("rerenderComplete").fire();
-            }
-        });
+        var forceClient = cmp.get("v.forceClient");
+
+        if (forceClient) {
+
+            var realbody = cmp.getValue("v.realbody");
+            var newbody = this.createRealBodyServer(cmp, false);
+            realbody.destroy();
+            realbody.setValue(newbody);
+            cmp.getEvent("rerenderComplete").fire();
+
+        } else {
+
+            this.createRealBody(cmp, false, function (newBody) {
+                if (cmp.isValid()) {
+                    var realbody = cmp.getValue("v.realbody");
+                    realbody.destroy();
+                    realbody.setValue(newBody);
+                    cmp.getEvent("rerenderComplete").fire();
+                }
+            });
+        }
     },
     
     rerenderSelective: function(cmp) {
