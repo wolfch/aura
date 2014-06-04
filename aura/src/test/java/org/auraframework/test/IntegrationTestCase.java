@@ -18,6 +18,7 @@ package org.auraframework.test;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -28,11 +29,11 @@ import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.auraframework.Aura;
-import org.auraframework.def.BaseComponentDef;
-import org.auraframework.def.DefDescriptor;
+import org.auraframework.def.*;
 import org.auraframework.def.DefDescriptor.DefType;
+import org.auraframework.http.CSP;
 import org.auraframework.service.ContextService;
-import org.auraframework.system.AuraContext;
+import org.auraframework.system.*;
 import org.auraframework.system.AuraContext.Authentication;
 import org.auraframework.system.AuraContext.Format;
 import org.auraframework.system.AuraContext.Mode;
@@ -113,7 +114,20 @@ public abstract class IntegrationTestCase extends AuraTestCase {
      * @throws Exception
      */
     protected HttpResponse perform(HttpRequestBase method, HttpContext context) throws Exception {
-        return getHttpClient().execute(method, context);
+        HttpResponse response = getHttpClient().execute(method, context);
+        Header cspHeaders[] = response.getHeaders(CSP.Header.REPORT_ONLY);
+        if (response.getStatusLine().getStatusCode() == 200) {
+            // TODO(fabbott): Although a request for e.g. moment.js from testSetRunner.app
+            // does have a header, the same request from AuraFrameworkServletHttpTest does
+            // not.  I suspect this is because the test has no UID, but the "real life" one
+            // does... but for now, let's validate the CSP header only if it's actually there.
+            if (cspHeaders.length != 0) {
+                assertEquals(1, cspHeaders.length);
+                assertTrue("No connect-src in default CSP",
+                        cspHeaders[0].getValue().contains("; connect-src 'self';"));
+            }
+        }
+        return response;
     }
 
     /**
