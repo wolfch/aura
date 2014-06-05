@@ -26,7 +26,17 @@
     box-sizing: border-box;
 }
 
-.uiScroller.scrollWrapper {}
+/* CSS Native scrolling Classes */
+.uiScroller.native {
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.uiScroller.native > .scroller > .pullToRefresh,
+.uiScroller.native > .scroller > .pullToLoadMore {
+    position: relative;
+    top: 0;
+}
 
 .uiScroller > .scroller {
     position: absolute;
@@ -48,6 +58,14 @@
     -ms-text-size-adjust: none;
     -o-text-size-adjust: none;
     text-size-adjust: none;
+}
+
+.uiScroller.native > .scroller {
+    -webkit-touch-callout: default;
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
 }
 
 .uiScroller > .scroll-vertical, .uiScroller > .scroll-vertical .surface {

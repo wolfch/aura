@@ -16,18 +16,17 @@
 ({
     afterRender : function(component, helper) {
         this.superAfterRender();
-        helper.init(component);
+        helper.initAfterRender(component);
     },
 
     rerender : function(component, helper) {
-        var attributes = component.getAttributes(),
-            enabled    = attributes.getValue("enabled").getBooleanValue();
+        var enabled = component.get("v.enabled");
 
         this.superRerender();
 
         if (enabled) {
             if (!component._scroller) {
-                helper.init(component);
+                helper.initAfterRender(component);
             }
         } else {
             helper.deactivate(component);
