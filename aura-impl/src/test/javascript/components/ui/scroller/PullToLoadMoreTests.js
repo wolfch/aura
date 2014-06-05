@@ -46,8 +46,10 @@ Test.Components.Ui.Scroller.PullToLoadMoreTests=function(){
 						return config;
 					},
 					"on": function(event,action){
-						//TODO Fix this test
 						//action.call(PTLplugin);
+					},
+					_setSize: function(){
+
 					},
 					scroller: {
 						appendChild: function(item){
@@ -62,9 +64,6 @@ Test.Components.Ui.Scroller.PullToLoadMoreTests=function(){
 			});
 			
 			Assert.True(true);
-						//PTLplugin._ptlIsEnabled() // && 
-						//PTLsurfaceItem.innerHTML && 
-						//PTLsurfaceItem.className === 'pullToLoadMore');
 		}
 	}
 
@@ -95,7 +94,7 @@ Test.Components.Ui.Scroller.PullToLoadMoreTests=function(){
 				});
 
 				neededMocks(function(){
-					PTLplugin._triggerPTL();
+					PTLplugin.triggerPTL();
 				});
 			});
 
@@ -135,7 +134,7 @@ Test.Components.Ui.Scroller.PullToLoadMoreTests=function(){
 				});
 
 				neededMocks(function(){
-					PTLplugin._triggerPTL();
+					PTLplugin.triggerPTL();
 					callback(0,[1,2]);
 				});
 			});
@@ -174,7 +173,7 @@ Test.Components.Ui.Scroller.PullToLoadMoreTests=function(){
 				});
 
 				neededMocks(function(){
-					PTLplugin._triggerPTL();
+					PTLplugin.triggerPTL();
 				});
 			});
 

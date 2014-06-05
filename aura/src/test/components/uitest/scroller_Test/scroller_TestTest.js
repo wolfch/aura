@@ -28,28 +28,6 @@
                 // Toggle canShowMore dynamiclly
                 scrollerCmp.getValue("v.canShowMore").setValue(false);
 
-            },
-            function(component) {
-                // Now the "pull to show more" div should not exists
-                var scrollerCmp = component.find("scrollToYTest"),
-                    scroller    = scrollerCmp.getElement(),
-                    pullUpDiv   = scroller.getElementsByClassName('pullToLoadMore')[0],
-                    displayNone = pullUpDiv.style.display === 'none';
-
-                $A.test.assertTrue(displayNone, "There should NOT be a 'pullUp' div");
-            
-                // Toggle canShowMore again
-                scrollerCmp.getValue("v.canShowMore").setValue(true);
-
-            },
-            function(component) {
-                // "pull to show more" div should be present again
-                var scrollerCmp = component.find("scrollToYTest"),
-                    scroller    = component.find("scrollToYTest").getElement(),
-                    pullUpDiv   = scroller.getElementsByClassName('pullToLoadMore')[0],
-                    displayNone = pullUpDiv.style.display === 'none';
-
-                $A.test.assertFalse(displayNone, "There should be a 'pullUp' div");
             }
         ]
     }
