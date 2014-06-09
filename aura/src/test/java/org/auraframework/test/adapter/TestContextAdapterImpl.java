@@ -17,6 +17,10 @@ package org.auraframework.test.adapter;
 
 import java.util.concurrent.TimeUnit;
 
+import org.auraframework.Aura;
+import org.auraframework.system.AuraContext;
+import org.auraframework.system.Client;
+import org.auraframework.system.Client.Type;
 import org.auraframework.test.TestContext;
 import org.auraframework.test.TestContextAdapter;
 import org.auraframework.test.TestContextImpl;
@@ -38,17 +42,18 @@ public class TestContextAdapterImpl implements TestContextAdapter {
     public TestContext getTestContext() {
         return testContext.get();
     }
-
+    
+    
     @Override
-    public TestContext getTestContext(String name) {
-    	TestContext context = allContexts.getIfPresent(name);
+	public TestContext getTestContext(String name) {
+		TestContext context = allContexts.getIfPresent(name);
         if (context == null){
             context = new TestContextImpl(name);
             allContexts.put(name, context);
         } 
         testContext.set(context);
         return context;
-    }
+	}
 
     @Override
     public void clear() {
@@ -64,5 +69,7 @@ public class TestContextAdapterImpl implements TestContextAdapter {
         }
     	clear();
     }
+
+	
     
 }
