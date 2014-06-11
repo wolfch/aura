@@ -29,7 +29,7 @@
 &lt;ui:inputNumber label="Number" value="{!v.number}"/></pre>
 		</p>
 		<p>
-			To provide a field label for accessibility, use the <code>label</code> attribute. You can hide the label from view by setting <code>labelPosition="hidden"</code> and still maintain accessibility.
+			To provide a field label for accessibility, use the <code>label</code> attribute.
 			
     	</p>
 		
