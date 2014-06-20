@@ -118,7 +118,7 @@
         <connection>scm:git:git@github.com:forcedotcom/lumen-beta.git</connection>
         <url>scm:git:git@github.com:forcedotcom/lumen-beta.git</url>
         <developerConnection>scm:git:git@github.com:forcedotcom/lumen-beta.git</developerConnection>
-        <tag>aura-framework-0.209.61-51-P1</tag>
+        <tag>aura-framework-0.209.61-51-P2</tag>
     </scm>
     <dependencies>
         <dependency>
