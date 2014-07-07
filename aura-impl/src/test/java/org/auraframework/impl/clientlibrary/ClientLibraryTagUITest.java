@@ -17,6 +17,7 @@ package org.auraframework.impl.clientlibrary;
 
 import org.auraframework.system.AuraContext.Mode;
 import org.auraframework.test.WebDriverTestCase;
+import org.auraframework.test.annotation.UnAdaptableTest;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
@@ -67,7 +68,9 @@ public class ClientLibraryTagUITest extends WebDriverTestCase {
 
     /**
      * Verify that resource change depending on Mode. Mixture of combinable and uncombinable resources
+     * mark it unadaptable for W-2309099
      */
+    @UnAdaptableTest
     public void testModeDependentResources() throws Exception {
         open("/clientLibraryTest/clientLibraryTest.app", Mode.PTEST);
 
