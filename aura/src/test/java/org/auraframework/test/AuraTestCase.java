@@ -75,7 +75,7 @@ public abstract class AuraTestCase extends UnitTestCase {
         }
         TestContextAdapter testContextAdapter = Aura.get(TestContextAdapter.class);
         if (testContextAdapter != null) {
-            testContextAdapter.clear(true);
+            testContextAdapter.release();
         }
         if (auraTestingUtil != null) {
             auraTestingUtil.tearDown();
@@ -95,7 +95,9 @@ public abstract class AuraTestCase extends UnitTestCase {
         getMockConfigAdapter().reset();
     }
 
+    //this is not being called
     public String getQualifiedName() {
+    	System.out.println("AuraTestCase.getQualifiedName");
         return getClass().getCanonicalName() + "." + getName();
     }
 

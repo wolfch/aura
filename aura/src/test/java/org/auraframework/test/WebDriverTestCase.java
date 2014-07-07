@@ -32,7 +32,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -41,10 +43,12 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
+import org.auraframework.Aura;
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.BaseComponentDef;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
+import org.auraframework.def.Definition;
 import org.auraframework.system.AuraContext.Mode;
 import org.auraframework.test.WebDriverUtil.BrowserType;
 import org.auraframework.test.annotation.FreshBrowserInstance;
@@ -108,6 +112,30 @@ public abstract class WebDriverTestCase extends IntegrationTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
+    }
+    
+    public String getBrowserTypeString() {
+    	String browserType = "";
+    	if(this.currentBrowserType!=null) {
+    		browserType = ":BROWSER"+this.currentBrowserType.name();
+    	} 
+    	return browserType;
+    }
+    
+    public void addMocksToTestContextLocalDef(Set<Definition> mocks) throws Throwable {
+    	if (mocks != null && !mocks.isEmpty()) { 
+	    	TestContextAdapter testContextAdapter = Aura.get(TestContextAdapter.class);
+	        if (testContextAdapter != null) {
+	        	if(this.currentBrowserType!=null) 
+	        	{
+	        		System.out.println("WebDriverTestCase.addMocksToTestContextLocalDef,currentBrowserType:"+currentBrowserType.name());
+	                String testName = getQualifiedName();
+	        		testContextAdapter.getTestContext(testName);
+	                Aura.get(TestContextAdapter.class).getTestContext().getLocalDefs().addAll(mocks);
+	        	}
+	        }
+	        AuraTestingUtil.clearCachedDefs(mocks);
+    	}
     }
 
     /**
@@ -510,6 +538,29 @@ public abstract class WebDriverTestCase extends IntegrationTestCase {
     }
 
     protected void open(String url, Mode mode, boolean waitForInit) throws MalformedURLException, URISyntaxException {
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("aura.mode", mode.name());
+        params.put("aura.test", getQualifiedName());
+        url = addUrlParams(url, params);
+        auraUITestingUtil.getRawEval("document._waitingForReload = true;");
+        try {
+            openAndWait(url, waitForInit);
+        } catch (TimeoutException e) {
+            // Hack to avoid timeout issue for IE7 and IE8. Appears that tests fail for the first time when we run the
+            // test in new vm session on Sauce.
+            if (currentBrowserType == BrowserType.IE7 || currentBrowserType == BrowserType.IE8) {
+                openAndWait(url, waitForInit);
+            } else {
+                throw e;
+            }
+        }
+    }
+
+    /**
+     * Add additional parameters to the URL. These paremeters will be added after the query string, and before a hash
+     * (if present).
+     */
+    protected String addUrlParams(String url, Map<String, String> params) {
         // save any fragment
         int hashLoc = url.indexOf('#');
         String hash = "";
@@ -528,24 +579,12 @@ public abstract class WebDriverTestCase extends IntegrationTestCase {
 
         List<NameValuePair> newParams = Lists.newArrayList();
         URLEncodedUtils.parse(newParams, new Scanner(qs), "UTF-8");
-
-        // update query with a nonce
-        newParams.add(new BasicNameValuePair("aura.mode", mode.name()));
-        newParams.add(new BasicNameValuePair("aura.test", getQualifiedName()));
-        url = url + "?" + URLEncodedUtils.format(newParams, "UTF-8") + hash;
-
-        auraUITestingUtil.getRawEval("document._waitingForReload = true;");
-        try {
-            openAndWait(url, waitForInit);
-        } catch (TimeoutException e) {
-            // Hack to avoid timeout issue for IE7 and IE8. Appears that tests fail for the first time when we run the
-            // test in new vm session on Sauce.
-            if (currentBrowserType == BrowserType.IE7 || currentBrowserType == BrowserType.IE8) {
-                openAndWait(url, waitForInit);
-            } else {
-                throw e;
-            }
+        
+        for (String key : params.keySet()) {
+            newParams.add(new BasicNameValuePair(key, params.get(key)));
         }
+
+        return url + "?" + URLEncodedUtils.format(newParams, "UTF-8") + hash;
     }
 
     private void openAndWait(String url, boolean waitForInit) throws MalformedURLException, URISyntaxException {

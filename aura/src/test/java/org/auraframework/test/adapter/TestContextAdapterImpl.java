@@ -15,53 +15,61 @@
  */
 package org.auraframework.test.adapter;
 
-import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
+import org.auraframework.Aura;
+import org.auraframework.system.AuraContext;
+import org.auraframework.system.Client;
+import org.auraframework.system.Client.Type;
 import org.auraframework.test.TestContext;
 import org.auraframework.test.TestContextAdapter;
 import org.auraframework.test.TestContextImpl;
 
-import com.google.common.collect.Maps;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 /**
  * Keep track of the current test.
  */
 public class TestContextAdapterImpl implements TestContextAdapter {
-	private final static Map<String, TestContext> allContexts = Maps
-			.newConcurrentMap();
+	
+	Cache<String, TestContext> allContexts = 
+			CacheBuilder.newBuilder().concurrencyLevel(8).expireAfterAccess(30, TimeUnit.MINUTES).maximumSize(100).build();
+			
 	private final ThreadLocal<TestContext> testContext = new ThreadLocal<TestContext>();
 
     @Override
     public TestContext getTestContext() {
         return testContext.get();
     }
-
+    
+    
     @Override
-    public TestContext getTestContext(String name) {
-        TestContext context = allContexts.get(name);
+	public TestContext getTestContext(String name) {
+		TestContext context = allContexts.getIfPresent(name);
         if (context == null){
             context = new TestContextImpl(name);
             allContexts.put(name, context);
         } 
         testContext.set(context);
         return context;
-    }
+	}
 
     @Override
-    public void clear(boolean discardContext) {
-        TestContext context = testContext.get();
-        if (context != null) {
-            if(discardContext) {
-            	allContexts.remove(context.getName());
-            	context.getLocalDefs().clear();
-            }
-            testContext.set(null);
-        }
+    public void clear() {
+        testContext.set(null);
     }
     
     @Override
     public void release() {
-    	clear(true);
+    	TestContext context = testContext.get();
+        if (context != null) {
+            allContexts.invalidate(context.getName());
+            context.getLocalDefs().clear();
+        }
+    	clear();
     }
+
+	
     
 }
