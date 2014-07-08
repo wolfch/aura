@@ -46,10 +46,8 @@ public class TestContextAdapterImpl implements TestContextAdapter {
     
     @Override
 	public TestContext getTestContext(String name) {
-    	System.out.println("getTestContext(testname:"+name+")");
 		TestContext context = allContexts.getIfPresent(name);
         if (context == null){
-        	System.out.println("create a new one with name:"+name);
             context = new TestContextImpl(name);
             allContexts.put(name, context);
         } 
@@ -66,7 +64,6 @@ public class TestContextAdapterImpl implements TestContextAdapter {
     public void release() {
     	TestContext context = testContext.get();
         if (context != null) {
-        	System.out.println("invalidate from allContexts:"+context.getName());
             allContexts.invalidate(context.getName());
             context.getLocalDefs().clear();
         }
