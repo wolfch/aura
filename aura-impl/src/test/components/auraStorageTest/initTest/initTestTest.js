@@ -905,7 +905,6 @@
      * If this doesn't work, will disable all three(iphone,ipad,safari)
      */
     testRefreshErrorResponseNotStored : {
-    	browsers: ["-IPAD"],
         mocks : [{
             type : "ACTION",
                 stubs : [{
