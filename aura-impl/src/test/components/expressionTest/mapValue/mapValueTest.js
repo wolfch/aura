@@ -285,6 +285,7 @@
         }
     },
 
+
     //
     // Check the map from the model, being absolutely sure to use Object.hasOwnProperty so that
     // we duplicate the JSON serializer behaviour.
@@ -299,7 +300,8 @@
                 count += 1;
             }
         }
-        $A.test.assertEquals(rawCount, count, "must have exactly four properties");
+
+        $A.test.assertEquals(rawCount, count, "must have exactly " + rawCount + " properties");
         $A.test.assertEquals('{"fruit":"apple","animal":"bear"}', $A.util.json.encode(map));
     },
 
@@ -317,6 +319,31 @@
             });
             $A.run(function() { $A.enqueueAction(a); });
             $A.test.addWaitFor(true, function() { return done; });
+        }
+    },
+
+    testSetNewSubmap: {
+        test: function(component) {
+           var leaf = component.get("m.map.was.missing.foo");
+           $A.test.assertUndefined(leaf);
+           var map = component.get("m.map");
+           this.checkMap(map, 3);
+           $A.test.assertUndefined(map.was);
+
+           component.set("m.map.was.missing.foo", 17);
+           leaf = component.get("m.map.was.missing.foo");
+           $A.test.assertEquals(17, leaf);
+           var submap = component.get("m.map.was");
+           for (var key in submap) {
+               if (!(submap[key] instanceof Function)) {
+                   $A.test.assertEquals("missing", key);
+               }
+           }
+           for (var key in submap.was) {
+               if (!(submap[key] instanceof Function)) {
+                   $A.test.assertEquals("foo", key);
+               }
+           }
         }
     },
     
