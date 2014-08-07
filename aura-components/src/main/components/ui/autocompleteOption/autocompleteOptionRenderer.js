@@ -20,6 +20,12 @@
         var concreteCmp = component.getConcreteComponent();
         var _helper = concreteCmp.getDef().getHelper();
         _helper.displayText(component);
+        
+        component.find("option").getElement().id = concreteCmp.getGlobalId();
+        
+        helper.updateVisibility(component);
+        helper.updateHighlight(component);
+        
         return ret;
     },
 
@@ -29,5 +35,10 @@
         var concreteCmp = component.getConcreteComponent();
         var _helper = concreteCmp.getDef().getHelper();
         _helper.displayText(component);
+        
+        component.find("option").getElement().id = concreteCmp.getGlobalId();
+        
+        helper.updateVisibility(component);
+        helper.updateHighlight(component);
     }
 })
