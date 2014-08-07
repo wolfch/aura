@@ -23,6 +23,36 @@
         }
     },
     
+    /**
+	 * Updates the visibility class on the wrapper element based on the concrete
+	 * component's "v.visible" attribute
+	 * 
+	 * @param {Component} component
+	 */ 
+    updateVisibility : function(component) {
+    	var concrete = component.getConcreteComponent(),
+    		elem = component.find("listItemWrapper").getElement(),
+	    	classChangeFunc = $A.util.getBooleanValue(concrete.get("v.visible")) ?
+	    		$A.util.removeClass : $A.util.addClass;
+    	
+    	classChangeFunc.apply($A.util, [elem, "invisible"]);
+    },
+    
+    /**
+	 * Updates the highlighted class on the wrapper element based on the concrete
+	 * component's "v.highlighted" attribute
+	 * 
+	 * @param {Component} component
+	 */ 
+    updateHighlight : function(component) {
+    	var concrete = component.getConcreteComponent(),
+    		elem = component.find("listItemWrapper").getElement(),
+    		classChangeFunc = $A.util.getBooleanValue(concrete.get("v.highlighted")) ?
+    			$A.util.addClass : $A.util.removeClass;
+    	
+    	classChangeFunc.apply($A.util, [elem, "highlighted"]);
+    },
+    
     displayText: function(component, keyword) {
         var concreteCmp = component.getConcreteComponent();
         var keyword = concreteCmp.get("v.keyword");

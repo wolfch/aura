@@ -40,12 +40,12 @@
     handleMouseover: function(component, event, helper) {
         var concreteCmp = component.getConcreteComponent();
         var _helper = concreteCmp.getDef().getHelper();
-        _helper.handleMouseover(concreteCmp);
+        _helper.handleMouseover(component);
     },
     
     handleMouseout: function(component, event, helper) {
         var concreteCmp = component.getConcreteComponent();
         var _helper = concreteCmp.getDef().getHelper();
-        _helper.handleMouseout(concreteCmp);
+        _helper.handleMouseout(component);
     }   
 })

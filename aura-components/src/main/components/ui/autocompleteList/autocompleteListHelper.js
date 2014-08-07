@@ -333,12 +333,10 @@
     },
 
     updateAriaAttributes: function(component, highlightedCmp) {
-        var optionCmp = highlightedCmp.find("option");
-        var elem = optionCmp ? optionCmp.getElement() : null;
         var updateAriaEvt = component.get("e.updateAriaAttributes");
-        if (elem && updateAriaEvt) {
+        if (updateAriaEvt) {
             var obj = {
-                "aria-activedescendant": elem.id
+                "aria-activedescendant": highlightedCmp.getConcreteComponent().getGlobalId()
             };
             updateAriaEvt.setParams({
                 attrs: obj
