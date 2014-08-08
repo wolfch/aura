@@ -195,6 +195,8 @@ ArrayValue.prototype._setValue = function(newArray, skipChange, doNotAutoDestroy
         this.doNotAutoDestroy = true;
     }
     
+    var currentArray = this.newArray;
+
     this.fireEvents = false;
     this.hasRealValue = (newArray !== null && newArray !== undefined);
     this.newArray = [];
@@ -208,34 +210,29 @@ ArrayValue.prototype._setValue = function(newArray, skipChange, doNotAutoDestroy
             try {
                 this["ignoreCommit"] = true; // NOTE: Using this ridiculous workaround for obfuscation collisions from Google Closure (using DOT notation results in $A.util.on() being undefined!
                 
-                var candiates = this.array ? this.array.slice() : [];
+                var candidates = this.array ? this.array.slice() : [];
+                if (currentArray) {
+                    this.array.push.apply(this.array, currentArray);
+                    candidates = currentArray.slice();
+                }
+                
                 for (var i = 0; i < newArray.length; i++) {
                     var value = newArray[i];
                     var found = false;
         
-                    if (value && candiates && candiates.length > 0) {
+                    if (value && candidates && candidates.length > 0) {
                         // See if we can find an existing object to use
-                        for (var j = 0; j < candiates.length; j++) {
-                            var current = candiates[j];
+                        for (var j = 0; j < candidates.length; j++) {
+                            var current = candidates[j];
                             if (current && $A.util.equalBySource(current, value)) {
                                 if (current && current.auraType === "Value" && current._hasChanged(value)) {
                                     current._setValue(value);
-                                    
-                                    // Preserve prior semantics that if something in the array is dirty then the entire array gets marked dirty
-                                    if (current.isDirty()) {
-                                        this.makeDirty();
-                                    }
                                 }
                                 
                                 this.newArray.push(current);
                                 
-                                // Mark dirty if the positions are not equal
-                                if (i !== j && !this.isDirty()) {
-                                    this.makeDirty();
-                                }
-                                
                                 // Consume the candidate
-                                candiates[j] = undefined;
+                                candidates[j] = undefined;
                                 found = true;
                                 break;
                             }
@@ -247,20 +244,15 @@ ArrayValue.prototype._setValue = function(newArray, skipChange, doNotAutoDestroy
                         this.push(value);
                     }
                 } 
-
-                // Catch the case where we have a subset of the original values
-                if (!this.isDirty() && (this.newArray.length !== candiates.length)) {
-                    this.makeDirty();
-                }
             } finally {
                 delete this["ignoreCommit"];
             }
         } else {
             this.push(newArray);
         }
-    } else {
-        this.makeDirty();
     }
+
+    this.makeDirty();
 
     // We always fire the change event even if nothing has changed because a number of places expect this 
     // to trigger initialization of downstream behavior
@@ -304,7 +296,9 @@ ArrayValue.prototype.commit = function(clean) {
                 
                 for (var n = 0; n < orphans.length; n++) {
                     var orphan = orphans[n];
-                    orphan.getConcreteComponent().destroy();
+                    if (orphan.isValid()) {
+                        orphan.getConcreteComponent().destroy();
+                    }
                 }
             } else {
                 // Reset for the next time around since this is the result of _setValue() with doNotAutoDestroy === true
