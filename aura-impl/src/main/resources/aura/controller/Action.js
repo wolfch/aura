@@ -383,9 +383,6 @@ Action.prototype.getComponent = function() {
 /**
  * Sets the callback function that is executed after the server-side Action returns. Call a server-side Action from a
  * client-side controller using <code>callback</code>.
- * <p>
- * See Also: <a href="#help?topic=serverSideControllers">Server-Side Controllers</a>
- * </p>
  *
  * @public
  * @param {Object}
@@ -828,10 +825,6 @@ Action.prototype.isExclusive = function() {
 
 /**
  * Marks the Action as storable and abortable. For server-side Actions only.
- * <p>
- * See Also: <a href="#help?topic=auraStorageService">Aura Storage Service</a>
- * </p>
- *
  * @public
  * @param {Object}
  *            config Optional. A set of key/value pairs that specify the storage options to set. You can set the
