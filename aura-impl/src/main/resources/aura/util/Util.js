@@ -1711,7 +1711,7 @@ $A.ns.Util.prototype.isComponent = function(obj) {
 $A.ns.Util.prototype.getNormalizedValueType = function(value) {
     var valueType;
 
-    if (value === null) {
+    if (this.isUndefinedOrNull(value)) {
         return 'SimpleValue';
     }
 
