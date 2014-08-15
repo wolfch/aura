@@ -35,10 +35,14 @@
     		this.assertRichTextInitalized(component.find("Text"));
     	}, function(component) {
     		component.find("base").find("submitBtn").get("e.press").fire();
-    		$A.test.addWaitFor(false, function(){
-    			var content = component.find("base").find("outputValue").get("v.value");
-    			return content === "<b>some content</b></html>";
-			});
+    		var content;
+    		$A.test.addWaitForWithFailureMessage(true, 
+    				function(){
+		    			content = component.find("base").find("outputValue").get("v.value");
+		    			return content === "<b>some content</b></html>";
+					}, 
+					"base.outputValue.v.value is not correct :"+content
+			);
     	}, function(component) {
     		var rtValue = component.find("Text").get("v.value");
     		$A.test.assertEquals("<b>some content</b></html>", rtValue, 
