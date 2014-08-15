@@ -490,30 +490,23 @@ var AuraDevToolService = function() {
              * @param   decoMsg                    - Error message for Decorative tag
              * @returns String                   - String concatenation of all error messages
              */
-            findAllImgTags:function (allImgTags, imgErrorMsg, infoMsg, decoMsg, altError){
+            findAllImgTags:function (allImgTags, imgErrorMsg){
         	 var accessAideFuncs = aura.devToolService.accessbilityAide;
                	
         	 var data_aura_rendered_by = "";
-        	 var informationErrorArray = [];
-        	 var decorationalErrorArray  = [];
-        	 var wrongAltErrorArray  = [];
-        	 var htmlAlt = "";
-        	 var errorMsg = "";
-        	 
+        	 var errorArray = [];	 
         	 var imgType = "";
         	 var alt = "";
         	
         	 for(var index = 0; index < allImgTags.length; index++){
         	     data_aura_rendered_by = $A.util.getElementAttributeValue(allImgTags[index], "data-aura-rendered-by");
-        	     htmlAlt = $A.util.getElementAttributeValue(allImgTags[index], "alt");
         	     imgType = null;
         	     alt = null;
         	     
-
         	    // Checking for the data_aura_rendered_by attribute 
          	    if(!$A.util.isEmpty(data_aura_rendered_by)){
-         		imgType = $A.getCmp(data_aura_rendered_by).getAttributes().getValueProvider().get('v.imageType');	
-         		alt     = $A.getCmp(data_aura_rendered_by).getAttributes().getValueProvider().get('v.alt');		 
+         		  imgType = $A.getCmp(data_aura_rendered_by).getAttributes().getValueProvider().get('v.imageType');	
+         		  alt     = $A.getCmp(data_aura_rendered_by).getAttributes().getValueProvider().get('v.alt');		 
          	    }
          	    
      		    /**
@@ -531,38 +524,36 @@ var AuraDevToolService = function() {
      		     * 
      		     */
      		     if($A.util.isUndefinedOrNull(imgType)){
-     		    
-     		        imgType = "informational";
-     		        if($A.util.isUndefinedOrNull(htmlAlt)){
-     			   alt="";
-     		        }
-     		        else{
-     			   alt = htmlAlt;
-     		        }         		    
-     		      }
-     		
-     		      if($A.util.isUndefinedOrNull(alt)){
-     		          alt="";
-     		      }
-     		
-     		      alt = alt.toLowerCase().replace(/[\s\t\r\n]/g,'');
-     		
-     		      if(alt==="undefined" || alt==="null" || alt ==="empty"){
-     		          wrongAltErrorArray.push(allImgTags[index]);
-     		      }
-     		      else if(imgType === "informational" &&  ($A.util.isUndefinedOrNull(alt) || alt === "")){
-     			  informationErrorArray.push(allImgTags[index]);
-     		      }
-     		      else if(imgType === "decorative" && (!$A.util.isUndefinedOrNull(alt) && alt !== "")){
-     			  decorationalErrorArray.push(allImgTags[index]);
-     		      }
+     		    	  //Need to use the dom version so that it will return null if element is not prese
+     		    	  var htmlAlt = allImgTags[index].getAttribute("alt");
+     		          if(!$A.util.isUndefinedOrNull(htmlAlt)){
+     		        	  htmlAlt = htmlAlt.toLowerCase().replace(/[\s\t\r\n]/g,'');
+     		        	  if(htmlAlt !=="undefined" && htmlAlt !=="null" && htmlAlt !=="empty"){
+     		        	     continue;
+     		        	  }
+     		          }
+     		          
+     		          errorArray.push(allImgTags[index]);    		                   		    
+     		      }else {
+     		    	 if($A.util.isUndefinedOrNull(alt)){
+        		          alt="";
+        		      }
+        		
+        		      alt = alt.toLowerCase().replace(/[\s\t\r\n]/g,'');
+        		
+        		      if(alt==="undefined" || alt==="null" || alt ==="empty"){
+        		    	  errorArray.push(allImgTags[index]);
+        		      }
+        		      else if(imgType === "informational" &&  alt === ""){
+        		    	  errorArray.push(allImgTags[index]);
+        		      }
+        		      else if(imgType === "decorative" && alt !== ""){
+        		    	  errorArray.push(allImgTags[index]);
+        		      }
+     		     }  
         	 }
         	 
-        	 errorMsg = accessAideFuncs.formatOutput(imgErrorMsg+altError, wrongAltErrorArray);
-        	 errorMsg = errorMsg + accessAideFuncs.formatOutput(imgErrorMsg+infoMsg, informationErrorArray);
-        	 errorMsg = errorMsg + accessAideFuncs.formatOutput(imgErrorMsg+decoMsg, decorationalErrorArray);
-        	 
-        	 return errorMsg;       	
+        	 return accessAideFuncs.formatOutput(imgErrorMsg, errorArray);       	
             },
             /**
              * Function that goes through all labels and check for either the for attribute and the label id, or if a parent tag is a label
@@ -1126,13 +1117,13 @@ var AuraDevToolService = function() {
                      * @returns String - Returns a string representation of the errors
                      */
         	    checkImageTagForAlt : function(domElem){
-        		var imgError = "IMG tag must have alt attribute. Refer to http://www.w3.org/TR/UNDERSTANDING-WCAG20/text-equiv.html.";
-        		var infoMsg = "\nNote: If the image type is informational, then the alt must be set";
-                	var decoMsg = "\nNote: If the image type is decorative,  then the alt must be the empty string";
-                	var altError = "\nNote: Alt attribute cannot not be equal to \"undefined\", \"empty\", \"null\"";
-        		var accessAideFuncs = aura.devToolService.accessbilityAide;
+        		var imgError = "All image tags require the presence of the alt attribute. If the image is decorative, set alt=\"\". " +
+        				"If the image is informational, set alt to equal a descriptive alternative for the image. Stings such as null, " +
+        				"empty, and undefined are not appropriate alt attribute values. Speak to your doc writer for assistance.";
+ 
+        		  
         		var allImgTags = domElem.getElementsByTagName("img");
-       		        return accessAideFuncs.findAllImgTags(allImgTags, imgError, infoMsg, decoMsg, altError);
+       		    return aura.devToolService.accessbilityAide.findAllImgTags(allImgTags, imgError);
         	    },
         	    /**
                      * Goes through all of the fieldsets tags that do not have the display:none field set and makes sure that each one has a legend
