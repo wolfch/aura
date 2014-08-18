@@ -135,7 +135,7 @@
                 caseToRender: 'buttonLabelValid'
             },
             test: function (cmp) {
-                this.runTest("Total Number of Errors found: 3", "Unexpected return from CheckAccessibility, should return 3 error. output: \n");
+                this.runTest("Total Number of Errors found: 2", "Unexpected return from CheckAccessibility, should return 2 errors. output: \n");
             }
         },
         testImageTagTest: {
@@ -143,7 +143,7 @@
                 caseToRender: 'imageTagTest'
             },
             test: function (cmp) {
-                this.runTest("Total Number of Errors found: 9", "Unexpected return from CheckAccessibility, should not return errornous string. output: \n");
+                this.runTest("Total Number of Errors found: 8", "Unexpected return from CheckAccessibility, should not return errornous string. output: \n");
             }
         },
         testHeadersCorrectOrder: {
