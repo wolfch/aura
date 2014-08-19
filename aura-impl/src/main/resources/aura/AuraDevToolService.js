@@ -486,9 +486,6 @@ var AuraDevToolService = function() {
             /**
              * Function that goes through all Image tags, makes sure it is set, then checks the alt tag
              * @param   imgErrorMsg                - Default error message telling user why they should set alt tag
-             * @param   infoMsg                    - Error message for Informational tag
-             * @param   decoMsg                    - Error message for Decorative tag
-             * @returns String                   - String concatenation of all error messages
              */
             findAllImgTags:function (allImgTags, imgErrorMsg){
         	 var accessAideFuncs = aura.devToolService.accessbilityAide;
