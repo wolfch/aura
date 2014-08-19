@@ -78,6 +78,7 @@ public class AuraResourceServletTest extends AuraTestCase {
         };
         AuraResourceServlet servlet = new AuraResourceServlet();
         servlet.doGet(request, response);
+        Aura.getContextService().endContext();
         assertEquals(HttpServletResponse.SC_NOT_FOUND, response.getStatus());
     }
 
@@ -114,6 +115,7 @@ public class AuraResourceServletTest extends AuraTestCase {
         assertTrue("Cookie should contain : but was:" + cookie.getValue(), cookie.getValue().contains(":"));
         String countStr = cookie.getValue().substring(0, cookie.getValue().indexOf(':'));
         String startTimeStr = cookie.getValue().substring(countStr.length() + 1);
+        Aura.getContextService().endContext();
         try {
             int count = Integer.parseInt(countStr);
             assertTrue("count should be between 1 & 8 was " + count, (count >= 0 && count < 9));
@@ -165,6 +167,7 @@ public class AuraResourceServletTest extends AuraTestCase {
         Aura.getDefinitionService().onSourceChanged(null, SourceListener.SourceMonitorEvent.changed, null);
 
         cssCache = context.getDefRegistry().getCachedString(uid, appDesc, key);
+        Aura.getContextService().endContext();
         assertNull("CSS cache not cleared after source change event", cssCache);
     }
 
@@ -205,6 +208,7 @@ public class AuraResourceServletTest extends AuraTestCase {
         Aura.getDefinitionService().onSourceChanged(null, SourceListener.SourceMonitorEvent.changed, null);
 
         jsCache = context.getDefRegistry().getCachedString(uid, appDesc, key);
+        Aura.getContextService().endContext();
         assertNull("JS cache not cleared after source change event", jsCache);
     }
 
