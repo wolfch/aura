@@ -22,6 +22,16 @@
             var actual = output.split("\n")[0];
             $A.test.assertEquals(expected, actual, errorMessage + output);
         },
+        
+        testMultiInputDefaultULToSingleInput :  {
+        	attributes: {
+                caseToRender: 'testMultiULToOne'
+            },
+            test: function (cmp) {
+                this.runTest("", "Unexpected return from CheckAccessibility, should not return errornous string. output: \n");
+            }
+        },
+        
         testInputDefaultError : {
         	attributes: {
                 caseToRender: 'testInputDefaultError'
