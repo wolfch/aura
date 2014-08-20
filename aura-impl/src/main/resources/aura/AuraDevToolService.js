@@ -411,18 +411,24 @@ var AuraDevToolService = function() {
                  * @param   attribute2find - attribute that we want to extract from the ID
                  * @returns boolean    - true signifies that it was found
                  */   
-         	findMatchingId : function (id, tags, attribute2find){
-         		var tagId = null;
-         		for(var i = 0; i<tags.length; i++){
-         			tagId = $A.util.getElementAttributeValue(tags[i], attribute2find);
-         			
-         			if(tagId === id){
-         				return true;
-         			}
-         		}
-         		
-         		return false;
-         	},
+             findMatchingId : function (id, tags, attribute2find){
+                 var tagIds = null;
+                 for(var i = 0; i<tags.length; i++){
+                     tagIds = $A.util.getElementAttributeValue(tags[i], attribute2find);
+                     
+                     if(!$A.util.isUndefinedOrNull(tagIds)){
+                    	 tagIds = tagIds.trim().split(/\s+/);
+                    	 for(var j = 0; j < tagIds.length; j++){                   	
+	                    	 if(tagIds[j].indexOf(id) == 0){
+	                             return true;
+	                         } 
+                    	 }
+                     }
+                     
+                 }
+                 
+                 return false;
+             },
             /**
              * Helper function that will return true if the two values equal each other
              * @param   attribute  - Contents of the attribute that we want to look at
