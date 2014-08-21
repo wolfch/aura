@@ -123,13 +123,16 @@
 	 */
 	testSettingBodyOfComponent_ReuseExistingComponent: {
 		test:[function(cmp){
+			var idsToDestroy = ["clearRootBody", "setRootBody", "rootDiv", 
+	                            "rootDivsBody", "rootButton", "facetButton", "clearFacetButtonBody", 
+	                            "facetCmp", "clearFacetCmpBody"];
 			var finder = cmp.getDef().getHelper();
-			cmp._toDestroy = finder.findCmpsById(cmp, ["rootDiv", "rootDivsBody", "rootButton"]);
+			cmp._toDestroy = finder.findCmpsById(cmp, idsToDestroy);
 			$A.test.clickOrTouch(cmp.find("setRootBody_ReUse").getElement());
 			$A.test.addWaitForWithFailureMessage(
 					true, 
 					function(){
-						return $A.util.isEmpty(finder.findCmpsById(cmp, ["rootDiv", "rootDivsBody", "rootButton"]));
+						return $A.util.isEmpty(finder.findCmpsById(cmp, idsToDestroy));
 					},
 					"Failed to auto destroy components in body of root component, still able to access body cmps by aura:id");
 		},function(cmp){
