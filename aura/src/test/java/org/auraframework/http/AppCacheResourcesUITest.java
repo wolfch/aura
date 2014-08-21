@@ -243,7 +243,7 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
     @ThreadHostileTest("NamespaceDef modification affects namespace")
     @TargetBrowsers({ BrowserType.GOOGLECHROME, BrowserType.SAFARI5, BrowserType.SAFARI, BrowserType.IPAD,
             BrowserType.IPHONE, BrowserType.IPAD_IOS_DRIVER, BrowserType.IPHONE_IOS_DRIVER })
-    public void testComponentCssChange() throws Exception {
+    public void _testComponentCssChange() throws Exception {
         createDef(NamespaceDef.class, String.format("%s://%s", DefDescriptor.MARKUP_PREFIX, namespace),
                 "<aura:namespace></aura:namespace>");
 
@@ -274,7 +274,7 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
      */
     @TargetBrowsers({ BrowserType.GOOGLECHROME, BrowserType.SAFARI5, BrowserType.SAFARI, BrowserType.IPAD,
             BrowserType.IPHONE, BrowserType.IPAD_IOS_DRIVER, BrowserType.IPHONE_IOS_DRIVER })
-    public void testComponentJsChange() throws Exception {
+    public void _testComponentJsChange() throws Exception {
         List<Request> logs = loadMonitorAndValidateApp(TOKEN, TOKEN, "", TOKEN);
         assertRequests(getExpectedInitialRequests(), logs);
         assertAppCacheStatus(Status.IDLE);
@@ -302,7 +302,7 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
      */
     @TargetBrowsers({ BrowserType.GOOGLECHROME, BrowserType.SAFARI5, BrowserType.SAFARI, BrowserType.IPAD,
             BrowserType.IPHONE, BrowserType.IPAD_IOS_DRIVER, BrowserType.IPHONE_IOS_DRIVER })
-    public void testComponentMarkupChange() throws Exception {
+    public void _testComponentMarkupChange() throws Exception {
         List<Request> logs = loadMonitorAndValidateApp(TOKEN, TOKEN, "", TOKEN);
         assertRequests(getExpectedInitialRequests(), logs);
         assertAppCacheStatus(Status.IDLE);
