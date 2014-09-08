@@ -30,7 +30,7 @@
 				);
 	},
 	verifyCmpsAreInvalid:function(cmps){
-		for(var i in cmps){
+		for (var i=0; i<cmps.length; i++) {
 			$A.test.assertFalse(cmps[i].isValid());
 		}
 	},
