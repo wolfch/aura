@@ -60,8 +60,7 @@
             $A.test.fail("ERROR: Expecting exception when provider return non-loaded componentDef");
         }
         catch (e){
-                $A.test.assertEquals("Assertion Failed!: Unknown component markup://attributesTest:parent : false",
-                    e.message);
+                $A.test.assertEquals("Unknown component: markup://attributesTest:parent", e.message);
             }
         }
     },
@@ -138,8 +137,7 @@
                 $A.componentService.newComponentAsync(this, function(){}, config, null, true, false);
                 $A.test.fail("Expected error to be thrown during new component creation");
             } catch (e){
-                $A.test.assertEquals("Assertion Failed!: Unknown component markup://arrested:development : false",
-                    e.message);
+                $A.test.assertEquals("Unknown component: markup://arrested:development", e.message);
             }
         }
     },
