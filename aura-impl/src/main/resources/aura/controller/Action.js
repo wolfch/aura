@@ -831,6 +831,14 @@ Action.prototype.setStorable = function(config) {
 };
 
 /**
+ * Get the storable config of this action
+ */
+Action.prototype.getStorable = function() {
+    return this.storableConfig;
+};
+
+
+/**
  * Returns true if the function is storable, or false otherwise. For server-side Actions only.
  *
  * @public

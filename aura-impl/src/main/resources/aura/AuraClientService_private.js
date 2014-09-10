@@ -254,7 +254,7 @@ var priv = {
 
             if (noAbort || !action.isAbortable()) {
                 if (needUpdate) {
-                	action.finishAction($A.getContext());
+                    action.finishAction($A.getContext());
                 }
                 if (action.isRefreshAction()) {
                     action.fireRefreshEvent("refreshEnd");
@@ -310,13 +310,13 @@ var priv = {
         var stackName = "actionCallback["; 
         var actions = collector.getActionsToSend(); 
         for (var n = 0; n < actions.length; n++) { 
-        	var action = actions[n]; 
-        	if (n > 0) { 
-        		stackName += ", "; 
-    		}
+            var action = actions[n]; 
+            if (n > 0) { 
+                stackName += ", "; 
+            }
 
-        	stackName += action.getStorageKey(); 
-    	}
+            stackName += action.getStorageKey(); 
+        }
         stackName += "]";
 
         $A.run(function() {
@@ -325,7 +325,6 @@ var priv = {
             //
             // pre-decrement so that we correctly send the next response right after this.
             //
-            flightCounter.finish();
             if (responseMessage) {
                 var token = responseMessage["token"];
                 if (token) {
@@ -427,15 +426,38 @@ var priv = {
         $A.mark("AuraClientService.request");
         $A.mark("Action Request Prepared");
         var that = this;
+        var flightHandled = { value: false };
         //
         // NOTE: this is done here, before the callback to avoid a race condition of someone else queueing up
         // an abortable action while we are off waiting for storage.
         //
-        var abortableId = this.actionQueue.getLastAbortableTransactionId();
-        var collector = new $A.ns.ActionCollector(actions, function() {
-            that.finishRequest(collector, flightCounter, abortableId);
-        });
-        collector.process();
+        this.flightCounterTimeoutId = window.setTimeout(function() {
+           if(!flightHandled.value) {
+               $A.warning("Timed out waiting for ActionController to reset flight counter! Resetting the flight counter and clearing component configs of processed actions");
+               flightCounter.cancel();
+           }
+        }, 30000);
+        try {
+            var abortableId = this.actionQueue.getLastAbortableTransactionId();
+            var collector = new $A.ns.ActionCollector(actions, function() {
+                try {
+                    that.finishRequest(collector, flightCounter, abortableId, flightHandled);
+                } catch (e) {
+                    if (!flightHandled.value) {
+                        flightCounter.cancel();
+                        flightHandled.value = true;
+                    }
+                    throw e;
+                }
+            });
+            collector.process();
+        } catch (e) {
+            if (!flightHandled.value) {
+                flightCounter.cancel();
+                flightHandled.value = true;
+            }
+            throw e;
+        }
         $A.mark("Action Group " + collector.getCollectorId() + " enqueued");
     },
 
@@ -447,7 +469,7 @@ var priv = {
      * 
      * @private
      */
-    finishRequest : function(collector, flightCounter, abortableId) {
+    finishRequest : function(collector, flightCounter, abortableId, flightHandled) {
         var actionsToSend = collector.getActionsToSend();
         var actionsToComplete = collector.getActionsToComplete();
 
@@ -455,7 +477,26 @@ var priv = {
             for ( var n = 0; n < actionsToComplete.length; n++) {
                 var info = actionsToComplete[n];
                 info.action.updateFromResponse(info.response);
-                info.action.finishAction($A.getContext());
+                try {
+                    info.action.finishAction($A.getContext());
+                } catch(e) {
+                    if (info.action.isFromStorage()) {
+                        $A.log("Finishing cached action failed. Trying to refetch from server.");
+                        
+                        // Clear potential leftover configs
+                        $A.getContext().clearComponentConfigs(info.action.getId());
+                        
+                        // If the action was from storage try to hit the server
+                        newConfig = this.shallowClone(info.action.getStorable());
+                        newConfig["ignoreExisting"] = true;
+
+                        info.action.setStorable(newConfig);
+                        $A.enqueueAction(info.action);
+                    } else {
+                        // If it was not in storage, just rethrow the error and carry on as normal.
+                        throw e;
+                    }
+                }
             }
             this.fireDoneWaiting();
         }
@@ -485,12 +526,13 @@ var priv = {
             // #end
 
             // clientService.requestQueue reference is mutable
-            flightCounter.send();
             var requestConfig = {
                 "url" : priv.host + "/aura",
                 "method" : "POST",
                 "scope" : this,
                 "callback" : function(response) {
+                    // always finish our in-flight counter here.
+                    flightCounter.finish();
                     this.actionCallback(response, collector, flightCounter, abortableId);
                 },
                 "params" : {
@@ -516,6 +558,8 @@ var priv = {
 
             $A.endMark("Action Request Prepared");
             $A.util.transport.request(requestConfig);
+            flightCounter.send();
+            flightHandled.value = true;
 
             setTimeout(function() {
                 $A.get("e.aura:waiting").fire();
@@ -523,7 +567,23 @@ var priv = {
         } else {
             // We didn't send a request, so clean up the in-flight counter.
             flightCounter.cancel();
+            flightHandled.value = true;
         }
+    },
+
+    shallowClone : function(original) {
+        if (!$A.util.isObject(original)) {
+            return original;
+        }
+
+        var clone = {};
+        for (var prop in original) {
+            if (original.hasOwnProperty(prop)) {
+                clone[prop] = original[prop];
+            }
+        }
+
+        return clone;
     },
 
     isBB10 : function() {
@@ -572,12 +632,12 @@ var priv = {
         //title is null: don't want to set the page title.
         history.pushState(null,null,newUrl);
         
-    	//fallback to old way : set location.href will trigger the reload right away
-    	//we need this because when AuraResourceServlet's GET request with a 'error' cookie, 
-    	//AuraServlet doesn't get to do the GET reqeust
-    	if( (location.href).indexOf("?nocache=") > -1 ) {
-    		location.href = (url + params);
-    	}
+        //fallback to old way : set location.href will trigger the reload right away
+        //we need this because when AuraResourceServlet's GET request with a 'error' cookie, 
+        //AuraServlet doesn't get to do the GET reqeust
+        if( (location.href).indexOf("?nocache=") > -1 ) {
+            location.href = (url + params);
+        }
     },
 
     flushLoadEventQueue : function() {
@@ -614,7 +674,7 @@ var priv = {
     },
 
     handleAppcacheChecking : function(e) {
-    	document._appcacheChecking = true;
+        document._appcacheChecking = true;
         if (priv.isDevMode()) {
             // TODO IBOGDANOV Why are you checking in commented out code like
             // this???
@@ -626,7 +686,7 @@ var priv = {
     },
 
     handleAppcacheUpdateReady : function(event) {
-    	if (window.applicationCache.swapCache) {
+        if (window.applicationCache.swapCache) {
             window.applicationCache.swapCache();
         }
 
@@ -645,12 +705,12 @@ var priv = {
     },
 
     handleAppcacheError : function(e) {
-    	if (e.stopImmediatePropagation) {
+        if (e.stopImmediatePropagation) {
             e.stopImmediatePropagation();
         }
         if (window.applicationCache
                 && (window.applicationCache.status === window.applicationCache.UNCACHED || window.applicationCache.status === window.applicationCache.OBSOLETE)) {
-        	return;
+            return;
         }
 
         /**
@@ -713,11 +773,11 @@ var priv = {
     },
 
     handleAppcacheCached : function(e) {
-    	priv.showProgress(100);
+        priv.showProgress(100);
     },
 
     handleAppcacheObsolete : function(e) {
-    	priv.hardRefresh();
+        priv.hardRefresh();
     },
 
     showProgress : function(progress) {
@@ -762,12 +822,12 @@ var priv = {
     },
     
     setConnected : function(isConnected) {
-    	var isDisconnected = !isConnected;
-    	if (isDisconnected === priv.isDisconnected) {
-    		// Already in desired state so no work to be done:
-    		return;
-    	}
-    	
+        var isDisconnected = !isConnected;
+        if (isDisconnected === priv.isDisconnected) {
+            // Already in desired state so no work to be done:
+            return;
+        }
+        
         e = $A.get(isDisconnected ? "e.aura:connectionLost" : "e.aura:connectionResumed");
         if (e) {
             priv.isDisconnected = isDisconnected;
