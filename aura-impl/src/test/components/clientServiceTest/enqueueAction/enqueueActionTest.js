@@ -302,6 +302,7 @@
      *  - Use a foreground process to kick off one of the backgrounds, causing the last one to fire as well.
      */
     testMaxNumBackgroundServerAction : {
+        labels : ["UnAdaptableTest"], // W-2331530: Fails on slower autobuilds in older IE
         test : [
             function(cmp) {
                 var that = this;
@@ -416,7 +417,7 @@
                     var that = this;
                     $A.run(function() {
                         // flush out background actions
-                        $A.enqueueAction(that.getAction(cmp, "c.execute", "RESUME back1;RESUME back2;RESUME back3", function(a) {
+                        $A.enqueueAction(that.getAction(cmp, "c.execute", "RESUME back1;SLEEP 200;RESUME back2;SLEEP 200;RESUME back3;", function(a) {
                             that.log(cmp, "fore1:" + a.getReturnValue());
                         }));
                     });
@@ -463,6 +464,7 @@
     },
 
     testPollSingleBackgroundAction : {
+        labels : ["UnAdaptableTest"], // W-2331530: Fails on slower autobuilds in older IE
         test : [
                 function(cmp) {
                     var that = this;
