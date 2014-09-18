@@ -121,6 +121,7 @@ AuraStorage.prototype.get = function(key, resultCallback) {
  * @param {Object} value The value of the item to store.
  */
 AuraStorage.prototype.put = function(key, value) {
+    try {
 	this.sweep();
 
 	var now = new Date().getTime();
@@ -136,6 +137,10 @@ AuraStorage.prototype.put = function(key, value) {
 	this.log("AuraStorage.put(): persisting action to " + this.getName() + " storage", [key, item]);
 	
 	$A.storageService.fireModified();
+        return null;
+    } catch (e) {
+        return e;
+    }
 };
 
 /**
