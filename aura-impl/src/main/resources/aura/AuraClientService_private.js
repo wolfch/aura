@@ -266,13 +266,12 @@ var priv = {
                 errorHandler = action.getStorageErrorHandler();
                 
                 if (toStore) {
-                    try {
-                    storage.put(key, toStore);
-                    } catch (error) {
+                    var error = storage.put(key, toStore);
+                    if (error !== null) {
                         if (errorHandler && $A.util.isFunction(errorHandler)) {
                             errorHandler(error);
                         } else {
-                            $A.error(error);
+                            $A.warning("failed to store action response", error);
                         }
                     }
                 }
