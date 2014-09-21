@@ -1006,6 +1006,31 @@ Action.prototype.getRefreshAction = function(originalResponse) {
 };
 
 /**
+ * Returns an action that retries this action from storage with the server or null if the action wasn't from storage
+ * 
+ * @private
+ * @returns {Action}
+ */
+Action.prototype.getRetryFromStorageAction = function() {
+    if(this.isFromStorage()) {
+        var retryAction = this.def.newInstance(this.cmp);
+        retryAction.callbacks = this.callbacks;
+
+        retryAction.setParams(this.params);
+        retryAction.setStorable({
+            "ignoreExisting" : true,
+            "errorHandler": this.getStorageErrorHandler()
+        });
+
+        retryAction.abortable = this.abortable;
+    
+        return retryAction;
+    }
+	
+    return null;
+};
+
+/**
  * Gets the Action storage.
  *
  * @private
