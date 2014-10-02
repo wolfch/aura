@@ -246,19 +246,4 @@
 			$A.test.assertEquals("key4", adapter.getMRU().toString());
 		} ]
 	},
-
-	testSetItemOverMaxSize : {
-            test : function(cmp) {
-                var adapter = this.adapter;
-                $A.test.expectAuraError("MemoryStorageAdapter.setItem() cannot store an item over the maxSize");
-                adapter.setItem("overSize", {
-                    "value" : {
-                        "BigMac" : new Array(5000).join("x")
-                    }
-                });
-                $A.test.assertStartsWith("MemoryStorageAdapter.setItem() cannot store an item over the maxSize", $A.test.getAuraErrorMessage(),
-                "$A.error failed to display msg testSetItemOverMaxSize");
-                $A.test.assertEquals(0, this.adapter.getSize());
-            }
-	}
 })
