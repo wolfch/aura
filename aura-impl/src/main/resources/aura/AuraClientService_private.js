@@ -480,20 +480,17 @@ var priv = {
                 try {
                     info.action.finishAction($A.getContext());
                 } catch(e) {
-                    if (info.action.isFromStorage()) {
+                	var retryAction = info.action.getRetryFromStorageAction();
+                    if (retryAction) {
                         $A.log("Finishing cached action failed. Trying to refetch from server.");
                         
                         // Clear potential leftover configs
                         $A.getContext().clearComponentConfigs(info.action.getId());
                         
-                        // If the action was from storage try to hit the server
-                        newConfig = this.shallowClone(info.action.getStorable());
-                        newConfig["ignoreExisting"] = true;
-
-                        info.action.setStorable(newConfig);
-                        $A.enqueueAction(info.action);
+                        // Enqueue the retry action
+                        $A.enqueueAction(retryAction);
                     } else {
-                        // If it was not in storage, just rethrow the error and carry on as normal.
+                        // If it was not from storage, just rethrow the error and carry on as normal.
                         throw e;
                     }
                 }
@@ -569,21 +566,6 @@ var priv = {
             flightCounter.cancel();
             flightHandled.value = true;
         }
-    },
-
-    shallowClone : function(original) {
-        if (!$A.util.isObject(original)) {
-            return original;
-        }
-
-        var clone = {};
-        for (var prop in original) {
-            if (original.hasOwnProperty(prop)) {
-                clone[prop] = original[prop];
-            }
-        }
-
-        return clone;
     },
 
     isBB10 : function() {
