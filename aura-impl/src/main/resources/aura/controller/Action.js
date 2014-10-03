@@ -1004,8 +1004,7 @@ Action.prototype.getRetryFromStorageAction = function() {
 
         retryAction.setParams(this.params);
         retryAction.setStorable({
-            "ignoreExisting" : true,
-            "errorHandler": this.getStorageErrorHandler()
+            "ignoreExisting" : true
         });
 
         retryAction.abortable = this.abortable;
