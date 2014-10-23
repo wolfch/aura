@@ -16,21 +16,18 @@
 package org.auraframework.impl.context;
 
 import java.io.IOException;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
-import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import org.apache.log4j.Logger;
 import org.auraframework.Aura;
 import org.auraframework.css.MutableThemeList;
@@ -53,7 +50,6 @@ import org.auraframework.instance.InstanceStack;
 import org.auraframework.instance.ValueProviderType;
 import org.auraframework.system.AuraContext;
 import org.auraframework.system.Client;
-
 import org.auraframework.system.LoggingContext.KeyValueLogger;
 import org.auraframework.system.MasterDefRegistry;
 import org.auraframework.test.TestContext;
@@ -68,10 +64,15 @@ import org.auraframework.util.json.JsonSerializer;
 import org.auraframework.util.json.JsonSerializer.NoneSerializer;
 import org.auraframework.util.json.JsonSerializers;
 
-import java.util.Deque;
+import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 public class AuraContextImpl implements AuraContext {
+
     private static final Logger logger = Logger.getLogger(AuraContextImpl.class);
+
     public static class SerializationContext extends BaseJsonSerializationContext {
         public SerializationContext() {
             super(false, false, -1, -1, false);
@@ -330,6 +331,8 @@ public class AuraContextImpl implements AuraContext {
 
     private static final int MAX_COMPONENT_COUNT        = 10000;
     private int componentCount;
+
+    private long restrictedTicket = -1;
 
     public AuraContextImpl(Mode mode, MasterDefRegistry masterRegistry, Map<DefType, String> defaultPrefixes,
             Format format, Authentication access, JsonSerializationContext jsonContext,
@@ -757,5 +760,33 @@ public class AuraContextImpl implements AuraContext {
         }
         
         return caller;
+    }
+
+    @Override
+    public long enterUserScope() {
+        if (inUserScope()) {
+            return 0;  // Don't tell them what the ticket is, but don't make a new one either
+        }
+        Random random = new Random();
+        while (restrictedTicket <= 0) {
+            // The loop handles draws of 0 and MIN_LONG
+            restrictedTicket = random.nextLong();
+            if (restrictedTicket < 0) {
+                restrictedTicket = -restrictedTicket;
+            }
+        }
+        return restrictedTicket;
+    }
+
+    @Override
+    public boolean inUserScope() {
+        return restrictedTicket > 0;
+    }
+
+    @Override
+    public void exitUserScope(long ticket) {
+        if (restrictedTicket > 0 && ticket == restrictedTicket) {
+            restrictedTicket = -1;
+        }
     }
 }

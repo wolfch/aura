@@ -507,4 +507,29 @@ public interface AuraContext {
      * the actual CSS request itself. See {@link #addAppThemeDescriptors()}.
      */
     ThemeList getThemeList();
+
+    /**
+     * Enters a restricted-priviledge user scope.  It is fine to call this multiple times (nested),
+     * but the restrictions will be in place until a matching {@link #exitUserScope(long)} call for
+     * the <em>first</em> restricted scope entered; the inner calls are entirely without effect.
+     * 
+     * @return an arbitrary "ticket" value, which must be presented to exit the restricted scope.
+     *     This mechanism is basically to prevent anything from early-exiting the restrictions.
+     */
+    long enterUserScope();
+
+    /**
+     * Returns whether we are in an established user scope, between calls to {@link #enterUserScope()}
+     * and a matching {@link #exitUserScope(long)}.
+     *
+     * @return {@code false} normally, but {@code true} during a "user scope"
+     */
+    boolean inUserScope();
+
+    /**
+     * Either leaves a restricted-priviledge user scope, or does nothing, depending on whether
+     * the context is already restricted and, if so, whether the {@code ticket} argument is a
+     * match to the one returned by the outermost call to {@link #enterUserScope()}.
+     */
+    void exitUserScope(long ticket);
 }

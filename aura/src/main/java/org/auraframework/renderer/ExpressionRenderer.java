@@ -26,6 +26,7 @@ import org.auraframework.instance.Component;
 import org.auraframework.instance.Wrapper;
 import org.auraframework.service.RenderingService;
 import org.auraframework.throwable.quickfix.QuickFixException;
+import org.auraframework.util.AuraTextUtil;
 
 /**
  */
@@ -42,7 +43,11 @@ public class ExpressionRenderer implements Renderer {
         }
 
         if (value instanceof String) {
-            out.append((String) value);
+            String escaped = (String) value;
+            if (Aura.getContextService().getCurrentContext().inUserScope()) {
+                escaped = AuraTextUtil.escapeForHTML(escaped);
+            }
+            out.append(escaped);
         } else if (value instanceof List) {
             List<?> kids = (List<?>) value;
             for (Object kid : kids) {
