@@ -258,7 +258,9 @@
                 </div>
             </div>
 
-            {!v.body}
+            <aura:userScope>
+                {!v.body}
+            </aura:userScope>
 
             {!v.extraScriptTags}
             {!v.auraScriptTags}
