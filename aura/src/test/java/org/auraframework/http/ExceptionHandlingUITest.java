@@ -274,7 +274,6 @@ public class ExceptionHandlingUITest extends WebDriverTestCase {
                 + "renderer.ComponentRenderer: org.auraframework.throwable.AuraExecutionException: org.auraframework."
                 + "renderer.HtmlRenderer: org.auraframework.throwable.AuraExecutionException: org.auraframework."
                 + "renderer.HtmlRenderer: org.auraframework.throwable.AuraExecutionException: org.auraframework."
-                + "renderer.UserScopeRenderer: org.auraframework.throwable.AuraExecutionException: org.auraframework."
                 + "renderer.ExpressionRenderer: org.auraframework.throwable.AuraExecutionException: org.auraframework."
                 + "renderer.ComponentRenderer: org.auraframework.throwable.AuraExecutionException: org.auraframework."
                 + "impl.renderer.sampleJavaRenderers.TestRendererThrowingException: java.lang.ArithmeticException: From TestRendererThrowingException at");
