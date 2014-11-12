@@ -1795,7 +1795,7 @@ _initScroller: function () {
         * @protected
         */
         _translate: function (x, y) {
-            this.scrollerStyle[STYLES.transform] = 'matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,' + x +',' + y +', 0, 1)';
+            this.scrollerStyle[STYLES.transform] = 'matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,' + x +',' + y +', 1, 1)';
             this.x = x;
             this.y = y;
         },
@@ -2314,7 +2314,7 @@ _initSurfaceManagerPlugin: function () {
                 offsetX = config.preCalculateSize ?  offset - width : offset;
             }
             
-            surface.dom.style[STYLES.transform] = 'matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,' + offsetX +',' + offsetY + ', 0, 1)';
+            surface.dom.style[STYLES.transform] = 'matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,' + offsetX +',' + offsetY + ', 1, 1)';
 
             surface.state       = 1;
             surface.contentIndex = index;
@@ -2633,7 +2633,7 @@ _initSurfaceManagerPlugin: function () {
 
             if (surface) {
                 diff = spaceBottom ? this.wrapperHeight : bottomOffset;
-                surface.style[STYLES.transform] = 'matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,0,' + diff + ', 0, 1)';
+                surface.style[STYLES.transform] = 'matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,0,' + diff + ', 1, 1)';
             }
         },
         _appendPullToLoad: function () {
@@ -3068,7 +3068,7 @@ _initIndicatorsPlugin: function () {
             this.x = x;
             this.y = y;
 
-            this.indicatorStyle[STYLES.transform] = 'matrix3d(' + scaleX +',0,0,0,0,' + scaleY + ',0,0,0,0,1,0,' + x +',' + y +', 0, 1)';
+            this.indicatorStyle[STYLES.transform] = 'matrix3d(' + scaleX +',0,0,0,0,' + scaleY + ',0,0,0,0,1,0,' + x +',' + y +', 1, 1)';
         }
     };
 
