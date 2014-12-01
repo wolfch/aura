@@ -47,7 +47,8 @@
          ]
     },
     
-    //test for [script-src 'self' chrome-extension: 'unsafe-eval' 'unsafe-inline';]
+    //test for [script-src 'self' chrome-extension: 'unsafe-eval' 'unsafe-inline';] 
+    //IE7 & 8 doesn't like the second part this test : eval(), first part: codeMirror loads fine though.
     testScriptSource : {
         browsers : [ "-IE8", "-IE7" ],
     	attributes: { testScriptSource: true },
@@ -90,9 +91,7 @@
     },
     
     //test for the whitelist url: [connect-src 'self' http://invalid.salesforce.com] 
-    //IE7 doesn't like sending HTTP request to url that doesn't exist. same origin url works, you can try that out in helper
     testConnectionSource : {
-        browsers : [ "-IE7" ],
     	attributes: { testConnectionSource: true },
     	test: [function(cmp) {
     			$A.test.assertFalse(cmp.get("v.xmlHttpRequestComplete"));
@@ -112,7 +111,7 @@
     //though we don't put restriction for media-src, but the src has to be same-domain, or it will get blocked by connect-src
     //Firefox doesn't support mp4
     //IE9 is giving me error: "getApplication not implemented", not sure why, not CSP related though
-    //IE8 doesn't support HTML5 video
+    //IE8 and below doesn't support HTML5 video
     testMediaSource : {
         browsers : [ "-FIREFOX", "-IE9", "-IE8", "-IE7"],
     	attributes: { testMediaSource: true },
