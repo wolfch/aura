@@ -1925,9 +1925,13 @@ _initScroller: function () {
         * @private
         */
         _scrollTo: function (x, y, time, easing) {
+        	var self = this;
             easing || (easing = EASING.regular);
-
-            if (!time || this.opts.useCSSTransition) {
+            
+            // TODO: Integrate first if-block with open source scroller in 196
+            if (this.opts.useNativeScroller) {
+            	self._wrapperScrollTo(x, y);
+            } else if (!time || this.opts.useCSSTransition) {
                 this._transitionEasing(easing.style);
                 this._transitionTime(time);
                 this._translate(x, y);
@@ -1941,6 +1945,21 @@ _initScroller: function () {
             } else {
                 this._animate(x, y, time, easing.fn);
             }
+        },
+        
+        /**
+         * Scroll to a {x,y} position using the wrapper's scrollTop and scrollLeft attributes.
+         * 
+         * @params x {float} The x-position to scroll to
+         * @params y {float} The y-position to scroll to
+         * @method _wrapperScrollTo
+         * @private
+         * 
+         * TODO: Integrate with open source scroller in 196
+         */
+        _wrapperScrollTo: function(x, y) {
+        	this.wrapper.scrollTop = this.scrollVertical ? Math.abs(y) : this.wrapper.scrollTop;
+        	this.wrapper.scrollLeft = this.scrollVertical ? this.wrapper.scrollLeft : Math.abs(x);
         },
 
         /**
