@@ -537,6 +537,20 @@ var priv = {
             markDescription += "]";
             // #end
 
+            var requestParams = {
+                "message" : $A.util.json.encode({"actions" : actionsToSend}),
+                "aura.token" : priv.token,
+                "aura.context" : $A.getContext().encodeForServer(),
+                "aura.num" : collector.getNum()
+            };
+
+            // #if {"modes" : ["PRODUCTION"]}
+            if ($A.Perf.enabled) {
+                requestParams["beaconData"] = $A.Perf.getBeaconData();
+                $A.Perf.clearBeaconData();
+            }
+            // #end
+            
             // clientService.requestQueue reference is mutable
             var requestConfig = {
                 "url" : priv.host + "/aura",
@@ -547,28 +561,13 @@ var priv = {
                     flightCounter.finish();
                     this.actionCallback(response, collector, flightCounter, abortableId);
                 },
-                "params" : {
-                    "message" : $A.util.json.encode({
-                        "actions" : actionsToSend
-                    }),
-                    "aura.token" : priv.token,
-                    "aura.context" : $A.getContext().encodeForServer(),
-                    "aura.num" : collector.getNum()
-                    // #if {"modes" : ["PTEST"]}
-                    ,
-                    "beaconData" : $A.Perf.getBeaconData()
-                // #end
-                },
+                "params" : requestParams,
                 "markDescription" : markDescription
             };
+
             $A.Perf.endMark("Action Group " + collector.getCollectorId() + " enqueued");
-
-            // clear the beaconData
-            // #if {"modes" : ["PTEST"]}
-            $A.Perf.clearBeaconData();
-            // #end
-
             $A.Perf.endMark("Action Request Prepared");
+
             $A.util.transport.request(requestConfig);
             flightCounter.send();
             flightHandled.value = true;
