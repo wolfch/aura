@@ -33,6 +33,11 @@ function FunctionCallValue(config, valueProvider){
 //#if {"modes" : ["STATS"]}
     valueFactory.index(this);
 //#end
+    
+
+//#if {"excludeModes" : ["PRODUCTION", "PRODUCTIONDEBUG"]}
+	this.key = config["key"];
+//#end    
 }
 
 FunctionCallValue.prototype.auraType = "Value";
@@ -151,6 +156,10 @@ FunctionCallValue.prototype.isDefined = function(){
  * @returns {String} FunctionCallValue
  */
 FunctionCallValue.prototype.toString = function(){
+//#if {"excludeModes" : ["PRODUCTION", "PRODUCTIONDEBUG"]}
+    return this.args.join(" " + this.key + " ");
+//#end
+    
     return "FunctionCallValue";
 };
 //#include aura.value.FunctionCallValue_export
