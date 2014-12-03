@@ -29,21 +29,21 @@ import org.uiautomation.ios.client.uiamodels.impl.augmenter.IOSDriverAugmenter;
 @TargetBrowsers({BrowserType.IPHONE, BrowserType.IPAD})
 public class ScrollerUITest extends WebDriverTestCase{
 	
-private static final String SCROLLER_CMP1 = "/uitest/scroller_basic.cmp";
+//private static final String SCROLLER_CMP1 = "/uitest/scroller_basic.cmp";
 //private static final String SCROLLER_CMP2 = "/uitest/scrollerEndless.cmp";
 //private static final String SCROLLER_CMP3 = "/uitest/scrollerSnap.cmp";
 //private static final String SCROLLER_CMP4 = "/uitest/scrollerNative.cmp";
-private WebDriver driver;
+//private WebDriver driver;
 
 public ScrollerUITest(String name) {
     super(name);
 }
 
 public void testScrollingWorkflow() throws Exception {
+	/* disable due to W-2233861
     open(SCROLLER_CMP1);
     driver = this.getDriver();
     augmentDriver();
-    /* disable due to W-2233861
     //attempting pull to refresh
     this.startFlick(0, 50);
     pause(600);
@@ -220,9 +220,9 @@ private void startFlick(int xOffset, int yOffset){
 }
  */
 
-private void augmentDriver(){
+/*private void augmentDriver(){
 	driver = IOSDriverAugmenter.getIOSDriver((RemoteWebDriver)driver);
-}
+}*/
 /*
 private List<WebElement> verifyPullToRefreshData(){
 	List<WebElement> PTRdata = driver.findElements(By.className("onPTR"));
