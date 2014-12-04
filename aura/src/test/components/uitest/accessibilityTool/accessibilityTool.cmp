@@ -87,6 +87,35 @@
                 <div class="panelModal">test</div>
              </div>
      </aura:if>
+     
+     <!-- Test panel slider-->
+     <aura:if isTrue="{!v.caseToRender == 'testActiveSliderNoTopPanel'}">
+             <section class="stage panelSlide forceAccess" aria-hidden="true">
+                <span>test</span>
+             </section>
+             <div class="forcePanelSlider active">
+                <div class="panelModal">test</div>
+             </div>
+     </aura:if>
+     
+        <aura:if isTrue="{!v.caseToRender == 'testNoActivePanelSliderWithActiveDiv'}">
+             <section class="stage panelSlide forceAccess" aria-hidden="false">
+                <span>test</span>
+             </section>
+             <div class="forcePanelSlider active">
+                <div class="panelModal">test</div>
+             </div>
+     </aura:if>
+     
+     <!--Test active panel slider but no top panel-->
+        <aura:if isTrue="{!v.caseToRender == 'testActiveSliderNoDiv'}">
+             <section class="stage panelSlide forceAccess" aria-hidden="true">
+                <span>test</span>
+             </section>
+     </aura:if>
+     
+     
+     
 
     <!--Should have 1 error -->   
     <aura:if isTrue="{!v.caseToRender == 'testInputDefaultError'}">

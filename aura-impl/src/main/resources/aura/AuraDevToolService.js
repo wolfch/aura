@@ -393,6 +393,7 @@ var AuraDevToolService = function() {
                     panel = panels[i];
                     hiddenValue = $A.util.getElementAttributeValue(panel, "aria-hidden");
                     //Panel is not the top element
+                   
                     if($A.util.hasClass(panel, "panelSlide")){                       
                         //If there is a top element, make sure that it has its aria-hidden attribute set to true
                         if(topPanelsCount > 0){
@@ -1224,11 +1225,12 @@ var AuraDevToolService = function() {
                      
                      var modalOverlay = "div.uiPanelDialog";
                      var panelOverlay = "div.forcePanelOverlay";
+                     var panelSliderOverlay = "div.forcePanelSlider";
                      var panelSlide   = "section.stage.panelSlide";
-                     
+
                      //Get all panels
-                     var panels = accessAideFuncs.nodeListToArray([domElem.querySelectorAll(modalOverlay), domElem.querySelectorAll(panelOverlay), domElem.querySelectorAll(panelSlide)]);
-                     var topPanelsCount = domElem.querySelectorAll(modalOverlay+".active").length + domElem.querySelectorAll(panelOverlay+".active").length;
+                     var panels = accessAideFuncs.nodeListToArray([domElem.querySelectorAll(modalOverlay), domElem.querySelectorAll(panelOverlay), domElem.querySelectorAll(panelSlide), domElem.querySelectorAll(panelSliderOverlay)]);
+                     var topPanelsCount = domElem.querySelectorAll(modalOverlay+".active").length + domElem.querySelectorAll(panelOverlay+".active").length + domElem.querySelectorAll(panelSliderOverlay+".active").length;
                      var errorArray = accessAideFuncs.findTopLevelErrors(panels, topPanelsCount);
                      return accessAideFuncs.formatOutput(errorMsg, errorArray);                  
                 }
