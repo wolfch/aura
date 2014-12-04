@@ -28,6 +28,33 @@
            
         },
         
+        testActiveSliderNoDiv : {
+        	attributes: {
+                caseToRender: 'testActiveSliderNoDiv'
+            },
+            test: function (cmp) {
+                this.runTest(1, "Unexpected return from CheckAccessibility, should return 1 errornous string. output: \n");
+            }
+        },
+
+        testNoActivePanelSliderWithActiveDiv : {
+        	attributes: {
+                caseToRender: 'testNoActivePanelSliderWithActiveDiv'
+            },
+            test: function (cmp) {
+                this.runTest(1, "Unexpected return from CheckAccessibility, should return 1 errornous string. output: \n");
+            }
+        },
+        
+        testActiveSliderNoTopPanel : {
+        	attributes: {
+                caseToRender: 'testActiveSliderNoTopPanel'
+            },
+            test: function (cmp) {
+                this.runTest(0, "Unexpected return from CheckAccessibility, should not return errornous string. output: \n");
+            }
+        }, 
+        
         testTopPanelHidden : {
         	attributes: {
                 caseToRender: 'testTopPanelHidden'
