@@ -66,6 +66,8 @@ PropertyReferenceValue.prototype.addChangeHandler=function(cmp, key, method) {
                 // prevent the events from firing on PRV where we know nothing has changed.
                 if (!cmp["stopPropagationPRV"]) {
                     cmp.fireChangeEvent(key, event.getParam("oldValue"), event.getParam("value"), event.getParam("index"));
+                } else {
+                    cmp["stopPropagationPRV"] = null;
                 }
             };
         }
