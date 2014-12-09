@@ -517,25 +517,25 @@ var priv = {
             collector.setNum($A.getContext().incrementNum());
 
             var markDescription = undefined;
-            // #if {"modes" : ["PTEST"]}
-            markDescription = ": [";
-            for (var m = 0; m < actionsToSend.length; m++) {
-                if (actionsToSend[m].def) {
-                    markDescription += "'" + actionsToSend[m].def.name
-                } else {
-                    markDescription += "'undefined";
+            if ($A.Perf.enabled) {
+                markDescription = ": [";
+                for (var m = 0; m < actionsToSend.length; m++) {
+                    if (actionsToSend[m].def) {
+                        markDescription += "'" + actionsToSend[m].def.name;
+                    } else {
+                        markDescription += "'undefined";
+                    }
+                    if (actionsToSend[m].background) {
+                        markDescription += "<BG>'";
+                    } else {
+                        markDescription += "'";
+                    }
+                    if (m < actionsToSend.length - 1) {
+                        markDescription += ",";
+                    }
                 }
-                if (actionsToSend[m].background) {
-                    markDescription += "<BG>'";
-                } else {
-                    markDescription += "'";
-                }
-                if (m < actionsToSend.length - 1) {
-                    markDescription += ",";
-                }
+                markDescription += "]";
             }
-            markDescription += "]";
-            // #end
 
             var requestParams = {
                 "message" : $A.util.json.encode({"actions" : actionsToSend}),
