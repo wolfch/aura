@@ -103,7 +103,9 @@
                     }
 					
 //					$A.renderingService.requestRerender(component);
-				} else {
+				}
+				
+				if (cmp.get('v.stopPropagationPRV')) {
 					component["stopPropagationPRV"] = true;	
 				}
 			}
