@@ -31,31 +31,33 @@
         }
 
         action.setCallback(this, function(a){
-            var newBody;
-            if (a.getState() === "SUCCESS"){
-                newBody = $A.newCmpDeprecated(a.getReturnValue(), avp, false, false);
-                newBody.mergeAttributes(attributes, true);
-            } else {
-                var errors = a.getError();
-                newBody = $A.newCmpDeprecated("markup://aura:text", null, false, false);
-                if (errors) {
-                    newBody.set("v.value", errors[0].message);
+        	if (cmp.isValid()) {
+                var newBody;
+                if (a.getState() === "SUCCESS"){
+                    newBody = $A.newCmpDeprecated(a.getReturnValue(), avp, false, false);
+                    newBody.mergeAttributes(attributes, true);
                 } else {
-                    newBody.set("v.value", 'unknown error');
+                    var errors = a.getError();
+                    newBody = $A.newCmpDeprecated("markup://aura:text", null, false, false);
+                    if (errors) {
+                        newBody.set("v.value", errors[0].message);
+                    } else {
+                        newBody.set("v.value", 'unknown error');
+                    }
                 }
-            }
-            
-            cmp.set("v.body", newBody);
+                
+                cmp.set("v.body", newBody);
 
-            $A.rerender(cmp);
+                $A.rerender(cmp);
 
-            //reindex
-            var localId = cmp.getLocalId();
-            if(localId){
-                var cvp = cmp.getComponentValueProvider();
-                cvp.deIndex(localId, cmp.getGlobalId());
-                cvp.index(localId, newBody.getGlobalId());
-            }
+                //reindex
+                var localId = cmp.getLocalId();
+                if(localId){
+                    var cvp = cmp.getComponentValueProvider();
+                    cvp.deIndex(localId, cmp.getGlobalId());
+                    cvp.index(localId, newBody.getGlobalId());
+                }
+        	}
         });
         
         var desc = cmp.get("v.refDescriptor");
