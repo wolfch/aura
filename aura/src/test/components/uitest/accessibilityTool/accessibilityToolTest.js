@@ -28,32 +28,32 @@
            
         },
         
-        testActiveSliderNoDiv : {
-        	attributes: {
-                caseToRender: 'testActiveSliderNoDiv'
-            },
-            test: function (cmp) {
-                this.runTest(1, "Unexpected return from CheckAccessibility, should return 1 errornous string. output: \n");
-            }
-        },
 
         testNoActivePanelSliderWithActiveDiv : {
         	attributes: {
-                caseToRender: 'testNoActivePanelSliderWithActiveDiv'
+                caseToRender: 'testNoActiveSliderAriaHiddenCorrect'
+            },
+            test: function (cmp) {
+                this.runTest(0, "Unexpected return from CheckAccessibility, should return 1 errornous string. output: \n");
+            }
+        },
+        
+        testActiveSliderAriaHiddenIncorrect : {
+        	attributes: {
+                caseToRender: 'testActiveSliderAriaHiddenIncorrect'
             },
             test: function (cmp) {
                 this.runTest(1, "Unexpected return from CheckAccessibility, should return 1 errornous string. output: \n");
             }
         },
-        
-        testActiveSliderNoTopPanel : {
+        testActiveSliderAriaHiddenIncorrect : {
         	attributes: {
-                caseToRender: 'testActiveSliderNoTopPanel'
+                caseToRender: 'testActivePanelSliderAriaHiddenCorrect'
             },
             test: function (cmp) {
-                this.runTest(0, "Unexpected return from CheckAccessibility, should not return errornous string. output: \n");
+                this.runTest(0, "Unexpected return from CheckAccessibility, should return 1 errornous string. output: \n");
             }
-        }, 
+        },
         
         testTopPanelHidden : {
         	attributes: {
