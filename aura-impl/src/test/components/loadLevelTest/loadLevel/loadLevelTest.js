@@ -69,6 +69,28 @@
             });
         }]
     },
+    testNestedLazyAbortedLoad: {
+    	failOnWarning: true,
+        attributes: {testNestedLazy:"true"},
+        test: [function(cmp){
+        	$A.test.expectAuraWarning("unused configs");
+        	var helper = cmp.getDef().getHelper();
+            $A.test.assertEquals("placeholder", cmp.find("nestedLazy").getDef().getDescriptor().getName());
+            helper.resumeGateId(cmp, "nestedLazy");
+            $A.test.addWaitFor("serverWithLazyChild", function(){
+                return cmp.find("nestedLazy").getDef().getDescriptor().getName();
+            },function(){
+                $A.test.assertTrue(cmp.find("nestedLazy").isRendered());
+                $A.test.assertTrue($A.test.getTextByComponent(cmp.find("nestedLazy")).indexOf("Lazy Kid:")!=-1);
+
+                var child = cmp.find("nestedLazy");
+                var kid = child.find("kid");
+                $A.test.assertEquals("placeholder", kid.getDef().getDescriptor().getName());
+                kid.destroy();
+                helper.resumeGateId(cmp, "lazyKid");
+            });
+        }]
+    },
     testMissingRequiredAttribute:{
         attributes: {testMissingRequiredAttribute:"true"},
         test:[function(cmp){
