@@ -313,7 +313,8 @@ PassthroughValue.prototype.set = function(key, value) {
 
 // JF: HALO: TODO: TEMPORARY VALID/ERROR MANAGEMENT - REMOVE WHEN POSSIBLE
 PassthroughValue.prototype.hasExpression = function(expression) {
-    return $A.util.isExpression(this.references[expression]);
+    var path = $A.util.isArray(expression)?expression:expression.split(".");
+    return $A.util.isExpression(this.references[path[0]]);
 };
 
 PassthroughValue.prototype.isValid = function(expression) {
