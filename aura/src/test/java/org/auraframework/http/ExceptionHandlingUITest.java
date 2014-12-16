@@ -341,12 +341,7 @@ public class ExceptionHandlingUITest extends WebDriverTestCase {
         DefDescriptor<?> cdd = addSourceAutoCleanup(ComponentDef.class,
                 "<aura:component>{!'&lt;'}script{!'&gt;'}alert('foo');{!'&lt;'}/script{!'&gt;'}</aura:component>");
         openRaw(getAppUrl("access='GLOBAL'", String.format("<%s:%s/>", cdd.getNamespace(), cdd.getName())));
-        auraUITestingUtil.waitForElementFunction(By.tagName("body"), new Function<WebElement, Boolean>() {
-                @Override
-			    public Boolean apply(WebElement elem) {
-				    return elem.getText().contains("alert(");
-			    }
-            },
+        auraUITestingUtil.waitForElementTextContains(By.tagName("body"), "alert(", true,
             "XSS may have injected a bad <script> tag");
         assertEquals("", auraUITestingUtil.getAuraErrorMessage());
     }
@@ -355,13 +350,8 @@ public class ExceptionHandlingUITest extends WebDriverTestCase {
         DefDescriptor<?>  cdd = addSourceAutoCleanup(ComponentDef.class,
                 "<aura:component>{!'&lt;script&gt;'}alert({!'\"foo\");&lt;/script&gt;'}</aura:component>");
         openRaw(getAppUrl("access='GLOBAL'", String.format("<%s:%s/>", cdd.getNamespace(), cdd.getName())));
-        auraUITestingUtil.waitForElementFunction(By.tagName("body"), new Function<WebElement, Boolean>() {
-                @Override
-		        public Boolean apply(WebElement elem) {
-			        return elem.getText().contains("alert(");
-		        }
-            },
-            "XSS may have injected a bad <script> tag");
+        auraUITestingUtil.waitForElementTextContains(By.tagName("body"), "alert(", true, 
+        		"XSS may have injected a bad <script> tag");
         assertEquals("", auraUITestingUtil.getAuraErrorMessage());
     }
 }
