@@ -1,5 +1,5 @@
 ({
-  Browsers: ["-IE7","-IE8"],
+  browsers: ["-IE7","-IE8"],
 	  
   EXPECTED_5    : ['Id', 'Subject', 'Name', 'RelatedTo', 'Due Date'],
   EXPECTED_2    : ['Item Id', 'Item Subject'],
