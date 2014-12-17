@@ -535,6 +535,12 @@ Action.prototype.runDeprecated = function(evt) {
         this.returnValue = this.meth.call(this, this.cmp, evt, helper);
         this.state = "SUCCESS";
     } catch (e) {
+
+        // catch and throw missing layout:// definition errors
+        if (e && e.message && e.message.indexOf("Missing layout://") !== -1) {
+            throw new Error(e);
+        }
+
         this.state = "FAILURE";
         $A.warning("Action failed: " + this.cmp.getDef().getDescriptor().getQualifiedName() + " -> "
                    + this.def.getName(), e);
