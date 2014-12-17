@@ -1,5 +1,6 @@
 ({
-    ADD_ROW_ARRAY    : ["Spidey", "Peter Parker", "Media Inc", "2020-10-12"],
+	browsers         : ["-IE7","-IE8"],
+	ADD_ROW_ARRAY    : ["Spidey", "Peter Parker", "Media Inc", "2020-10-12"],
     BASIC_ROW_ARRAY  : ["Foo", "John Doe", "Acme", "2014-01-01"],
     INSERT_ROW_ARRAY : ["Bar", "New John", "SFDC", "2014-11-11"],
     doNotWrapInAuraRun : true,
@@ -29,7 +30,6 @@
      * bug tracking: 2327175
      */
     _testWithLargeData : {
-    	browsers : ["-IE8", "-IE7"],
         attributes : {"pageSize" : 3000, "currentPage" : 1},
         test : function(cmp){
             this.verifyDataGridUsingPager(cmp,[true, true, false, false], 3000, "1 - 3000 of 15000");
