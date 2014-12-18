@@ -753,7 +753,11 @@ $A.ns.Aura.prototype.run = function(func, name) {
 
         return func();
     } catch (e) {
-        $A.error("Error while running "+name, e);
+        // Don't error dramatically for missing layout:// definitions
+        if (e && e.message && e.message.indexOf("Missing layout://") !== -1) {
+            throw new Error(e);
+        }
+        $A.error("Error while running " + name, e);
     } finally {
         $A.services.client.popStack(name);
     }
