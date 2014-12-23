@@ -337,7 +337,7 @@ InvalidComponent.prototype.getFacets = function() {
 /**
  * @private
  */
-InvalidComponent.prototype.raiseInvalidComponentError = function(){
+InvalidComponent.prototype.raiseInvalidComponentError = function(func, args) {
     var error = "Invalid component tried calling function [" + func + "]";
     var argsArr = Array.prototype.slice.call(args);
     if (argsArr.length) {
