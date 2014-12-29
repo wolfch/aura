@@ -34,6 +34,7 @@ import org.auraframework.def.StyleDef;
 import org.auraframework.def.ThemeDef;
 import org.auraframework.test.WebDriverTestCase;
 import org.auraframework.test.annotation.ThreadHostileTest;
+import org.auraframework.test.annotation.UnAdaptableTest;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -290,6 +291,7 @@ public class ClientOutOfSyncUITest extends WebDriverTestCase {
         auraUITestingUtil.waitForElementText(By.cssSelector("#sample"), "deposit", true);
     }
 
+    @UnAdaptableTest("Flaps on ie8 builds")
     @ThreadHostileTest("NamespaceDef modification affects namespace")
     public void testPostAfterStyleChange() throws Exception {
         DefDescriptor<ComponentDef> cmpDesc = setupTriggerComponent("", "<div id='out'>hi</div>");
@@ -456,6 +458,7 @@ public class ClientOutOfSyncUITest extends WebDriverTestCase {
                 "golden egg", true);
     }
 
+    @UnAdaptableTest("Flaps on ie8 builds")
     public void testPostAfterJsHelperChange() throws Exception {
         DefDescriptor<?> helperDesc = addSourceAutoCleanup(HelperDef.class, "({getHelp:function(){return 'simply';}})");
         DefDescriptor<ComponentDef> cmpDesc = setupTriggerComponent(
@@ -515,6 +518,7 @@ public class ClientOutOfSyncUITest extends WebDriverTestCase {
         });
     }
 
+    @UnAdaptableTest("Flaps on ie8 builds")
     public void testPostAfterInterfaceChange() throws Exception {
         DefDescriptor<?> interfaceDesc = addSourceAutoCleanup(
                 InterfaceDef.class,
