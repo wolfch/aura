@@ -1,0 +1,74 @@
+4c974ce91e52cd0adc0834c956354a1ac0d317f1###Bob Yao###Create 194/patch branch###None
+ae3e82f3a08b5a8e95a4c0765754f28159f565b5###Lin Hong###test fix for testSvgCacheClearedOnSourceChange : NPE also fix a test flapper on AIS ui test @bug W-2438109@###None
+536ecf46b3ba15bd60830fe6a3a7ac2795537948###Jason Ye###Added method to do scrollTo with wrapper attributes###None
+8932be856d85dd97a98f576f97546020dccb67d3###Diego###@bug W-2439103@ reverting fcv change detection###None
+cdfc1dd2ed38dacbbbf6346105f361a94d25eec5###Jason Ye###Fixed isRendered check on dataGrid @bug W-2437772@ @rev ssun@###None
+01c0601881b1acc14f4c4caa77779e4817356f23###Kris Gray###Add the visible class to autoCompleteList Better toString for FunctionCallValues###None
+3daeaffc8ef6a940fbeff9023b381e58bd2a09e9###Lin###cherry-pick from main: test fix for html test -- nbsp in IEs @rev tbliss@ @bug W-2426163@###None
+b2497099a767ccb89ca59c13f3ef7da2553d6d59###ronak.shah###Disabling test###None
+98230fac2c45fd1976669c45503e2c28fd930884###Gerald###validate library js @bug W-2360275@ @rev goliver@###None
+8d83d25022026568dd3dbe6f81025cf40082ee99###Gerald###Merge branch '194/patch' of git.soma.salesforce.com:aura/aura into 194patch###None
+b9b309bffca580e2f73ced110b445a5aaf01d8fe###Michael###Adding in checks to make sure that panelSlider is caught @rev john.huang@ @bug W-2434504@###None
+fd798ffcc809b21db0c1715824ae8641c9ec374e###Gerald###Merge branch '194/patch' of git.soma.salesforce.com:aura/aura into 194patch###None
+7370f1573a913d36b7aa7f7c9f85fb0ce80ab3ab###JF Paradis###Reduced function calls in isExpression###None
+e705ce2f8f86780f38c0c374501eb5fd2a5cfcc5###Gordon###Support for namespace based defaults for prefixes.###Gordon Oliver
+9d1264ca93696fb11c9f3dc2f5c04af03690fe1f###John###Fix issue where datepicker opener icon is not position correctly when container does not has css position.###None
+e3b7a4e33a1efac5bef5bed4eac4037024d7be65###apalke###IE8 test failure fixes @bug W-2438324@ @rev ronak.shah@###None
+57ab52b1072180184257b841b824303026cce254###Diego Ferreiro Val###uncheck stopProgataion state when fired###None
+bd5d6e6389602555f47125e6c389f7f322d2c1f9###Gerald###Merge branch '194/patch' of git.soma.salesforce.com:aura/aura into 194patch###None
+6840f0e7792c0ab57241087b57cf7daebc29d866###Gerald###Merge branch '194/patch' of git.soma.salesforce.com:aura/aura into 194patch###None
+6b0fe16b7c6518a326fa94c9bf9991a090b536f8###Jason Ye###Disabled sorting when there are no items in a dataGrid and updated examples @bug W-2396201@ @rev john.huang@###None
+e37f9d33efc341ad66ef8611cd5dad674205b822###Diego###adding stopPRV option to iteration###None
+a6a6942156c1ee8ade010b0f885ea8904e8c98ec###Jason Ye###Fixed accessibility issues with extended autocomplete options###None
+b20b68a0427180fbc0c1ae25cd29ee6a9368eb2c###Jason Ye###Added autocomplete option extension examples###None
+24b49ba768b48224ceeaf1e1cb361c64c2350052###Gerald###Merge branch '194/patch' of git.soma.salesforce.com:aura/aura into 194patch###None
+80dd3c15e9f54fe99ee2f854bc1464a34a51e1f3###Gerald###Merge branch '194/patch' of git.soma.salesforce.com:aura/aura into 194patch###None
+38e0916ebb46a054bdbc5fa758dd0037be746b94###Michael###Adding additional feature to accessibility Panel Slider tool @bug W-2446327@ @rev ctatlah@###None
+9b9361db0a56f39749f76c753576bc8737fcad49###John###Fix $A.util.apply deepCopy algorithm. Fixing Models and GVPs to copy data correctly. W-2445275, W-2449341###None
+0953b3ca5b3fc07367bcfdefd6100754e5f9ff13###Jason Ye###Merge branch '194/patch' of git.soma.salesforce.com:aura/aura into 194/patch###None
+f3356d77cf8fe8f5b8de60a753ace193bf88be0c###Charandeep###Null check for plugins in scroller helper. @rev john.huang@ @bug W-2439891@###None
+c2dcb9628d4d50ff7cea43c7adab16b2a713cc06###Jason Ye###Fixed accessibility issues with extended autocomplete options###None
+d649c2e88cf9bc48ed84bcfeda13927cb5c7f12e###Jason Ye###Added autocomplete option extension examples###None
+d21b83816bb3f266825b577273ee5558b8cbbc36###Gerald###Merge branch '194/patch' of git.soma.salesforce.com:aura/aura into 194patch###None
+a4c247a79276bcd5a409dbf27e5e6855fa24efff###JF Paradis###Fix W-2451480 Field with validation error is not highlighted###None
+88932cfe04f39aa9db1dd8f6cf9690ac5050a075###JF Paradis###Fix W-2451457 Multiple field-level validations get appended to all invalid field in the layout###None
+8d726b9660c8c7a57c6bc633142906844231d8d3###JF Paradis###Allow class inputError to be overwritten###None
+9fc669baaca5527bb16d67fe64ce5a1c4de7508b###Andrew###Forward merge of e33fea0 -- done manually. Pretty Print app.js in prod debug mode. @bug W-2452225@ @rev dchasman@async###None
+6f7e53734eba8edb5d0e8b8c4c08193b0bb0bf7b###Gerald###Merge branch '194/patch' of git.soma.salesforce.com:aura/aura into 194patch###None
+7c5b05bc1db7971db91ef22dfcf2b189662c03e8###Diego###eRelease metrics @bug W-2441905@###None
+0d6b3e2a4973487da294382efac160d673d940a8###Diego Ferreiro Val###adding metrics and mark to xhr for perf###None
+cd6dc41fa3c621fd2a0034e6fee68a0203ebe5c2###ssun###Change "cmp.setValue" to "cmp.set" @bug W-2427197@###None
+8f9c68f0e0bd7a90ada5f02deec248d9fce8573c###John###show listSorter in full screen in mobile devices @bug w-2371705@ @rev ssun@###None
+9be368896af392486b15b433671d9870f09761f8###Freeland Abbott###Expression-injected script tags are guarded; they can only happen directly in a template (where we use this misfeature, evil us).###None
+35584910c7208c9d18ac0ff5bddc260ae79de48d###Freeland Abbott###Expression-injected script tags are guarded; they can only happen directly in a template (where we use this misfeature, evil us).###None
+d83e465964999641f59ab5be7e131ddccf543586###Jason Ye###Merge branch '194/patch' of git.soma.salesforce.com:aura/aura into 194/patch###None
+534242b7a276f0818c6956aeba1662973c295d10###Michael###Modifying tests so that they are going to be ignored for IE7/8 @rev ctatlah@ @bug W-2446821@###None
+21a7e6fc29d2184db842ef0bb165c3da16c77bdb###Charandeep###Automation for autocomplete accessibility attributes @bug W-2406824@ @rev ronak.shah@###None
+a94f94859cba6cdb4f12bf7107e2603c56534d50###Jason Ye###Merge branch '194/patch' of git.soma.salesforce.com:aura/aura into 194/patch###None
+0c000bfb0a369e6a75948f0a0d1525bd36122065###Jason Ye###Fixed setting options to empty array in inputSelect and added tests to cover those cases @bug W-2447922@ @rev abakhtiari@###None
+6bcfb6dc05ca73845c062ea79fb2a02661887ddf###Charandeep###Automation for sorting on an empty data grid @bug W-2396201@ @rev mkohanfars@###None
+78eb31acbb7f6d2a32be78dc4b2663325787ab7f###Gerald###Merge branch '194/patch' of git.soma.salesforce.com:aura/aura into 194patch###None
+91bf48b29bb0ac567cbfa179ea97c91fcdb1ed19###ssun###DateFormatSymbols->getMonths returns a different size of array for Norwegian locale. @bug w-2450628@###None
+ed87ca352a2ae7fb3705f93033dd91adda2e404f###Bob Yao###When a layout:// def is missing, Aura will try to retrieve def from server which cannot happen which is prohibited. Instead, throw errors that will be caught.###None
+9a3cea303503a109199ae884dc259774fe607511###Iurie###Remove a few test that are no longer necessary since the way the events are treated has changed. @bug W-2416535@ @rev ronak.shah@###None
+25a519a6212fb67e48d1c2e13cb0cc51e4c8e8a3###Iurie###Revert diect commit: Remove a few test that are no longer necessary since the way the events are treated has changed. @bug W-2416535@ @rev ronak.shah@###None
+eea64805aab732a03779846e0854e000771b1862###Charandeep###Test for autocomplete edit inputed value @rev ronak.shah@later###None
+8fdcb714fa36c1c042d56a3a4325983d893eb4a7###Iurie###ui:inputDate test fix @bug W-2416535@ @rev ronak.shah@###None
+e546667b5dc91f4056d47378eadecd791b13922e###Gerald###Merge branch '194/patch' of git.soma.salesforce.com:aura/aura into 194patch###None
+d8afe4ea82ff85a26e4a278e2d61f7629ad4841d###Gerald###tests for value errors @bug W-2410735@ @rev jparadis@###None
+31732b16cccc2ca5e2c4dac77971eb58cbf4a3fc###Diego###fixing(hacking)  autoComplete###None
+73ebdd4d8417cf1d10e3f18530df05c3382c475e###Diego###css performance fixes for normalize and scroller###None
+b2cb8700c465075b457ce106f26fe105584b10aa###Kris Gray###Remove StopPropagationPRV and prevent change events from firing in pickoperations###None
+1c62621c04818ec5401ac8251f648f225df4dc12###Kris Gray###Remove StopPropagationPRV and prevent change events from firing in pickoperations###None
+98968cbf27fe34e90acc98cbcabbb71f7b960481###Kris Gray###Merge branch 'kgray/194-patch-pending-prviteration' of git.soma.salesforce.com:aura/aura into kgray/194-patch-pending-prviteration###None
+f9de3263847a478eb3b3f4771a0ab35591a39be9###Jason Ye###Added component.isValid() check to scroller before calling an action###None
+d7df310272be298807b67e1bc59b85bb744b1bed###John###-Fix listSorter bug where multiple items are selected -Fix destroyPanel bug###None
+0fdcc3086de57abbfb50fa1fcf744a629704e4df###Lin Hong###add waitForElementTextContains and update the tests @rev gtorres@ @bug W-2455389@###None
+ffec0e7ae5b91185fd8b294413fd3f5847111be6###Iurie###Add onRowClose & onRowOpen hooks for ui:infiniteList, allows for activity logging on swiping rows @bug W-2390936@ @rev apalke@###None
+7086ca2e053c4c16b4fe879bc5894a2fb0d241bf###ssun###Remove scroll bars on windows surface. @bug W-2456475@###None
+af6cd81807bd1dcab90f6c3a70e5ecd694c95c1a###Jason Ye###Merge branch '194/patch' of git.soma.salesforce.com:aura/aura into 194/patch###None
+a7fdb9f2404f738a039ab94497eba88cc5305ae8###ronak.shah###Fix for Accessibly for popUp test cmp###None
+f35e9d1fcf2059e7a992796608d6d50d41d80409###Kris Gray###This was causing flexipage test failures, don't want it to go to 194 yet.###None
+dcc67f28e3b08d680faa9ad6f18a0cd84c6af165###Jason Ye###Merge branch '194/patch' of git.soma.salesforce.com:aura/aura into 194/patch###None
+fca41591bbf31a19ff782f136c5c30c664f03ef3###Jason Ye###Fixed unexpected behaviors with swiping row actions###None
+b6f7ded8c1b7d9371f5097ccd4db87b59ef99c2b###John###Fix listSorter tablet display issue @bug W-2460449@ @rev ssun@###None
