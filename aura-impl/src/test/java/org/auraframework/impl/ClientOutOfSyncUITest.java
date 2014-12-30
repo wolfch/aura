@@ -34,7 +34,6 @@ import org.auraframework.def.StyleDef;
 import org.auraframework.def.ThemeDef;
 import org.auraframework.test.WebDriverTestCase;
 import org.auraframework.test.annotation.ThreadHostileTest;
-import org.auraframework.test.annotation.UnAdaptableTest;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -75,14 +74,45 @@ public class ClientOutOfSyncUITest extends WebDriverTestCase {
         return cmpDesc;
     }
 
+    private boolean isIE() {
+        switch (getBrowserType()) {
+        case IE7:
+        case IE8:
+        case IE9:
+        case IE10:
+        case IE11:
+            return true;
+        default:
+            break;
+        }
+        return false;
+    }
+
     /**
      * Trigger a server action and wait for the browser to begin refreshing.
      */
     private void triggerServerAction() {
         // Careful. Android doesn't like more than one statement.
         auraUITestingUtil.getRawEval("document._waitingForReload = true;");
+
+        // This test flaps on slower environments in IE. Give it a little more time to process the javascript.
+        if (isIE()) {
+            waitFor(3);
+        }
         auraUITestingUtil.findDomElement(By.cssSelector("button")).click();
-        waitForCondition("return !document._waitingForReload");
+        if (isIE()) {
+            waitFor(3);
+        }
+        auraUITestingUtil.waitUntil(new ExpectedCondition<Boolean>() {
+            @Override
+            public Boolean apply(WebDriver d) {
+                Object ret = auraUITestingUtil.getRawEval("return !document._waitingForReload");
+                if (ret != null && ((Boolean) ret).booleanValue()) {
+                    return true;
+                }
+                return false;
+            }
+        }, timeoutInSecs, "Page failed to refresh after server action triggered.");
         auraUITestingUtil.waitForDocumentReady();
         waitForAuraFrameworkReady();
     }
@@ -291,7 +321,6 @@ public class ClientOutOfSyncUITest extends WebDriverTestCase {
         auraUITestingUtil.waitForElementText(By.cssSelector("#sample"), "deposit", true);
     }
 
-    @UnAdaptableTest("Flaps on ie8 builds")
     @ThreadHostileTest("NamespaceDef modification affects namespace")
     public void testPostAfterStyleChange() throws Exception {
         DefDescriptor<ComponentDef> cmpDesc = setupTriggerComponent("", "<div id='out'>hi</div>");
@@ -458,7 +487,6 @@ public class ClientOutOfSyncUITest extends WebDriverTestCase {
                 "golden egg", true);
     }
 
-    @UnAdaptableTest("Flaps on ie8 builds")
     public void testPostAfterJsHelperChange() throws Exception {
         DefDescriptor<?> helperDesc = addSourceAutoCleanup(HelperDef.class, "({getHelp:function(){return 'simply';}})");
         DefDescriptor<ComponentDef> cmpDesc = setupTriggerComponent(
@@ -518,7 +546,6 @@ public class ClientOutOfSyncUITest extends WebDriverTestCase {
         });
     }
 
-    @UnAdaptableTest("Flaps on ie8 builds")
     public void testPostAfterInterfaceChange() throws Exception {
         DefDescriptor<?> interfaceDesc = addSourceAutoCleanup(
                 InterfaceDef.class,
