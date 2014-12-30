@@ -364,10 +364,13 @@ var AuraRenderingService = function AuraRenderingService(){
                             renderedElements=info.component.getElements();
                         }
 
-                        if(renderedElements.length && priv.isMarker(component._marker)) {
-                                $A.util.removeElement(component._marker);
-                                component._marker = renderedElements[0];
-                        }
+                        // Something like this is still necessary, but caused these test failures
+                        // https://gus.my.salesforce.com/a07B00000013W7x?srPos=0&srKp=a07
+                        // We should re-implement this soon and figure out why those tests were failing.ß
+                        // if(renderedElements.length && priv.isMarker(component._marker)) {
+                        //         $A.util.removeElement(component._marker);
+                        //         component._marker = renderedElements[0];
+                        // }
                         
                         info.component.disassociateElements();
                         priv.associateElements(info.component, renderedElements);
