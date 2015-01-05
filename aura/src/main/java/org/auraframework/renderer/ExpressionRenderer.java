@@ -42,11 +42,7 @@ public class ExpressionRenderer implements Renderer {
         }
 
         if (value instanceof String) {
-            String escaped = (String) value;
-            if (Aura.getContextService().getCurrentContext().inUserScope()) {
-                escaped = escaped.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
-            }
-            out.append(escaped);
+            out.append((String) value);
         } else if (value instanceof List) {
             List<?> kids = (List<?>) value;
             for (Object kid : kids) {

@@ -33,8 +33,6 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import com.google.common.base.Function;
-
 /**
  * What should you see when something goes wrong. {@link ThreadHostile} due to setProdConfig and friends.
  * 
@@ -276,7 +274,6 @@ public class ExceptionHandlingUITest extends WebDriverTestCase {
                 + "renderer.ComponentRenderer: org.auraframework.throwable.AuraExecutionException: org.auraframework."
                 + "renderer.HtmlRenderer: org.auraframework.throwable.AuraExecutionException: org.auraframework."
                 + "renderer.HtmlRenderer: org.auraframework.throwable.AuraExecutionException: org.auraframework."
-                + "renderer.UserScopeRenderer: org.auraframework.throwable.AuraExecutionException: org.auraframework."
                 + "renderer.ExpressionRenderer: org.auraframework.throwable.AuraExecutionException: org.auraframework."
                 + "renderer.ComponentRenderer: org.auraframework.throwable.AuraExecutionException: org.auraframework."
                 + "impl.renderer.sampleJavaRenderers.TestRendererThrowingException: java.lang.ArithmeticException: From TestRendererThrowingException at");
@@ -335,34 +332,5 @@ public class ExceptionHandlingUITest extends WebDriverTestCase {
         // Wait for page to reload and aura framework initialization
         auraUITestingUtil.waitForAuraInit();
         waitForElementTextPresent(findDomElement(By.cssSelector(".uiOutputText")), "initial");
-    }
-
-    /**
-     * Test XSS handling
-     */
-    public void testXssScenarioOne() throws Exception {
-        DefDescriptor<?> cdd = addSourceAutoCleanup(ComponentDef.class,
-                "<aura:component><span>{!'&lt;'}script{!'&gt;'}alert('foo');{!'&lt;'}/script{!'&gt;'}</span></aura:component>");
-        openRaw(getAppUrl("access='GLOBAL'", String.format("<%s:%s/>", cdd.getNamespace(), cdd.getName())));
-        auraUITestingUtil.waitForElementFunction(By.tagName("span"), new Function<WebElement, Boolean> () {
-            @Override
-            public Boolean apply(WebElement element) {
-                return element.getText().contains("alert(");
-            }},
-            "XSS may have generated a bad <script> tag");
-        assertEquals("", auraUITestingUtil.getAuraErrorMessage());
-    }
-
-    public void testXssScenarioTwo() throws Exception {
-        DefDescriptor<?>  cdd = addSourceAutoCleanup(ComponentDef.class,
-                "<aura:component><span>{!'&lt;script&gt;'}alert({!'\"foo\");&lt;/script&gt;'}</span></aura:component>");
-        openRaw(getAppUrl("access='GLOBAL'", String.format("<%s:%s/>", cdd.getNamespace(), cdd.getName())));
-        auraUITestingUtil.waitForElementFunction(By.tagName("span"), new Function<WebElement, Boolean> () {
-            @Override
-            public Boolean apply(WebElement element) {
-                return element.getText().contains("alert(");
-            }},
-            "XSS may have generated a bad <script> tag");
-        assertEquals("", auraUITestingUtil.getAuraErrorMessage());
     }
 }
