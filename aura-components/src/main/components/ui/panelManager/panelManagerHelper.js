@@ -338,7 +338,7 @@
         var manager = this.getManager(cmp),
         	self = this,
             slider,
-            stack = manager._stack;
+            stack = manager._stack,
             containerEl = manager.getElement();
         if (panel && !panel.isValid()) {
         	// we can get here when two components both fire hidePanel to dismiss the same panel;
