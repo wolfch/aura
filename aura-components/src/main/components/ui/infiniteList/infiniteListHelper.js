@@ -208,17 +208,20 @@
                 	percentage = this.getWidthPercentage(cmp, swipe.body, swipe.absX + swipe.initialPosition);
                 	swipe.percentage = -percentage;
                 	
-                	if (swipe.percentage >= -(this.OPEN_PERCENTAGE)) { 
+                	if (swipe.percentage >= -(this.OPEN_PERCENTAGE)) {
                 		this.translateX(cmp, swipe.body, swipe.percentage);
                 	}
                 }
                 else {
                 	percentage = this.getWidthPercentage(cmp, swipe.body, (swipe.absX + (cmp._bodyLength - swipe.initialPosition)));
-                	swipe.percentage = -this.getWidthPercentage(cmp, swipe.body, swipe.absX);
+                	var percentageChange = -this.getWidthPercentage(cmp, swipe.body, swipe.absX);
                 	
-                	if (cmp._isInteractionOnOpenRow && swipe.percentage <= 0 && percentage <= 100) {
+                	if (cmp._isInteractionOnOpenRow && percentageChange <= 0 && percentage <= 100) {
+                        swipe.percentage = percentageChange;
                 		this.translateX(cmp, swipe.body, -(100 - percentage));
-                	}
+                	} else {
+                        swipe.percentage = 0;
+                    }
                 }
             }
             else if (cmp._isInteractionOnOpenRow) {
