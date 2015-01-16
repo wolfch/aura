@@ -83,41 +83,42 @@
 
 			$A.test.assertEquals(expected, items.length);
 		}
-	}
+	},
 
 
-	// #######
-	// The Following two test cases do not pass. Currently if you fire a change event that bubbles up
-	// through a passthrough value, it doesn't propagate correctly. 
-	// #######
-	// ,
-	// testUpdateSourceDataOnIterationRerendersGlobalReference: {
-	// 	test: function(component) {
-	// 		var output = component.find("mapglobal");
-	// 		var iteration = component.find("iteration");
-	// 		var expected = "updateditem";
+	/*
+	 The Following two test cases do not pass. Currently if you fire a change event that bubbles up
+	 through a passthrough value, it doesn't propagate correctly. 
+	 W-2460566
+	*/
+	 _testUpdateSourceDataOnIterationRerendersGlobalReference: {
+	 	test: function(component) {
+	 		var output = component.find("mapglobal");
+	 		var iteration = component.find("iteration");
+	 		var expected = "updateditem";
 
-	// 		iteration.set("v.items.0.label", expected);
+	 		iteration.set("v.items.0.label", expected);
 
-	// 		$A.test.addWaitForWithFailureMessage(true, function() {
-	// 			actual = $A.util.getText(output.getElement());
-	// 			return expected	=== actual;
-	// 		}, "Updating the PRV to the passthrough value never caused a markDirty and rerender.");
-	// 	}
-	// },
-	// testAttributePRVRerendersGlobalReference: {
-	// 	test: function(component) {
-	// 		var item = component.find("listItem")[0];
-	// 		var output = component.find("mapglobal");
-	// 		var expected = "updateditem";
+	 		$A.test.addWaitForWithFailureMessage(true, function() {
+	 			actual = $A.util.getText(output.getElement());
+	 			return expected	=== actual;
+	 		}, "Updating the PRV to the passthrough value never caused a markDirty and rerender.");
+	 	}
+	 },
+	 
+	 _testAttributePRVRerendersGlobalReference: {
+	 	test: function(component) {
+	 		var item = component.find("listItem")[0];
+	 		var output = component.find("mapglobal");
+	 		var expected = "updateditem";
 
-	// 		// should cause a rerender of the item 
-	// 		item.set("v.HTMLAttributes.prv", expected);
+	 		// should cause a rerender of the item 
+	 		item.set("v.HTMLAttributes.prv", expected);
 
-	// 		$A.test.addWaitForWithFailureMessage(true, function() {
-	// 			actual = $A.util.getText(output.getElement());
-	// 			return expected	=== actual;
-	// 		}, "Updating the PRV to the passthrough value never caused a markDirty and rerender.");
-	// 	}
-	// }
+	 		$A.test.addWaitForWithFailureMessage(true, function() {
+	 			actual = $A.util.getText(output.getElement());
+	 			return expected	=== actual;
+	 		}, "Updating the PRV to the passthrough value never caused a markDirty and rerender.");
+	 	}
+	 }
 })
