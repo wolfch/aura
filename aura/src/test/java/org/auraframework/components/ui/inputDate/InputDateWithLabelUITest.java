@@ -309,7 +309,8 @@ public class InputDateWithLabelUITest extends WebDriverTestCase {
         element = findDomElement(By.cssSelector("a[class*='" + classOfActiveElem + "']"));
 
         // Moving from the on focus element to the today link
-        auraUITestingUtil.pressEnter(element);
+        //Keys.Enter does not work with chrome v40.0.2214.91
+        element.click();
         // make sure value change event got fired
         element = findDomElement(By.cssSelector(OUTPUT_ST));
         assertEquals("Value Change event should not be fired", "Value Change Event Fired", element.getText());
