@@ -20,39 +20,44 @@
 		test: [function(cmp) {
 			cmp.set("v.start", 1);
 		}, function(cmp) {
-			var iterCmpEle = cmp.find("iterationOnMapAttributePassthrough").getElements();
 			var expected = [
 				         	{render_count: 1, rerender_count: 0, unrender_count:0, passthrough_string: "1"},
 				         	{render_count: 1, rerender_count: 0, unrender_count:0, passthrough_string: "2"},
 				         	{render_count: 1, rerender_count: 0, unrender_count:0, passthrough_string: "3"},
 				         	{render_count: 1, rerender_count: 0, unrender_count:0, passthrough_string: "4"}];
-         	this.assertIterationCmpElements(expected, iterCmpEle);
+         	this.assertIterationCmpElements(expected, cmp);
 		}, function(cmp) {
 			cmp.set("v.end", 4);
 		}, function(cmp) {
-			var iterCmpEle = cmp.find("iterationOnMapAttributePassthrough").getElements();
          	var expected = [
          		         	{render_count: 1, rerender_count: 0, unrender_count:0, passthrough_string: "1"},
          		         	{render_count: 1, rerender_count: 0, unrender_count:0, passthrough_string: "2"},
-         		         	{render_count: 1, rerender_count: 0, unrender_count:0, passthrough_string: "3"},
-         		         	];
-         	this.assertIterationCmpElements(expected, iterCmpEle);
+         		         	{render_count: 1, rerender_count: 0, unrender_count:0, passthrough_string: "3"}];
+         	this.assertIterationCmpElements(expected, cmp);
 		}
 		]
 	},
 	
 	//check elements in iteration component 
 	//notice that edit in iteration and in attribute give us different reRender count
-	assertIterationCmpElements: function(expected, cmpElements) {
-		$A.test.assertEquals( expected.length, cmpElements.length, "number of element in iteration component is not expected." );
-		for(var i = 0; i< expected.length; i++) {
-			var eleText = $A.test.getText(cmpElements[i]);
-			var exp = expected[i];
-			$A.test.assertTrue(eleText.indexOf("Passthrough Object's Label: "+exp.passthrough_string) > -1, "unexpected Passthrough String");
-			$A.test.assertTrue(eleText.indexOf("render count: "+exp.render_count) > -1, "unexpected render count");
-			$A.test.assertTrue(eleText.indexOf("rerender count: "+exp.rerender_count) > -1, "unexpeteced rerender count");
-			$A.test.assertTrue(eleText.indexOf("unrender count: "+exp.unrender_count) > -1, "unexpeteced unrerender count");
-		}
+	assertIterationCmpElements: function(expectedConfig, iterationCmp) {
+		var expected = expectedConfig;
+		var iteration = iterationCmp;
+		$A.test.addWaitForWithFailureMessage(expected.length,
+				function(){ return iteration.find("iterationOnMapAttributePassthrough").getElements().length },
+				"unexpected number of elements in iteration component",
+				function(){
+					var cmpElements = iteration.find("iterationOnMapAttributePassthrough").getElements()
+					for(var i = 0; i< expected.length; i++) {
+						var eleText = $A.test.getText(cmpElements[i]);
+						var exp = expected[i];
+						$A.test.assertTrue(eleText.indexOf("Passthrough Object's Label: "+exp.passthrough_string) > -1, "unexpected Passthrough String");
+						$A.test.assertTrue(eleText.indexOf("render count: "+exp.render_count) > -1, "unexpected render count");
+						$A.test.assertTrue(eleText.indexOf("rerender count: "+exp.rerender_count) > -1, "unexpeteced rerender count");
+						$A.test.assertTrue(eleText.indexOf("unrender count: "+exp.unrender_count) > -1, "unexpeteced unrerender count");
+					}
+				}
+		);
 	},
 	
     testSetItemsInIteration:{
@@ -65,7 +70,6 @@
             data[index] = {"label": newValue}; 
             iter.set("v.items", data);
         }, function(cmp) {
-        	var iterCmpEle = cmp.find("iterationOnMapAttributePassthrough").getElements();
          	var expected = 
          	[{render_count: 1, rerender_count: 1, unrender_count:0, passthrough_string: "0"},
           	{render_count: 1, rerender_count: 1, unrender_count:0, passthrough_string: "999"},
@@ -73,7 +77,7 @@
           	{render_count: 1, rerender_count: 1, unrender_count:0, passthrough_string: "3"},
           	{render_count: 1, rerender_count: 1, unrender_count:0, passthrough_string: "4"}];
 
-         	this.assertIterationCmpElements(expected, iterCmpEle);
+         	this.assertIterationCmpElements(expected, cmp);
          	
          	var v_mapdata_items = cmp.get("v.mapdata").items;
     		for(var i = 0; i < v_mapdata_items.length; i++) {
@@ -91,7 +95,6 @@
             (data.items)[index] =  {"label": newValue}; 
             cmp.set("v.mapdata", data);
     	}, function(cmp) {
-    		var iterCmpEle = cmp.find("iterationOnMapAttributePassthrough").getElements();
          	var expected = 
              	[{render_count: 1, rerender_count: 1, unrender_count:0, passthrough_string: "0"},
               	{render_count: 1, rerender_count: 0, unrender_count:0, passthrough_string: "999"},
@@ -99,7 +102,7 @@
               	{render_count: 1, rerender_count: 1, unrender_count:0, passthrough_string: "3"},
               	{render_count: 1, rerender_count: 1, unrender_count:0, passthrough_string: "4"}];
 
-         	this.assertIterationCmpElements(expected, iterCmpEle);
+         	this.assertIterationCmpElements(expected, cmp);
     	}]
     },
     
@@ -113,7 +116,6 @@
             data.splice( index, 0, {"label": newValue}); 
             iter.set("v.items", data);
         }, function(cmp) {
-        	var iterCmpEle = cmp.find("iterationOnMapAttributePassthrough").getElements();
          	var expected = 
              	[{render_count: 1, rerender_count: 1, unrender_count:0, passthrough_string: "999"},
              	 {render_count: 1, rerender_count: 1, unrender_count:0, passthrough_string: "0"},
@@ -122,7 +124,7 @@
               	{render_count: 1, rerender_count: 1, unrender_count:0, passthrough_string: "3"},
               	{render_count: 1, rerender_count: 1, unrender_count:0, passthrough_string: "4"}];
 
-         	this.assertIterationCmpElements(expected, iterCmpEle);
+         	this.assertIterationCmpElements(expected, cmp);
          	
          	var v_mapdata_items = cmp.get("v.mapdata").items;
     		for(var i = 0; i < v_mapdata_items.length; i++) {
@@ -140,7 +142,6 @@
             (data.items).splice( index, 0, {"label": newValue}); 
             cmp.set("v.mapdata", data);
     	}, function(cmp) {
-    		var iterCmpEle = cmp.find("iterationOnMapAttributePassthrough").getElements();
          	var expected = 
              	[{render_count: 1, rerender_count: 0, unrender_count:0, passthrough_string: "999"},
              	 {render_count: 1, rerender_count: 1, unrender_count:0, passthrough_string: "0"},
@@ -148,7 +149,7 @@
               	{render_count: 1, rerender_count: 1, unrender_count:0, passthrough_string: "2"},
               	{render_count: 1, rerender_count: 1, unrender_count:0, passthrough_string: "3"},
               	{render_count: 1, rerender_count: 1, unrender_count:0, passthrough_string: "4"}];
-         	this.assertIterationCmpElements(expected, iterCmpEle);
+         	this.assertIterationCmpElements(expected, cmp);
     	}]
     },
     
@@ -161,14 +162,13 @@
             data.splice( index, 1); 
             iter.set("v.items", data);
         }, function(cmp) {
-        	var iterCmpEle = cmp.find("iterationOnMapAttributePassthrough").getElements();
          	var expected = 
              	[{render_count: 1, rerender_count: 1, unrender_count:0, passthrough_string: "1"},
               	{render_count: 1, rerender_count: 1, unrender_count:0, passthrough_string: "2"},
               	{render_count: 1, rerender_count: 1, unrender_count:0, passthrough_string: "3"},
               	{render_count: 1, rerender_count: 1, unrender_count:0, passthrough_string: "4"}];
 
-         	this.assertIterationCmpElements(expected, iterCmpEle);
+         	this.assertIterationCmpElements(expected, cmp);
          	
          	var v_mapdata_items = cmp.get("v.mapdata").items;
     		for(var i = 0; i < v_mapdata_items.length; i++) {
@@ -185,14 +185,13 @@
             (data.items).splice( index, 1); 
             cmp.set("v.mapdata", data);
     	}, function(cmp) {
-    		var iterCmpEle = cmp.find("iterationOnMapAttributePassthrough").getElements();
     		var expected = 
              	[{render_count: 1, rerender_count: 1, unrender_count:0, passthrough_string: "1"},
               	{render_count: 1, rerender_count: 1, unrender_count:0, passthrough_string: "2"},
               	{render_count: 1, rerender_count: 1, unrender_count:0, passthrough_string: "3"},
               	{render_count: 1, rerender_count: 1, unrender_count:0, passthrough_string: "4"}];
 
-         	this.assertIterationCmpElements(expected, iterCmpEle);
+         	this.assertIterationCmpElements(expected, cmp);
     	}]
     },
     
