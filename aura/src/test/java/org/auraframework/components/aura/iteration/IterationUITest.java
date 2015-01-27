@@ -29,7 +29,15 @@ public class IterationUITest extends WebDriverTestCase {
     public IterationUITest(String name) {
         super(name);
     }
-
+    
+    @Override
+	public void setUp() throws Exception {
+    	super.setUp();
+    }
+    
+    /**
+     * test verify simple iteration created on server and client has the same html 
+     */
     public void testSimpleIteration() throws Exception {
         open("/iterationTest/simpleIteration.cmp");
 

@@ -74,9 +74,11 @@
 		// v.items
 		// should NOT fire
 		// v.items.0.label
+		/*
 		var items = iteration.get("v.items");
 		items[1].label = "foo" + Date.now();
 		iteration.set("v.items", items);
+		*/
 		// ****
 
 	},

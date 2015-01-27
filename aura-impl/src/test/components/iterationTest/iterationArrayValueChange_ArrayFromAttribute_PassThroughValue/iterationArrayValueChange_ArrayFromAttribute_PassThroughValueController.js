@@ -14,23 +14,16 @@
  * limitations under the License.
  */
 ({
-	handleClick: function (cmp) {
-		alert("ROW CLICK");
-	},
-	
-	handleEdit: function (cmp) {
-		alert("EDIT");
-	}
 
-	/* API not exposed yet.
-	handleOpen: function (cmp, evt, hlp) {
-		evt.getParam('domEvent').preventDefault();
-		cmp.getEvent('open').setParams(evt.getParams()).fire();
-	},
+	doInit: function(component, event, helper) {
+		var listdata = [
+		    	"0",
+		    	"1",
+		    	"2",
+		    	"3",
+		    	"4"
+		    ];
 
-	handleClose: function (cmp, evt, hlp) {
-		evt.getParam('domEvent').preventDefault();
-		cmp.getEvent('close').setParams(evt.getParams()).fire();
-	}
-	*/
+		    component.set("v.listdata", listdata);
+	},
 })

@@ -14,23 +14,18 @@
  * limitations under the License.
  */
 ({
-	handleClick: function (cmp) {
-		alert("ROW CLICK");
-	},
-	
-	handleEdit: function (cmp) {
-		alert("EDIT");
-	}
 
-	/* API not exposed yet.
-	handleOpen: function (cmp, evt, hlp) {
-		evt.getParam('domEvent').preventDefault();
-		cmp.getEvent('open').setParams(evt.getParams()).fire();
+	doInit: function(component, event, helper) {
+		// Add some data to the "data" attribute to show in the iteration
+		var mapdata = {
+			items: [
+				{ "label": "0"},
+				{ "label": "1"},
+				{ "label": "2"},
+				{ "label": "3"},
+				{ "label": "4"}
+			]
+		};
+		component.set("v.mapdata", mapdata);
 	},
-
-	handleClose: function (cmp, evt, hlp) {
-		evt.getParam('domEvent').preventDefault();
-		cmp.getEvent('close').setParams(evt.getParams()).fire();
-	}
-	*/
 })
