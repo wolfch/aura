@@ -803,11 +803,11 @@
         //dequeue all the actions that got queued up while the panel is opening or closing
         while (manager._actionQueue.length > 0) {
             queuedAction = manager._actionQueue.shift();
-            setTimeout(function() {
+            setTimeout(function(action) {
             	$A.run(function() {
-            		queuedAction();
+            		action();
             	});
-            }, 0);
+            }.bind(this, queuedAction), 0);
         }
     },
 
