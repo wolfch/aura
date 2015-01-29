@@ -800,14 +800,14 @@
         }
 
         manager._transitioningInstance = null;
+        function executeAction(action) {
+        	$A.run(function() {
+        		action();
+        	});
+        }
         //dequeue all the actions that got queued up while the panel is opening or closing
         while (manager._actionQueue.length > 0) {
-            queuedAction = manager._actionQueue.shift();
-            setTimeout(function(action) {
-            	$A.run(function() {
-            		action();
-            	});
-            }.bind(this, queuedAction), 0);
+            setTimeout(executeAction.bind(this, manager._actionQueue.shift()), 0);
         }
     },
 
