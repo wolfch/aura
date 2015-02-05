@@ -342,7 +342,7 @@ var AuraRenderingService = function AuraRenderingService(){
                 var renderedElements=null;
                 switch(info.action){
                     case "render":
-                        renderedElements=this.render(info.component);
+                    	renderedElements=this.render(info.component);
                         if(updatedFacet.useFragment){
                             ret=ret.concat(renderedElements);
                         }else if(renderedElements.length){
@@ -366,7 +366,7 @@ var AuraRenderingService = function AuraRenderingService(){
 
                         // Something like this is still necessary, but caused these test failures
                         // https://gus.my.salesforce.com/a07B00000013W7x?srPos=0&srKp=a07
-                        // We should re-implement this soon and figure out why those tests were failing.ß
+                        // We should re-implement this soon and figure out why those tests were failing.
                         // if(renderedElements.length && priv.isMarker(component._marker)) {
                         //         $A.util.removeElement(component._marker);
                         //         component._marker = renderedElements[0];
