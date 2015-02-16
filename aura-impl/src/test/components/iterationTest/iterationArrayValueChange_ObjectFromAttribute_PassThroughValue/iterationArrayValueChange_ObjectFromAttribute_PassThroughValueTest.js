@@ -163,7 +163,6 @@
 	assertIterationCmpElements: function(expectedConfig, iterationCmp) {
 		var expected = expectedConfig;
 		var iteration = iterationCmp;
-		console.log("expected",expected);
 		$A.test.addWaitForWithFailureMessage(expected.length,
 				function(){ return (iteration.find("iterationOnMapAttributePassthrough").getElements().length); },
 				"unexpected number of elements in iteration component",
