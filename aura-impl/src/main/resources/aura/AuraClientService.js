@@ -469,6 +469,7 @@ var AuraClientService = function() {
          */
         resetToken : function(newToken) {
             priv.token = newToken;
+            priv.saveTokenToStorage();
         },
 
 
