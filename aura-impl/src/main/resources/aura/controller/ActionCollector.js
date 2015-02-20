@@ -67,13 +67,23 @@ $A.ns.ActionCollector.prototype.process = function() {
         // For cacheable actions check the storage service to see if we already have a viable cached action
         // response we can complete immediately. In this case, we get a callback, so we create a callback
         // for each one (ugh, this could have been handled via passing an additional param to the action,
-        // bue we don't have that luxury now.)
+        // but we don't have that luxury now.)
         //
         var storage = action.getStorage();
         if (action.isStorable() && storage) {
             key = action.getStorageKey();
             storage.get(key).then(
-                that.createResultCallback(action)
+                function(value) {
+                    $A.run(function() {
+                        that.collectAction(action, value ? value.value : null);
+                    });
+                },
+                function() {
+                    // error fetching from storage so go to the server
+                    $A.run(function() {
+                        that.collectAction(action);
+                    });
+                }
             );
         } else {
             that.collectAction(action);
@@ -134,21 +144,6 @@ $A.ns.ActionCollector.prototype.setNum = function(num) {
  */
 $A.ns.ActionCollector.prototype.getNum = function() {
     return this.num;
-};
-
-/**
- * Internal routine to create a callback for the storage service.
- *
- * This simply binds to both 'this' and 'action'.
- * 
- * @param {Action} action the action we will use in the call to collectAction.
- * @private
- */
-$A.ns.ActionCollector.prototype.createResultCallback = function(action) {
-    var that = this;
-    return function(response) {
-        that.collectAction(action, response ? response.value : response);
-    };
 };
 
 /**
