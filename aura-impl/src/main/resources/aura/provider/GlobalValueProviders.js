@@ -111,6 +111,11 @@ $A.ns.GlobalValueProviders.prototype.loadFromStorage = function(callback) {
                 }
                 callback(!!item);
             });
+        }, function() {
+            // error retrieving from storage
+            $A.run(function() {
+                callback(false);
+            });
         });
     } else {
         // nothing loaded from persistent storage
