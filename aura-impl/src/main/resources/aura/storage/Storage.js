@@ -25,18 +25,18 @@ var AuraStorage = function AuraStorage(config) {
     this.defaultExpiration = config["defaultExpiration"] * 1000;
     this.defaultAutoRefreshInterval = config["defaultAutoRefreshInterval"] * 1000;
     this.debugLoggingEnabled = config["debugLoggingEnabled"];
-    
+
     var clearStorageOnInit = config["clearStorageOnInit"];
-    
+
 	this.log("AuraStorage:ctor() initializing storage adapter using { name: \"" + config["name"] + "\", implementation: \""
 			+ this.adapter.getName() + "\", maxSize: " + this.maxSize + ", defaultExpiration: " + this.defaultExpiration
 			+ ", defaultAutoRefreshInterval: " + this.defaultAutoRefreshInterval + ", clearStorageOnInit: " + clearStorageOnInit + ", debugLoggingEnabled: " + this.debugLoggingEnabled + " }");
-    
+
     if (clearStorageOnInit === true) {
     	this.log("AuraStorage.ctor(): clearing " + this.getName() + " storage on init");
     	this.adapter.clear();
     }
-    
+
     // work around the obfuscation logic to allow external Adapters to properly plug in
     this.adapter.clear = this.adapter.clear || this.adapter["clear"];
     this.adapter.getExpired = this.adapter.getExpired || this.adapter["getExpired"];
@@ -44,8 +44,8 @@ var AuraStorage = function AuraStorage(config) {
     this.adapter.getName = this.adapter.getName || this.adapter["getName"];
     this.adapter.getSize = this.adapter.getSize || this.adapter["getSize"];
     this.adapter.removeItem = this.adapter.removeItem || this.adapter["removeItem"];
-    this.adapter.setItem = this.adapter.setItem || this.adapter["setItem"];  
-    
+    this.adapter.setItem = this.adapter.setItem || this.adapter["setItem"];
+
     //#if {"excludeModes" : ["PRODUCTION", "PRODUCTIONDEBUG"]}
     	this.adapter["getItem"] = this.adapter.getItem;
     	this["adapter"] = this.adapter;
@@ -70,7 +70,7 @@ AuraStorage.prototype.getSize = function() {
 };
 
 /**
- * Returns the maximum storage size in KB. 
+ * Returns the maximum storage size in KB.
  * @returns {number} The maximum storage size in KB.
  */
 AuraStorage.prototype.getMaxSize = function() {
@@ -78,7 +78,7 @@ AuraStorage.prototype.getMaxSize = function() {
 };
 
 /**
- * Returns the default auto-refresh interval in seconds. 
+ * Returns the default auto-refresh interval in seconds.
  * @returns {number} The default auto-refresh interval.
  */
 AuraStorage.prototype.getDefaultAutoRefreshInterval = function() {
@@ -119,7 +119,7 @@ AuraStorage.prototype.get = function(key) {
 
 /**
  * Asynchronously stores the value in storage using the specified key.
- * @param {String} key The key of the item to store. 
+ * @param {String} key The key of the item to store.
  * @param {Object} value The value of the item to store.
  * @return {Promise} A Promise that will put the value in storage.
  */
@@ -205,6 +205,9 @@ AuraStorage.prototype.sweep = function() {
                     error(err);
                 }
             );
+        }, function (err) {
+            that.log("Error while AuraStorage.sweep was removing items: " + err);
+            error(err);
         });
     });
 

@@ -1,0 +1,6 @@
+<aura:component
+    template="auraStorageTest:failedStorageTemplate"
+    controller="java://org.auraframework.impl.java.controller.AuraStorageTestController"
+    implements="auraStorage:refreshObserver">
+
+</aura:component>
