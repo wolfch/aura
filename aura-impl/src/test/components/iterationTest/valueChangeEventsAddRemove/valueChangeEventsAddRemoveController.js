@@ -145,7 +145,7 @@
 	// },
 
 	,logRenderEvent: function(component, event, helper) {
-		console.log(event.getParams());
+		$A.log(event.getParams());
 	},
 
 	// popAndDirty: function(component, event, helper) {
