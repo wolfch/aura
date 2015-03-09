@@ -15,6 +15,7 @@
  */
 ({
 	testClearAndReplaceWholeObjectInAttribute: {
+		browsers: ["-IE7","-IE8"],//disable IE because of W-2516537
 		test: [function(cmp) {
 			cmp.set("v.mapdata",{"items":[]});
 		}, function(cmp) {
