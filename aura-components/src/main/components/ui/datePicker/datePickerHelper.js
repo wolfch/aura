@@ -349,6 +349,8 @@
         var yearTitleCmp = component.find("yearTitle");
         var selectElem = yearTitleCmp ? yearTitleCmp.getElement() : null;
         if (selectElem) {
+        	//need to add dom id to select element for android devices, otherwise, onChange event won't get fired
+        	selectElem.setAttribute("id", yearTitleCmp.getGlobalId());
             for (var i = minY; i <= maxY; i++) {
                 selectElem.options[selectElem.options.length] = new Option(i+"", i+"");
             }
