@@ -45,7 +45,7 @@ var AuraRenderingService = function AuraRenderingService(){
 
             components = priv.getArray(components);
             var elements = [];
-             
+
             for (var i=0; i < components.length; i++){
                 var cmp = components[i];
                 //JBUCH: HALO: FIXME: WE SHOULD REFUSE TO RENDER THINGS THAT AREN'T COMPONENTS
@@ -78,7 +78,7 @@ var AuraRenderingService = function AuraRenderingService(){
                 'endTime' : (new Date()).getTime()
             });
             //#end
-            
+
             return elements;
         },
 
@@ -276,6 +276,7 @@ var AuraRenderingService = function AuraRenderingService(){
             };
             var renderCount=0;
             if(component._facetInfo) {
+                var jmax = 0;
                 for (var i = 0; i < facet.length; i++) {
                     var child = facet[i];
                     // Guard against undefined/null facets, as these will cause troubles later.
@@ -284,9 +285,10 @@ var AuraRenderingService = function AuraRenderingService(){
                         for (var j = 0; j < component._facetInfo.length; j++) {
                             if (child === component._facetInfo[j]) {
                                 updatedFacet.components.push({action:"rerender",component: child, oldIndex: j, newIndex: i});
-                                if(j!=(i-renderCount)){
+                                if((j!=(i-renderCount)) && (j < jmax)) {
                                     updatedFacet.useFragment=true;
                                 }
+                                jmax = j;
                                 found = true;
                                 component._facetInfo[j] = undefined;
                                 break;
@@ -371,7 +373,7 @@ var AuraRenderingService = function AuraRenderingService(){
                         //         $A.util.removeElement(component._marker);
                         //         component._marker = renderedElements[0];
                         // }
-                        
+
                         info.component.disassociateElements();
                         priv.associateElements(info.component, renderedElements);
                         ret = ret.concat(renderedElements);
@@ -500,7 +502,7 @@ var AuraRenderingService = function AuraRenderingService(){
                     var dirty = [];
                     priv.needsCleaning = false;
                     maxiterations--;
-                                        
+
                     while(priv.dirtyComponentIds.length) {
                     	var id = priv.dirtyComponentIds.shift();
                         var cmp = $A.componentService.get(id);
