@@ -19,6 +19,10 @@
      */
     testStorableAction : {
         test : [ function(cmp) {
+        		var a = cmp.get("c.resetCounter");
+        		a.setParams({ testName : "testStorableAction" });
+        		$A.test.enqueueAction(a);
+        	}, function(cmp) {
             // sets the server-side counter to 0
             var a = cmp.get("c.string");
             a.setParams({ testName : "testStorableAction", param1 : 1 /* ignored */ });
