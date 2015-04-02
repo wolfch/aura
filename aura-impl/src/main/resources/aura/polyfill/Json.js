@@ -99,17 +99,18 @@ Json.prototype._resolveRefs = function(config, cache, parent, property) {
                 }
             }
         } else {
-            var serRefId = config["serRefId"];
+            // prepare for Json.ApplicationKey
+            var serRefId = config["serRefId"] || config["r"];
             if (serRefId !== undefined) {
                 // Replace with the referenced object
                 parent[property] = cache[serRefId];
             } else {
-                var serId = config["serId"];
+                var serId = config["serId"] || config["s"];
                 if (serId !== undefined) {
-                    value = config["value"];
+                    value = config["value"] || config["v"];
 
                     if (typeof value === "object" && value !== null
-                            && (value["serId"] || value["serRefId"])) {
+                            && (value["serId"] || value["serRefId"] || value["s"] || value["r"])) {
                         this._resolveRefs(value, cache, parent, property);
                         value = parent[property];
                     } else {
