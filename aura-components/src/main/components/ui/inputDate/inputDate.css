@@ -21,6 +21,10 @@ div.THIS {
 	position: relative;	
 }
 
+div.THIS.uiDatePicker {
+	position: absolute;	
+}
+
 .THIS + .datePicker-openIcon,
 .THIS .datePicker-openIcon {
     position: relative;
