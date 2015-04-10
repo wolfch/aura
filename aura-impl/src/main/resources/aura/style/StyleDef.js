@@ -19,10 +19,11 @@
  * @constructor
  * @param {Object} config
  */
-function StyleDef(config){
+function StyleDef(config) {
     this.code = config["code"];
     this.className = config["className"];
     this.descriptor = new DefDescriptor(config["descriptor"]);
+    this.asyncLoaded = !$A.util.isUndefinedOrNull(this.code); // based on logic in StyleDefImpl serialization
 }
 
 StyleDef.prototype.auraType = "StyleDef";
@@ -30,7 +31,7 @@ StyleDef.prototype.auraType = "StyleDef";
 /**
  * Applies style to element. If this StyleDef's style has not been added to the DOM, add it to the DOM.
  */
-StyleDef.prototype.apply = function(){
+StyleDef.prototype.apply = function() {
     var element = this.element;
     var code = this.code;
     if (!element && code) {
@@ -40,8 +41,16 @@ StyleDef.prototype.apply = function(){
     delete this.code;
 };
 
-StyleDef.prototype.remove = function(){
+StyleDef.prototype.remove = function() {
     //TODO
+};
+
+/**
+ * Gets the descriptor. (e.g. markup://foo:bar)
+ * @returns {DefDescriptor}
+ */
+StyleDef.prototype.getDescriptor = function() {
+    return this.descriptor;
 };
 
 /**
@@ -49,6 +58,13 @@ StyleDef.prototype.remove = function(){
  * @param {Object} className
  *
  */
-StyleDef.prototype.getClassName = function(){
+StyleDef.prototype.getClassName = function() {
     return this.className;
+};
+
+/**
+ * Gets whether this def was async loaded from the server, as opposed to preloaded in app.css.
+ */
+StyleDef.prototype.wasAsyncLoaded = function() {
+    return this.asyncLoaded;
 };

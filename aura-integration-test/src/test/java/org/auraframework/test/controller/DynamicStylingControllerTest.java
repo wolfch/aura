@@ -174,6 +174,7 @@ public class DynamicStylingControllerTest extends StyleTestCase {
     private Action runAction(String theme) throws Exception {
         Map<String, Object> params = new HashMap<>();
         params.put("themes", Lists.newArrayList(theme));
+        params.put("asyncLoaded", ImmutableList.<String>of());
         params.put("extraStyles", ImmutableList.<String>of());
         Action action = (Action) Aura.getInstanceService().getInstance(ACTION, ActionDef.class, params);
         action.run();

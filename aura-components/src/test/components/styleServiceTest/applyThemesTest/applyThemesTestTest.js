@@ -205,6 +205,13 @@
                 var toTest = addedCmp.getElement();
                 var expected = $A.util.isIE? "#39cccc" : this.map["#39CCCC"];
                 $A.test.assertEquals($A.util.style.getCSSProperty(toTest, "color"), expected );
+
+                // transitive dependencies should be picked up as well
+                var child1 = addedCmp.find("c1").getElement();
+                var child2 = addedCmp.find("c2").getElement();
+
+                $A.test.assertEquals($A.util.style.getCSSProperty(child1, "color"), expected);
+                $A.test.assertEquals($A.util.style.getCSSProperty(child2, "color"), expected);
             });
         }
     },

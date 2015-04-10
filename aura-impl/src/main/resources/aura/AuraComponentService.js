@@ -27,21 +27,22 @@ $A.ns.AuraComponentService = function(actions, finishedCallback) {
     this.providerDefRegistry = new ProviderDefRegistry();
     this.rendererDefRegistry = new RendererDefRegistry();
     this.helperDefRegistry = new HelperDefRegistry();
+    this.styleDefRegistry = new StyleDefRegistry();
     this.libraryDefRegistry = new $A.ns.LibraryDefRegistry();
     this.indexes = { globalId : {} };
     this.renderedBy = "auraRenderedBy";
     this.flavorable = "auraFlavorable";
 
-    // KRIS: 
+    // KRIS:
     // We delay the creation of the definition of a class till it's requested.
     // The function that creates the component class is a classConstructorExporter
     this.classConstructorExporter={};
-    
-    // KRIS: 
+
+    // KRIS:
     // Collection of all the component classes we generate for
     // proper stack traces and proper use of prototypical inheritance
     this.classConstructors={};
-    
+
 };
 
 /**
@@ -704,6 +705,22 @@ $A.ns.AuraComponentService.prototype.getHelperDef = function(componentDefDescrip
  */
 $A.ns.AuraComponentService.prototype.getLibraryDef = function(descriptor, libraryDef){
     return this.libraryDefRegistry.getDef(descriptor, libraryDef);
+};
+
+/**
+ * Gets the style definition from the registry.
+ * @private
+ */
+$A.ns.AuraComponentService.prototype.getStyleDef = function(config){
+    return this.styleDefRegistry.getDef(config);
+};
+
+/**
+ * Gets async loaded and applied (not preloaded) style def descriptors.
+ * @private
+ */
+$A.ns.AuraComponentService.prototype.getAsyncLoadedStyleDefs = function() {
+    return this.styleDefRegistry.getAsyncLoadedStyleDefs();
 };
 
 /**

@@ -48,6 +48,7 @@ Test.Aura.AuraComponentServiceTest = function(){
         "ProviderDefRegistry": function(){},
         "RendererDefRegistry": function(){},
         "HelperDefRegistry": function(){},
+        "StyleDefRegistry" : function(){},
         "exp": function(){},
         "$A": $A,
         "window": function(){},
