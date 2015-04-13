@@ -69,6 +69,7 @@ public final class DynamicStylingController {
     @AuraEnabled
     public static String applyThemes(
             @Key("themes") List<String> themeDescriptors,
+            @Key("asyncLoaded") List<String> asyncLoaded,
             @Key("extraStyles") List<String> extraStyles)
             throws QuickFixException {
 
@@ -96,9 +97,9 @@ public final class DynamicStylingController {
             }
         }
 
-        // add any client-loaded style defs (todo-- check for dupes?)
-        for (DefDescriptor<?> desc : context.getClientLoaded().keySet()) {
-            DefDescriptor<StyleDef> style = defService.getDefDescriptor(desc, DefDescriptor.CSS_PREFIX, StyleDef.class);
+        // add any client-loaded style defs
+        for (String desc : asyncLoaded) {
+            DefDescriptor<StyleDef> style = defService.getDefDescriptor(desc, StyleDef.class);
             if (style.exists() && !styles.contains(style)) {
                 styles.add(style);
             }

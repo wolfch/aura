@@ -1,3 +1,7 @@
 <aura:component>
-    <div class="color1">Color 1</div>
+    <div class="color1">Color 1 (async)</div>
+    <div>
+        <styleServiceTest:asyncLoadedChild1 aura:id="c1"/>
+        <styleServiceTest:asyncLoadedChild2 aura:id="c2"/>
+    </div>
 </aura:component>

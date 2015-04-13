@@ -125,10 +125,11 @@ var AuraStyleService = function() {
                 $A.Perf.mark("applyThemes");
 
                 var action = $A.get("c.aura://DynamicStylingController.applyThemes");
-
                 action.setParams({
                     "themes": themes,
+                    "asyncLoaded": $A.componentService.getAsyncLoadedStyleDefs(),
                     "extraStyles": config["extraStyles"] || []
+
                 });
 
                 // default storable true

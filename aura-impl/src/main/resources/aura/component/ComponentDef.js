@@ -32,7 +32,7 @@ $A.ns.ComponentDef = function ComponentDef(config) {
     this.access=config[Json.ApplicationKey.ACCESS];
 
     this.superDef = this.initSuperDef(config["superDef"]);
-    this.styleDef = config["styleDef"] ? new StyleDef(config["styleDef"]) : undefined;
+    this.styleDef = config["styleDef"] ? $A.componentService.getStyleDef(config["styleDef"]) : undefined;
 
     this.controllerDef = config["controllerDef"] ? $A.componentService.getControllerDef(config["controllerDef"]) : undefined;
     this.modelDef = config["modelDef"] ? $A.componentService.getModelDef(config["modelDef"]) : undefined;
