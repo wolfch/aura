@@ -68,7 +68,7 @@
     	        </ui:header>
     	            
     	        <div class="{! 'body actions scrollbox ' + ((v.body.length || v.detail) ? '' : 'hidden') }">
-    	    		<ui:scroller aura:id='scroller' scrollContentClass="panelScrollContent" bindEventsToScroller="true">
+    	    		<ui:scroller aura:id='scroller' scrollContentClass="panelScrollContent" bindEventsToScroller="true" preventDefaultOnMove="true">
 	    	        	<aura:renderIf isTrue="{! v.detail != '' &amp;&amp; v.detail != null}">
 	    					<div class="detail">{!v.detail}</div>
 	    				</aura:renderIf>
