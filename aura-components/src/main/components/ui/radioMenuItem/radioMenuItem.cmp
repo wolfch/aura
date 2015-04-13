@@ -18,7 +18,7 @@
 <aura:component access="GLOBAL" support="GA" extends="ui:menuItem" extensible="true" description="​A menu item with a radio button that indicates a mutually exclusive selection and can be used to invoke an action. This component is nested in a ui:menu component.">
     <aura:handler name="click" action="{!c.handleClick}"/>
     <li aura:id="listitem" class="{!v.class}" role="presentation">
-        <a aura:id="link" role="menuitemradio">
+        <a aura:id="link" role="menuitem">
             <aura:renderIf isTrue="{!v.body.length == 0}">
                 <b></b>{!v.label}
                 <aura:set attribute="else">
