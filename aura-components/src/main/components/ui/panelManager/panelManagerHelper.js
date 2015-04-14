@@ -603,9 +603,13 @@
         var manager = this.getManager(cmp),
             stack = manager._stack;
         // remove the current panel if and only if last on stack
-        if (stack.indexOf(panel) === stack.length-1) {
+        if (stack.indexOf(panel) === stack.length - 1) {
             stack.pop();
-            this.setActiveInstance(cmp, stack[stack.length-1]);
+            var nextPanel = stack[stack.length - 1];
+            this.setActiveInstance(cmp, nextPanel);
+            if (!$A.util.isUndefinedOrNull(nextPanel)) {
+                this.setFocus(cmp, nextPanel)
+            }
         }
     },
 
