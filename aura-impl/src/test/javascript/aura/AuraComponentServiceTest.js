@@ -67,6 +67,7 @@ Test.Aura.AuraComponentServiceTest = function(){
             assert:function(condition,message){
                 if(!condition)throw message;
             },
+            enqueueAction:function(){},
             util:{
                 isString:function(obj){
                     return typeof obj === 'string';
@@ -176,6 +177,7 @@ Test.Aura.AuraComponentServiceTest = function(){
             };
             targetService.requestComponent = function() {
                 actual = true;
+                return Test.Stubs.Aura.GetAction();
             }
 
             $Amock(function(){
@@ -200,6 +202,7 @@ Test.Aura.AuraComponentServiceTest = function(){
             };
             targetService.requestComponent = function() {
                 actual = true;
+                return Test.Stubs.Aura.GetAction();
             }
 
             $Amock(function(){
