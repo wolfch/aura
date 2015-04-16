@@ -200,15 +200,17 @@
 	    // or else CSS transitions will not work when the target is appended to the body
 	    // at the same time the visible property is changed
 	    setTimeout(function() {
-		    if (visible === true) {
-	        	$A.util.removeClass(elements.targetElement, component.get('v.preTransitionClass'));
-	        	$A.util.addClass(elements.targetElement, "visible");
-	        	elements.target.get("e.popupExpand").fire();
-	        } else {
-	        	$A.util.on(elements.targetElement, transitionEndEventName, hideFunc, false);
-	        	$A.util.removeClass(elements.targetElement, "visible");
-	        	elements.target.get("e.popupCollapse").fire();
-	        }
+			if (component.isValid()) {
+				if (visible === true) {
+					$A.util.removeClass(elements.targetElement, component.get('v.preTransitionClass'));
+					$A.util.addClass(elements.targetElement, "visible");
+					elements.target.get("e.popupExpand").fire();
+				} else {
+					$A.util.on(elements.targetElement, transitionEndEventName, hideFunc, false);
+					$A.util.removeClass(elements.targetElement, "visible");
+					elements.target.get("e.popupCollapse").fire();
+				}
+			}
 	    }, 0);
     },
     
