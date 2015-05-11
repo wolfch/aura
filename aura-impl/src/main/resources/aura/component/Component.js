@@ -1080,6 +1080,7 @@ if(!this.concreteComponentId) {
  * @param {Boolean}
  *            [localCreation] - local creation
  * @param {Boolean} [creatingPrototype] - creating a prototype only
+ * @platform
  */
 function Component(config, localCreation, creatingPrototype) {
     if(creatingPrototype) {
@@ -1228,6 +1229,7 @@ Component.prototype.deIndex = function(localId, globalId) {
  *            name If name is an object, return instances of it. Otherwise,
  *            finds a component using its index.
  * @public
+ * @platform
  */
 Component.prototype.find = function(name) {
     //JBUCH: HALO: TODO: I WANT TO SEPARATE THESE CONCEPTS, AND EXPOSE cmp.findInstances("foo:bar","foo:baz");
@@ -1328,6 +1330,7 @@ Component.prototype.findInstanceOf = function(type) {
  *            name The name of the component (or interface), with a format of
  *            <code>namespace:componentName</code>.
  * @returns {Boolean} true if the component is an instance, or false otherwise.
+ * @platform
  */
 Component.prototype.isInstanceOf = function(name) {
     return this.getDef().isInstanceOf(name);
@@ -1361,6 +1364,7 @@ Component.prototype.implementsDirectly = function(type) {
  *            insert The flag to indicate if we should put the handler at the
  *            beginning instead of the end of handlers array.
  * @public
+ * @platform
  */
 Component.prototype.addHandler = function(eventName, valueProvider, actionExpression, insert) {
     var dispatcher = this.priv.getEventDispatcher(this);
@@ -1475,6 +1479,7 @@ Component.prototype.finishDestroy = function() {
  *            async Set to true if component should be destroyed asynchronously.
  *            The default value is true.
  * @public
+ * @platform
  */
 Component.prototype.destroy = function(async) {
     this.fire("destroy");
@@ -1684,6 +1689,7 @@ Component.prototype.superUnrender = function() {
  * necessarily mean component is in the dom tree).
  *
  * @protected
+ * @platform
  */
 Component.prototype.isRendered = function() {
     return this.priv.rendered;
@@ -1743,6 +1749,7 @@ Component.prototype.getRenderable = function() {
  * pageloads.
  *
  * @public
+ * @platform
  */
 Component.prototype.getGlobalId = function() {
     return this.priv.concreteComponentId || this.priv.globalId;
@@ -1753,6 +1760,7 @@ Component.prototype.getGlobalId = function() {
  * <code>find()</code> on the parent to locate this child.
  *
  * @public
+ * @platform
  */
 Component.prototype.getLocalId = function() {
     return this.priv.localId;
@@ -1777,6 +1785,7 @@ Component.prototype.getRendering = function() {
  * Returns the super component.
  *
  * @protected
+ * @platform
  */
 Component.prototype.getSuper = function() {
     return this.priv.superComponent;
@@ -1837,6 +1846,7 @@ Component.prototype.disassociateElements = function() {
  * Returns a map of the elements previously rendered by this component.
  *
  * @public
+ * @platform
  */
 Component.prototype.getElements = function() {
     if (!this.isConcrete()) {
@@ -1852,6 +1862,7 @@ Component.prototype.getElements = function() {
  * should use <code>getElements()</code>.
  *
  * @public
+ * @platform
  */
 Component.prototype.getElement = function() {
     var elements = this.getElements();
@@ -1872,6 +1883,7 @@ Component.prototype.getElement = function() {
  *            key The data key for which to return a reference.
  * @return {PropertyReferenceValue}
  * @public
+ * @platform
  */
 Component.prototype.getReference = function(key) {
     key = $A.expressionService.normalize(key);
@@ -1887,6 +1899,7 @@ Component.prototype.getReference = function(key) {
  * @param {String}
  *            key The data key for which to clear the reference.
  * @public
+ * @platform
  */
 Component.prototype.clearReference = function(key) {
     key = $A.expressionService.normalize(key);
@@ -1908,6 +1921,7 @@ Component.prototype.clearReference = function(key) {
  * @param {String}
  *            key The data key to look up on the Component.
  * @public
+ * @platform
  */
 Component.prototype.get = function(key) {
     key = $A.expressionService.normalize(key).replace(/^v\.body\b/g,"v.body."+this.priv.globalId);
@@ -1953,6 +1967,7 @@ Component.prototype.getShadowAttribute = function(key) {
  *            value The value to set
  *
  * @public
+ * @platform
  */
 Component.prototype.set = function(key, value, ignoreChanges) {
     key = $A.expressionService.normalize(key).replace(/^v\.body\b/g,"v.body."+this.priv.globalId);
@@ -2034,6 +2049,7 @@ Component.prototype.fireChangeEvent=function(key,oldValue,newValue,index){
  * @param {Boolean} destroy The flag to specify whether or not to destroy this component automatically.
  *
  * @public
+ * @platform
  */
 Component.prototype.autoDestroy = function(destroy) {
     if(!$A.util.isUndefinedOrNull(destroy)) {
@@ -2049,6 +2065,7 @@ Component.prototype.autoDestroy = function(destroy) {
  * method to get the concrete component of a super component.
  *
  * @public
+ * @platform
  */
 Component.prototype.getConcreteComponent = function() {
     var priv = this.priv;
@@ -2059,6 +2076,7 @@ Component.prototype.getConcreteComponent = function() {
  * Returns true if the component is concrete, or false otherwise.
  *
  * @public
+ * @platform
  */
 Component.prototype.isConcrete = function() {
     return !this.priv.concreteComponentId;
@@ -2095,6 +2113,7 @@ Component.prototype.getComponentValueProvider = function() {
  * @param {String} key string by which to identify the valueProvider. Used in expressions in markup, etc.
  * @param {Object} valueProvider the object to request data from. Must implement .get(expression), can implement .set(key,value).
  * @public
+ * @platform
  */
 Component.prototype.addValueProvider=function(key,valueProvider){
     $A.assert($A.util.isString(key),"Component.addValueProvider(): 'key' must be a valid String.");
@@ -2140,6 +2159,7 @@ Component.prototype.getModel = function() {
  * @param {String}
  *            name The name of the Event.
  * @public
+ * @platform
  */
 Component.prototype.getEvent = function(name) {
     var eventDef = this.getDef().getEventDef(name);
@@ -2214,6 +2234,7 @@ Component.prototype.isDirty = function(expression) {
  * Returns true if the component has not been destroyed.
  *
  * @public
+ * @platform
  */
 Component.prototype.isValid = function(expression) {
     if (!expression) {

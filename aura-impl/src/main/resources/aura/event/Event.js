@@ -18,6 +18,7 @@
  * @description Creates an Event with name, source component, event definition, event dispatcher, parameters, and sets the fired flag to false.
  * @constructor
  * @param {Object} config
+ * @platform
  */
 function Event(config) {
     this.source = config["component"];
@@ -35,6 +36,7 @@ Event.prototype.auraType = "Event";
  * This method doesn't work for application events.
  *
  * @returns {Object}
+ * @platform
  */
 Event.prototype.getSource = function() {
     return this.source;
@@ -51,6 +53,7 @@ Event.prototype.getDef = function(){
 /**
  * Gets the name of the Event.
  * Returns a name of type String, the unique identifier that the component can use to call this Action.
+ * @platform
  */
 Event.prototype.getName = function(){
     return this.eventName;
@@ -60,6 +63,7 @@ Event.prototype.getName = function(){
  * Sets parameters for the Event. Does not modify an event that has already been fired.
  * Maps key in config to attributeDefs.
  * @param {Object} config The parameters for the Event.
+ * @platform
  */
 Event.prototype.setParams = function(config) {
     if (this.fired) {
@@ -84,6 +88,7 @@ Event.prototype.setParams = function(config) {
  * Sets a parameter for the Event. Does not modify an event that has already been fired.
  * @param {String} key The name of the parameter.
  * @param {Object} value The value of the parameter.
+ * @platform
  */
 Event.prototype.setParam=function(key,value) {
     if (this.fired) {
@@ -99,6 +104,7 @@ Event.prototype.setParam=function(key,value) {
 /**
  * Gets an Event parameter. Returns the parameters.
  * @param {String} name The name of the Event. For example, <code>event.getParam("button")</code> returns the value of the pressed mouse button (0, 1, or 2).
+ * @platform
  */
 Event.prototype.getParam = function(name){
     return this.params[name];
@@ -106,6 +112,7 @@ Event.prototype.getParam = function(name){
 
 /**
  * Gets all the Event parameters. Returns the collection of parameters.
+ * @platform
  */
 Event.prototype.getParams = function(){
     return this.params;
@@ -120,6 +127,7 @@ Event.prototype.statsIndex = [];
  * Returns null if a handler has destroyed the component.
  * Maps the component handlers to the event dispatcher.
  * @param {Object} params Optional A set of parameters for the Event. Any previous parameters of the same name will be overwritten.
+ * @platform
  */
 Event.prototype.fire = function(params) {
     if (this.fired) {
