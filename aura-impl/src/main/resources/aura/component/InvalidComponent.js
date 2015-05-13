@@ -297,6 +297,7 @@ InvalidComponent.prototype.getFacets = function() {
  * @private
  */
 InvalidComponent.prototype.raiseInvalidComponentError = function(func, args) {
+    //#if {"excludeModes" : ["PRODUCTION"]}
     var error = "Invalid component tried calling function [" + func + "]";
     var argsArr = Array.prototype.slice.call(args);
     if (argsArr.length) {
@@ -307,6 +308,7 @@ InvalidComponent.prototype.raiseInvalidComponentError = function(func, args) {
     }
 
     $A.error(error);
+    //#end
 };
 
 
