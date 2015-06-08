@@ -654,16 +654,7 @@ $A.ns.AuraClientService.prototype.request = function(actions, flightCounter) {
     $A.Perf.mark("Action Request Prepared");
     var flightHandled = { value: false };
     var acs = this;
-    //
-    // NOTE: this is done here, before the callback to avoid a race condition of someone else queueing up
-    // an abortable action while we are off waiting for storage.
-    //
-    window.setTimeout(function() {
-        if(!flightHandled.value) {
-            $A.warning("Timed out waiting for ActionController to reset flight counter! Resetting the flight counter and clearing component configs of processed actions");
-            flightCounter.cancel();
-        }
-    }, 30000);
+
     try {
         var abortableId = this.actionQueue.getLastAbortableTransactionId();
         var collector = new $A.ns.ActionCollector(actions, function() {
