@@ -55,6 +55,9 @@ Test.Aura.AuraClientServiceTest = function() {
                 json : {
                     encode :function(errorText) {
                         return "mockedJson:"+errorText;
+                    },
+                    orderedEncode: function(obj) {
+                        return obj;
                     }
                 }
             },
@@ -777,6 +780,9 @@ Test.Aura.AuraClientServiceTest = function() {
                         json : {
                             encode : function(toEncode) {
                                 return "<<" + JSON.stringify(toEncode) + ">>";
+                            },
+                            orderedEncode: function(obj) {
+                                return this.encode(obj);
                             }
                         },
                         isString : function(obj) {
@@ -1038,6 +1044,9 @@ Test.Aura.AuraClientServiceTest = function() {
                     json : {
                         encode :function(errorText) {
                             return "mockedJson:"+errorText;
+                        },
+                        orderedEncode: function(obj) {
+                            return obj;
                         }
                     }
                 },

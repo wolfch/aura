@@ -53,6 +53,7 @@ var clientService;
 
 // #include aura.polyfill.Array
 // #include aura.polyfill.Function
+// #include aura.polyfill.Object
 // #include aura.polyfill.Json
 // #include aura.polyfill.Promise
 // #include aura.util.Util

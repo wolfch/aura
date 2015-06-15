@@ -58,7 +58,7 @@
         	//we expect 2 warnings from setItem. 
     	    //one from gvp's merging context. another one is from storing the return of Action c.string down there
         	$A.test.expectAuraWarning("GlobalValueProvider.merge(), failed to put, error:Error: setItem(): mock always fails");
-        	$A.test.expectAuraWarning("AuraClientService.singleAction, problem when putting java://org.auraframework.impl.java.controller.AuraStorageTestController/ACTION$string:{\"testName\":\"testStorableAction\",\"param1\":1} into storage, error:Error: setItem(): mock always fails");
+                $A.test.expectAuraWarning('AuraClientService.singleAction, problem when putting java://org.auraframework.impl.java.controller.AuraStorageTestController/ACTION$string:{"param1":1,"testName":"testStorableAction"} into storage, error:Error: setItem(): mock always fails');
             // sets the server-side counter to 0
             var a = cmp.get("c.string");
             a.setParams({ testName : "testStorableAction", param1 : 1 });
@@ -80,8 +80,8 @@
         	//we are expecting 2 warning from setItem() 
         	//one from gvp's merging context
         	//one from storing the return of Action c.string below
-        	$A.test.expectAuraWarning("AuraClientService.singleAction, problem when putting java://org.auraframework.impl.java.controller.AuraStorageTestController/ACTION$string:{\"testName\":\"testStorableAction\",\"param1\":11} into storage, error:Error: setItem(): mock always fails");
-        	$A.test.expectAuraWarning("GlobalValueProvider.merge(), failed to put, error:Error: setItem(): mock always fails");
+            $A.test.expectAuraWarning('AuraClientService.singleAction, problem when putting java://org.auraframework.impl.java.controller.AuraStorageTestController/ACTION$string:{"param1":11,"testName":"testStorableAction"} into storage, error:Error: setItem(): mock always fails');
+            $A.test.expectAuraWarning("GlobalValueProvider.merge(), failed to put, error:Error: setItem(): mock always fails");
         	
             // increment the server-side counter (to 1)
             var a = cmp.get("c.string");
