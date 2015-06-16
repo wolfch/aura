@@ -1840,6 +1840,9 @@ Test.Aura.Controller.ActionTest = function() {
                     json : {
                         encode : function() {
                             return expectedEncode;
+                        },
+                        orderedEncode: function() {
+                            return expectedEncode;
                         }
                     }
                 }
@@ -2277,6 +2280,9 @@ Test.Aura.Controller.ActionTest = function() {
                     json : {
                         encode : function(val) {
                             return val;
+                        },
+                        orderedEncode: function(obj) {
+                            return obj;
                         }
                     }
                 },

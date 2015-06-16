@@ -1529,4 +1529,10 @@ $A.ns.Test.prototype.run = function(name, code, timeoutOverride){
     this.continueWhenReady();
 };
 
+$A.ns.Test.prototype["json"] = {
+    "orderedEncode": function(obj) {
+        return $A.util.json.orderedEncode(obj);
+    }
+};
+
 //#include aura.test.Test_export
