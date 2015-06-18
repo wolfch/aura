@@ -204,7 +204,7 @@
      * Verify that touchend event handlers is used if present before using onclick.
      * Automation for W-1564377
      */
-    testTouchEndHandlerUsedWhenPresent:{
+    _testTouchEndHandlerUsedWhenPresent:{
     	browsers:["IPAD"],
     	labels : ["UnAdaptableTest"],
     	test: [
@@ -264,7 +264,7 @@
             $A.test.assertEquals(0, component.get("v.clickCount"));
             component.find("anchor").getElement().click();
             $A.test.assertEquals(1, component.get("v.clickCount"), "onclick was not fired/handled");
-            
+
             // If the following handler was bound (unexpectedly), it should throw an error when executed
             component.find("hasBadOnClickHandler").getElement().click();
         }
