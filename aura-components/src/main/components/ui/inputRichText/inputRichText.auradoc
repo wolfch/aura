@@ -21,6 +21,7 @@
 		    By default, <code>ui:inputRichText</code> renders a WYSIWYG editor for entering rich text. 
 		    Setting <code>isRichText="false"</code> uses the <code>ui:inputTextArea</code> component instead of a WYSIWYG editor.
 		</p>
+		<pre>&lt;ui:inputRichText aura:id="inputRT" label="Rich Text Demo" value="Type something here" /></pre>
 		<p>
 			The width and height of the rich text editor are independent of those on the <code>ui:inputTextArea</code> component.
 		  	To set the width and height of the component when you set <code>isRichText="false"</code>, use the <code>cols</code> and <code>rows</code> attributes.
@@ -30,10 +31,5 @@
 			<code>ui:outputRichText</code> supports a list of HTML tags that are supported by CKEditor.
     	   Tags such as <code>&lt;script&gt;</code> are removed.
     	</p>
-	</aura:description>	
-		<aura:example name="inputRichText" ref="auradocs:demoInputRT" label="Using ui:inputRichText">
-    	<p>This example shows a text area and WYSIWYG editor.</p>
-	   </aura:example>
-	   
-	
+	</aura:description>
 </aura:documentation>
