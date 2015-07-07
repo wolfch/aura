@@ -56,8 +56,9 @@ $A.ns.Test.prototype.errors = [];
  * current test stage is completed but before the next stage is started.
  *
  * @example
- * <code>$A.test.addWaitFor("i was updated", function(){<br/>
- * return element.textContent;}, function(){alert("the wait is over"});</code>
+ * $A.test.addWaitFor("i was updated", function(){
+ *   return element.textContent;
+ *  }, function(){alert("the wait is over"});
  *
  * @param {Object} expected
  *             The value to compare against. If expected is a function,
@@ -77,7 +78,7 @@ $A.ns.Test.prototype.addWaitFor = function(expected, testFunction, callback){
  * current test stage is completed but before the next stage is started.
  *
  * @example
- * <code>$A.test.addWaitForAction(true, "myActionName", function() {alert("My Action Completed");});</code>
+ * $A.test.addWaitForAction(true, "myActionName", function() {alert("My Action Completed");});
  *
  * @param {Object} success true if the action should succeed.
  * @param {Object} actionName the name of the action from createAction or markForCompletion
@@ -108,8 +109,8 @@ $A.ns.Test.prototype.addWaitForAction = function(success, actionName, callback) 
  * current test stage is completed but before the next stage is started.
  *
  *  @example
- * <code>$A.test.addWaitForWithFailureMessage("i was updated", function(){<br/>
- *   return element.textContent;},"Failure Message", function(){alert("the wait is over"});</code>
+ *  $A.test.addWaitForWithFailureMessage("i was updated", function(){<br/>
+ *   return element.textContent;},"Failure Message", function(){alert("the wait is over"});
  *
  * @param {Object} expected The value to compare against. If expected is a function, it will evaluate it before
  *             comparison.
@@ -269,9 +270,9 @@ $A.ns.Test.prototype.enqueueAction = function(action, background) {
  * @description Get an instance of a server action that is not available to the component.
  * 
  * @example
- * <code>$A.test.getExternalAction(cmp, "aura =//ComponentController/ACTION$getComponent",<br/> 
- * 			{name:"aura:text", attributes:{value:"valuable"}},<br/>
- * 			function(action){alert(action.getReturnValue().attributes.values.value)})</code>
+ * $A.test.getExternalAction(cmp, "aura =//ComponentController/ACTION$getComponent",
+ * 			{name:"aura:text", attributes:{value:"valuable"}},
+ * 			function(action){alert(action.getReturnValue().attributes.values.value)})
  * 
  * @param {Component} component
  *            The scope to run the action with, even if the action is not visible to it
@@ -659,8 +660,8 @@ $A.ns.Test.prototype.assertAccessible = function() {
  * A truthy value refers to an Object, a string, a non-zero number, a non-empty array, or true.
  * 
  * @example
- * Positive: <code>assertTruthy("helloWorld")</code>,
- * Negative: <code>assertTruthy(null)</code>
+ * assertTruthy("helloWorld"); // Positive
+ * assertTruthy(null); // Negative
  * 
  * @param {Object} condition The condition to evaluate
  * @param {String} assertMessage The message that is returned if the condition is not true
@@ -679,8 +680,9 @@ $A.ns.Test.prototype.assertTruthy = function(condition, assertMessage) {
  * @description A falsey value refers to zero, an empty string, null, undefined, or false.
  * 
  * @example
- * Negative: <code>assertFalsy("helloWorld")</code>,
- * Postive: <code>assertFalsy(null)</code>
+ * assertFalsy("helloWorld"); // Negative
+ * assertFalsy(null); // Positive
+ *
  */
 $A.ns.Test.prototype.assertFalsy = function(condition, assertMessage) {
     if (condition) {
@@ -689,13 +691,15 @@ $A.ns.Test.prototype.assertFalsy = function(condition, assertMessage) {
 };
 
  /**
- * Assert that if(condition) check evaluates to true.
+ * @description Assert that if(condition) check evaluates to true.
  * 
  * @param {Object} condition The condition to evaluate
  * @param {String} assertMessage The message that is returned if the condition is not true
- * @description
- * Positive: assert("helloWorld"),
- * Negative: assert(null)
+ * 
+ * 
+ * @example
+ * assert("helloWorld"); // Positive
+ * assert(null); // Negative
  */
 $A.ns.Test.prototype.assert = function(condition, assertMessage) {
     this.assertTruthy(condition, assertMessage);

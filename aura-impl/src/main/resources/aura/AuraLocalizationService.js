@@ -18,6 +18,7 @@
  * @description The Aura Localization service Service, accessible using $A.localizationService. Provides utility methods
  * for localizing data or getting formatters for numbers, currencies, dates, etc.
  * @constructor
+ * @platform
  */
 var AuraLocalizationService = function AuraLocalizationService() {
     var numberFormat, percentFormat, currencyFormat;
@@ -41,6 +42,7 @@ var AuraLocalizationService = function AuraLocalizationService() {
          * @return {Number} The formatted number
          * @memberOf AuraLocalizationService
          * @public
+         * @platform
          */
         formatNumber : function(number) {
             return this.getDefaultNumberFormat().format(number);
@@ -57,6 +59,7 @@ var AuraLocalizationService = function AuraLocalizationService() {
          * @return {Number} The formatted percentage
          * @memberOf AuraLocalizationService
          * @public
+         * @platform
          */
         formatPercent : function(number) {
             return this.getDefaultPercentFormat().format(number);
@@ -73,6 +76,7 @@ var AuraLocalizationService = function AuraLocalizationService() {
          * @return {Number} The formatted currency
          * @memberOf AuraLocalizationService
          * @public
+         * @platform
          */
         formatCurrency : function(number) {
             return this.getDefaultCurrencyFormat().format(number);
@@ -94,7 +98,7 @@ var AuraLocalizationService = function AuraLocalizationService() {
          * @return {Number} The number format
          * @memberOf AuraLocalizationService
          * @public
-        
+         * @platform        
          */
         getNumberFormat : function(format, symbols) {
             return new NumberFormat(format, symbols);
@@ -110,8 +114,8 @@ var AuraLocalizationService = function AuraLocalizationService() {
          * @return {Number} The number format returned by <code>$Locale.numberFormat</code>.
          * @memberOf AuraLocalizationService
          * @public
+         * @platform
          */
-
         getDefaultNumberFormat : function() {
             if (!numberFormat) {
                 numberFormat = new NumberFormat($A.get("$Locale.numberFormat"));
@@ -130,6 +134,7 @@ var AuraLocalizationService = function AuraLocalizationService() {
          * @return {Number} The percentage format returned by <code>$Locale.percentFormat</code>.
          * @memberOf AuraLocalizationService
          * @public
+         * @platform
          */
         getDefaultPercentFormat : function() {
             if (!percentFormat) {
@@ -148,6 +153,7 @@ var AuraLocalizationService = function AuraLocalizationService() {
          * @return {Number} The currency format returned by <code>$Locale.currencyFormat</code>.
          * @memberOf AuraLocalizationService
          * @public
+         * @platform
          */
         getDefaultCurrencyFormat : function() {
             if (!currencyFormat) {
@@ -163,6 +169,7 @@ var AuraLocalizationService = function AuraLocalizationService() {
          * @return {String} A duration object
          * @memberOf AuraLocalizationService
          * @public
+         * @platform
          */
         displayDuration : function(d, noSuffix) {
             return d["humanize"](noSuffix);
@@ -174,6 +181,7 @@ var AuraLocalizationService = function AuraLocalizationService() {
          * @return {Number} The length of time in days.
          * @memberOf AuraLocalizationService
          * @public
+         * @platform
          */
         displayDurationInDays : function(d) {
             return d["asDays"]();
@@ -185,6 +193,7 @@ var AuraLocalizationService = function AuraLocalizationService() {
          * @return {Number} The length of time in hours.
          * @memberOf AuraLocalizationService
          * @public
+         * @platform
          */
         displayDurationInHours : function(d) {
             return d["asHours"]();
@@ -196,6 +205,7 @@ var AuraLocalizationService = function AuraLocalizationService() {
          * @return {Number} The length of time in milliseconds.
          * @memberOf AuraLocalizationService
          * @public
+         * @platform
          */
         displayDurationInMilliseconds : function(d) {
             return d["asMilliseconds"]();
@@ -207,6 +217,7 @@ var AuraLocalizationService = function AuraLocalizationService() {
          * @return {Number} The length of time in minutes.
          * @memberOf AuraLocalizationService
          * @public
+         * @platform
          */
         displayDurationInMinutes : function(d) {
             return d["asMinutes"]();
@@ -218,6 +229,7 @@ var AuraLocalizationService = function AuraLocalizationService() {
          * @return {Number} The length of time in months.
          * @memberOf AuraLocalizationService
          * @public
+         * @platform
          */
         displayDurationInMonths : function(d) {
             return d["asMonths"]();
@@ -229,6 +241,7 @@ var AuraLocalizationService = function AuraLocalizationService() {
          * @return {Number} The length of time in seconds.
          * @memberOf AuraLocalizationService
          * @public
+         * @platform
          */
         displayDurationInSeconds : function(d) {
             return d["asSeconds"]();
@@ -240,6 +253,7 @@ var AuraLocalizationService = function AuraLocalizationService() {
          * @return {Number} The length of time in years.
          * @memberOf AuraLocalizationService
          * @public
+         * @platform
          */
         displayDurationInYears : function(d) {
             return d["asYears"]();
@@ -252,6 +266,7 @@ var AuraLocalizationService = function AuraLocalizationService() {
          * @return {Object} A duration object
          * @memberOf AuraLocalizationService
          * @public
+         * @platform
          */
         duration : function(num, unit) {
             return unit ? moment["duration"](num, unit) : moment["duration"](num);
@@ -264,6 +279,7 @@ var AuraLocalizationService = function AuraLocalizationService() {
          * @return {Date} A JavaScript Date object
          * @memberOf AuraLocalizationService
          * @public
+         * @platform
          */
         endOf : function(date, unit) {
             return moment(date)["endOf"](unit)["toDate"]();
@@ -277,6 +293,7 @@ var AuraLocalizationService = function AuraLocalizationService() {
          * @return A formatted and localized date string
          * @memberOf AuraLocalizationService
          * @public
+         * @platform
          */
         formatDate : function(date, formatString, locale) {
             var mDate = moment(date);
@@ -299,6 +316,7 @@ var AuraLocalizationService = function AuraLocalizationService() {
          * @return A formatted and localized date string
          * @memberOf AuraLocalizationService
          * @public
+         * @platform
          */
         formatDateUTC : function(date, formatString, locale) {
             var mDate = moment["utc"](date);
@@ -321,6 +339,7 @@ var AuraLocalizationService = function AuraLocalizationService() {
          * @return A formatted and localized datetime string
          * @memberOf AuraLocalizationService
          * @public
+         * @platform
          */
         formatDateTime : function(date, formatString, locale) {
             var mDate = moment(date);
@@ -342,6 +361,7 @@ var AuraLocalizationService = function AuraLocalizationService() {
          * @param {String} locale A Java locale string. The default is from LocaleValueProvider.
          * @return A formatted and localized datetime string
          * @public
+         * @platform
          */
         formatDateTimeUTC : function(date, formatString, locale) {
             var mDate = moment["utc"](date);
@@ -364,6 +384,7 @@ var AuraLocalizationService = function AuraLocalizationService() {
          * @return A formatted and localized time string
          * @memberOf AuraLocalizationService
          * @public
+         * @platform
          */
         formatTime : function(date, formatString, locale) {
             var mDate = moment(date);
@@ -386,6 +407,7 @@ var AuraLocalizationService = function AuraLocalizationService() {
          * @return a formatted and localized time string
          * @memberOf AuraLocalizationService
          * @public
+         * @platform
          */
         formatTimeUTC : function(date, formatString, locale) {
             var mDate = moment["utc"](date);
@@ -406,6 +428,7 @@ var AuraLocalizationService = function AuraLocalizationService() {
          * @return {Number} The number of days in d.
          * @memberOf AuraLocalizationService
          * @public
+         * @platform
          */
         getDaysInDuration : function(d) {
             return d["days"]();
@@ -417,6 +440,7 @@ var AuraLocalizationService = function AuraLocalizationService() {
          * @return {Number} The number of hours in d.
          * @memberOf AuraLocalizationService
          * @public
+         * @platform
          */
         getHoursInDuration : function(d) {
             return d["hours"]();
@@ -427,6 +451,7 @@ var AuraLocalizationService = function AuraLocalizationService() {
          * @return {Object} the localized label set.
          * @memberOf AuraLocalizationService
          * @public
+         * @platform
          */
         getLocalizedDateTimeLabels : function() {
             var langLocale = $A.get("$Locale.langLocale");
@@ -440,6 +465,7 @@ var AuraLocalizationService = function AuraLocalizationService() {
          * @return {Number} The number of milliseconds in d.
          * @memberOf AuraLocalizationService
          * @public
+         * @platform
          */
         getMillisecondsInDuration : function(d) {
             return d["milliseconds"]();
@@ -451,6 +477,7 @@ var AuraLocalizationService = function AuraLocalizationService() {
          * @return {Number} The number of minutes in d.
          * @memberOf AuraLocalizationService
          * @public
+         * @platform
          */
         getMinutesInDuration : function(d) {
             return d["minutes"]();
@@ -462,6 +489,7 @@ var AuraLocalizationService = function AuraLocalizationService() {
          * @return {Number} The number of months in d.
          * @memberOf AuraLocalizationService
          * @public
+         * @platform
          */
         getMonthsInDuration : function(d) {
             return d["months"]();
@@ -473,6 +501,7 @@ var AuraLocalizationService = function AuraLocalizationService() {
          * @return {Number} The number of seconds in d.
          * @memberOf AuraLocalizationService
          * @public
+         * @platform
          */
         getSecondsInDuration : function(d) {
             return d["seconds"]();
@@ -484,6 +513,7 @@ var AuraLocalizationService = function AuraLocalizationService() {
          * @return {Number} The number of years in d.
          * @memberOf AuraLocalizationService
          * @public
+         * @platform
          */
         getYearsInDuration : function(d) {
             return d["years"]();
@@ -495,6 +525,7 @@ var AuraLocalizationService = function AuraLocalizationService() {
          * @return {Boolean} Returns true if it uses period time view.
          * @memberOf AuraLocalizationService
          * @public
+         * @platform
          */
         isPeriodTimeView : function(pattern) {
             if (!pattern || typeof pattern  != 'string') {
@@ -524,6 +555,7 @@ var AuraLocalizationService = function AuraLocalizationService() {
          * @return {Boolean} Returns true if date1 is after date2, or false otherwise.
          * @memberOf AuraLocalizationService
          * @public
+         * @platform
          */
         isAfter : function(date1, date2, unit) {
             return moment(date1)["isAfter"](date2, unit);
@@ -538,6 +570,7 @@ var AuraLocalizationService = function AuraLocalizationService() {
          * @return {Boolean} Returns true if date1 is before date2, or false otherwise.
          * @memberOf AuraLocalizationService
          * @public
+         * @platform
          */
         isBefore : function(date1, date2, unit) {
             return moment(date1)["isBefore"](date2, unit);
@@ -552,6 +585,7 @@ var AuraLocalizationService = function AuraLocalizationService() {
          * @return {Boolean} Returns true if date1 is the same as date2, or false otherwise.
          * @memberOf AuraLocalizationService
          * @public
+         * @platform
          */
         isSame : function(date1, date2, unit) {
             return moment(date1)["isSame"](date2, unit);
@@ -565,6 +599,7 @@ var AuraLocalizationService = function AuraLocalizationService() {
          * @return {Date} A JavaScript Date object
          * @memberOf AuraLocalizationService
          * @public
+         * @platform
          */
         parseDateTime : function(dateTimeString, targetFormat, locale) {
             if (!dateTimeString) {
@@ -584,6 +619,7 @@ var AuraLocalizationService = function AuraLocalizationService() {
          * @return {Date} A JavaScript Date object
          * @memberOf AuraLocalizationService
          * @public
+         * @platform
          */
         parseDateTimeISO8601 : function(dateTimeString) {
             if (!dateTimeString) {
@@ -605,6 +641,7 @@ var AuraLocalizationService = function AuraLocalizationService() {
          * @return {Date} A JavaScript Date object
          * @memberOf AuraLocalizationService
          * @public
+         * @platform
          */
         parseDateTimeUTC : function(dateTimeString, targetFormat, locale) {
             if (!dateTimeString) {
@@ -625,6 +662,7 @@ var AuraLocalizationService = function AuraLocalizationService() {
          * @return {Date} A JavaScript Date object
          * @memberOf AuraLocalizationService
          * @public
+         * @platform
          */
         startOf : function(date, unit) {
             return moment(date)["startOf"](unit)["toDate"]();
@@ -636,6 +674,7 @@ var AuraLocalizationService = function AuraLocalizationService() {
          * @return {String} An ISO8601 string to represent passed in Date object.
          * @memberOf AuraLocalizationService
          * @public
+         * @platform
          */
         toISOString : function(date) {
             if (date && (date instanceof Date)) {
@@ -661,6 +700,7 @@ var AuraLocalizationService = function AuraLocalizationService() {
          * @return {String} a string with Arabic digits.
          * @memberOf AuraLocalizationService
          * @public
+         * @platform
          */
         translateFromLocalizedDigits : function(input) {
             if (!input) {
@@ -690,6 +730,7 @@ var AuraLocalizationService = function AuraLocalizationService() {
          * @return {Date} an updated Date object.
          * @memberOf AuraLocalizationService
          * @public
+         * @platform
          */
         translateFromOtherCalendar : function(date) {
             var userLocaleLang = $A.get("$Locale.userLocaleLang");
@@ -706,6 +747,7 @@ var AuraLocalizationService = function AuraLocalizationService() {
          * @return {String} a string with localized digits.
          * @memberOf AuraLocalizationService
          * @public
+         * @platform
          */
         translateToLocalizedDigits : function(input) {
             if (!input) {
@@ -734,6 +776,7 @@ var AuraLocalizationService = function AuraLocalizationService() {
          * @return {Date} an updated Date object.
          * @memberOf AuraLocalizationService
          * @public
+         * @platform
          */
         translateToOtherCalendar : function(date) {
             var userLocaleLang = $A.get("$Locale.userLocaleLang");
@@ -751,6 +794,7 @@ var AuraLocalizationService = function AuraLocalizationService() {
          * @param {Function} callback A function to be called after the conversion is done
          * @memberOf AuraLocalizationService
          * @public
+         * @platform
          */
         UTCToWallTime : function(date, timezone, callback) {
             if (typeof callback === 'function') {
@@ -781,6 +825,7 @@ var AuraLocalizationService = function AuraLocalizationService() {
          * @param {Function} callback A function to be called after the conversion is done
          * @memberOf AuraLocalizationService
          * @public
+         * @platform
          */
         WallTimeToUTC : function(date, timezone, callback) {
             if (typeof callback === 'function') {

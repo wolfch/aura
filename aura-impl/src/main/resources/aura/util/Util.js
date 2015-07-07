@@ -15,7 +15,7 @@
  */
 /*jslint evil:true, sub: true */
 /**
- * @description The top-level namespace/object for all SFDC Util code.
+ * @description 
  * Util methods provide utility functions for browsers in addition to
  * functions for retrieving, manipulating, or checking DOM elements.
  * @constructor
@@ -77,6 +77,7 @@ $A.ns.Util.prototype.globalEval = $A.ns.Util.prototype.isIE ? function(src) {
  *
  * @param {Object} obj The object to check for.
  * @returns {Boolean} True if the object is an array, or false otherwise.
+ * @function
  * @platform
  */
 $A.ns.Util.prototype.isArray = typeof Array.isArray === "function" ? Array.isArray : function(obj) {
@@ -90,6 +91,7 @@ $A.ns.Util.prototype.isArray = typeof Array.isArray === "function" ? Array.isArr
  *
  * @param {Object} obj The object to check for.
  * @returns {Boolean} True if the object is a valid object, or false otherwise.
+ * @function
  * @platform
  */
 $A.ns.Util.prototype.isObject = function(obj){
@@ -163,6 +165,7 @@ $A.ns.Util.prototype.isBoolean = function(obj){
 /**
  * Checks if the object is undefined.
  *
+ * @platform
  * @param {Object} obj The object to check for.
  * @returns {Boolean} True if the object type is undefined, or false otherwise.
  */
@@ -187,6 +190,7 @@ $A.ns.Util.prototype.isUndefinedOrNull = function(obj){
  *
  * @param {Object} obj The object to check for.
  * @returns {Boolean} True if the object is empty, or false otherwise.
+ * @platform
  */
 $A.ns.Util.prototype.isEmpty = function(obj){
     return this.isUndefinedOrNull(obj) || obj === '' || (this.isArray(obj) && obj.length === 0) || (this.isObject(obj) && this.keys(obj).length === 0);
@@ -197,6 +201,8 @@ $A.ns.Util.prototype.isEmpty = function(obj){
  *
  * @param {Object} val The object to check.
  * @returns {Boolean} True if the object is truthy, or false otherwise.
+ * @platform
+ * @function
  */
 $A.ns.Util.prototype.getBooleanValue = function (val) {
     return val !== undefined && val !== null && val !== false && val !== 0 && val !== "false" && val !== "" && val !== "f";
@@ -353,7 +359,7 @@ $A.ns.Util.prototype.hasClass = function(element, className){
  * Adds the specified class to the element, depending on whether it already existed on that element.
  *
  * @param {Object} element The element to apply the class on.
- * @param {String} clz The CSS class to be applied on the element.
+ * @param {String} newClass The CSS class to be applied on the element.
  * @platform
  */
 $A.ns.Util.prototype.addClass = function(element, newClass){
@@ -1103,13 +1109,19 @@ $A.ns.Util.prototype.isSubDef = function(def, qname) {
  * @description Takes the methods, and properties from one object and assigns them to another.
  * Returns the base object with the members from the child object.
  * This is commonly used to apply a set of configurations to a default set, to get a single set of configuration properties.
+ *
  * @example
- * <ul>
- *  <li><code>util.apply(Child.prototype, Parent); // Returns a new object inheriting all the methods and properties from Parent.</code></li>
- *  <li><code>util.apply(Child.prototype, { isCool: true }); // Parent would then have a property of child.</code></li>
- *  <li><code>util.apply({ foo: 'bar', diameter: 10}, { diameter: 20, bat: 'man' }, true); //== {foo:'bar', diameter: 20, bat: 'man'}</code></li>
- *  <li><code>util.apply({ foo: 'bar', diameter: 10}, { diameter: 20, bat: 'man' }, false); //== {foo:'bar', diameter: 10, bat: 'man'}</code></li>
- *  </ul>
+ * $A.util.apply(Child.prototype, Parent); // Returns a new object inheriting all the methods and properties from Parent.
+ *
+ * @example
+ * $A.util.apply(Child.prototype, { isCool: true }); // Parent would then have a property of child.
+ * 
+ * @example
+ * $A.util.apply({ foo: 'bar', diameter: 10}, { diameter: 20, bat: 'man' }, true); //== {foo:'bar', diameter: 20, bat: 'man'}
+ * 
+ * @example
+ * $A.util.apply({ foo: 'bar', diameter: 10}, { diameter: 20, bat: 'man' }, false); //== {foo:'bar', diameter: 10, bat: 'man'}
+ *
  * @param {Object|Function} baseObject The object that will receive the methods, and properties.
  * @param {Object|Function} members The methods and properties to assign to the baseObject.
  * @param {Boolean} [forceCopy] If the property already exists, should we still copy the member? false by default

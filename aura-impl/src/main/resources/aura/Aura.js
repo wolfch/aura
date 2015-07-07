@@ -29,12 +29,11 @@ function exp() {
     }
 }
 
-/**
+/*
  * @description This, $A, is supposed to be our ONLY window-polluting top-level variable. Everything else in Aura is
  *            attached to it. Note that this almost empty object $A is replaced later, after $A.ns (created below) is
  *            populated with the types that can be used to populate the "real" $A. TODO(fabbott): Make that "only gobal
  *            name" goal become true; today it ain't.
- * @platform
  */
 window['$A'] = {};
 
@@ -132,9 +131,33 @@ var clientService;
  * @class Aura
  * @classdesc The Aura framework. Default global instance name is $A.
  * @constructor
- * @platform
+ * 
+ * @borrows $A.ns.AuraClientService#enqueueAction as enqueueAction
+ * @borrows $A.ns.AuraClientService#deferAction as deferAction
+ * @borrows $A.ns.AuraRenderingService#render as render
+ * @borrows $A.ns.AuraRenderingService#rerender as rerender
+ * @borrows $A.ns.AuraRenderingService#unrender as unrender
+ * @borrows $A.ns.AuraRenderingService#afterRender as afterRender
+ * @borrows $A.ns.AuraComponentService#get as getCmp
+ * @borrows $A.ns.AuraComponentService#createComponent as createComponent
+ * @borrows $A.ns.AuraComponentService#createComponents as createComponents
+ * @borrows $A.ns.AuraComponentService#getComponent as getComponent
+ * @borrows $A.ns.AuraComponentService#newComponentDeprecated as newCmp
+ * @borrows $A.ns.AuraComponentService#newComponentDeprecated as newCmpDeprecated
+ * @borrows $A.ns.AuraComponentService#newComponentAsync as newCmpAsync
+ * @borrows AuraEventService.newEvent as getEvt
+ * @borrows Component as Component
+ * @borrows $A.ns.AuraClientService#getCurrentTransasctionId as getCurrentTransactionId
+ * @borrows $A.ns.AuraClientService#setCurrentTransasctionId as setCurrentTransactionId
  */
 $A.ns.Aura = function() {
+    /** 
+     * Collection of basic utility methods to operate on the DOM and Aura Components. <br/>
+     * See the documentation for <a href="#reference?topic=api:Util">Util</a> for the members.
+     *
+     * @type $A.ns.Util
+     * @platform 
+     */
     this.util = new $A.ns.Util();
     this["util"] = this.util;
     this.globalValueProviders={};
@@ -153,6 +176,13 @@ $A.ns.Aura = function() {
     this.historyService = new $A.ns.AuraHistoryService();
     this.eventService = new AuraEventService();
     this.layoutService = new AuraLayoutService();
+    /**
+     * Instance of the AuraLocalizationService which provides utility methods for localizing data or getting formatters for numbers, currencies, dates, etc.<br/>
+     * See the documentation for <a href="#reference?topic=api:AuraLocalizationService">AuraLocalizationService</a> for the members.
+     * 
+     * @type AuraLocalizationService
+     * @platform
+     */
     this.localizationService = new AuraLocalizationService();
     this.storageService = new AuraStorageService();
     this.styleService = new AuraStyleService();
@@ -163,6 +193,7 @@ $A.ns.Aura = function() {
     //#if {"excludeModes" : ["PRODUCTION", "PRODUCTIONDEBUG"]}
     this.devToolService = new AuraDevToolService();
     //#end
+
     var aura = this;
 
     /** @field */
@@ -283,138 +314,25 @@ $A.ns.Aura = function() {
         }
     };
 
-    /**
-     * Equivalent to <code>$A.clientService.enqueueAction()</code>.
-     * <p>See Also: <a href="#reference?topic=api:AuraClientService">AuraClientService</a></p>
-     * @public
-     * @function
-     * @param {Action} action
-     * @borrows AuraClientService.enqueueAction
-     * @platform
-     */
+
+    // Doced at the source by the @borrows statements on the Aura class
     this.enqueueAction = this.clientService.enqueueAction.bind(this.clientService);
-
-    /**
-     * Equivalent to <code>$A.clientService.deferAction()</code>.
-     * <p>See Also: <a href="#reference?topic=api:AuraClientService">AuraClientService</a></p>
-     * @public
-     * @function
-     * @param {Action} action
-     * @borrows AuraClientService.deferAction
-     */
     this.deferAction = this.clientService.deferAction.bind(this.clientService);
-
-    /**
-     * Equivalent to <code>$A.renderingService.render()</code>.
-     * <p>See Also: <a href="#reference?topic=api:AuraRenderingService">AuraRenderingService</a></p>
-     * @public
-     * @function
-     * @param {Component|Array} cmp
-     * @borrows AuraRenderingService.render
-     */
     this.render = this.renderingService.render.bind(this.renderingService);
-
-    /**
-     * Equivalent to <code>$A.renderingService.rerender()</code>.
-     * <p>See Also: <a href="#reference?topic=api:AuraRenderingService">AuraRenderingService</a></p>
-     * @public
-     * @function
-     * @param {Component|Array} cmp
-     * @borrows AuraRenderingService.rerender
-     */
     this.rerender = this.renderingService.rerender.bind(this.renderingService);
-
-    /**
-     * Equivalent to <code>$A.renderingService.unrender()</code>.
-     * <p>See Also: <a href="#reference?topic=api:AuraRenderingService">AuraRenderingService</a></p>
-     * @public
-     * @function
-     * @param {Component|Array} cmp
-     * @borrows AuraRenderingService.unrender
-     */
     this.unrender = this.renderingService.unrender.bind(this.renderingService);
-
-    /**
-     * Equivalent to <code>$A.renderingService.afterRender()</code>.
-     * <p>See Also: <a href="#reference?topic=api:AuraRenderingService">AuraRenderingService</a>
-     * @public
-     * @function
-     * @param {Component|Array} cmp
-     * @borrows AuraRenderingService.afterRender
-     */
     this.afterRender = this.renderingService.afterRender.bind(this.renderingService);
-
-    /**
-     * Equivalent to <code>$A.componentService.get()</code>.
-     * <p>See Also: <a href="#reference?topic="AuraComponentService">AuraComponentService</a></p>
-     * @public
-     * @deprecated use getComponent instead
-     * @function
-     * @param {Component|Array} cmp
-     * @borrows AuraComponentService.get
-     */
     this.getCmp = this.componentService.get.bind(this.componentService);
-
-    /**
-     * Equivalent to <code>$A.componentService.getComponent()</code>.
-     * <p>See Also: <a href="#reference?topic="AuraComponentService">AuraComponentService</a></p>
-     * @public
-     * @function
-     * @param {Component|Array} cmp
-     * @borrows AuraComponentService.getComponent
-     * @platform
-     */
     this.getComponent = this.componentService.getComponent.bind(this.componentService);
-
-    /**
-     * Create a component from a type and a set of attributes.
-     * @borrows AuraComponentService.createComponent
-     * @platform
-     */
     this.createComponent = this.componentService["createComponent"].bind(this.componentService);
-
-    /**
-     * Create an array of components from a list of types and attributes.
-     * @borrows AuraComponentService.createComponents
-     * @platform
-     */
     this.createComponents = this.componentService["createComponents"].bind(this.componentService);
-
-    /**
-     * Client-side component creation. This method is replaced by newCmpAsync().
-     * @param {Object} config
-     * @param {Object} attributeValueProvider
-     * @param {Boolean} localCreation
-     * @deprecated Use createComponent instead.
-     * @platform
-     */
     this.newCmp = this.componentService["newComponentDeprecated"].bind(this.componentService);
-
-    /**
-     * Previously known as newComponent(). This method is replaced by newCmpAsync().
-     * @param {Object} config
-     * @param {Object} attributeValueProvider
-     * @param {Boolean} localCreation
-     * @param {Boolean} doForce
-     * @deprecated Use createComponent instead.
-     */
     this.newCmpDeprecated = this.componentService["newComponentDeprecated"].bind(this.componentService);
-
-    /**
-     * Creates components from a client-side controller or helper. Equivalent to <code>$A.newCmpAsync()</code>.
-     * If no server-side dependencies are found, this method runs synchronously.
-     * @param {Object} callbackScope The callback scope
-     * @param {Function} callback The callback function, required for returning the newly created component
-     * @param {Object} config Provides the component descriptor and attributes. Example:
-     * <p><code>"componentDef": "markup://ui:button", "attributes": { "values": {label: "Submit"}}</code></p>
-     * @param {Object} attributeValueProvider The value provider for the attribute.
-     * @param {Boolean} localCreation For internal use only. localCreation determines if the global id is used and defaults to false.
-     * @param {Boolean} doForce For internal use only. doForce enforces client-side creation and defaults to false.
-     * @param {Boolean} forceServer For internal use only. forceServer enforces server-side creation and defaults to false.
-     * @deprecated Use createComponent instead.
-     */
-
     this.newCmpAsync = this.componentService["newComponentAsync"].bind(this.componentService);
+    this.getEvt = this.eventService.newEvent;
+    this.Component = Component;
+    this.getCurrentTransactionId = this.clientService.getCurrentTransasctionId.bind(this.clientService);
+    this.setCurrentTransactionId = this.clientService.setCurrentTransasctionId.bind(this.clientService);
 
     /**
      * Pushes current portion of attribute's creationPath onto stack
@@ -434,19 +352,6 @@ $A.ns.Aura = function() {
     	act.pushCreationPath(creationPath);
     };
 
-    /**
-     * Get the current abortable transaction ID.
-     *
-     * @public
-     */
-    this.getCurrentTransactionId = this.clientService.getCurrentTransasctionId.bind(this.clientService);
-
-    /**
-     * Set the current abortable transaction ID.
-     *
-     * @public
-     */
-    this.setCurrentTransactionId = this.clientService.setCurrentTransasctionId.bind(this.clientService);
 
     /**
      * pops current portion of attribute's creationPath from stack
@@ -483,19 +388,6 @@ $A.ns.Aura = function() {
     	}
     	act.setCreationPathIndex(idx);
     };
-
-
-    /**
-     * Equivalent to <code>$A.eventService.newEvent()</code>.
-     * <p>See Also: <a href="#reference?topic="AuraEventService">AuraEventService</a></p>
-     * @public
-     * @function
-     * @param {Component|Array} cmp
-     * @borrows AuraEventService.newEvent
-     */
-    this.getEvt = this.eventService.newEvent;
-    
-    this.Component = Component;
 
     // TODO: convert to //#exportSymbols when available
     exp(aura,
@@ -709,23 +601,11 @@ $A.ns.Aura.prototype.finishInit = function(doNotCallUIPerfOnLoad) {
  * each error that occurs. <code>auraErrorsExpectedDuringInit</code> allows server side errors to not stop the
  * test as well.
  *
- *@example
- * <pre>
- * testDuplicate : {
-   auraErrorsExpectedDuringInit : ["Duplicate found!"],
-     attributes : {
- *     dupCmp : true
- *   },
- *    //more tests
- * }
- * </pre>
- *
- * <p>This code tries to separate a "display message" (with limited information for users in production
- * modes) from a "log message" (always complete).</p>
  *
  * @public
  * @param {String} msg The error message to be displayed to the user.
  * @param {Error} [e] The error object to be displayed to the user.
+ * @platform
  */
 $A.ns.Aura.prototype.error = function(msg, e){
     this.logger.error(msg, e);
@@ -755,6 +635,7 @@ $A.ns.Aura.prototype.showErrors = function(toggle){
  * @public
  * @param {String} w The message to display.
  * @param {Error} e an error, if any.
+ * @platform
  */
 $A.ns.Aura.prototype.warning = function(w, e) {
     this.logger.warning(w, e);
@@ -861,6 +742,7 @@ $A.ns.Aura.prototype.getContext = function() {
  * @param {Function} func The function to run.
  * @param {String} name an optional name for the stack.
  * @public
+ * @platform
  */
 $A.ns.Aura.prototype.run = function(func, name) {
     $A.assert(func && $A.util.isFunction(func), "The parameter 'func' for $A.run() must be a function!");
@@ -921,9 +803,11 @@ $A.ns.Aura.prototype.userAssert = function(condition, msg) {
  *  If both value and error are passed in, value shows up in the console as a group with value logged within the group.
  *  If only value is passed in, value is logged without grouping.
  *  <p>For example, <code>$A.log(action.getError());</code> logs the error from an action.</p>
+ *
  * @public
  * @param {Object} value The first object to log.
  * @param {Object} error The error messages to be logged in the stack trace.
+ * @platform
  */
 $A.ns.Aura.prototype.log = function(value, error) {
     this.logger.info(value, error);
@@ -1296,10 +1180,36 @@ $A.ns.Aura.prototype.Perf = window["Perf"] ?
 // $A, without making a new top-level name:
 (function bootstrap() {
     var ns = $A.ns;
+    /**
+     * @description This, $A, is supposed to be our ONLY window-polluting top-level variable. Everything else in Aura is
+     *            attached to it. Note that this almost empty object $A is replaced later, after $A.ns (created below) is
+     *            populated with the types that can be used to populate the "real" $A. TODO(fabbott): Make that "only gobal
+     *            name" goal become true; today it ain't.
+     * @platform
+     * @namespace
+     * @alias $A
+     *
+     * @borrows $A.ns.AuraComponentService#createComponent as $A.createComponent
+     * @borrows $A.ns.AuraComponentService#createComponents as $A.createComponents
+     * @borrows $A.ns.AuraComponentService#getComponent as $A.getComponent
+     * @borrows $A.ns.Aura#getRoot as $A.getRoot
+     * @borrows $A.ns.Aura#get as $A.get
+     * @borrows $A.ns.Aura#set as $A.set
+     * @borrows $A.ns.AuraClientService#enqueueAction as $A.enqueueAction
+     * @borrows $A.ns.Aura#error as $A.error
+     * @borrows $A.ns.Aura#log as $A.log
+     * @borrows $A.ns.Aura#warning as $A.warning
+     * @borrows $A.ns.Aura#run as $A.run
+     * @borrows $A.ns.AuraComponentService#newComponentDeprecated as $A.newCmp
+     * @borrows $A.ns.AuraComponentService#newComponentAsync as $A.newCmpAsync
+     * @borrows $A.ns.Aura#localizationService as localizationService
+     * @borrows $A.ns.Aura#util as util
+     */
     window['$A'] = new ns.Aura();
     window['$A']['ns'] = ns;
     window['$A'].ns = ns;
     $A.metricsService.bootstrapMark("frameworkReady");
+
 })();
 
 // shortcuts for using throughout the framework code.
