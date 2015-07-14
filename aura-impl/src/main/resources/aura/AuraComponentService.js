@@ -58,10 +58,11 @@ $A.ns.AuraComponentService.prototype.get =  function(globalId) {
 };
 
 /**
- * Gets an instance of a component.
+ * Gets an instance of a component from either a GlobalId or a DOM element that was created via a Component Render.
  * @param {Object} identifier that is either a globalId or an element.
  *
  * @public
+ * @platform
  */
 $A.ns.AuraComponentService.prototype.getComponent = function(identifier) {
     return this.get(identifier) || this.getRenderingComponentForElement(identifier);
@@ -113,14 +114,23 @@ $A.ns.AuraComponentService.prototype.newComponentArray = function(config, attrib
 };
 
 /**
- * createComponent is used to create components in javascript. It accepts the name of a type of component, a map of attributes,
+ * Create a component from a type and a set of attributes. 
+ * It accepts the name of a type of component, a map of attributes,
  * and a callback to notify callers.
+ *
  * @param {String} type The type of component to create, e.g. "ui:button".
  * @param {Object} attributes A map of attributes to send to the component. These take the same form as on the markup,
- * including events </code>{"press":component.getReference("c.handlePress")}</code>, and id <code>{"aura:id":"myComponentId"}</code>.
+ * including events <code>{"press":component.getReference("c.handlePress")}</code>, and id <code>{"aura:id":"myComponentId"}</code>.
  * @param {Function} callback The method to call, to which it returns the newly created component.
  *
+ * @example
+ * $A.createComponent("aura:text",{value:'Hello World'}, function(auraTextComponent, status, statusMessagesList){
+ *      // auraTextComponent is an instance of aura:text containing the value Hello World
+ * });
+ * 
  * @public
+ * @platform
+ * @function
  */
 $A.ns.AuraComponentService.prototype.createComponent = function(type, attributes, callback){
     $A.assert($A.util.isString(type), "ComponentService.createComponent(): 'type' must be a valid String.");
@@ -163,12 +173,27 @@ $A.ns.AuraComponentService.prototype.createComponent = function(type, attributes
 };
 
 /**
- * createComponents is used to create an array of components. It accepts a list of component names and attribute maps, and a callback
+ * Create an array of components from a list of types and attributes.
+ * It accepts a list of component names and attribute maps, and a callback
  * to notify callers.
- * @param {Array} components The list of components to create, e.g. ["ui:button",{"press":component.getReference("c.handlePress")}]
+ * 
+ * @param {Array} components The list of components to create, e.g. <code>["ui:button",{"press":component.getReference("c.handlePress")}]</code>
  * @param {Function} callback The method to call, to which it returns the newly created components.
- *
+ * 
+ * @example $A.createComponents([
+ *      ["aura:text",{value:'Hello'}],
+ *      ["ui:button",{label:'Button'}],
+ *      ["aura:text",{value:'World'}]
+ *  ],function(components,status,statusMessagesList){
+ *      // Components is an array of 3 components
+ *      // 0 - Text Component containing Hello
+ *      // 1 - Button Component with label Button
+ *      // 2 - Text component containing World
+ *  });
+ * 
  * @public
+ * @platform
+ * @function
  */
 $A.ns.AuraComponentService.prototype.createComponents = function(components, callback) {
     $A.assert($A.util.isArray(components), "ComponentService.createComponents(): 'components' must be a valid Array.");
@@ -215,7 +240,9 @@ $A.ns.AuraComponentService.prototype.newComponent = function(config, attributeVa
  * creates a <code>ui:inputText</code> component.
  * @param {Object} config Use config to pass in your component definition and attributes. Supports lazy or exclusive loading by passing in "load": "LAZY" or "load": "EXCLUSIVE"
  * @param {Object} attributeValueProvider The value provider for the attributes
- *
+ * 
+ * @platform
+ * @function
  * @deprecated use createComponent instead
  */
 $A.ns.AuraComponentService.prototype.newComponentDeprecated = function(config, attributeValueProvider, localCreation, doForce){
@@ -412,7 +439,8 @@ $A.ns.AuraComponentService.prototype.hasComponentClass = function(descriptor) {
  * @param {Boolean} [doForce] Whether to force client side creation
  * @param {Boolean} [forceServer] Whether to force server side creation
  *
- * @deprecated use createComponent instead
+ * @deprecated Use <code>$A.createComponent(String type, Object attributes, function callback)</code> instead.
+ * @platform
  */
 $A.ns.AuraComponentService.prototype.newComponentAsync = function(callbackScope, callback, config, attributeValueProvider, localCreation, doForce, forceServer) {
     $A.assert(config, "ComponentService.newComponentAsync(): 'config' must be a valid Object.");

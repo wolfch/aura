@@ -1634,6 +1634,7 @@ $A.ns.AuraClientService.prototype.isConnected = function() {
  * @param {Boolean} background Set to true to run the action in the background, otherwise the value of action.isBackground() is used.
  * @memberOf $A.ns.AuraClientService
  * @public
+ * @platform
  */
 // TODO: remove boolean trap http://ariya.ofilabs.com/2011/08/hall-of-api-shame-boolean-trap.html
 $A.ns.AuraClientService.prototype.enqueueAction = function(action, background) {
