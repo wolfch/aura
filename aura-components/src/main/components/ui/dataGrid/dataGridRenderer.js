@@ -26,7 +26,8 @@
 		return table;
 	},
 	
-	unrender: function (cmp) {
+	unrender: function (cmp, helper) {
+		helper.destroyTemplates(cmp);
 		this.superUnrender();
 	}
 })
