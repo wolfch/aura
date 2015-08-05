@@ -78,8 +78,16 @@
     
     hideList: function(component) {
         var list = component.find("list");
+        var panel;
         if (list && list.get("v.visible") === true) {
             list.set("v.visible", false);
+        } else if (component.get("v.usePanel")) {
+            panel = component.find("panel");
+            
+            if(panel && panel.get("v.visible")) {
+                component._panel.set('v.visible', false);
+            }
+            
         }
     },
 

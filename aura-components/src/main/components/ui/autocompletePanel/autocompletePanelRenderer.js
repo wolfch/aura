@@ -13,17 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-.THIS {
-	visibility: hidden;
-	z-index: 1000;
-	top: 0;
-	left: 0;
-}
+({
+    unrender: function(component, helper) {
 
-.THIS.visible {
-	visibility: visible;
-}
-
-.THIS .uiAbstractList {
-	position: relative;
-}
+        //clean up constraint
+        if(component.positionConstraint) {
+            component.positionConstraint.destroy();
+            delete component.positionConstraint;
+        }
+        this.superUnrender();
+    }
+})

@@ -59,6 +59,7 @@
 		        </aura:set>
 		    </ui:autocomplete>
 		</div>
+		
 	</div>
 
 </aura:component>
