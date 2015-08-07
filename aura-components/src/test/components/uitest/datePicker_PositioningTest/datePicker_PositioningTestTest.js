@@ -31,6 +31,8 @@
                 var windowDimensions = $A.util.getWindowSize();
                 var datePickerRect = datePicker.getBoundingClientRect();
                 var inputDateRect = cmp.find('inputDate').getElement().getBoundingClientRect();
+                if(datePickerRect.top < 0 || datePickerRect.left < 0)
+                	return false;
                 $A.test.assertTrue(datePickerRect.top >= 0, "top of datePicker going out of viewport for " + position);
                 $A.test.assertTrue(datePickerRect.left >= 0, "left portion of datePicker going out of viewport for " + position);                          
                 //$A.test.assertTrue(datePickerRect.bottom <= windowDimensions.height, "bottom of datePicker going out of viewport for " + position);
