@@ -328,6 +328,7 @@
         var visible = component.get("v.visible");
         var viewPort = $A.util.getWindowSize();
         var self = this;
+        var allowFlips = component.get("v.allowFlips");
         var referenceElem = component.getConcreteComponent().get("v.referenceElement");
 
         if (elem && visible) {
@@ -363,7 +364,9 @@
 
                 };
 
-                // if the target element is inside a
+                this.attachToDocumentBody(component);
+
+                // if the target element is inside a 
                 // scrollable element, we need to make sure
                 // scroll events move that element,
                 // not the parent, also we need to reposition on scroll
@@ -372,20 +375,36 @@
                     elem.addEventListener('wheel', this._handleWheel);
                 }
 
-                if(!component.positionConstraint) {
-                    component.positionConstraint = this.lib.panelPositioning.createRelationship({
-                        element:elem,
-                        target:referenceElem,
-                        appendToBody: true,
-                        align: 'left top',
-                        targetAlign: 'left bottom'
-                    });
+                var elAlign = 'left top';
+                var targetAlign = 'left bottom';
+
+                if(allowFlips && window.innerHeight - referenceElem.getBoundingClientRect().bottom < 100) {
+                    elAlign = 'left bottom';
+                    targetAlign = 'left top';
                 }
+
+                // the constraints must be destroyed and recreated
+                // because the datepicker height may change on rerender,
+                // making all the caches wrong. 
+                if(component.positionConstraint) {
+                    component.positionConstraint.destroy();
+                    delete component.positionConstraint;
+                }
+                
+                component.positionConstraint = this.lib.panelPositioning.createRelationship({
+                    element:elem,
+                    target:referenceElem,
+                    align: elAlign,
+                    targetAlign: targetAlign
+                });
+
                 this.lib.panelPositioning.reposition(function() {
                     //attaching to the body causes the date to lose focus so we need to add the focus back
                     self.focusDate(component);
                 });
+
                 
+               
             } else {
                 if (!$A.util.isUndefinedOrNull(referenceElem)) {
                     $A.util.attachToDocumentBody(component.getElement());

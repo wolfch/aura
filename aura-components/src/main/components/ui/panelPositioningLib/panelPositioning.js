@@ -144,6 +144,7 @@ function (constraint, elementProxyFactory) {
                 bindEvents();
             }
 
+
             var el = config.element;
     		var targ = config.target;
             var constraintList = [];
@@ -152,10 +153,14 @@ function (constraint, elementProxyFactory) {
             
             if(config.appendToBody) {
                 document.body.appendChild(config.element);
+                config.element.style.top = '0px';
+                config.element.style.left = '0px';
+
             }
+            config.element.offsetHeight;
             config.element = elementProxyFactory.getElement(config.element);
             config.target = elementProxyFactory.getElement(config.target);
-            
+            config.target.refresh();
             if(config.type !== 'bounding box' && config.type !== 'below'  && config.type !== 'inverse bounding box') {
                 var constraintDirections = config.align.split(/\s/);
                 constraintList.push(new Constraint(directionMap.horiz[constraintDirections[0]], config));
