@@ -110,7 +110,6 @@ function (w) {
      * @method refresh
      */
     ElementProxy.prototype.refresh = function() {
-
         if(this.isDirty()) {
             return;
         }
@@ -176,11 +175,16 @@ function (w) {
      * Computes and applies the positioning changes to the DOM
      */
     ElementProxy.prototype.bake = function() {
-        var absPos = this._node.getBoundingClientRect();
+
+        
         this._node.style.position = 'absolute';
+        this._node.offsetHeight;
+        var absPos = this._node.getBoundingClientRect();
         var style = w.getComputedStyle(this._node);
+
         var originalLeft, originalTop;
         var scrollTop, scrollLeft;
+
 
         if(typeof w.pageYOffset !== 'undefined') {
             scrollTop = w.pageYOffset;
@@ -203,7 +207,6 @@ function (w) {
         
         originalLeft = parseInt(originalLeft.replace('px', ''), 10);
         originalTop = parseInt(originalTop.replace('px', ''), 10);
-        
         var leftDif = this.left - (absPos.left + scrollLeft);
         var topDif = this.top - (absPos.top + scrollTop);
         
