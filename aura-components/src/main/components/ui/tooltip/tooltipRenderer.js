@@ -62,5 +62,6 @@
 
     unrender: function(component, helper) {
         helper.cleanup(component);
+        this.superUnrender();
     }
 })
