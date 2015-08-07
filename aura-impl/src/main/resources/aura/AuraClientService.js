@@ -921,12 +921,10 @@ AuraClientService.prototype.loadTokenFromStorage = function() {
  * Note that in testing, this can be used to make the host appear unreachable.
  *
  * @param {string} host the host name of the server.
- * @param {string} sid optional session ID.
  * @export
  */
-AuraClientService.prototype.initHost = function(host, sid) {
+AuraClientService.prototype.initHost = function(host) {
     this._host = host || "";
-    this._sid = sid || "";
 
     //#if {"modes" : ["PRODUCTION", "PRODUCTIONDEBUG"]}
     delete AuraClientService.prototype.initHost;
@@ -1780,8 +1778,7 @@ AuraClientService.prototype.send = function(auraXHR, actions, method, options) {
         qs = this.buildParams({
             "message"      : $A.util.json.encode({ "actions" : actionsToSend }),
             "aura.token"   : this._token,
-            "aura.context" : context.encodeForServer(),
-            "sid"          : this._sid
+            "aura.context" : context.encodeForServer()
         });
 
     } catch (e) {
@@ -1800,6 +1797,7 @@ AuraClientService.prototype.send = function(auraXHR, actions, method, options) {
     auraXHR.length = qs.length;
     auraXHR.request = this.createXHR();
     auraXHR.request["open"](method, url, true);
+    auraXHR.request["withCredentials"] = true;
     auraXHR.request["onreadystatechange"] = function() {
     // Ordering is important. auraXHR will no longer be valid after processed.
 
@@ -1810,6 +1808,7 @@ AuraClientService.prototype.send = function(auraXHR, actions, method, options) {
             that.receive(auraXHR);
         }
     };
+    
     if(context&&context.getCurrentAccess()&&this.inAuraLoop()){
         auraXHR.request["onreadystatechange"] = $A.getCallback(auraXHR.request["onreadystatechange"]);
     }
@@ -1833,9 +1832,11 @@ AuraClientService.prototype.send = function(auraXHR, actions, method, options) {
     } else {
         auraXHR.request["send"]();
     }
+    
     setTimeout(function() {
         $A.get("e.aura:waiting").fire();
     }, 1);
+    
     return true;
 };
 
