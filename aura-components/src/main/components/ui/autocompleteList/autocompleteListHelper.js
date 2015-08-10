@@ -30,6 +30,16 @@
     },
 
     /**
+     * Notify listeners to when the list is hidden
+     */
+    fireHide: function(component) {
+        var evt = component.get("e.listHide");
+        if (evt) {
+            evt.fire();
+        }
+    },
+
+    /**
      * Notify that the matching is done.
      */
     fireMatchDoneEvent: function(component, items) {
@@ -427,7 +437,6 @@
     
     showLoading:function (component, visible) {
         $A.util.toggleClass(component, "loading", visible);
-
         // Originally, no loading indicator was shown. Making it only appear when specified in the facet.
         if (!$A.util.isEmpty(component.get("v.loadingIndicator"))) {
             var list = component.find("list");
@@ -452,6 +461,7 @@
                 // De-register list expand/collapse events
                 $A.util.removeOn(document.body, this.getOnClickEventProp("onClickStartEvent"), this.getOnClickStartFunction(component));
                 $A.util.removeOn(document.body, this.getOnClickEventProp("onClickEndEvent"), this.getOnClickEndFunction(component));
+                this.fireHide(component);
             } else { // Register list expand/collapse events
                 obj["aria-expanded"] = true;
                 $A.util.on(document.body, this.getOnClickEventProp("onClickStartEvent"), this.getOnClickStartFunction(component));

@@ -24,8 +24,5 @@ public class PillContainerAutoCompleteWithUsePanelUITest extends BasePillContain
 	public PillContainerAutoCompleteWithUsePanelUITest() {
 		super("/uitest/pillContainer_WithAutoCompleteUsePanelSet.cmp");	
 	}
-	@Override
-	public void testLossOfFocusVerification(){
-		//TODO:Remove this override test once W-2707857 is fixed
-	}
+
 }

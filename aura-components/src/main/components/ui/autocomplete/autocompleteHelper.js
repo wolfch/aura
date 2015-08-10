@@ -85,7 +85,7 @@
             panel = component.find("panel");
             
             if(panel && panel.get("v.visible")) {
-                component._panel.set('v.visible', false);
+                panel.set('v.visible', false);
             }
             
         }

@@ -86,6 +86,19 @@
         var domEvent = event.getParam("domEvent");
         helper.fireEvent(component, domEvent, helper);
     },
+
+    handleListHide: function(component) {
+        var listCmp = component.find("list");
+        var panel;
+        var isVisible = false;
+
+        if(listCmp && component.get('v.usePanel')) {
+            panel = component.find('panel');
+            isVisible = listCmp.get('v.visible');
+            panel.set('v.visible', isVisible);
+        }
+
+    },
     
     handleMatchDone: function(component, event, helper) {
         var evt = component.get("e.matchDone");
@@ -123,11 +136,13 @@
         var usePanel = component.get('v.usePanel');
         var panel;
         var zIndex;
+        var listCmp = component.find("list");
         
-        if(usePanel) {
+        if(usePanel && listCmp) {
             panel = component.find('panel');
-            panel.set('v.visible', true);
+            panel.set('v.visible', listCmp.get('v.visible'));
             panel.set('v.referenceElement', concreteHelper.getPanelListReferenceElement(component));
+            panel.set('v.referenceElement', component.find('input').getElement().querySelector('input'));
             $A.get('e.ui:stackPanel').setParams({
                 callback: function(zIndex) {
                     panel.set('v.zIndex', zIndex);
