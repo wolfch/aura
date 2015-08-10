@@ -21,15 +21,18 @@
     testClickVsChanged : {
     	browsers : ["-IPHONE", "-IPAD"],
     	test : [function (cmp){   	
+    		checkbox = cmp.find("checkbox").find("checkbox").getElement();
     		//Verify that the outputTexts are set to their default value of the inputCheckbox
     		$A.test.assertEquals("false", cmp.find("changedEvt_ot").get("v.value"), "Value of the checkbox should be 'false', since no events have been fired");
     		$A.test.assertEquals("false", cmp.find("clickedEvt_ot").get("v.value"), "Value of the checkbox should be 'false', since no events have been fired");
-    	},function (cmp){
+    		checkboxClass = $A.util.getElementAttributeValue(checkbox, "class");
+    		//Test case for W-2581057
+    		$A.test.assertTrue($A.util.isUndefinedOrNull(checkboxClass), "input Checkbox should not have className");
+        },function (cmp){
             // v.value does not change since no change event is fired in IE7/8: W-2328667
             // so, focus, click, blur is required for IE to generate a change event
 
             //Change the value of the checkbox
-            var checkbox = cmp.find("checkbox").find("checkbox").getElement();
             checkbox.focus();
     		$A.test.clickOrTouch(checkbox);
             checkbox.blur();
@@ -43,6 +46,9 @@
     		$A.test.addWaitForWithFailureMessage("true",function(){
     			return cmp.find("clickedEvt_ot").get("v.value");
     		}, "Value of the checkbox should be true, when the click evt is fired");
-    	}]
+    	}, function(cmp) {
+    		//Test case for W-2581057
+    		$A.test.assertTrue($A.util.isUndefinedOrNull(checkboxClass), "input Checkbox should not have className after change event is fired");
+        }]
     }	
 })
