@@ -69,7 +69,7 @@
             aura.test.assertEquals("September 10, 2012", inputDateStr, "Dates are not the same and they should be");
         }
     },
-    
+
     /**
      * Verify behavior when 'langLocale' attribute is assigned a different value.
      */
@@ -80,7 +80,19 @@
             aura.test.assertEquals("Septiembre 10, 2012", inputDateStr, "Dates are not the same and they should be");
         }
     },
-    
+
+    /**
+     * The Norwegian language is a particular case where java considers the locale as 'no', but moment recognizes it as 'nb'
+     */
+    testNorwegianLangLocale: {
+        attributes: {displayDatePicker: 'true', format: 'MMMM dd, yyyy', value: '2015-10-22', langLocale: 'no'}  ,
+        test: function(cmp){
+            var inputDateStr = cmp.find("inputText").getElement().value;
+            debugger;
+            aura.test.assertEquals("oktober 22, 2015", inputDateStr, "Dates are not the same and they should be");
+        }
+    },
+
     /**
      * Verify behavior when 'langLocale' attribute is not assigned an empty string.
      */

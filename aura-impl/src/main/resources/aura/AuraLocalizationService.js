@@ -992,7 +992,12 @@ AuraLocalizationService.prototype.getNormalizedLangLocale = function(langLocale)
 
         langLocale = langLocale.substring(index + 1);
         if (!$A.util.isEmpty(langLocale)) {
-            lang.push(langLocale.toLowerCase());
+            // moment and java are inconsistent in their standard for norwegian languages.
+            // In Java, no_NO represents the Bokmal form of Norwegian, whereas moment represents this language as 'nb'.
+            // Also see comment for the Norwegian language in UserLanguage.java in core, where 'no' is returned
+            // instead of 'nb', to avoid java issues.
+            var locale = langLocale.toLowerCase() === "no" ? "nb" : langLocale.toLowerCase();
+            lang.push(locale);
         }
 
         var ret = lang[0];
