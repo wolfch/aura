@@ -24,8 +24,8 @@
 		<p>This is a basic set up of a checkbox.</p>		
 		<pre>&lt;ui:inputCheckbox label="Reimbursed?"/></pre>
 		<p>This example results in the following HTML.</p>
-		<pre>&lt;div class="uiInput uiInputCheckbox">
-  &lt;label class="uiLabel-left uiLabel">
+		<pre>&lt;div class="uiInput uiInputCheckbox uiInput--default uiInput--checkbox">
+  &lt;label class="uiLabel-left form-element__label uiLabel">
     &lt;span>Reimbursed?&lt;/span>
   &lt;/label>
   &lt;input type="checkbox" class="uiInput uiInputCheckbox">
