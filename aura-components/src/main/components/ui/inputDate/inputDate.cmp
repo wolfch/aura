@@ -19,6 +19,7 @@
                 defaultFlavor="default, input, datetime" description="An input field for entering a date.">
     <aura:attribute name="placeholder" type="String" description="The hint for the date input format. Set during init based on the 'format' value."/>
     <aura:attribute name="loadDatePicker" type="Boolean" default="true" description="Set to true to load the date picker. Defaults to 'true'."/>
+    <aura:attribute name="allowFlips" type="Boolean" default="false" description="If the input is near the bottom of the view open the picker above the input rather than below"/>
 
     <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
     <aura:registerEvent name="openPicker" type="ui:openPicker"/>
@@ -53,6 +54,6 @@
     </aura:if>
 
     <aura:if isTrue="{! v.loadDatePicker }">
-        <ui:datePicker aura:id="datePicker" hideOnSelect="true" closeOnClickOut="true" selectDate="{!c.setValue}" showToday="{!$Browser.isPhone || $Browser.isTablet}"/>
+        <ui:datePicker allowFlips="{!v.allowFlips}" aura:id="datePicker" hideOnSelect="true" closeOnClickOut="true" selectDate="{!c.setValue}" showToday="{!$Browser.isPhone || $Browser.isTablet}"/>
    </aura:if>
 </aura:component>

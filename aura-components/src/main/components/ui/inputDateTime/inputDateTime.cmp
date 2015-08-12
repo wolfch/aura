@@ -23,6 +23,7 @@
     <aura:attribute name="value" type="String" access="GLOBAL" description="The input value of the date/time."/>
     <aura:attribute name="placeholder" type="String" description="The text that is displayed for date input by default. Set during init based on the 'format' value."/>
     <aura:attribute name="timePlaceholder" type="String" description="The text that is displayed for time input by default. Set during init based on the 'format' value."/>
+    <aura:attribute name="allowFlips" type="Boolean" default="false" description="If the input is near the bottom of the view open the datepicker above the input rather than below. Only works on desktop and datepicker at this time."/>
 
     <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
     <aura:registerEvent name="openPicker" type="ui:openPicker"/>
@@ -38,7 +39,7 @@
                     </a>
                 </aura:if>
             </div>
-            <ui:datePicker aura:id="datePicker" selectDate="{!c.setValue}"/>
+            <ui:datePicker aura:id="datePicker" allowFlips="{!v.allowFlips}" selectDate="{!c.setValue}"/>
             <div class="dateTime-inputTime form-element form-element__control">
                 <div class="input-has-icon input-has-icon--right">
                     <label for="{!v.domId+'-time'}"/>

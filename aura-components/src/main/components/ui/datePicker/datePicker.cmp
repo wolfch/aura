@@ -33,6 +33,7 @@
     <aura:attribute name="setFocus" type="Boolean" default="true" description="Control if we should focus any date when we render the month."/>
     <aura:attribute name="titleHeadingLevel" type="String" description="The heading level for the title. The default is h2."/>
     <aura:attribute name="closeOnClickOut" access="INTERNAL" type="Boolean" default="false" description="true if used with input date, work around for 198 REMOVE in 200"/>
+    <aura:attribute name="allowFlips" type="Boolean" default="false" description="If the input is near the bottom of the view open the picker above the input rather than below" />
 
     <!-- private attributes -->
     <aura:attribute name="_today" type="String" access="private" description="The date string (yyyy-MM-dd) of today based on the Aura time zone."/>

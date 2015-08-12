@@ -114,7 +114,7 @@ function (w) {
             return;
         }
 
-        if(!this.checkNodeIsInDom) {
+        if(!this.checkNodeIsInDom()) {
             return this.release();
         }
 
@@ -149,6 +149,8 @@ function (w) {
             this.right = w.document.documentElement.clientWidth + scrollLeft;
             this.bottom = w.document.documentElement.clientHeight;
         }
+
+
 
         this._dirty = false;
     };

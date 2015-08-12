@@ -62,6 +62,9 @@ Test.Components.Ui.PanelPositioning.elementProxyTest = function() {
 		this.offsetParent = offsetParent || false;
 		this.offsetLeft = dimensions.left;
 		this.offsetTop = dimensions.top;
+		this.parentNode = {
+			tagName: 'body'
+		};
 		this._dimensions = dimensions;
 
 	}
