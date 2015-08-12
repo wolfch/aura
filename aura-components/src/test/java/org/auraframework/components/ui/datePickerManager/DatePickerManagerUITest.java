@@ -15,7 +15,7 @@
  */
 package org.auraframework.components.ui.datePickerManager;
 
-import org.auraframework.test.util.WebDriverTestCase;
+import org.auraframework.test.util.*;
 import org.auraframework.test.util.WebDriverTestCase.ExcludeBrowsers;
 import org.auraframework.test.util.WebDriverUtil.BrowserType;
 import org.openqa.selenium.By;
@@ -34,7 +34,7 @@ public class DatePickerManagerUITest extends WebDriverTestCase {
 
     // URL string to go to
     public String URL = "/uitest/datePickerManager_Test.cmp";
-    private final String TEST_DATE_TO_USE = "4/15/2013";
+    
 
     private final String DATE_INPUT_BOX_SEL = "input[class*='date_input_box']";
     private final String DATE_ICON_SEL = "//a[@class='datePicker-openIcon display uiInput uiInputDate uiInput--default uiInput--input'][2]";
@@ -65,7 +65,7 @@ public class DatePickerManagerUITest extends WebDriverTestCase {
 
     }
 
-    private void openAndCheckDate(By loc, String date) {
+    public void openAndCheckDate(By loc, String date) {
         // Grabbing the Date Icon and click on it to open the calendar
         WebElement element = findDomElement(By.xpath(DATE_ICON_SEL));
         element.click();
