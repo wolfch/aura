@@ -61,7 +61,9 @@ component.set("v.today", today);</pre>
 &lt;div class="DESKTOP uiDatePicker--default uiDatePicker">
     &lt;!-- Date picker set to visible when icon is clicked -->
 &lt;/div></pre>
-
+    <p>On desktop, the <code>input</code> tag is wrapped in a <code>form</code> tag; the date and time fields display as two separate fields. The form factor (DESKTOP, MOBILE, or PHONE) determines the dimensions of the date picker.
+	The time picker displays a list of time in 30-minute increments.
+    </p>
 	</aura:description>		
 	<aura:example name="datetime" ref="uiExamples:datetime" label="Using ui:inputDateTime">
     	This example retrieves the value of a <code>ui:inputDateTime</code> component and displays it using <code>ui:outputDateTime</code>.
