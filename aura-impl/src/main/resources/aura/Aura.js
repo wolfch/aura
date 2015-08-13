@@ -767,6 +767,42 @@ $A.ns.Aura.prototype.run = function(func, name) {
     return undefined;
 };
 
+/**
+ * Returns a callback which is safe to invoke from outside Aura, e.g. as an event handler or in a setTimeout.
+ * @public
+ * @function
+ * @param {Function} callback The method to call after reestablishing Aura context.
+ * @platform
+ */
+$A.ns.Aura.prototype.getCallback = function(callback) {
+    $A.assert($A.util.isFunction(callback),"$A.getCallback(): 'callback' must be a valid Function");
+    var transactionId = $A.getCurrentTransactionId();
+    return function(){
+        var nested = $A.clientService.inAuraLoop();
+        $A.clientService.pushStack(name);
+        var savedTid = $A.getCurrentTransactionId();
+        if (transactionId) {
+            $A.setCurrentTransactionId(transactionId);
+        }
+        try {
+            return callback.apply(this,Array.prototype.slice.call(arguments));
+        } catch (e) {
+            // Should we even allow 'nested'?
+            if (nested) {
+                throw e;
+            } else {
+                $A.error("Uncaught error in "+name, e);
+            }
+        } finally {
+            $A.clientService.popStack(name);
+            if (nested) {
+                $A.setCurrentTransactionId(savedTid);
+            }
+        }
+    };
+};
+
+
 /**@description
  * Checks the condition and if the condition is false, displays an error message.
  *

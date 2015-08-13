@@ -20,6 +20,25 @@
             }
         ]
     },
+    testTransactionSavedByGetCallback: {
+        test: [
+            function(cmp) {
+                var tid = $A.getCurrentTransactionId();
+                var hlp = cmp.getDef().getHelper();
+                cmp._savedCb = $A.getCallback(function() { $A.test.assertEquals(tid, $A.getCurrentTransactionId()); });
+                cmp._saved = function() { $A.test.assertFalse(tid === $A.getCurrentTransactionId()); };
+                cmp._done = false;
+                hlp.sendAction(cmp, true, undefined, function (b) {
+                    cmp._done = true;
+                });
+                $A.test.addWaitFor(true, function() { return cmp._done; });
+            },
+            function(cmp) {
+                cmp._savedCb();
+                cmp._saved();
+            }
+        ]
+    },
     testAbortOnOldTransaction : {
         test: [
             function fireFirstAction(cmp) {

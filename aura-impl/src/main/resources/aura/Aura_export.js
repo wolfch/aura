@@ -28,6 +28,7 @@ $A.ns.Aura.prototype["get"] = $A.ns.Aura.prototype.get;
 $A.ns.Aura.prototype["getRoot"] = $A.ns.Aura.prototype.getRoot;
 $A.ns.Aura.prototype["getContext"] = $A.ns.Aura.prototype.getContext;
 $A.ns.Aura.prototype["run"] = $A.ns.Aura.prototype.run;
+$A.ns.Aura.prototype["getCallback"] = $A.ns.Aura.prototype.getCallback;
 $A.ns.Aura.prototype["set"] = $A.ns.Aura.prototype.set;
 $A.ns.Aura.prototype["assert"] = $A.ns.Aura.prototype.assert;
 $A.ns.Aura.prototype["userAssert"] = $A.ns.Aura.prototype.userAssert;
