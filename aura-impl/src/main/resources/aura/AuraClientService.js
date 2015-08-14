@@ -2404,10 +2404,6 @@ AuraClientService.prototype.clearPreviousAbortableActions = function() {
 };
 
 /**
- * [DEPRECATED] Queue an action for execution after the current event loop has ended.
- *
- * FIXME: this should not be public. Its use is deprecated.
- *
  * This function must be called from within an event loop.
  *
  * @param {Action} action the action to enqueue
