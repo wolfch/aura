@@ -171,11 +171,7 @@
 			var auraId = null;
 			var dataTransfer = {};
 			
-			if ($A.util.isIE) {
-				var dataTransfer = JSON.parse(event.dataTransfer.getData("Text"));
-				auraId = dataTransfer["aura/id"];
-				delete dataTransfer["aura/id"];
-			} else {
+			try {
 				var auraId = event.dataTransfer.getData("aura/id");
 				var dataTransferTypes = event.dataTransfer.types;
 				for (var i = 0; i < dataTransferTypes.length; i++) {
@@ -184,6 +180,11 @@
 						dataTransfer[dataTransferType] = event.dataTransfer.getData(dataTransferType);
 					}
 				}
+			} catch (e) {
+				// This is IE case
+				var dataTransfer = JSON.parse(event.dataTransfer.getData("Text"));
+				auraId = dataTransfer["aura/id"];
+				delete dataTransfer["aura/id"];
 			}
 			
 			// Get draggable component
