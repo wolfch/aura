@@ -87,11 +87,11 @@
     //test how datepicker behaves when setFocus=true
     testSetFocusOnDatepickerGridTrue: {
         attributes : {"renderItem" : "testDatepickerSetFocus"},
-        browsers: ["-ANDROID_PHONE", "-ANDROID_TABLET", "-IPHONE", "-IPAD"],
+        browsers: ["SAFARI", "GOOGLECHROME"],
         test: [function(cmp) {
             //initial focus state (DEFAULT SETFOCUS state)
             var self = this;
-            if(self.isViewDesktop()){
+            if(self.isViewDesktop() && $A.get("$Browser").isFIREFOX === false){
                 var cmpInputDate = cmp.find('inputDate');
                 var setFocusBool = $A.util.getBooleanValue(
                     cmpInputDate.find('datePicker').get('v.setFocus')
@@ -118,7 +118,7 @@
             }
         }, function(cmp) {
             var self = this;
-            if(self.isViewDesktop()){
+            if(self.isViewDesktop() && $A.get("$Browser").isFIREFOX === false){
                 var cmpInputDate = cmp.find('inputDate');
 
                 //show datepicker
@@ -159,10 +159,10 @@
     //test how datepicker behaves when setFocus=false
     testSetFocusOnDatepickerGridFalse: {
         attributes : {"renderItem" : "testDatepickerSetFocus"},
-        browsers: ["-ANDROID_PHONE", "-ANDROID_TABLET", "-IPHONE", "-IPAD"],
+        browsers: ["SAFARI", "GOOGLECHROME"],
         test: [function(cmp) {
             var self = this;
-            if(self.isViewDesktop()){
+            if(self.isViewDesktop() && $A.get("$Browser").isFIREFOX === false){
                 var cmpInputDate = cmp.find('inputDate');
 
                 //set setFocus=false
@@ -319,8 +319,10 @@
         attributes : {"renderItem" : "simpleInputDateTime"},
         browsers: ["-ANDROID_PHONE", "-ANDROID_TABLET", "-IPHONE", "-IPAD"],
         test: [function(cmp) {
-            var ACCEPTABLE_DELTA = 30;//acceptable delta between the datepicker and input textbox
             var self = this;
+
+            var ACCEPTABLE_DELTA = 30;//acceptable delta between the datepicker and input textbox
+            var ACCEPTABLE_LOWER_LIMIT = -1;
 
             if(self.isViewDesktop()){
                 //acceptable delta
@@ -345,8 +347,8 @@
                         self.setDebugCmpAttribute(cmp, 'v.dpTopDelta', actualTopDelta);
                         self.setDebugCmpAttribute(cmp, 'v.dpLeftDelta', actualLeftDelta);
 
-                        return actualTopDelta >= 0 && actualTopDelta <= ACCEPTABLE_DELTA &&
-                            actualLeftDelta >= 0 && actualLeftDelta <= ACCEPTABLE_DELTA;
+                        return actualTopDelta >= ACCEPTABLE_LOWER_LIMIT && actualTopDelta <= ACCEPTABLE_DELTA &&
+                            actualLeftDelta >= ACCEPTABLE_LOWER_LIMIT && actualLeftDelta <= ACCEPTABLE_DELTA;
                     },
                     'Datepicker position is not aligned to the input textbox',//failureMessage
                     function(){
@@ -368,8 +370,8 @@
                                 self.setDebugCmpAttribute(cmp, 'v.tpTopDelta', actualTopDelta);
                                 self.setDebugCmpAttribute(cmp, 'v.tpLeftDelta', actualLeftDelta);
 
-                                return actualTopDelta >= 0 && actualTopDelta <= ACCEPTABLE_DELTA &&
-                                    actualLeftDelta >= 0 && actualLeftDelta <= ACCEPTABLE_DELTA;
+                                return actualTopDelta >= ACCEPTABLE_LOWER_LIMIT && actualTopDelta <= ACCEPTABLE_DELTA &&
+                                    actualLeftDelta >= ACCEPTABLE_LOWER_LIMIT && actualLeftDelta <= ACCEPTABLE_DELTA;
                             },
                             'Timepicker position is not aligned to the input textbox'//failureMessage
                         );
@@ -378,7 +380,6 @@
             }
         }]
     },
-    
 
     verifyDatepickerVisibility: function(elSelector, visible){
         var els = $A.test.select(elSelector, '.uiDatePicker');
