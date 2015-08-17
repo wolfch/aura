@@ -173,12 +173,17 @@
 			
 			try {
 				var auraId = event.dataTransfer.getData("aura/id");
-				var dataTransferTypes = event.dataTransfer.types;
-				for (var i = 0; i < dataTransferTypes.length; i++) {
-					var dataTransferType = dataTransferTypes[i];
-					if (dataTransferType !== "aura/id") {
-						dataTransfer[dataTransferType] = event.dataTransfer.getData(dataTransferType);
+				if (auraId) {
+					var dataTransferTypes = event.dataTransfer.types;
+					for (var i = 0; i < dataTransferTypes.length; i++) {
+						var dataTransferType = dataTransferTypes[i];
+						if (dataTransferType !== "aura/id") {
+							dataTransfer[dataTransferType] = event.dataTransfer.getData(dataTransferType);
+						}
 					}
+				} else if (event.dataTransfer.getData("Text")) {
+					// MS Edge doesn't throw unlike IE so throw here so that we can handle the two in similar fashion
+					throw new Error("Unsupported argument");
 				}
 			} catch (e) {
 				// This is IE case
@@ -195,6 +200,10 @@
 		
 		// Prevent default browser action, such as redirecting
 		return false;
+	},
+	
+	parseDataTransfer: function() {
+		
 	},
 	
 	fireDrop: function(component, operationType, dataTransfer, dragComponent, targetComponent, isInAccessibilityMode) {
