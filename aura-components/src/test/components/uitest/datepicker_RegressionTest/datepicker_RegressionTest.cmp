@@ -83,5 +83,14 @@ Timepicker Top,Left Delta: {!v.tpTopDelta},	{!v.tpLeftDelta}
 			</pre>
 			<ui:inputDateTime displayDatePicker="true"/>
 		</aura:if>
+
+
+		<aura:if isTrue="{! v.renderItem == 'testInputDatePlaceHolder'}">
+			<b>With placeholder ( displayDatePicker=false ) </b><br />
+			<ui:inputDateTime aura:id="dpWithPlaceholder" displayDatePicker="false"/><br />
+
+			<b>Without placeholder ( displayDatePicker=true ) </b><br />
+			<ui:inputDateTime aura:id="dpWithoutPlaceholder" displayDatePicker="true"/>
+		</aura:if>
 	</div>
 </aura:component>
