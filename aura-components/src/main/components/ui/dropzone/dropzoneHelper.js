@@ -202,10 +202,6 @@
 		return false;
 	},
 	
-	parseDataTransfer: function() {
-		
-	},
-	
 	fireDrop: function(component, operationType, dataTransfer, dragComponent, targetComponent, isInAccessibilityMode) {
 		// reset onDragOver class
 		this.resetCssClass(component);
