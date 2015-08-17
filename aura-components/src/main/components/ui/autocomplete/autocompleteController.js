@@ -118,6 +118,8 @@
     },
 
     handleListExpand: function(component, event, helper) {
+        var concrete = component.getConcreteComponent();
+        var concreteHelper = concrete.getDef().getHelper();
         var usePanel = component.get('v.usePanel');
         var panel;
         var zIndex;
@@ -125,7 +127,7 @@
         if(usePanel) {
             panel = component.find('panel');
             panel.set('v.visible', true);
-            panel.set('v.referenceElement', component.find('input').getElement().querySelector('input'));
+            panel.set('v.referenceElement', concreteHelper.getPanelListReferenceElement(component));
             $A.get('e.ui:stackPanel').setParams({
                 callback: function(zIndex) {
                     panel.set('v.zIndex', zIndex);
@@ -133,9 +135,6 @@
                 }
             }).fire();
         }
-
-        var concrete = component.getConcreteComponent();
-        var concreteHelper = concrete.getDef().getHelper();
         concreteHelper.handleListExpand(component, event)
     }
 })
