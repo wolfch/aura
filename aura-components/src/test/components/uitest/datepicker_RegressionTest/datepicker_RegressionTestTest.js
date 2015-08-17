@@ -381,6 +381,85 @@
         }]
     },
 
+    //placeholder in input date test
+    testInputDatePlaceHolder:{
+        attributes : {"renderItem" : "testInputDatePlaceHolder"},
+        browsers: ["-ANDROID_PHONE", "-ANDROID_TABLET", "-IPHONE", "-IPAD"],
+        test: [function(cmp) {
+            //with placeholder
+            var self = this;
+
+            if(self.isViewDesktop()){
+                var dpWithPlaceholder = cmp.find('dpWithPlaceholder').getElement();
+
+                //assert placeholder
+                $A.test.addWaitForWithFailureMessage(
+                    true,
+                    function(){
+                        var inputDate = dpWithPlaceholder.querySelector('.dateTime-inputDate input');
+                        if (inputDate === null){
+                            return false;
+                        }
+
+                        var placeHolderValue = $A.test.getElementAttributeValue( inputDate, 'placeholder');
+                        return placeHolderValue !== null && placeHolderValue.length > 0;
+                    },
+                    'dpWithPlaceholder - datePicker should have placeholder'
+                );
+
+                $A.test.addWaitForWithFailureMessage(
+                    true,
+                    function(){
+                        var inputDate = dpWithPlaceholder.querySelector('.dateTime-inputTime input');
+                        if (inputDate === null){
+                            return false;
+                        }
+
+                        var placeHolderValue = $A.test.getElementAttributeValue( inputDate, 'placeholder');
+                        return placeHolderValue !== null && placeHolderValue.length > 0;
+                    },
+                    'dpWithPlaceholder - timePicker should have placeholder'
+                );
+            }
+        }, function(cmp) {
+            //without placeholder
+            var self = this;
+
+            if(self.isViewDesktop()){
+                var dpWithoutPlaceholder = cmp.find('dpWithoutPlaceholder').getElement();
+
+                //assert placeholder
+                $A.test.addWaitForWithFailureMessage(
+                    true,
+                    function(){
+                        var inputDate = dpWithoutPlaceholder.querySelector('.dateTime-inputDate input');
+                        if (inputDate === null){
+                            return false;
+                        }
+
+                        var placeHolderValue = $A.test.getElementAttributeValue( inputDate, 'placeholder');
+                        return placeHolderValue === null || placeHolderValue.length === 0;
+                    },
+                    'dpWithoutPlaceholder - datePicker should NOT have placeholder'
+                );
+
+                $A.test.addWaitForWithFailureMessage(
+                    true,
+                    function(){
+                        var inputDate = dpWithoutPlaceholder.querySelector('.dateTime-inputTime input');
+                        if (inputDate === null){
+                            return false;
+                        }
+
+                        var placeHolderValue = $A.test.getElementAttributeValue( inputDate, 'placeholder');
+                        return placeHolderValue === null || placeHolderValue.length === 0;
+                    },
+                    'dpWithoutPlaceholder - timePicker should NOT have placeholder'
+                );
+            }
+        }]
+    },
+
     verifyDatepickerVisibility: function(elSelector, visible){
         var els = $A.test.select(elSelector, '.uiDatePicker');
         var el = els[0];
