@@ -212,5 +212,9 @@
     },
 
     handleListExpand: function(component, event) {
+    },
+
+    getPanelListReferenceElement: function(component) {
+        return component.find('input').getElement().querySelector('input');
     }
 })

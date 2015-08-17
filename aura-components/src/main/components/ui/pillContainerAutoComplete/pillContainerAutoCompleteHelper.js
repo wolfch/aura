@@ -135,5 +135,10 @@
             return inputHelper.getInputElement(inputComponent);
         }
         return null;
+    },
+
+
+    getPanelListReferenceElement: function(component) {
+        return this._getPillContainer(component).getElement();
     }
 })
