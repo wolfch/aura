@@ -190,7 +190,8 @@ public class DialogUITest extends WebDriverTestCase {
     // Checking if Dialog box will will close after having all elements tabbed through
     @ExcludeBrowsers({ BrowserType.IE7, BrowserType.SAFARI, BrowserType.ANDROID_PHONE,
             BrowserType.ANDROID_TABLET, BrowserType.IPAD, BrowserType.IPHONE })
-    public void testDialogNonModalTab() throws MalformedURLException, URISyntaxException {
+    // TODO Test disabled because it fails in jenkins and not locally: W-2725112
+    public void _testDialogNonModalTab() throws MalformedURLException, URISyntaxException {
         open(URL_NON_MODAL);
 
         WebDriver driver = getDriver();

@@ -82,6 +82,7 @@
         theme="{!v.theme}"
         visible="false"
         role="listbox"
+        listHide="{!c.handleListHide}"
         propertyToMatch="{!v.propertyToMatch}"
         matchDone="{!c.handleMatchDone}"
         selectListOption="{!c.handleSelectOption}"
