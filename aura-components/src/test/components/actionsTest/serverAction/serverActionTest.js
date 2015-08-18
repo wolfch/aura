@@ -1,4 +1,22 @@
 ({
+    /**
+     * Verify we can get action not accessable through current component by $A.test.getExternalAction
+     * in the test down below, if we do cmp.get("c.getNamedComponent"); it will return nothing and error out
+     */
+    testGetExternalAction : {
+        test: [function(cmp) {
+            var eAction = $A.test.getExternalAction(cmp, "java://org.auraframework.impl.java.controller.TestController/ACTION$getNamedComponent",
+                    {"componentName":"markup://aura:text", 'attributes':{'value':'valuable'}},
+                    "java://org.auraframework.instance.component",
+                    function(action){
+                        $A.test.assertTrue(action.state === "SUCCESS");
+                    });
+            $A.test.addWaitForWithFailureMessage(true, function() { return $A.test.areActionsComplete([eAction]); },
+                    "external action didn't finish");
+            $A.enqueueAction(eAction);
+        }]
+    },
+
 	testServerActionWithStoredResponseGetStorageFirst : {
 		test: [
 		function primeActionStorage(cmp) {
@@ -380,20 +398,6 @@
                     "Error div never displayed error thrown from retry action callback"
             );
         }]
-    },
-
-    _testCallingComponentExistsInServerAction : {
-        test: function(cmp) {
-            var a = cmp.get("c.updateTextWithCallingDescrptor");
-            $A.enqueueAction(a);
-            $A.test.addWaitFor(false,
-                function() {return $A.util.isUndefined(cmp.get("v.text"));},
-                function() {
-                    var expect = cmp.getDef().getDescriptor().getQualifiedName();
-                    $A.test.assertEquals(expect, cmp.get("v.text"),
-                            "Calling component should be the testing component");
-                });
-        }
     },
 
     isAuraErrorDivVisible: function() {
