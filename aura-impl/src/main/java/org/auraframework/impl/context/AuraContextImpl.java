@@ -713,7 +713,7 @@ public class AuraContextImpl implements AuraContext {
         DefDescriptor<?> caller = getCurrentCallingDescriptor();
         if (caller == null) {
             InstanceStack istack = getInstanceStack();
-            Instance<?> instance = istack.peek();
+            Instance<?> instance = istack.getAccess();
             if (instance != null) {
                 caller = instance.getDescriptor();
             }
