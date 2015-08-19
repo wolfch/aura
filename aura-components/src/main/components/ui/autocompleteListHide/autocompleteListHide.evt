@@ -15,4 +15,4 @@
     limitations under the License.
 
 -->
-<aura:event type="COMPONENT" support="Proto" description="Fired when autocomplete list hides." />
+<aura:event type="COMPONENT" support="PROTO" description="Fired when autocomplete list hides." />
