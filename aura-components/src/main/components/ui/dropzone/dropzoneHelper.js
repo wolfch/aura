@@ -172,24 +172,23 @@
 			var dataTransfer = {};
 			
 			try {
-				var auraId = event.dataTransfer.getData("aura/id");
+				auraId = event.dataTransfer.getData("aura/id");
 				if (auraId) {
-					var dataTransferTypes = event.dataTransfer.types;
-					for (var i = 0; i < dataTransferTypes.length; i++) {
-						var dataTransferType = dataTransferTypes[i];
-						if (dataTransferType !== "aura/id") {
-							dataTransfer[dataTransferType] = event.dataTransfer.getData(dataTransferType);
-						}
-					}
-				} else if (event.dataTransfer.getData("Text")) {
+					dataTransfer = this.convertDataTransferToMap(event.dataTransfer, ["aura/id"]);
+				} else {
 					// MS Edge doesn't throw unlike IE so throw here so that we can handle the two in similar fashion
-					throw new Error("Unsupported argument");
+					throw new Error("Invalid argument");
 				}
 			} catch (e) {
-				// This is IE case
-				var dataTransfer = JSON.parse(event.dataTransfer.getData("Text"));
-				auraId = dataTransfer["aura/id"];
-				delete dataTransfer["aura/id"];
+				try {
+					// This is IE case
+					dataTransfer = JSON.parse(event.dataTransfer.getData("Text"));
+					auraId = dataTransfer["aura/id"];
+					delete dataTransfer["aura/id"];
+				} catch (e) {
+					// We're handling drop that is not coming from ui:draggable so parse dataTransfer regularly
+					dataTransfer = this.convertDataTransferToMap(event.dataTransfer);
+				}
 			}
 			
 			// Get draggable component
@@ -200,6 +199,27 @@
 		
 		// Prevent default browser action, such as redirecting
 		return false;
+	},
+	
+	/**
+	 * Convert Event.DataTransfer object to a simple key-value pair map (JSON).
+	 * @param {Event.DataTransfer} dataTransfer - dataTransfer object of DOM Event
+	 * @param {String[]} [excludeKeys] - keys to be excluded when converting dataTransfer
+	 * @returns {Object} map representing dataTransfer object
+	 */
+	convertDataTransferToMap: function(dataTransfer, excludeKeys) {
+		if (excludeKeys === undefined) {
+			excludeKeys = [];
+		}
+		
+		var map = {};
+		for (var i = 0; i < dataTransfer.types.length; i++) {
+			var dataTransferType = dataTransfer.types[i];
+			if (excludeKeys.indexOf(dataTransferType) === -1) {
+				map[dataTransferType] = dataTransfer.getData(dataTransferType);
+			}
+		}
+		return map;
 	},
 	
 	fireDrop: function(component, operationType, dataTransfer, dragComponent, targetComponent, isInAccessibilityMode) {
