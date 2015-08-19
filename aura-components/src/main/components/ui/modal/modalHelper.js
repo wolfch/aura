@@ -117,9 +117,9 @@
             useTransition = $A.util.getBooleanValue(cmp.get('v.useTransition')),
             closeAnimation = cmp.get('v.closeAnimation'),
             panel = this._findContainedComponent(cmp, 'panel').getElement();
-        
+
         this.unmask(cmp, useTransition, panel);
-        
+
         if(closeAnimation) {
             animationName = closeAnimation;
         }
@@ -127,11 +127,13 @@
         var timeout;
         var onFinish = function() {
             clearTimeout(timeout);
-            var handler = self._getKeyHandler(cmp);
-        	if ($A.util.isFunction(handler)) {
-        		$A.util.removeOn(containerEl, 'keydown', handler);
-        	}
-            
+            if ($A.util.isComponent(cmp) && cmp.isValid()) {
+                var handler = self._getKeyHandler(cmp);
+            	if ($A.util.isFunction(handler)) {
+            		$A.util.removeOn(containerEl, 'keydown', handler);
+            	}
+            }
+
             if(callback) { //give time for all transitions to complete
                 setTimeout(callback, 2);
             }
@@ -149,6 +151,7 @@
         // does not fire.
         timeout = setTimeout(onFinish, 600);
 
+
         if(closeAnimation) {
             config.animationName = 'moveto' + closeAnimation;
         }
@@ -159,14 +162,14 @@
     mask: function(cmp) {
         var useTransition = $A.util.getBooleanValue(cmp.get('v.useTransition'));
         var mask = this._findContainedComponent(cmp, 'modal-glass').getElement();
-        
+
         if ($A.util.isUndefinedOrNull(this.global._originalOverflowStyle)) {
         	var overflowStyle = window.getComputedStyle(document.body, '').overflow;
         	this.global._originalOverflowStyle = overflowStyle;
             // prevent scrolling of the body when modals are open
             document.body.style.overflow = 'hidden';
         }
-        
+
         $A.util.removeClass(mask, 'hidden');
         $A.util.addClass(mask, 'fadein');
         if(useTransition) {
@@ -177,20 +180,20 @@
             mask.style.opacity = 1;
         }
     },
-    
+
     unmask: function(cmp, useTransition, panel) {
     	var mask = this._findContainedComponent(cmp, 'modal-glass').getElement();
-    	
+
         if(useTransition) {
             panel.style.opacity = '0';
             setTimeout(function() {
                  mask.style.opacity = '0';
             }, 50);
         }
-        
+
         this.unsetOverflow(cmp);
     },
-    
+
     unsetOverflow: function(cmp) {
     	 // remove overflow changes only when it's the last modal that's opened
         var openedMasks = document.querySelectorAll('.uiModal .modal-glass.fadein');
@@ -199,6 +202,6 @@
             delete this.global._originalOverflowStyle;
         }
     },
-    
+
     global: {}
 })
