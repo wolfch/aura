@@ -20,37 +20,6 @@
 	},
 
 	handleReferenceElement: function(cmp, evt, helper) {
-		
-		var elem = cmp.getElement();
-		var referenceBox;
-		var referenceElem = cmp.get('v.referenceElement');
-
-		//hide while it is positioned
-		elem.style.opacity = 0;
-		if(!referenceElem) {
-			return;
-		} else {
-			referenceBox = referenceElem.getBoundingClientRect();
-		}
-
-		if(referenceBox) {
-			elem.style.width = referenceBox.width + 'px';
-		}
-		
-		if(!cmp.positionConstraint) {
-			cmp.positionConstraint = helper.lib.panelPositioning.createRelationship({
-	            element:elem,
-	            target:referenceElem,
-	            appendToBody: true,
-	            align: 'left top',
-	            targetAlign: 'left bottom'
-        	});
-		}
-
-		
-		helper.lib.panelPositioning.reposition(function() {
-			elem.style.opacity = 1;
-		});
-		
+		helper.handleReferenceElement(cmp);
 	}
 })
