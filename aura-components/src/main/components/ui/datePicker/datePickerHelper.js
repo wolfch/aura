@@ -356,7 +356,7 @@
 
                 this._handleWheel = function(e) {
                     var scrollableParent = self._getScrollableParent(elem);
-                    if(scrollableParent && scrollableParent.scrollTop) {
+                    if(scrollableParent && typeof scrollableParent.scrollTop !== "undefined") {
                         scrollableParent.scrollTop += e.deltaY;
                     }
 

@@ -21,6 +21,8 @@
             component.positionConstraint.destroy();
             delete component.positionConstraint;
         }
+
+        helper.cleanEvents();
         this.superUnrender();
     }
 })
