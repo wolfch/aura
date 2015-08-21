@@ -85,9 +85,35 @@
     },
 
     attachToDocumentBody: function(component) {
-        var body = document.getElementsByTagName("body")[0];
-        var elem = component.getElement();
-        body.appendChild(elem);
+        var body;
+        var elem;
+        var scrollTop;
+        if(!component._attachedToBody) {
+            body = document.getElementsByTagName("body")[0];
+
+            // store current scrolltop
+            scrollTop = body.scrollTop;
+            elem = component.getElement();
+            body.appendChild(elem);
+
+            // return scroll to previous position
+            // focus on body (sometimes) causes
+            // scroll to top, this prevents that
+            // 
+            // setTimeout is required to let
+            // the element by appended and the browser
+            // reflowed for scrolling back.
+            setTimeout(function() {
+                body.scrollTop = scrollTop;
+            }, 10); // 10ms (rather than 0) delay delay removes an
+                    // awkward flash
+
+            // make sure to do this only once
+            component._attachedToBody = true;
+        } else {
+            return;
+        }
+
     },
 
     focusDate: function(component) {
