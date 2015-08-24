@@ -22,7 +22,7 @@
             delete component.positionConstraint;
         }
 
-        helper.cleanEvents();
+        helper.cleanEvents(component);
         this.superUnrender();
     }
 })
