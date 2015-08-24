@@ -24,6 +24,9 @@
      */
     _getScrollableParent: function(elem) {
         // TODO this is copypasta from datePickerHelper W-2727472
+        if(!elem || elem === window || (elem.tagName && elem.tagName.toUpperCase() === 'BODY')) {
+            return null;
+        }
 
         // memoize
         if(this._scrollableParent) {
@@ -32,7 +35,20 @@
 
         // if overflow is auto overflow-y is also auto, 
         // however in firefox the opposite is not true
-        var overflow = getComputedStyle(elem)['overflow-y'];
+        try { 
+            // getComputedStyle throws an exception
+            // if elem is not an element
+            // (can happen during unrender)
+            var computedStyle = getComputedStyle(elem);
+        } catch (e) {
+            return null;
+        }
+
+        if(!computedStyle) {
+            return;
+        }
+
+        var overflow = computedStyle['overflow-y'];
 
         //
         if(overflow === 'auto') {
