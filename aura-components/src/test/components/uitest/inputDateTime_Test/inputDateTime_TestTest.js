@@ -126,9 +126,10 @@
             		$A.test.addWaitFor(true, function(){return $A.util.hasClass(datePicker, "visible")});
  		}
  	},
- 	
+
  	testInvalidDateTimeInput: {
-		 attributes : {value:'2015-10-23T16:30:00.000Z', dateFormat:'MM-dd-yyyy', timeFormat:'HH:mm', timezone: 'GMT'},
+		browsers: ['IE11','FIREFOX','GOOGLECHROME','SAFARI'],
+		attributes : {value:'2015-10-23T16:30:00.000Z', dateFormat:'MM-dd-yyyy', timeFormat:'HH:mm', timezone: 'GMT'},
 		 test: function(cmp){
 			 var inputDateTimeCmp = cmp.find("dateTimePickerTest");
 			 var inputDateElement = inputDateTimeCmp.find("inputDate").getElement();
@@ -145,14 +146,12 @@
 				 "Sep 10th, 2015",
 				 "abcefghijklm"];
 
-			 if (this.isViewDesktop()) {
-				 for(var i = 0; i < invalidDates.length; i++) {
-					 inputDateElement.value = invalidDates[i];
-					 $A.test.fireDomEvent(inputDateElement, "change");
-					 var expectedValue = invalidDates[i] + " " + time;
-					 aura.test.assertEquals(expectedValue, inputDateTimeCmp.get("v.value"), "value should not change when input is invalid");
-					 aura.test.assertEquals(invalidDates[i], inputDateElement.value, "input value doesn't change on invalid input");
-				 }
+			 for (var i = 0; i < invalidDates.length; i++) {
+				 inputDateElement.value = invalidDates[i];
+				 $A.test.fireDomEvent(inputDateElement, "change");
+				 var expectedValue = invalidDates[i] + " " + time;
+				 aura.test.assertEquals(expectedValue, inputDateTimeCmp.get("v.value"), "value should not change when input is invalid");
+				 aura.test.assertEquals(invalidDates[i], inputDateElement.value, "input value doesn't change on invalid input");
 			 }
 
 			 inputDateElement.value = date;
@@ -163,19 +162,18 @@
 				 "20:45 PM",
 				 "abcefghijklm"];
 
-			 if (this.isViewDesktop()) {
-				 for(var i = 0; i < invalidTimes.length; i++) {
-					 inputTimeElement.value = invalidTimes[i];
-					 $A.test.fireDomEvent(inputTimeElement, "change");
-					 expectedValue = date + " " + invalidTimes[i];
-					 aura.test.assertEquals(expectedValue, inputDateTimeCmp.get("v.value"), "value should change even when input is invalid");
-					 aura.test.assertEquals(invalidTimes[i], inputTimeElement.value, "input value doesn't change on invalid input");
-				 }
+			 for (var i = 0; i < invalidTimes.length; i++) {
+				 inputTimeElement.value = invalidTimes[i];
+				 $A.test.fireDomEvent(inputTimeElement, "change");
+				 expectedValue = date + " " + invalidTimes[i];
+				 aura.test.assertEquals(expectedValue, inputDateTimeCmp.get("v.value"), "value should change even when input is invalid");
+				 aura.test.assertEquals(invalidTimes[i], inputTimeElement.value, "input value doesn't change on invalid input");
 			 }
 		 }
 	 },
 
 	 testValidDateTimeInput: {
+		 browsers: ['IE11','FIREFOX','GOOGLECHROME','SAFARI'],
 		 attributes : {value:'2015-10-23T16:30:00.000Z', dateFormat:'MM-dd-yyyy', timeFormat:'hh:mm a', timezone:'GMT'},
 		 test: function(cmp){
 			 var inputDateTimeCmp = cmp.find("dateTimePickerTest");
@@ -184,39 +182,35 @@
 
 
 			 var validTimes = {
-				 "12:30 pm" : "2015-10-23T12:30:00.000Z",
-				 "12:30PM" : "2015-10-23T12:30:00.000Z",
-				 "12:30 PM" : "2015-10-23T12:30:00.000Z",
+				 "12:30 pm": "2015-10-23T12:30:00.000Z",
+				 "12:30PM": "2015-10-23T12:30:00.000Z",
+				 "12:30 PM": "2015-10-23T12:30:00.000Z",
 			 };
 
-			 if (this.isViewDesktop()) {
-				 for(var key in validTimes) {
-					 if (validTimes.hasOwnProperty(key)) {
-						 var validTime = key;
-						 var expectedValue = validTimes[key];
-						 inputTimeElement.value = validTime;
-						 $A.test.fireDomEvent(inputTimeElement, "change");
-						 aura.test.assertEquals(expectedValue, cmp.get("v.value"), "value should change when input is valid");
-					 }
+			 for (var key in validTimes) {
+				 if (validTimes.hasOwnProperty(key)) {
+					 var validTime = key;
+					 var expectedValue = validTimes[key];
+					 inputTimeElement.value = validTime;
+					 $A.test.fireDomEvent(inputTimeElement, "change");
+					 aura.test.assertEquals(expectedValue, cmp.get("v.value"), "value should change when input is valid");
 				 }
 			 }
 
 			 var validDates = {
-				 "11-15-2015" : "2015-11-15T12:30:00.000Z",
-				 "8-23-2015" : "2015-08-23T12:30:00.000Z",
-				 "8-8-2015" : "2015-08-08T12:30:00.000Z",
-				 "01-02-2015" : "2015-01-02T12:30:00.000Z"
+				 "11-15-2015": "2015-11-15T12:30:00.000Z",
+				 "8-23-2015": "2015-08-23T12:30:00.000Z",
+				 "8-8-2015": "2015-08-08T12:30:00.000Z",
+				 "01-02-2015": "2015-01-02T12:30:00.000Z"
 			 };
 
-			 if (this.isViewDesktop()) {
-				 for(var key in validDates) {
-					 if (validDates.hasOwnProperty(key)) {
-						 var validDate = key;
-						 var expectedValue = validDates[key];
-						 inputDateElement.value = validDate;
-						 $A.test.fireDomEvent(inputDateElement, "change");
-						 aura.test.assertEquals(expectedValue, cmp.get("v.value"), "value should change when input is valid");
-					 }
+			 for (var key in validDates) {
+				 if (validDates.hasOwnProperty(key)) {
+					 var validDate = key;
+					 var expectedValue = validDates[key];
+					 inputDateElement.value = validDate;
+					 $A.test.fireDomEvent(inputDateElement, "change");
+					 aura.test.assertEquals(expectedValue, cmp.get("v.value"), "value should change when input is valid");
 				 }
 			 }
 		 }
