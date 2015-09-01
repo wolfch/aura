@@ -400,50 +400,32 @@
             this.matchFuncDone(component, items);
         }
     },
-
-    toggleListVisibility: function(component, items) {
-        var showEmptyListContent = !$A.util.isEmpty(component.get("v.emptyListContent")) &&
-                !$A.util.isEmpty(component.get("v.keyword")); 
-
-        var hasVisibleOption = this.hasVisibleOption(items);
-        
-        // Should no longer be necessary, as the class attribute is now adds "visible" if v.visible is true.
-        //var list = component.find("list");
-        //$A.util.toggleClass(list, "visible", hasVisibleOption);
-        
-        component.set("v.visible", hasVisibleOption || showEmptyListContent);
-    },
-
-    updateAriaAttributes: function(component, highlightedCmp) {
-        var updateAriaEvt = component.get("e.updateAriaAttributes");
-        if (updateAriaEvt) {
-            var obj = {
-                "aria-activedescendant": highlightedCmp.get("v.domId")
-            };
-            updateAriaEvt.setParams({
-                attrs: obj
-            })
-            updateAriaEvt.fire();
+    
+    setDefaultHighlight: function(component) {
+    	var setDefaultHighlight = component.get("v.setDefaultHighlight");
+    	if (setDefaultHighlight !== true) {
+    		return;
+    	}
+    	var iterCmp = component.find("iter");
+        if (iterCmp) {
+            var iters = iterCmp.get("v.body");
+            var highlightedIndex = this.findHighlightedOptionIndex(iters);
+            if (highlightedIndex < 0) { // no option is highlighted now
+            	var highlightedCmp = iters[0];
+                highlightedCmp.set("v.highlighted", true);
+                var highlightedElement = highlightedCmp.getElement();
+                if (highlightedElement) {
+                    if (highlightedElement.scrollIntoViewIfNeeded) {
+                        highlightedElement.scrollIntoViewIfNeeded();
+                    } else {
+                        highlightedElement.scrollIntoView(false);
+                    }
+                }
+                this.updateAriaAttributes(component, highlightedCmp);
+            }
         }
     },
     
-    updateEmptyListContent: function (component) {
-        var visible = component.getConcreteComponent().get("v.visible");
-        var items = component.getConcreteComponent().get("v.items");
-        var hasVisibleOption = this.hasVisibleOption(items);
-        
-        $A.util.toggleClass(component, "showEmptyContent", visible && !hasVisibleOption);
-    },
-    
-    showLoading:function (component, visible) {
-        $A.util.toggleClass(component, "loading", visible);
-        // Originally, no loading indicator was shown. Making it only appear when specified in the facet.
-        if (!$A.util.isEmpty(component.get("v.loadingIndicator"))) {
-            var list = component.find("list");
-            $A.util.toggleClass(list, "invisible", !visible);
-        }
-    },
-
     setUpEvents: function (component) {
         if (component.isRendered()) {
             var obj = {};
@@ -486,5 +468,48 @@
                 updateAriaEvt.fire();
             }
         }
+    },
+    
+    showLoading:function (component, visible) {
+        $A.util.toggleClass(component, "loading", visible);
+        // Originally, no loading indicator was shown. Making it only appear when specified in the facet.
+        if (!$A.util.isEmpty(component.get("v.loadingIndicator"))) {
+            var list = component.find("list");
+            $A.util.toggleClass(list, "invisible", !visible);
+        }
+    },
+
+    toggleListVisibility: function(component, items) {
+        var showEmptyListContent = !$A.util.isEmpty(component.get("v.emptyListContent")) &&
+                !$A.util.isEmpty(component.get("v.keyword")); 
+
+        var hasVisibleOption = this.hasVisibleOption(items);
+        
+        // Should no longer be necessary, as the class attribute is now adds "visible" if v.visible is true.
+        //var list = component.find("list");
+        //$A.util.toggleClass(list, "visible", hasVisibleOption);
+        
+        component.set("v.visible", hasVisibleOption || showEmptyListContent);
+    },
+
+    updateAriaAttributes: function(component, highlightedCmp) {
+        var updateAriaEvt = component.get("e.updateAriaAttributes");
+        if (updateAriaEvt) {
+            var obj = {
+                "aria-activedescendant": highlightedCmp.get("v.domId")
+            };
+            updateAriaEvt.setParams({
+                attrs: obj
+            })
+            updateAriaEvt.fire();
+        }
+    },
+    
+    updateEmptyListContent: function (component) {
+        var visible = component.getConcreteComponent().get("v.visible");
+        var items = component.getConcreteComponent().get("v.items");
+        var hasVisibleOption = this.hasVisibleOption(items);
+        
+        $A.util.toggleClass(component, "showEmptyContent", visible && !hasVisibleOption);
     }
 })
