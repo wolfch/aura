@@ -50,6 +50,10 @@
         helper.handleInputChange(cmp, event, "autoCompleteToggle");
     },
     
+    handleInputChangeHighlight: function(cmp, event, helper) {
+        helper.handleInputChange(cmp, event, "autoCompleteHighlight");
+    },
+    
     handleSelectOptionAutoComplete: function(cmp, event, helper) {
     	helper.handleSelectOption(cmp, event, "autoComplete");
     },
@@ -80,6 +84,10 @@
     
     handleSelectOptionToggle: function(cmp, event, helper) {
         helper.handleSelectOption(cmp, event, "autoCompleteToggle");
+    },
+    
+    handleSelectOptionHighlight: function(cmp, event, helper) {
+        helper.handleSelectOption(cmp, event, "autoCompleteHighlight");
     },
     
     handleInputChangeAutoCompleteMatchDone: function(cmp, event, helper) {
@@ -120,6 +128,10 @@
     
     handleInputChangeToggleMatchDone: function(cmp, event, helper) {
         helper.handleMatchDone(cmp, event, "autoCompleteToggle");
+    },
+    
+    handleInputChangeHighlightMatchDone: function(cmp, event, helper) {
+        helper.handleMatchDone(cmp, event, "autoCompleteHighlight");
     },
     
     matchFuncShowAllMatchFunc: function(cmp, event, helper) {
