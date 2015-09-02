@@ -283,16 +283,15 @@ AuraEventService.prototype.hasHandlers = function(name) {
     return !$A.util.isUndefined(this.eventDispatcher[name]);
 };
 
-//#if {"excludeModes" : ["PRODUCTION", "PRODUCTIONDEBUG"]}
 /**
  * Returns the qualified name of all events known to the registry.
- * Available in DEV mode only.
  * @export
  */
 AuraEventService.prototype.getRegisteredEvents = function() {
     return Object.keys(this.registry.eventDefs);
 };
 
+//#if {"excludeModes" : ["PRODUCTION", "PRODUCTIONDEBUG"]}
 /**
  * Whether there are pending events
  * Available in DEV mode only.
