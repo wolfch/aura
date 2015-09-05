@@ -68,33 +68,7 @@
             panel.style.opacity = 0;
             containerEl.style.display = 'block';
         }
- 
-        // set timeout is here
-        // so that if this loads quick from cache
-        // we don't need to do the animation
-        setTimeout(function() {
-            var modalBody = panel.querySelector('.modal-body');
-            if(modalBody && modalBody.querySelector('.indicator:not(.hideEl')) {
-
-                var observer = new MutationObserver(function(mutations) {
-                  mutations.forEach(function(mutation) {
-
-                    if(mutation.addedNodes.length > 0) {
-                        modalBody.style.maxHeight= '100%';
-                    }
-                  });    
-                });
-                observer.observe(modalBody, { childList: true});
-            } else if (modalBody) {
-                modalBody.style.transition = 'none';
-                modalBody.style.webkitTransition = 'none';
-                modalBody.style.maxHeight= '100%';
-            }
-        }, 20);
-
         
- 
-
         var config = {
             useTransition: useTransition,
             animationName: 'movefrom' + cmp.get('v.animation'),
