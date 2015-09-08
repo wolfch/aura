@@ -9,7 +9,7 @@
 	        cmp.get('c.handleInputChangeAutoComplete').runDeprecated({"getParam":function(value){return "h";}});
 	    }, function(cmp){
 	    	//Grab Autocomplete List
-		    var autoList = cmp.find("autoComplete").find("list");
+	    	var autoList = cmp.find("autoComplete").find("list");
 		    
 	        //Get the anchor in the list to click as the user would
 	        var ul = autoList.getElement().getElementsByTagName("ul")[0];
@@ -47,5 +47,43 @@
     	        var expected = "hello world2"
     	        $A.test.assertEquals(expected, actual, "List element in autocompleteList is not clickable!");
     	    }]
+        },
+
+        /*
+         * ui:autocomplete - Add an option to highlight the first item by default
+         * Test case: W-2737788
+         */
+        testSetDefaultHighlight: {
+        	browsers : ["-IE7", "-IE8"],
+        	attributes: {usePanel: true},
+            test : [function(cmp){	    
+        	        //Fire change event for autocomplete
+        	        cmp.get('c.handleInputChangeHighlight').runDeprecated({"getParam":function(value){return "h";}});
+        	    }, function(cmp){
+        	    	//Grab Autocomplete List
+        		    var autoList = cmp.find("autoCompleteHighlight").find("list");
+        		    
+        	        //Get the anchor in the list to click as the user would
+        	        var ul = autoList.getElement().getElementsByTagName("ul")[0];
+        	        //Test case for W-2428589
+        	        $A.test.assertTrue($A.util.hasClass(ul,"visible"), "Class name should contain visible");
+                	var listAnchors = ul.getElementsByTagName("a");
+                	var globalId = $A.util.getElementAttributeValue(listAnchors[0], "id");
+            		//First element in the list should be highlighted by default
+                	$A.test.assertTrue($A.getCmp(globalId).get("v.highlighted"), "Autocomplete list option with globalId:" + globalId + " should be higlighted");
+            		for (var i = 1; i < listAnchors.length; i++) {
+                		globalId = $A.util.getElementAttributeValue(listAnchors[i], "id");
+                		//none of other list option should be highlighted. 
+                		$A.test.assertFalse($A.getCmp(globalId).get("v.highlighted"), "Autocomplete list option with globalId:" + globalId + " should not be higlighted");
+                	}
+            		$A.test.clickOrTouch(listAnchors[1]);
+        	    }, function(cmp){
+        	        //assert
+        	        var actual = cmp.find("autoCompleteHighlight").find("input").find("txt").getElement().value;
+        	        var expected = "hello world2"
+        	        $A.test.assertEquals(expected, actual, "List element in autoCompleteHighlight is not clickable!");
+                }]
         }
+        
+        
 })
