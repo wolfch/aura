@@ -2,7 +2,9 @@
     tearDown: function() {
         $A.storageService.getStorage('actions').remove('aura://ComponentController/ACTION$getApplication:{"name":"auraStorageTest:applicationTest"}');
     },
-
+    // Safari doesn't like deleting the database immediately after initializing it.
+    browsers:["-IE7", "-IE8", "-IE9", "-SAFARI", "-IPAD", "-IPHONE"],
+    
     testApplicationRefreshedEvent: {
         test: [
             function loadIframe(cmp) {
