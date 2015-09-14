@@ -22,7 +22,7 @@ function (w) {
         if (el === w) {
             return true;
         }
-        if(el.parentNode && el.parentNode.tagName.toUpperCase() === 'BODY'){
+        if(el.parentNode && el.tagName && el.parentNode.tagName.toUpperCase() === 'BODY'){
             return true;
         } else if(el.parentNode) {
             return isInDom(el.parentNode);
