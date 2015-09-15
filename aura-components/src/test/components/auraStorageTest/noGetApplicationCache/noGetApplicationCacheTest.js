@@ -1,4 +1,7 @@
 ({
+    // IndexedDb not supported in IE < 10 and not supported by Aura in Safari
+    browsers:["-IE7", "-IE8", "-IE9", "-SAFARI", "-IPAD", "-IPHONE"],
+
     tearDown: function() {
         $A.storageService.getStorage('actions').remove('aura://ComponentController/ACTION$getApplication:{"name":"auraStorageTest:noGetApplicationCache"}');
     },
