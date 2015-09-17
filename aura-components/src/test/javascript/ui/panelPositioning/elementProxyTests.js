@@ -229,6 +229,20 @@ Test.Components.Ui.PanelPositioning.elementProxyTest = function() {
 			Assert.Equal("-380px", el.style.left);
 			Assert.Equal("-80px", el.style.top);
 		}
+
+	}
+
+	[Fixture]
+	function isInDom() {
+
+		[Fact]
+		function documentFragmentNotInDom() {
+			var el = getMockElement("foo");
+			delete el.parentNode.tagName;
+			var actual = positioningNS.isInDom(el)
+			
+			Assert.Equal(false, actual);
+		}
 	}
 
 }
