@@ -14,17 +14,23 @@
  * limitations under the License.
  */
 ({
-    createBody: function (component) {
+    createBody: function (component,localCreation) {
         component.set("v.loaded", false);
         component._itemInfo = [];
+        var helper=this;
         this.buildBody(component,
             function createBodyItem(component, template, item, index, itemVar, indexVar, templateValueProvider, forceServer, callback) {
-                this.buildTemplate(component, template, item, index, itemVar, indexVar, templateValueProvider, true, forceServer, callback);
+                this.buildTemplate(component, template, item, index, itemVar, indexVar, templateValueProvider, localCreation, forceServer, callback);
             },
             function createBodyComplete(component, components){
                 component.set("v.body", components, true);
                 component.set("v.loaded",true);
                 component.get("e.iterationComplete").fire({operation:"Initialize"});
+                var queued=component._queueUpdate;
+                component._queueUpdate=false;
+                if(queued){
+                    helper.updateBody(component);
+                }
             }
         );
     },
@@ -98,10 +104,11 @@
                 component.set("v.body", components);
                 component.set("v.loaded",true);
                 component.get("e.iterationComplete").fire({operation:"Update"});
-                if(component._queueUpdate){
+                var queued=component._queueUpdate;
+                component._queueUpdate=false;
+                if(queued){
                     helper.updateBody(component);
                 }
-                component._queueUpdate=false;
             }
         );
     },
