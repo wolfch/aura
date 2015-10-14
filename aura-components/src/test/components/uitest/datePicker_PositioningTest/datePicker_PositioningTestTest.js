@@ -1,10 +1,5 @@
 ({
 
-	testDummy : {
-		test : function(cmp) {
-			
-		}
-	},
 	/**
 	 * Test Flow:
 	 * For each position:
@@ -18,6 +13,8 @@
 	
 
 	testPositioning: {
+		
+		browsers: ["-ANDROID_PHONE", "-ANDROID_TABLET", "-IPHONE", "-IPAD"],
         test:  function(cmp) {
            	//trying 9 times since there 9 different positions to check at
         	this.checkEachPosition(cmp, 9);
