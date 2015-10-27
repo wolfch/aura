@@ -21,6 +21,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.io.IOException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.locks.Lock;
 
 import org.apache.log4j.Logger;
@@ -60,6 +63,7 @@ import com.google.common.collect.Sets;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
+import com.google.common.base.Throwables;
 
 /**
  * Overall Master definition registry implementation, there be dragons here.
@@ -1489,6 +1493,38 @@ public class MasterDefRegistryImpl implements MasterDefRegistry {
             }
         }
         return null;
+    }
+
+    @Override
+    public String getCachedString(String uid, DefDescriptor<?> descriptor, String key, Callable<String> loader) throws QuickFixException, IOException {
+    	if (shouldCache(descriptor)) {
+	        DependencyEntry de = localDependencies.get(uid);
+	
+	        if (de != null) {
+	        	try {
+	        		return stringsCache.get(getKey(de, descriptor, key), loader);
+	    		} catch (ExecutionException e) {
+	    			// Don't interfere if the callable caused these exceptions.
+	    		    Throwables.propagateIfInstanceOf(e.getCause(), IOException.class);
+	    		    Throwables.propagateIfInstanceOf(e.getCause(), QuickFixException.class);
+	    		    // Propagates as-is if RuntimeException, or wraps with a RuntimeException.
+	    		    Throwables.propagate(e);
+	    		}
+	        }
+        } 
+    	
+    	// When caching is bypassed, execute the loader directly.
+    	try {
+			return loader.call();
+		} catch (Exception e) {
+			// Don't interfere if the call caused these exceptions.
+		    Throwables.propagateIfInstanceOf(e, IOException.class);
+		    Throwables.propagateIfInstanceOf(e, QuickFixException.class);
+		    // Propagates as-is if RuntimeException, or wraps with a RuntimeException.
+		    Throwables.propagate(e);
+		}
+    	
+    	return null;
     }
 
     @Override
