@@ -15,11 +15,11 @@
  */
 /*jslint sub: true */
 /**
- * @description Context's Global ValueProvider. 
+ * @description Context's Global ValueProvider.
  * @constructor
  */
-function ContextValueProvider() {
-    this.values = {}; 
+function ContextValueProvider(values) {
+    this.values = values || {};
 }
 
 /**
@@ -143,7 +143,7 @@ ContextValueProvider.prototype.set = function(key, value) {
  * @return {Object} the value
  */
 ContextValueProvider.prototype.extract = function(gv) {
-    return gv && (gv.hasOwnProperty("value") ? gv["value"] : gv["defaultValue"]);  
+    return gv && (gv.hasOwnProperty("value") ? gv["value"] : gv["defaultValue"]);
 };
 
 Aura.Provider.ContextValueProvider = ContextValueProvider;
