@@ -182,7 +182,7 @@ window['$A'] = {};
  * @class Aura
  * @classdesc The Aura framework. Default global instance name is $A.
  * @constructor
- * 
+ *
  * @borrows Aura.Services.AuraClientService#enqueueAction as enqueueAction
  * @borrows Aura.Services.AuraClientService#deferAction as deferAction
  * @borrows Aura.Services.AuraRenderingService#render as render
@@ -205,24 +205,24 @@ function AuraInstance () {
     this.displayErrors        = true;
 
     this.logger               = new Aura.Utils.Logger();
-    
-    /** 
+
+    /**
      * Collection of basic utility methods to operate on the DOM and Aura Components. <br/>
      * See the documentation for <a href="#reference?topic=api:Util">Util</a> for the members.
      *
      * @type $A.ns.Util
-     * @platform 
+     * @platform
      */
     this.util                 = new Aura.Utils.Util();
     this["util"]              = this.util; //Move this? (check prod mangling)
 
     this.auraError            = Aura.Errors.AuraError;
     this.auraFriendlyError    = Aura.Errors.AuraFriendlyError;
-    
+
     /**
      * Instance of the AuraLocalizationService which provides utility methods for localizing data or getting formatters for numbers, currencies, dates, etc.<br/>
      * See the documentation for <a href="#reference?topic=api:AuraLocalizationService">AuraLocalizationService</a> for the members.
-     * 
+     *
      * @type AuraLocalizationService
      * @platform
      */
@@ -572,7 +572,7 @@ AuraInstance.prototype.initConfig = function(config, useExisting, doNotInitializ
         $A.clientService.initHost(config["host"], config["sid"]);
         // creating context.
         $A.context = new Aura.Context.AuraContext(config["context"]);
-        this.initPriv($A.util.json.resolveRefs(config["instance"]), config["token"], null, doNotInitializeServices, doNotCallUIPerfOnLoad);
+        this.initPriv(config["instance"], config["token"], null, doNotInitializeServices, doNotCallUIPerfOnLoad);
         $A.context.finishComponentConfigs($A.context.getCurrentAction().getId());
         $A.context.setCurrentAction(null);
     } else {
@@ -1069,7 +1069,7 @@ AuraInstance.prototype.Perf = window['Perf'] || PerfShim;
     /**
      * @description This, $A, is supposed to be our ONLY window-polluting top-level variable. Everything else in Aura is
      *            attached to it.
-     * 
+     *
      * @platform
      * @namespace
      * @alias $A
