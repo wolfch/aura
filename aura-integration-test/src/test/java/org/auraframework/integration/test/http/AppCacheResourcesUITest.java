@@ -56,8 +56,6 @@ import com.google.common.collect.Lists;
 /**
  * Tests for AppCache functionality by watching the requests received at the server and verifying that the updated
  * content is being used by the browser. AppCache only works for WebKit browsers.
- *
- * @since 0.0.224
  */
 @FreshBrowserInstance
 @ThreadHostileTest("TestLoggingAdapter not thread-safe")
@@ -256,7 +254,7 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
      */
     @ThreadHostileTest("NamespaceDef modification affects namespace")
     @TargetBrowsers({ BrowserType.GOOGLECHROME, BrowserType.SAFARI, BrowserType.IPAD, BrowserType.IPHONE })
-    public void testComponentCssChange() throws Exception {
+    public void _testComponentCssChange() throws Exception {
         createDef(StyleDef.class, String.format("%s://%s.%s", DefDescriptor.CSS_PREFIX, namespace, cmpName),
                 ".THIS {background-image: url(/auraFW/resources/qa/images/s.gif?@@@TOKEN@@@);}");
 
@@ -364,7 +362,7 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
      * this function will check each request in actual list against expected list. fudge is the number this request
      * suppose to show up. we remove the request from expected list once it has been visited #fudge times. any missing
      * request will be added to missingRequests list.
-     *
+     * 
      * @param expected : list of expected request
      * @param actual : list of actual request captured by log
      * @throws Exception
@@ -432,7 +430,7 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
      * <li>updated styling applied (cssToken)</li>
      * <li>updated framework called (fwToken)</li>
      * </ul>
-     *
+     * 
      * @param markupToken The text to be found in the markup.
      * @param jsToken The text to be found from js
      * @param cssToken The text to be found from css.
@@ -573,7 +571,7 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
 
     /**
      * Get the set of expected requests on change. These are the requests that we expect for filling the app cache.
-     *
+     * 
      * @return the list of request objects, not necessarily in order.
      */
     private List<Request> getExpectedChangeRequests() {
@@ -616,7 +614,7 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
 
     /**
      * Get the set of expected requests on change. These are the requests that we expect for filling the app cache.
-     *
+     * 
      * @return the list of request objects, not necessarily in order.
      */
     private List<Request> getExpectedInitialRequests() {
@@ -698,7 +696,7 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
 
         /**
          * We passed the test for this request.
-         *
+         * 
          * @return true if we got the request. each request from expected list must show up at least once in the actual
          *         list.
          */
@@ -708,7 +706,7 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
 
         /**
          * Mark the request as found.
-         *
+         * 
          * @return true if it should be removed.count > fudge: browsers don't behave consistently. better have a loose
          *         bound here. we are comparing two requests list: actual list and expected list. count start at 0, we
          *         are expecting 1,2,..,fudge, or fudge+1 request. once we have some request X that show up fudge+1 in
