@@ -2429,6 +2429,9 @@ Component.prototype.output = function(value, avp, serialized, depth) {
                 domOutput["$serId"] = value["$serId"];
                 domOutput["__proto__"] = null;//eslint-disable-line no-proto
                 return domOutput;
+            } else if(value === document || value === window) {
+                // Cause max callstacks if we attempt to serialize them.
+                return {};
             } else if($A.util.isObject(value)){
                 return this.outputMapValue(value, avp, serialized, depth);
             }
