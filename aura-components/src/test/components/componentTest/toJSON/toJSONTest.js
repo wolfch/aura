@@ -96,5 +96,20 @@
             $A.test.assertEquals(globalId, targetObj["globalId"]);
             $A.test.assertFalse(targetObj["valid"]);
         }
+    },
+
+    testAvoidSerializingDOMObjectInComponent: {
+        test: function(cmp) {
+            cmp.set("v.object", document);
+
+            var serialized = cmp.toJSON();
+            $A.test.assertNotUndefinedOrNull(serialized);
+
+            var parsed = JSON.parse(serialized);
+            var parsedObj = JSON.parse(serialized);
+            var targetObj = parsedObj["attributes"]["object"];
+            $A.test.assertNotUndefinedOrNull(targetObj);
+            $A.test.assertTrue($A.util.isEmpty(targetObj), "document object should NOT be serialized.");
+        }
     }
  })
