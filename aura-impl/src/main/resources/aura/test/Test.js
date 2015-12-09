@@ -1649,7 +1649,7 @@ TestInstance.prototype.sendOverride = function(config, auraXHR, actions, method,
     if (this.disconnectedNoSend) {
         return false;
     }
-    if(processing) {
+    if(processing && processing.length > 0) {
     	this.prePostSendConfigs = [];
 	    for (i = 0; i < processing.length; i++) {
 	        cb_config = processing[i];
@@ -1709,26 +1709,24 @@ TestInstance.prototype.decodeOverride = function(config, response, noStrip) {
     //we cannot modify the original reponse, however, we can make a copy, modify it, then later feed decode() with that copy
     var oldResponse = response;
     var newResponse; var i;
-    if(processing) {
-    	this.prePostDecodeConfigs = [];
-	    for (i = 0; i < processing.length; i++) {
-	        cb_config = processing[i];
-	        if (cb_config) {
-	        	if(cb_config.preDecodeCallback) {
-		        	newResponse = cb_config.preDecodeCallback(oldResponse);
-		        	oldResponse = newResponse;
-	        	}
-	        	if(cb_config.postDecodeCallback) {
-	        		post_callbacks.push(cb_config);
-	        	}
-	        }
-	    }
-
+    if(processing && processing.length > 0) {
+        for (i = 0; i < processing.length; i++) {
+            cb_config = processing[i];
+            if (cb_config) {
+                if(cb_config.preDecodeCallback) {
+                    newResponse = cb_config.preDecodeCallback(oldResponse);
+                    oldResponse = newResponse;
+                }
+                if(cb_config.postDecodeCallback) {
+                    post_callbacks.push(cb_config);
+                }
+            }
+        }
     }
     //now feed decode() with our copy of response
     var res = config["fn"].call(config["scope"], oldResponse, noStrip);
     for (i = 0; i < post_callbacks.length; i++) {
-    	post_callbacks[i].postDecodeCallback(res);
+        post_callbacks[i].postDecodeCallback(res);
     }
 
     return res;
