@@ -21,7 +21,9 @@ import java.util.List;
 
 import org.auraframework.test.util.WebDriverTestCase;
 import org.auraframework.test.util.WebDriverTestCase.ExcludeBrowsers;
+import org.auraframework.test.util.WebDriverTestCase.Flapper;
 import org.auraframework.test.util.WebDriverUtil.BrowserType;
+import org.auraframework.util.test.annotation.UnAdaptableTest;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
@@ -53,6 +55,8 @@ public class PanelModalOverlayUITest extends WebDriverTestCase {
     /**
      * [Accessibility] modal overlay dialog closing on Esc key. Test case for W-2396326
      */
+    @UnAdaptableTest("W-2869786: flapper")
+    @Flapper
     public void testPressEscKeyOnModalOverlayDialog() throws Exception {
         open(APP);
         verifyOverlayNotActive();
