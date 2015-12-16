@@ -262,7 +262,9 @@ AuraRenderingService.prototype.unrender = function(components) {
                     }
                 }
             } finally {
-                cmp.setUnrendering(false);
+                if (cmp.isValid()) {
+                    cmp.setUnrendering(false);
+                }
             }
         }
     }
