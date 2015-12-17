@@ -89,7 +89,7 @@
     updateGlobalEventListeners: function(component) {
         var visible = component.get("v.visible");
         if (!component._clickHandler) {
-            component._clickHandler = component.addDocumentLevelHandler("click", this.getOnClickFunction(component), visible);
+            component._clickHandler = component.addDocumentLevelHandler("mouseup", this.getOnClickFunction(component), visible);
         } else {
             component._clickHandler.setEnabled(visible);
         }
@@ -159,7 +159,7 @@
                 }
                 var time = ("0" + hours).slice(-2) + ("0" + closestMinute).slice(-2);
                 if (!$A.util.isUndefinedOrNull(time)) {
-                    var elem = document.getElementById(time);
+                    var elem = document.querySelector(".visible li[id = '" + time + "']");
                     if (!$A.util.isUndefinedOrNull(elem)) {
                         //elem.scrollIntoView();
                         elem.focus();
@@ -239,7 +239,7 @@
         }
         var time = ("0" + hours).slice(-2) + ("0" + newMinutes).slice(-2);
         if (!$A.util.isUndefinedOrNull(time)) {
-            var elem = document.getElementById(time);
+            var elem = document.querySelector(".visible li[id = '" + time + "']");
             if (!$A.util.isUndefinedOrNull(elem)) {
                 elem.focus();
             }
@@ -263,7 +263,7 @@
         }
         var time = ("0" + hours).slice(-2) + ("0" + newMinutes).slice(-2);
         if (!$A.util.isUndefinedOrNull(time)) {
-            var elem = document.getElementById(time);
+            var elem = document.querySelector(".visible li[id = '" + time + "']");
             if (!$A.util.isUndefinedOrNull(elem)) {
                 elem.focus();
             }
