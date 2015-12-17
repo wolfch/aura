@@ -39,7 +39,7 @@ public class CacheableDefFactoryImpl<D extends Definition> extends DefFactoryImp
         Source<D> source = sourceFactory.getSource(descriptor);
         if (source != null && source.exists()) {
             Parser<D> parser = ParserFactory.getParser(source.getFormat(), descriptor);
-            D def = parser.parse(source.getDescriptor(), source);
+            D def = parser.parse(descriptor, source);
             return def;
         }
 
