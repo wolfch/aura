@@ -476,7 +476,16 @@
     
     resizeColumns : function(cmp, widths) {
     	if (widths && widths.length > 0) {
-    		cmp._colResizer.resizeAll(widths);
+    		if (this.hasResizerHandles(cmp)) {
+    			cmp._colResizer.resizeAll(widths);
+    		} else {
+    			var headers = cmp.get("v.headerColumns") || [];
+				for (var i = 0; i < headers.length; i++) {
+					if (widths[i]) {
+						headers[i].set("v.width", widths[i]);
+					}
+        		}
+    		}
     	}
     },
     
