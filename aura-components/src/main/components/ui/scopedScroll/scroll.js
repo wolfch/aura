@@ -14,23 +14,14 @@
  * limitations under the License.
  */
 function lib() { //eslint-disable-line no-unused-vars
-    var raf;
-
-    var mouseWheelHandlerWrapper = function (e) {
-        // debounce event with calculation
-        if (!raf) {
-            raf = window.requestAnimationFrame(function () {
-                mouseWheelHandler(e);
-                raf = null;
-            });
-        }
-    };
 
     var getSrollerWrapper = function (element) {
         var parent = element;
         while (parent && !parent._scopedScroll) {
             parent = parent.parentElement;
         }
+
+        return parent;
     };
 
     var mouseWheelHandler = function (e) {
@@ -50,7 +41,7 @@ function lib() { //eslint-disable-line no-unused-vars
         var delta        = e.wheelDelta;
         var up           = delta > 0;
 
-        if (!up && -delta > scrollHeight - height - scrollTop) {
+        if (!up && (scrollHeight - height) === scrollTop) {
             // Scrolling down, but this will take us past the bottom.
             wrapper.scrollTop = scrollHeight;
             e.preventDefault();
@@ -66,13 +57,13 @@ function lib() { //eslint-disable-line no-unused-vars
         scope: function (element) {
             var dom = typeof element === 'string' ? document.querySelector(element) : element;
             if (dom && !dom._scopedScroll) {
-                dom.addEventListener('mousewheel', mouseWheelHandlerWrapper, false);
+                dom.addEventListener('mousewheel', mouseWheelHandler, false);
                 dom._scopedScroll = true;
             }
         },
         unscope: function (element) {
             var dom = typeof element === 'string' ? document.querySelector(element) : element;
-            dom.removeEventListener('mousewheel', mouseWheelHandlerWrapper, false);
+            dom.removeEventListener('mousewheel', mouseWheelHandler, false);
             dom._scopedScroll = false;
         }
     };
