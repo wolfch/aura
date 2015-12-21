@@ -1367,13 +1367,13 @@ Component.prototype.getEvent = function(name) {
     if(!eventDef){
         return null;
     }
+    // #if {"excludeModes" : ["PRODUCTION","AUTOTESTING"]}
     if (!$A.clientService.allowAccess(eventDef,this)) {
-        // #if {"excludeModes" : ["PRODUCTION","AUTOTESTING"]}
         $A.warning("Access Check Failed! Component.getEvent():'" + name + "' of component '" + this + "' is not visible to '" + $A.getContext().getCurrentAccess() + "'.");
-        // #end
-
-        return null;
+        // KRIS: Disabling Access Checks for 200
+        //return null;
     }
+    // #end
     return new Aura.Event.Event({
         "name" : name,
         "eventDef" : eventDef,
@@ -1837,13 +1837,14 @@ Component.prototype.setupSuper = function(configAttributes) {
 
             if (facets) {
                 for (var i = 0; i < facets.length; i++) {
+                    // #if {"excludeModes" : ["PRODUCTION","AUTOTESTING"]}
                     var facetDef = AttributeSet.getDef(facets[i]["descriptor"], this.componentDef);
                     if (!$A.clientService.allowAccess(facetDef[0], facetDef[1])) {
-                        // #if {"excludeModes" : ["PRODUCTION","AUTOTESTING"]}
                         $A.warning("Access Check Failed! Component.setupSuper():'" + facets[i]["descriptor"] + "' of component '" + this + "' is not visible to '" + $A.getContext().getCurrentAccess() + "'.");
-                        // #end
-                        continue;
+                        // KRIS: Disabling Access Checks for 200
+                        //continue;
                     }
+                    // #end
                     superAttributes["values"][facets[i]["descriptor"]] = facets[i]["value"];
                 }
             }
@@ -1928,14 +1929,14 @@ Component.prototype.setupAttributes = function(cmp, config, localCreation) {
             value = value["value"];
         }
         if (!setByDefault[attribute]){
+            // #if {"excludeModes" : ["PRODUCTION","AUTOTESTING"]}
             var def=AttributeSet.getDef(attribute,cmp.getDef());
             if(!$A.clientService.allowAccess(def[0],def[1])) {
-                // #if {"excludeModes" : ["PRODUCTION","AUTOTESTING"]}
                 $A.warning("Access Check Failed! Component.setupAttributes():'" + attribute + "' of component '" + cmp + "' is not visible to '" + $A.getContext().getCurrentAccess() + "'.");
-                // #end
-
-                continue;
+                // KRIS: Disabling Access Checks for 200
+                //continue;
             }
+            // #end
         }
 
         if (isFacet) {

@@ -345,14 +345,15 @@ AuraComponentService.prototype.newComponentDeprecated = function(config, attribu
     } else {
         // var currentAccess = $A.getContext().getCurrentAccess();
         // Server should handle the case of an unknown def fetched "lazily"
+        // #if {"excludeModes" : ["PRODUCTION","AUTOTESTING"]}
         if(!$A.clientService.allowAccess(def) /* && currentAccess  */) {
-            // #if {"excludeModes" : ["PRODUCTION","AUTOTESTING"]}
             $A.warning("Access Check Failed! AuraComponentService.newComponentDeprecated(): '" +
                 (def&&def.getDescriptor().getQualifiedName()) + "' is not visible to '" +
                 $A.getContext().getCurrentAccess() + "'.");
-            // #end
-            return null;
+            // KRIS: Disabling Access Checks for 200
+            //return null;
         }
+        // #end
     }
 
     return this.createComponentInstance(config, localCreation);
@@ -672,14 +673,16 @@ AuraComponentService.prototype.newComponentAsync = function(callbackScope, callb
                 var action=this.requestComponent(callbackScope, collectComponent, configItem, attributeValueProvider, i);
                 $A.enqueueAction(action);
             } else {
-                if($A.clientService.allowAccess(def)) {
-                    collectComponent(this["newComponentDeprecated"](configItem, attributeValueProvider, localCreation, doForce),"SUCCESS","",i);
-                }else{
-                    // #if {"excludeModes" : ["PRODUCTION","AUTOTESTING"]}
+                // #if {"excludeModes" : ["PRODUCTION","AUTOTESTING"]}
+                if(!$A.clientService.allowAccess(def)) {
                     $A.warning("Access Check Failed! AuraComponentService.newComponentAsync(): '"+def.getDescriptor().getQualifiedName()+"' is not visible to '"+$A.getContext().getCurrentAccess()+"'.");
-                    // #end
-                    collectComponent(null,"ERROR","Unknown component '"+desc+"'.",i);
-                }
+                } 
+                // #end
+                // KRIS: Disabling Access Checks for 200
+                //     collectComponent(null,"ERROR","Unknown component '"+desc+"'.",i);
+                // } else {
+                    collectComponent(this["newComponentDeprecated"](configItem, attributeValueProvider, localCreation, doForce),"SUCCESS","",i);
+                //}
             }
         }
     }
@@ -883,13 +886,14 @@ AuraComponentService.prototype.getDefinition = function(descriptor, callback) {
     var def = this.getComponentDef(this.createDescriptorConfig(descriptor));
 
     if (def) {
+        // #if {"excludeModes" : ["PRODUCTION","AUTOTESTING"]}
         if(!$A.clientService.allowAccess(def)) {
-            // #if {"excludeModes" : ["PRODUCTION","AUTOTESTING"]}
             $A.warning("Access Check Failed! ComponentService.getDef():'" + def.getDescriptor().toString() + "' is not visible to '" + ($A.getContext()&&$A.getContext().getCurrentAccess()) + "'.");
-            // #end
-            callback(null);
-            return;
+            // KRIS: Disabling Access Checks for 200
+            // callback(null);
+            // return;
         }
+        // #end
         callback(def);
         return;
     }
@@ -947,13 +951,13 @@ AuraComponentService.prototype.getDef = function(descriptor) {
     $A.assert(descriptor, "No ComponentDef descriptor specified");
     var def = this.getComponentDef(this.createDescriptorConfig(descriptor));
 
+    // #if {"excludeModes" : ["PRODUCTION","AUTOTESTING"]}
     if (def && !$A.clientService.allowAccess(def)) {
-        // #if {"excludeModes" : ["PRODUCTION","AUTOTESTING"]}
         $A.warning("Access Check Failed! ComponentService.getDef():'" + def.getDescriptor().toString() + "' is not visible to '" + ($A.getContext()&&$A.getContext().getCurrentAccess()) + "'.");
-        // #end
-
-        return null;
+        // KRIS: Disabling Access Checks for 200
+        //return null;
     }
+    // #end
     return def;
 };
 

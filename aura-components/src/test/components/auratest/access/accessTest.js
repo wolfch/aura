@@ -68,52 +68,52 @@
             }
         ]
     },
-
-    testComponentUseAttributesOfRemotePrivilegedComponentInController:{
-        test:[
-            function canNotUsePrivateAttribute(cmp){
-                // No access private attribute on facet
-                var expected="";
-                cmp.set("v.testType","Private");
-
-                cmp.find("testRemoteAttributes").getElement().click();
-
-                $A.test.addWaitFor(expected,function(){
-                    return $A.test.getTextByComponent(cmp.find("local"));
-                });
-            },
-            function canUsePublicAttribute(cmp){
-                var expected="PUBLIC";
-                cmp.set("v.testType","Public");
-
-                cmp.find("testRemoteAttributes").getElement().click();
-
-                $A.test.addWaitFor(expected,function(){
-                    return $A.test.getTextByComponent(cmp.find("local"));
-                });
-            },
-            function canUseInternalAttribute(cmp){
-                var expected="INTERNAL";
-                cmp.set("v.testType","Internal");
-
-                cmp.find("testRemoteAttributes").getElement().click();
-
-                $A.test.addWaitFor(expected,function(){
-                    return $A.test.getTextByComponent(cmp.find("local"));
-                });
-            },
-            function canUseGlobalAttribute(cmp){
-                var expected="GLOBAL";
-                cmp.set("v.testType","Global");
-
-                cmp.find("testRemoteAttributes").getElement().click();
-
-                $A.test.addWaitFor(expected,function(){
-                    return $A.test.getTextByComponent(cmp.find("local"));
-                });
-            }
-        ]
-    },
+//
+//    testComponentUseAttributesOfRemotePrivilegedComponentInController:{
+//        test:[
+//            function canNotUsePrivateAttribute(cmp){
+//                // No access private attribute on facet
+//                var expected="";
+//                cmp.set("v.testType","Private");
+//
+//                cmp.find("testRemoteAttributes").getElement().click();
+//
+//                $A.test.addWaitFor(expected,function(){
+//                    return $A.test.getTextByComponent(cmp.find("local"));
+//                });
+//            },
+//            function canUsePublicAttribute(cmp){
+//                var expected="PUBLIC";
+//                cmp.set("v.testType","Public");
+//
+//                cmp.find("testRemoteAttributes").getElement().click();
+//
+//                $A.test.addWaitFor(expected,function(){
+//                    return $A.test.getTextByComponent(cmp.find("local"));
+//                });
+//            },
+//            function canUseInternalAttribute(cmp){
+//                var expected="INTERNAL";
+//                cmp.set("v.testType","Internal");
+//
+//                cmp.find("testRemoteAttributes").getElement().click();
+//
+//                $A.test.addWaitFor(expected,function(){
+//                    return $A.test.getTextByComponent(cmp.find("local"));
+//                });
+//            },
+//            function canUseGlobalAttribute(cmp){
+//                var expected="GLOBAL";
+//                cmp.set("v.testType","Global");
+//
+//                cmp.find("testRemoteAttributes").getElement().click();
+//
+//                $A.test.addWaitFor(expected,function(){
+//                    return $A.test.getTextByComponent(cmp.find("local"));
+//                });
+//            }
+//        ]
+//    },
 
     testComponentFromExternalNamespaceCanUseAllAccessLevelsInMarkup:{
         test:function(cmp){
@@ -165,48 +165,48 @@
             }
         ]
     },
-
-    testComponentCanAccessEventsOfRemotePrivilegedComponentFromController: {
-        test: [
-           function canAccessGlobalEvent(cmp) {
-               var expected = "markup://auratest:accessGlobalEvent";
-               cmp.set("v.testType", "globalEvent");
-
-               cmp.find("testRemoteEvent").getElement().click();
-
-               var actual = cmp.get("v.output").getDef().getDescriptor().getQualifiedName();
-               $A.test.assertEquals(expected, actual);
-           },
-           function canAccessPublicEvent(cmp) {
-               var expected = "markup://auratest:accessPublicEvent";
-               cmp.set("v.testType", "publicEvent");
-
-               cmp.find("testRemoteEvent").getElement().click();
-
-               var actual = cmp.get("v.output").getDef().getDescriptor().getQualifiedName();
-               $A.test.assertEquals(expected, actual);
-           },
-           function canAccessInternalEvent(cmp) {
-               var expected = "markup://auratest:accessInternalEvent";
-               cmp.set("v.testType", "internalEvent");
-
-               cmp.find("testRemoteEvent").getElement().click();
-
-               var actual = cmp.get("v.output").getDef().getDescriptor().getQualifiedName();
-               $A.test.assertEquals(expected, actual);
-           },
-           function canAccessPrivateEvent(cmp) {
-               // Cannot access remote private event
-               var expected = null;
-               cmp.set("v.testType", "privateEvent");
-
-               cmp.find("testRemoteEvent").getElement().click();
-
-               var actual = cmp.get("v.output");
-               $A.test.assertEquals(expected, actual);
-           }
-       ]
-   },
+//
+//    testComponentCanAccessEventsOfRemotePrivilegedComponentFromController: {
+//        test: [
+//           function canAccessGlobalEvent(cmp) {
+//               var expected = "markup://auratest:accessGlobalEvent";
+//               cmp.set("v.testType", "globalEvent");
+//
+//               cmp.find("testRemoteEvent").getElement().click();
+//
+//               var actual = cmp.get("v.output").getDef().getDescriptor().getQualifiedName();
+//               $A.test.assertEquals(expected, actual);
+//           },
+//           function canAccessPublicEvent(cmp) {
+//               var expected = "markup://auratest:accessPublicEvent";
+//               cmp.set("v.testType", "publicEvent");
+//
+//               cmp.find("testRemoteEvent").getElement().click();
+//
+//               var actual = cmp.get("v.output").getDef().getDescriptor().getQualifiedName();
+//               $A.test.assertEquals(expected, actual);
+//           },
+//           function canAccessInternalEvent(cmp) {
+//               var expected = "markup://auratest:accessInternalEvent";
+//               cmp.set("v.testType", "internalEvent");
+//
+//               cmp.find("testRemoteEvent").getElement().click();
+//
+//               var actual = cmp.get("v.output").getDef().getDescriptor().getQualifiedName();
+//               $A.test.assertEquals(expected, actual);
+//           },
+//           function canAccessPrivateEvent(cmp) {
+//               // Cannot access remote private event
+//               var expected = null;
+//               cmp.set("v.testType", "privateEvent");
+//
+//               cmp.find("testRemoteEvent").getElement().click();
+//
+//               var actual = cmp.get("v.output");
+//               $A.test.assertEquals(expected, actual);
+//           }
+//       ]
+//   },
 
    testComponentCanClientSideCreateGlobalComponentOnServerFromController: {
        test: function(cmp) {
@@ -325,21 +325,21 @@
        ]
    },
 
-   testSetNonExistentAttribute: {
-       test: function(cmp) {
-           cmp.testSetNonExistentAttribute();
-           $A.test.assertUndefined(cmp.get("v.output"), "Should not be able to set and retrieve attributes on a"
-                   + " component that do not exist");
-       }
-   },
-
-   testSetNonExistentRemoteAttribute: {
-       test: function(cmp) {
-           cmp.testSetNonExistentRemoteAttribute();
-           $A.test.assertUndefined(cmp.get("v.output"), "Should not be able to set and retrieve attributes on a"
-                   + " component that do not exist");
-       }
-   },
+//   testSetNonExistentAttribute: {
+//       test: function(cmp) {
+//           cmp.testSetNonExistentAttribute();
+//           $A.test.assertUndefined(cmp.get("v.output"), "Should not be able to set and retrieve attributes on a"
+//                   + " component that do not exist");
+//       }
+//   },
+//
+//   testSetNonExistentRemoteAttribute: {
+//       test: function(cmp) {
+//           cmp.testSetNonExistentRemoteAttribute();
+//           $A.test.assertUndefined(cmp.get("v.output"), "Should not be able to set and retrieve attributes on a"
+//                   + " component that do not exist");
+//       }
+//   },
 
    testAuraMethodAccess: {
        test: [
