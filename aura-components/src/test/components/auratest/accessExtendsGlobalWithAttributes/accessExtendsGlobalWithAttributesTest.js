@@ -18,12 +18,13 @@
             cmp.testAttributeAccess("Internal");
             $A.test.assertEquals("INTERNAL", cmp.get("v.output"));
         }
-    },
-
-    testCanNotAccessPrivateAttributeOnBaseComponent: {
-        test: function(cmp) {
-            cmp.testAttributeAccess("Private");
-            $A.test.assertEquals(undefined, cmp.get("v.output"));
-        }
     }
+//    ,
+//
+//    testCanNotAccessPrivateAttributeOnBaseComponent: {
+//        test: function(cmp) {
+//            cmp.testAttributeAccess("Private");
+//            $A.test.assertEquals(undefined, cmp.get("v.output"));
+//        }
+//    }
 })

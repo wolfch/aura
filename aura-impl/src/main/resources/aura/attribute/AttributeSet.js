@@ -96,8 +96,9 @@ AttributeSet.prototype.get = function(key, component) {
     if(!$A.clientService.allowAccess(defs[0], defs[1])){
         // #if {"excludeModes" : ["PRODUCTION","AUTOTESTING"]}
         $A.warning("Access Check Failed! AttributeSet.get(): attribute '"+attribute+"' of component '"+component+"' is not visible to '"+$A.getContext().getCurrentAccess()+"'.");
+        // KRIS: Disabling Access Checks for 200
+        //return undefined;
         // #end
-        return undefined;
     }
 	if (!path) {
         var decorators=this.decorators[key];
@@ -176,9 +177,9 @@ AttributeSet.prototype.set = function(key, value, component) {
     if(!$A.clientService.allowAccess(defs[0],defs[1])){
         // #if {"excludeModes" : ["PRODUCTION","AUTOTESTING"]}
         $A.warning("Access Check Failed! AttributeSet.set(): '"+attribute+"' of component '"+component+"' is not visible to '"+$A.getContext().getCurrentAccess()+"'.");
+        // KRIS: Disabling Access Checks for 200
+        //return;
         // #end
-
-        return;
     }
     if(!$A.util.isUndefinedOrNull(value) && !this.isValueValidForAttribute(key, value)) {
     	if(this.isTypeOfArray(key)) {
