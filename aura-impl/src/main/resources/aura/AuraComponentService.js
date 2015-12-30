@@ -1314,8 +1314,10 @@ AuraComponentService.prototype.saveDefsToStorage = function (context) {
 
                 $A.warning("AuraComponentService.saveDefsToStorage: failure during analysis, pruning, or saving; clearing actions and component def storages", e);
                 $A.metricsService.transaction('AURAPERF', 'defsEvicted', {
-                    "defsRequiredSize" : defSizeKb + libSizeKb,
-                    "error" : e
+                    "context": {
+                        "defsRequiredSize" : defSizeKb + libSizeKb,
+                        "error" : e
+                    }
                 });
 
                 // collect promises that clear actions + cmp def storage. note that the promises do not reject in order
@@ -1738,10 +1740,12 @@ AuraComponentService.prototype.pruneDefsFromStorage = function(requiredSpaceKb) 
                         function(evicted) {
                             $A.log("AuraComponentService.pruneDefsFromStorage: evicted " + evicted.length + " component defs and actions");
                             $A.metricsService.transaction('AURAPERF', 'defsEvicted', {
-                                "defsRequiredSize" : requiredSpaceKb,
-                                "storageCurrentSize" : currentSize,
-                                "storageRequiredSize" : newSize,
-                                "evicted" : evicted
+                                "context": {
+                                    "defsRequiredSize" : requiredSpaceKb,
+                                    "storageCurrentSize" : currentSize,
+                                    "storageRequiredSize" : newSize,
+                                    "evicted" : evicted
+                                }
                             });
                         }
                     );
