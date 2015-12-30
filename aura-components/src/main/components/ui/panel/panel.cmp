@@ -64,9 +64,9 @@
             <span class="assistiveText">{!v.startOfDialogLabel}</span>
 
            	<div class="panel-header">
-                <aura:If isTrue="{!!empty(v.title)}">
+                <aura:if isTrue="{!!empty(v.title)}">
                     <h2 id="{!'title_' + globalId}" class="{!v.titleDisplay ? 'title' : 'assistiveText'}">{!v.title}</h2>
-                </aura:If>
+                </aura:if>
                  {!v.header}
                  {!v.closeButton}
             </div>
