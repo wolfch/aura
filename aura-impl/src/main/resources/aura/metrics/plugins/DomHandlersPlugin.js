@@ -58,12 +58,7 @@ DomHandlersPlugin.prototype.disable = function () {
     }
 };
 
-DomHandlersPlugin.prototype.dispatchActionHook = function (original, action, domEvent, cmp) {
-    var payload = {
-
-    };
-    
-    console.log(payload);
+DomHandlersPlugin.prototype.dispatchActionHook = function (original) {
     var ret = original.apply(this, Array.prototype.slice.call(arguments, 1));
     return ret;
 };
