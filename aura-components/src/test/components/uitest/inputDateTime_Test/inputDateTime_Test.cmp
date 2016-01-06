@@ -33,4 +33,16 @@
                       timeFormat="{!v.timeFormat}"
                       timezone="{!v.timezone}"
                       useSingleInput="{!v.useSingleInput}"/>
+                  
+    <ui:inputDateTime aura:id="dateTimePickerTest2"
+                      label="2nd row label"
+                      displayDatePicker="true"
+                      class="date_input_box2"
+                      value="{!v.value}"
+                      format="{!v.format}"
+                      dateFormat="{!v.dateFormat}"
+                      timeFormat="{!v.timeFormat}"
+                      timezone="{!v.timezone}"
+                      useSingleInput="{!v.useSingleInput}"/>
+                      
 </aura:component>

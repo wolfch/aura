@@ -16,6 +16,8 @@
 
 package org.auraframework.components.ui.inputDateTime;
 
+import java.util.List;
+
 import org.auraframework.test.util.*;
 import org.auraframework.test.util.WebDriverTestCase.ExcludeBrowsers;
 import org.auraframework.test.util.WebDriverUtil.BrowserType;
@@ -85,7 +87,7 @@ public class InputDateTimeUITest extends WebDriverTestCase {
     public void testTPCloseWithClick() throws Exception {
          open(URL);
 
-        clickToOpenTimePicker();
+         clickToOpenTimePicker(0);
 
         // click outside to close the timePicker
         WebElement body = findDomElement(By.tagName("body"));
@@ -118,7 +120,7 @@ public class InputDateTimeUITest extends WebDriverTestCase {
     public void testSelectTimeFromTP() throws Exception {
         open(URL);
 
-        clickToOpenTimePicker();
+        clickToOpenTimePicker(0);
 
         // focus is on timePicker, just press ENTER to select a time
         WebElement activeElement = findDomElement(By.xpath(TIME_1200_XPATH));
@@ -205,6 +207,25 @@ public class InputDateTimeUITest extends WebDriverTestCase {
         selectTimePicker(Keys.ARROW_RIGHT, TIME_1200_XPATH, "12:30 PM");
     }
 
+    /**
+     * Test Flow:
+     * - Open one timepicker
+     * - Open the other timepicker
+     * - Verify that there is only one timepicker open
+     * @throws Exception
+     */
+    public void testMultipleTPOpen() throws Exception {
+    	
+    	open(URL);
+  	
+    	clickToOpenTimePicker(1);
+
+    	clickToOpenTimePicker(0);
+
+        List<WebElement> timePickerSelectionPanels = findDomElements(By.cssSelector(TIME_PICKER_SEL));
+        assertEquals("Number of time picker selection panels open should only be 1", 1, timePickerSelectionPanels.size());
+       
+    }
     /***********************************************************************************************
      *********************************** HELPER FUNCTIONS*******************************************
      ***********************************************************************************************/
@@ -214,7 +235,7 @@ public class InputDateTimeUITest extends WebDriverTestCase {
      * @throws Exception
      */
     private void selectTimePicker(Keys arrow, String timeXpath, String expectedTime) throws Exception {
-        clickToOpenTimePicker();
+    	clickToOpenTimePicker(0);
 
         // focus on timepicker and press arrow key
         WebElement activeElem = findDomElement(By.xpath(timeXpath));
@@ -251,9 +272,9 @@ public class InputDateTimeUITest extends WebDriverTestCase {
 //        waitForTimePickerAppear();
 //    }
 
-    private void clickToOpenTimePicker() {
+    private void clickToOpenTimePicker(int index) {
         // use input time box to tab into calendar icon and wait for timePicker
-        WebElement inputTimeIcon = findDomElement(By.cssSelector(TIME_ICON_SEL));
+        WebElement inputTimeIcon = findDomElements(By.cssSelector(TIME_ICON_SEL)).get(index);
         inputTimeIcon.click();
         waitForTimePickerAppear();
     }
@@ -265,7 +286,7 @@ public class InputDateTimeUITest extends WebDriverTestCase {
      * - Check if inputTimeBox has focus
      */
     private void checkTPFocusOnClosingWithKey(Keys key) {
-        clickToOpenTimePicker();
+    	clickToOpenTimePicker(0);
 
         // activeElement is timePicker now
         WebElement activeElement = findDomElement(By.xpath(TIME_1200_XPATH));
