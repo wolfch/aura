@@ -57,7 +57,7 @@ public class PanelModalOverlayUITest extends WebDriverTestCase {
      */
     @UnAdaptableTest("W-2869786: flapper")
     @Flapper
-    public void testPressEscKeyOnModalOverlayDialog() throws Exception {
+    public void _testPressEscKeyOnModalOverlayDialog() throws Exception {
         open(APP);
         verifyOverlayNotActive();
         openOverlay(PANELDIALOG_MODAL_BUTTON);
@@ -211,7 +211,7 @@ public class PanelModalOverlayUITest extends WebDriverTestCase {
     /**
      * Tabs on Modal overlay should do focus trapping and not close the overlay
      */
-    public void testModalOverlayDialogDoesFocusTrapping() throws Exception {
+    public void _testModalOverlayDialogDoesFocusTrapping() throws Exception {
         open(APP);
         verifyOverlayNotActive();
         openOverlay(PANELDIALOG_MODAL_BUTTON);
