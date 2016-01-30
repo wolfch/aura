@@ -411,6 +411,7 @@ public class ServerServiceImpl implements ServerService {
                 // ONLY if not production instance
                 if (!Aura.getConfigAdapter().isProduction()) {
                     sb.append(commentedJavascriptErrors(errors));
+                    output = sb.toString();
                 }
             }
         }
