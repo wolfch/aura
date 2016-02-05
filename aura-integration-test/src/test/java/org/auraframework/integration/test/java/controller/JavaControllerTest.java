@@ -15,8 +15,14 @@
  */
 package org.auraframework.integration.test.java.controller;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import java.io.StringWriter;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.inject.Inject;
+
 import org.auraframework.cache.Cache;
 import org.auraframework.components.test.java.controller.CustomParamType;
 import org.auraframework.def.ActionDef;
@@ -49,12 +55,8 @@ import org.auraframework.util.test.annotation.UnAdaptableTest;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import javax.inject.Inject;
-import java.io.StringWriter;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 /**
  * Automation for java Controllers.
@@ -653,9 +655,9 @@ public class JavaControllerTest extends AuraImplTestCase {
         private String value = null;
 
         @Override
-        public void log(String key, String value) {
-            this.key = key;
-            this.value = value;
+        public void log(String lkey, String lvalue) {
+            this.key = lkey;
+            this.value = lvalue;
         }
     }
 }

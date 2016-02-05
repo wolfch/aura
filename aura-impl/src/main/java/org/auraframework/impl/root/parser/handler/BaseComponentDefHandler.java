@@ -203,8 +203,8 @@ public abstract class BaseComponentDefHandler<T extends BaseComponentDef, B exte
             builder.events.put(regDef.getAttributeName(), regDef);
         } else if (EventHandlerDefHandler.TAG.equalsIgnoreCase(tag)) {
             builder.eventHandlers.add(new EventHandlerDefHandler(this, xmlReader, source, definitionService).getElement());
-        } else if (ImportDefHandler.TAG.equalsIgnoreCase(tag)) {
-            builder.imports.add(new ImportDefHandler(this, xmlReader, source, definitionService).getElement());
+        } else if (LibraryDefRefHandler.TAG.equalsIgnoreCase(tag)) {
+            builder.imports.add(new LibraryDefRefHandler(this, xmlReader, source, definitionService).getElement());
         } else if (AttributeDefRefHandler.TAG.equalsIgnoreCase(tag)) {
             builder.facets.add(new AttributeDefRefHandler<>(this, xmlReader, source, isInPrivilegedNamespace,
                     definitionService, configAdapter, definitionParserAdapter).getElement());

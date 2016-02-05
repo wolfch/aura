@@ -15,7 +15,13 @@
  */
 package org.auraframework.impl.system;
 
-import com.google.common.collect.Maps;
+import static org.auraframework.instance.AuraValueProviderType.LABEL;
+
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+
 import org.auraframework.Aura;
 import org.auraframework.builder.DefBuilder;
 import org.auraframework.def.ActionDef;
@@ -40,7 +46,7 @@ import org.auraframework.impl.css.flavor.FlavorIncludeDefImpl;
 import org.auraframework.impl.css.flavor.FlavorsDefImpl;
 import org.auraframework.impl.java.model.JavaValueDef;
 import org.auraframework.impl.javascript.model.JavascriptValueDef;
-import org.auraframework.impl.root.library.ImportDefImpl;
+import org.auraframework.impl.root.library.LibraryDefRefImpl;
 import org.auraframework.instance.GlobalValueProvider;
 import org.auraframework.system.Location;
 import org.auraframework.system.SubDefDescriptor;
@@ -52,12 +58,7 @@ import org.auraframework.util.json.Serialization.ReferenceScope;
 import org.auraframework.util.json.Serialization.ReferenceType;
 import org.auraframework.util.text.Hash;
 
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
-
-import static org.auraframework.instance.AuraValueProviderType.LABEL;
+import com.google.common.collect.Maps;
 
 /**
  * The implementation for a definition.
@@ -209,7 +210,7 @@ public abstract class DefinitionImpl<T extends Definition> implements Definition
                 || FlavorsDefImpl.class.isAssignableFrom(this.getClass())
                 || ResourceDef.class.isAssignableFrom(this.getClass())
                 || JavascriptValueDef.class.isAssignableFrom(this.getClass())
-                || ImportDefImpl.class.isAssignableFrom(this.getClass())
+                || LibraryDefRefImpl.class.isAssignableFrom(this.getClass())
                 || DesignItemsDef.class.isAssignableFrom(this.getClass())
                 || AttributeDefRef.class.isAssignableFrom(this.getClass())) {
         } else {

@@ -15,12 +15,14 @@
  */
 package org.auraframework.integration.test.def;
 
-import com.google.common.base.Charsets;
-import com.google.common.base.Function;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import org.apache.commons.lang3.StringUtils;
+import java.io.ByteArrayOutputStream;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.List;
+import java.util.Set;
+
+import javax.inject.Inject;
+
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.IncludeDef;
 import org.auraframework.def.IncludeDefRef;
@@ -39,12 +41,11 @@ import org.auraframework.util.json.JsonEncoder;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import javax.inject.Inject;
-import java.io.ByteArrayOutputStream;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.List;
-import java.util.Set;
+import com.google.common.base.Charsets;
+import com.google.common.base.Function;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 
 public class LibraryDefTest extends DefinitionTest<LibraryDef> {
 
@@ -63,36 +64,17 @@ public class LibraryDefTest extends DefinitionTest<LibraryDef> {
         assertEquals(9, includes.size());
         assertInclude(includes.get(0), "basicFirst", null, null);
         assertInclude(includes.get(1), "basicSecond", null, null);
-        assertInclude(includes.get(2), "hasVars", null, "firstVar");
-        assertInclude(includes.get(3), "undefined", null, null);
-        assertInclude(includes.get(4), "expectsImport", "basicFirst", null);
-        assertInclude(includes.get(5), "reusesImport", "basicFirst", null);
+        assertInclude(includes.get(2), "expectsImport", "basicFirst", null);
+        assertInclude(includes.get(3), "expectsImportAlso", "expectsImport", null);
+        assertInclude(includes.get(4), "reusesImport", "basicFirst", null);
+        assertInclude(includes.get(5), "hasVars", null, "firstVar");
         assertInclude(includes.get(6), "importsAndExport", "basicFirst", "anExport");
-        assertInclude(includes.get(7), "handlesMultipleImports", "basicFirst,basicSecond,undefined", null);
-        assertInclude(includes.get(8), "expectsImportAlso", "expectsImport", null);
-    }
-
-    private void assertInclude(IncludeDefRef include, String name, String importList, String export) {
-        assertEquals("Unexpected name for include", name, include.getName());
-        assertEquals("Unexpected export for " + name, export, include.getExport());
-
-        List<DefDescriptor<IncludeDef>> actualImports = include.getImports();
-        if (actualImports == null) {
-            assertNull("Unexpected imports for " + name, importList);
-        } else {
-            String actualList = StringUtils.join(
-                    Lists.transform(actualImports, new Function<DefDescriptor<IncludeDef>, String>() {
-                        @Override
-                        public String apply(DefDescriptor<IncludeDef> input) {
-                            return input.getName();
-                        }
-                    }), ',');
-            assertEquals(importList, actualList);
-        }
+        assertInclude(includes.get(7), "handlesMultipleImports", "basicFirst,basicSecond,undefined", "anExport");
+        assertInclude(includes.get(8), "undefined", null, null);
     }
 
     /**
-     * Tests the ordering logic of the {@link LibraryDef} to ensure that imports will be serialized in order.
+     * Tests that all includes have been defined and in the same order.
      */
     @Test
     public void testIncludeOrdering() throws Exception {
@@ -101,71 +83,11 @@ public class LibraryDefTest extends DefinitionTest<LibraryDef> {
 
         List<IncludeDefRef> includes = libDef.getIncludes();
         assertEquals(5, includes.size());
-        assertEquals("e", includes.get(0).getName());
-        assertEquals("d", includes.get(1).getName());
+        assertEquals("a", includes.get(0).getName());
+        assertEquals("b", includes.get(1).getName());
         assertEquals("c", includes.get(2).getName());
-        assertEquals("b", includes.get(3).getName());
-        assertEquals("a", includes.get(4).getName());
-    }
-
-    /**
-     * Tests the exception thrown when a cycle exists in the lib's dependency tree.
-     */
-    @Test
-    public void testIncludeNotOrderable() throws Exception {
-        try {
-            definitionService.getDefinition("test:test_LibraryNotOrderable", LibraryDef.class);
-            fail("Getting library should fail because it is malformed.");
-        } catch (Throwable t) {
-            assertExceptionMessageEndsWith(t, InvalidDefinitionException.class,
-                    "aura:library: Unable to order include statements by dependency tree.");
-        }
-    }
-
-    /**
-     * Tests the ordering logic of the {@link LibraryDef} to ensure that imports will be serialized in order.
-     */
-    @Test
-    public void testIncludeOrderingOneDependsOnRest() throws Exception {
-        LibraryDef libDef = definitionService.getDefinition(
-                "test:test_LibraryIncludeOrderingOneDependsOnRest", LibraryDef.class);
-        assertNotNull(libDef);
-
-        String libraryName1 = libDef.getIncludes().get(0).getName();
-        String libraryName2 = libDef.getIncludes().get(1).getName();
-        String libraryName3 = libDef.getIncludes().get(2).getName();
-
-        assertEquals(4, libDef.getIncludes().size());
-
-        // Ensure no dependency-included-twice malarkey:
-        assertFalse(libraryName1.equals(libraryName2));
-        assertFalse(libraryName2.equals(libraryName3));
-        assertFalse(libraryName1.equals(libraryName3));
-
-        // a, b, c are not required to be in any particular order since they have no dependencies:
-        assertTrue(libraryName1.equals("a") || libraryName1.equals("b") || libraryName1.equals("c"));
-        assertTrue(libraryName2.equals("a") || libraryName2.equals("b") || libraryName2.equals("c"));
-        assertTrue(libraryName3.equals("a") || libraryName3.equals("b") || libraryName3.equals("c"));
-
-        // d needs to be the last included dependency:
-        assertEquals("d", libDef.getIncludes().get(3).getName());
-    }
-
-    /**
-     * Tests the ordering logic of the {@link LibraryDef} to ensure a mix of external and internal dependencies work.
-     */
-    @Test
-    public void testLibraryOrderingInternalExternalMix() throws Exception {
-        LibraryDef libDef = definitionService.getDefinition("test:test_LibraryOrderingInternalExternalMix",
-                LibraryDef.class);
-        assertNotNull(libDef);
-
-        // c only depends on something external, it has no library level dependencies and hence is first:
-        assertEquals("c", libDef.getIncludes().get(0).getName());
-        // b depends on c so it will be chosen second:
-        assertEquals("b", libDef.getIncludes().get(1).getName());
-        // a has both external and library dependencies, it depends on c and b and is therefore last:
-        assertEquals("a", libDef.getIncludes().get(2).getName());
+        assertEquals("d", includes.get(3).getName());
+        assertEquals("e", includes.get(4).getName());
     }
 
     /**
@@ -193,7 +115,7 @@ public class LibraryDefTest extends DefinitionTest<LibraryDef> {
         builder.setDescriptor(libDesc);
         builder.setAccess(new DefinitionAccessImpl(Access.INTERNAL));
 
-        LibraryDefImpl libraryDef = builder.build();
+        LibraryDef libraryDef = builder.build();
 
         try {
             libraryDef.validateDefinition();
@@ -221,7 +143,7 @@ public class LibraryDefTest extends DefinitionTest<LibraryDef> {
         builder.setIncludes(includes);
         builder.setAccess(new DefinitionAccessImpl(Access.INTERNAL));
 
-        LibraryDefImpl libraryDef = builder.build();
+        LibraryDef libraryDef = builder.build();
 
         try {
             libraryDef.validateDefinition();
@@ -240,8 +162,7 @@ public class LibraryDefTest extends DefinitionTest<LibraryDef> {
                 IncludeDef.class, libDesc);
         addSourceAutoCleanup(libDesc,
                 String.format("<aura:library><aura:include name='%s'/></aura:library>", includeDesc.getName()));
-        addSourceAutoCleanup(
-                includeDesc,
+        addSourceAutoCleanup(includeDesc,
                 "function(){\n\tvar renamed = 'truth';\n\tif(window.blah)\n\t\t{renamed+=' hurts'}\n\treturn renamed}");
 
         contextService.endContext();
@@ -256,4 +177,23 @@ public class LibraryDefTest extends DefinitionTest<LibraryDef> {
             fail(String.format("library code was not compressed - expected <%s> but got <%s>", expected, actual));
         }
     }
+
+    private void assertInclude(IncludeDefRef include, String name, String importList, String export) {
+      assertEquals("Unexpected name for include", name, include.getName());
+      assertEquals("Unexpected export for " + name, export, include.getExport());
+
+      List<DefDescriptor<IncludeDef>> actualImports = include.getImports();
+      if (actualImports == null) {
+          assertNull("Unexpected imports for " + name, importList);
+      } else {
+         String actualList = String.join(",",
+                 Lists.transform(actualImports, new Function<DefDescriptor<IncludeDef>, String>() {
+                     @Override
+                     public String apply(DefDescriptor<IncludeDef> input) {
+                         return input.getName();
+                     }
+                 }));
+         assertEquals(importList, actualList);
+      }
+  }
 }

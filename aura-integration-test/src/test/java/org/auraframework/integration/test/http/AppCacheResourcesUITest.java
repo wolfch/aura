@@ -623,12 +623,10 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
                     @Override
                     public String apply(WebDriver input) {
                         try {
-                            WebElement find = findDomElement(By
-                                    .cssSelector(".clickableme"));
+                            WebElement find = findDomElement(By.cssSelector(".clickableme"));
                             find.click();
-                            WebElement output = findDomElement(By
-                                    .cssSelector("div.attroutput"));
-                            return output.getText();
+                            WebElement outputEl = findDomElement(By.cssSelector("div.attroutput"));
+                            return outputEl.getText();
                         } catch (StaleElementReferenceException e) {
                             // could happen before the click or if output is
                             // rerendering

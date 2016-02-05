@@ -17,6 +17,7 @@ package org.auraframework.impl.root.parser.handler;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+
 import org.auraframework.adapter.ConfigAdapter;
 import org.auraframework.adapter.DefinitionParserAdapter;
 import org.auraframework.builder.RootDefinitionBuilder;
@@ -31,6 +32,7 @@ import org.auraframework.util.AuraTextUtil;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+
 import java.util.List;
 import java.util.Set;
 
@@ -40,7 +42,7 @@ public class LibraryDefHandler extends RootTagHandler<LibraryDef> {
 
     private final LibraryDefImpl.Builder builder = new LibraryDefImpl.Builder();
 
-    private final List<IncludeDefRef> includes = Lists.newLinkedList();
+    private final List<IncludeDefRef> includes = Lists.newArrayList();
 
     public LibraryDefHandler() {
         super();

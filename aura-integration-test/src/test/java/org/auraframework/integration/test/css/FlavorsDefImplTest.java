@@ -15,7 +15,8 @@
  */
 package org.auraframework.integration.test.css;
 
-import org.auraframework.Aura;
+import javax.inject.Inject;
+
 import org.auraframework.css.FlavorOverrideLocator;
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.ComponentDef;
@@ -28,8 +29,6 @@ import org.auraframework.impl.system.DefDescriptorImpl;
 import org.auraframework.service.DefinitionService;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.junit.Test;
-
-import javax.inject.Inject;
 
 public class FlavorsDefImplTest extends StyleTestCase {
 

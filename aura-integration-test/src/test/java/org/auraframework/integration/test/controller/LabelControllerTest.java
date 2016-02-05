@@ -16,7 +16,6 @@
 package org.auraframework.integration.test.controller;
 
 import com.google.common.collect.Maps;
-import org.auraframework.adapter.ExceptionAdapter;
 import org.auraframework.def.ActionDef;
 import org.auraframework.def.ControllerDef;
 import org.auraframework.def.DefDescriptor;
@@ -36,9 +35,6 @@ import java.util.Map;
 @UnAdaptableTest
 // Missing labels behave differently in SFDC stack
 public class LabelControllerTest extends AuraImplTestCase {
-    @Inject
-    private ExceptionAdapter exceptionAdapter;
-
     @Inject
     private InstanceService instanceService;
 

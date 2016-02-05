@@ -15,10 +15,8 @@
  */
 package org.auraframework.test.instance;
 
-import org.auraframework.adapter.ExceptionAdapter;
 import org.auraframework.instance.Action;
 import org.auraframework.instance.ActionWithKeyOverride;
-import org.auraframework.service.LoggingService;
 import org.auraframework.util.json.JsonEncoder;
 import org.auraframework.util.test.util.UnitTestCase;
 import org.junit.Test;
@@ -71,8 +69,6 @@ public class ActionWithKeyOverrideTest extends UnitTestCase {
     public void testDelegations() throws Exception {
         final Action actionAsKey = mock(Action.class);
         final Action actionToExecute = mock(Action.class);
-        final LoggingService loggingService = mock(LoggingService.class);
-        final ExceptionAdapter exceptionAdapter = mock(ExceptionAdapter.class);
 
         Action action = new ActionWithKeyOverride(actionAsKey, actionToExecute);
 

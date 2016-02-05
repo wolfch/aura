@@ -19,7 +19,7 @@ import org.auraframework.def.ComponentDef;
 import org.auraframework.def.ControllerDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.HelperDef;
-import org.auraframework.def.ImportDef;
+import org.auraframework.def.LibraryDefRef;
 import org.auraframework.def.LibraryDef;
 import org.auraframework.def.ProviderDef;
 import org.auraframework.def.RendererDef;
@@ -63,7 +63,7 @@ public class ClientComponentClassTest extends AuraImplTestCase {
         StringBuilder sb = new StringBuilder();
         ClientComponentClass componentClass = new ClientComponentClass(spyCmpDef);
 
-        componentClass.writeComponentClass(sb);
+        componentClass.writeClass(sb);
 
         this.goldFileText(sb.toString());
     }
@@ -88,7 +88,7 @@ public class ClientComponentClassTest extends AuraImplTestCase {
         StringBuilder sb = new StringBuilder();
         ClientComponentClass componentClass = new ClientComponentClass(spyCmpDef);
 
-        componentClass.writeComponentClass(sb);
+        componentClass.writeClass(sb);
 
         this.goldFileText(sb.toString());
     }
@@ -113,7 +113,7 @@ public class ClientComponentClassTest extends AuraImplTestCase {
         StringBuilder sb = new StringBuilder();
         ClientComponentClass componentClass = new ClientComponentClass(spyCmpDef);
 
-        componentClass.writeComponentClass(sb);
+        componentClass.writeClass(sb);
 
         this.goldFileText(sb.toString());
     }
@@ -141,7 +141,7 @@ public class ClientComponentClassTest extends AuraImplTestCase {
         StringBuilder sb = new StringBuilder();
         ClientComponentClass componentClass = new ClientComponentClass(spyCmpDef);
 
-        componentClass.writeComponentClass(sb);
+        componentClass.writeClass(sb);
 
         this.goldFileText(sb.toString());
     }
@@ -166,7 +166,7 @@ public class ClientComponentClassTest extends AuraImplTestCase {
         StringBuilder sb = new StringBuilder();
         ClientComponentClass componentClass = new ClientComponentClass(spyCmpDef);
 
-        componentClass.writeComponentClass(sb);
+        componentClass.writeClass(sb);
 
         this.goldFileText(sb.toString());
     }
@@ -186,7 +186,7 @@ public class ClientComponentClassTest extends AuraImplTestCase {
         StringBuilder sb = new StringBuilder();
         ClientComponentClass componentClass = new ClientComponentClass(spyCmpDef);
 
-        componentClass.writeComponentClass(sb);
+        componentClass.writeClass(sb);
 
         this.goldFileText(sb.toString());
     }
@@ -200,25 +200,25 @@ public class ClientComponentClassTest extends AuraImplTestCase {
         when(libraryDescriptor.getDescriptorName()).thenReturn("test:testLibrary");
 
         // so far, we only add library's meta info to component class. Mock the ImportDefs.
-        List<ImportDef> importDefs = new ArrayList<>();
-        ImportDef mockImportDef1 = mock(ImportDef.class);
+        List<LibraryDefRef> importDefs = new ArrayList<>();
+        LibraryDefRef mockImportDef1 = mock(LibraryDefRef.class);
         when(mockImportDef1.getProperty()).thenReturn("myLib1");
-        when(mockImportDef1.getLibraryDescriptor()).thenReturn(libraryDescriptor);
+        when(mockImportDef1.getReferenceDescriptor()).thenReturn(libraryDescriptor);
         importDefs.add(mockImportDef1);
 
-        ImportDef mockImportDef2 = mock(ImportDef.class);
+        LibraryDefRef mockImportDef2 = mock(LibraryDefRef.class);
         when(mockImportDef2.getProperty()).thenReturn("myLib2");
-        when(mockImportDef2.getLibraryDescriptor()).thenReturn(libraryDescriptor);
+        when(mockImportDef2.getReferenceDescriptor()).thenReturn(libraryDescriptor);
         importDefs.add(mockImportDef2);
 
         ComponentDef spyCmpDef =spy(definitionService.getDefinition(cmpDescriptor));
         when(spyCmpDef.getDescriptor()).thenReturn(mockCmpDescriptor);
-        when(spyCmpDef.getImportDefs()).thenReturn(importDefs);
+        when(spyCmpDef.getImports()).thenReturn(importDefs);
 
         StringBuilder sb = new StringBuilder();
         ClientComponentClass componentClass = new ClientComponentClass(spyCmpDef);
 
-        componentClass.writeComponentClass(sb);
+        componentClass.writeClass(sb);
 
         this.goldFileText(sb.toString());
     }
@@ -240,7 +240,7 @@ public class ClientComponentClassTest extends AuraImplTestCase {
         StringBuilder sb = new StringBuilder();
         ClientComponentClass componentClass = new ClientComponentClass(spyCmpDef);
 
-        componentClass.writeComponentClass(sb);
+        componentClass.writeClass(sb);
 
         this.goldFileText(sb.toString());
     }

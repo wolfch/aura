@@ -31,7 +31,8 @@ import org.auraframework.def.Definition;
 import org.auraframework.def.DocumentationDef;
 import org.auraframework.def.EventDef;
 import org.auraframework.def.EventHandlerDef;
-import org.auraframework.def.ImportDef;
+import org.auraframework.def.LibraryDefRef;
+import org.auraframework.def.IncludeDef;
 import org.auraframework.def.IncludeDefRef;
 import org.auraframework.def.InterfaceDef;
 import org.auraframework.def.LibraryDef;
@@ -173,16 +174,17 @@ public class ComponentDefModel implements ModelInstance {
 
             // Add all imported libraries AND their source to the documentation.
             if (definition instanceof ComponentDef) {
-                Collection<ImportDef> importDefs = ((ComponentDef) definition).getImportDefs();
+                Collection<LibraryDefRef> importDefs = ((ComponentDef) definition).getImports();
 
-                for (ImportDef importDef : importDefs) {
-                    LibraryDef libraryDef = definitionService.getDefinition(importDef.getLibraryDescriptor());
-                    if (hasAccess(libraryDef)) {
+                for (LibraryDefRef importDef : importDefs) {
+                    LibraryDef libraryDef = definitionService.getDefinition(importDef.getReferenceDescriptor());
+                    MasterDefRegistry registry = definitionService.getDefRegistry();
+                    if (registry.hasAccess(getReferencingDescriptor(), libraryDef) == null) {
                         defs.add(new DefModel(libraryDef.getDescriptor()));
 
                         // Treat the included js files specially because they load source differently:
                         for (IncludeDefRef includeDef : libraryDef.getIncludes()) {
-                            includeDefs.add(new IncludeDefModel(includeDef.getIncludeDescriptor()));
+                            includeDefs.add(new IncludeDefModel((DefDescriptor<IncludeDef>) includeDef.getDescriptor()));
                         }
                     }
                 }

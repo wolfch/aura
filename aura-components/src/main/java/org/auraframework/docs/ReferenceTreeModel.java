@@ -40,17 +40,17 @@ import java.util.Set;
 
 @ServiceComponentModelInstance
 public class ReferenceTreeModel implements ModelInstance{
-	
-	private final DefinitionService definitionService;
-	private final ContextService contextService;
-	private final ConfigAdapter configAdapter;
+    
+    private final DefinitionService definitionService;
+    private final ContextService contextService;
+    private final ConfigAdapter configAdapter;
     private List<TreeNode> tree;
-	
-	public ReferenceTreeModel(ContextService contextService, DefinitionService definitionService, ConfigAdapter configAdapter) {
-		this.contextService = contextService;
-		this.definitionService = definitionService;
-		this.configAdapter = configAdapter;
-	}
+    
+    public ReferenceTreeModel(ContextService contextService, DefinitionService definitionService, ConfigAdapter configAdapter) {
+        this.contextService = contextService;
+        this.definitionService = definitionService;
+        this.configAdapter = configAdapter;
+    }
 
 
     private final <E extends Definition> List<TreeNode> makeTreeNodes(String prefix, DefType type)
@@ -154,7 +154,7 @@ public class ReferenceTreeModel implements ModelInstance{
         return definitionService.getDefDescriptor(String.format("%s:application", defaultNamespace),
                 ApplicationDef.class);
     }
-	
+    
     public boolean hasAccess(Definition def) throws QuickFixException {
         MasterDefRegistry registry = definitionService.getDefRegistry();
         return registry.hasAccess(getReferencingDescriptor(), def) == null;

@@ -15,8 +15,6 @@
  */
 package org.auraframework.def;
 
-import org.auraframework.adapter.ExceptionAdapter;
-import org.auraframework.service.LoggingService;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
 import java.util.List;

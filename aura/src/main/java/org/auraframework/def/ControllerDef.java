@@ -15,10 +15,7 @@
  */
 package org.auraframework.def;
 
-import org.auraframework.instance.Action;
 import org.auraframework.instance.ValueProvider;
-import org.auraframework.throwable.quickfix.DefinitionNotFoundException;
-import org.auraframework.throwable.quickfix.QuickFixException;
 
 import java.util.Map;
 

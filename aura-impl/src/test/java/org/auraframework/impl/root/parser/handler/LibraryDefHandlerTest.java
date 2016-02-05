@@ -48,15 +48,6 @@ public class LibraryDefHandlerTest extends AuraImplTestCase {
     @Mock(answer = Answers.RETURNS_MOCKS)
     DefDescriptor<LibraryDef> descriptor;
 
-    private XMLStreamReader getReader(Source<?> source) throws XMLStreamException {
-        XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
-        xmlInputFactory.setProperty(XMLInputFactory.IS_NAMESPACE_AWARE, false);
-        XMLStreamReader xmlReader = xmlInputFactory.createXMLStreamReader(source.getSystemId(),
-                source.getHashingReader());
-        xmlReader.next();
-        return xmlReader;
-    }
-
     @Test
     public void testGetElement() throws Exception {
         StringSource<LibraryDef> source = new StringSource<>(fileMonitor, descriptor, String.format(
@@ -110,7 +101,7 @@ public class LibraryDefHandlerTest extends AuraImplTestCase {
 
         try {
             handler.getElement();
-            fail("only aura:include is allowed in a library body");
+            fail("Only aura:include is allowed in a library body");
         } catch (AuraRuntimeException t) {
             assertExceptionMessageEndsWith(t, AuraRuntimeException.class, "Found unexpected tag br");
         }
@@ -137,10 +128,18 @@ public class LibraryDefHandlerTest extends AuraImplTestCase {
 
         try {
             handler.getElement();
-            fail("unexpected attribute was not validated");
+            fail("Unexpected attribute was not validated");
         } catch (InvalidSystemAttributeException t) {
             assertExceptionMessageEndsWith(t, InvalidSystemAttributeException.class, "Invalid attribute \"unexpected\"");
         }
     }
 
+    private XMLStreamReader getReader(Source<?> source) throws XMLStreamException {
+        XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
+        xmlInputFactory.setProperty(XMLInputFactory.IS_NAMESPACE_AWARE, false);
+        XMLStreamReader xmlReader = xmlInputFactory.createXMLStreamReader(source.getSystemId(),
+                source.getHashingReader());
+        xmlReader.next();
+        return xmlReader;
+    }
 }

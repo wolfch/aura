@@ -15,26 +15,27 @@
  */
 package org.auraframework.impl.root.parser.handler;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.DefDescriptor.DefType;
 import org.auraframework.def.IncludeDef;
-import org.auraframework.def.IncludeDefRef;
 import org.auraframework.def.LibraryDef;
 import org.auraframework.def.RootDefinition;
 import org.auraframework.impl.root.library.IncludeDefRefImpl;
-import org.auraframework.impl.system.SubDefDescriptorImpl;
+import org.auraframework.impl.util.AuraUtil;
 import org.auraframework.service.DefinitionService;
 import org.auraframework.system.Source;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.AuraTextUtil;
 
+import com.google.common.collect.ImmutableSet;
+
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -44,10 +45,11 @@ public class IncludeDefRefHandler extends XMLHandler<IncludeDefRefImpl> {
 
     private static final String ATTRIBUTE_NAME = "name";
     private static final String ATTRIBUTE_IMPORTS = "imports";
+    private static final String ATTRIBUTE_ALIASES = "aliases";
     private static final String ATTRIBUTE_EXPORT = "export";
 
     protected final static Set<String> ALLOWED_ATTRIBUTES = ImmutableSet.of(
-            ATTRIBUTE_NAME, ATTRIBUTE_IMPORTS, ATTRIBUTE_EXPORT, RootTagHandler.ATTRIBUTE_DESCRIPTION);
+            ATTRIBUTE_NAME, ATTRIBUTE_IMPORTS, ATTRIBUTE_ALIASES, ATTRIBUTE_EXPORT, RootTagHandler.ATTRIBUTE_DESCRIPTION);
 
     private RootTagHandler<? extends RootDefinition> parentHandler;
     private final IncludeDefRefImpl.Builder builder = new IncludeDefRefImpl.Builder();
@@ -65,7 +67,7 @@ public class IncludeDefRefHandler extends XMLHandler<IncludeDefRefImpl> {
     @Override
     @SuppressWarnings("unchecked")
     public IncludeDefRefImpl getElement() throws XMLStreamException, QuickFixException {
-        DefDescriptor<LibraryDef> parentDescriptor = (DefDescriptor<LibraryDef>) parentHandler.getDefDescriptor();
+    	DefDescriptor<LibraryDef> parentDescriptor = (DefDescriptor<LibraryDef>) parentHandler.getDefDescriptor();
         if (parentDescriptor.getDefType() != DefType.LIBRARY) {
             throw new InvalidDefinitionException("aura:include may only be set in a library.", getLocation());
         }
@@ -76,21 +78,19 @@ public class IncludeDefRefHandler extends XMLHandler<IncludeDefRefImpl> {
 
         String name = getAttributeValue(ATTRIBUTE_NAME);
         if (AuraTextUtil.isNullEmptyOrWhitespace(name)) {
-            throw new InvalidDefinitionException(("aura:include must specify a valid library name."), getLocation());
+            throw new InvalidDefinitionException(("aura:include must specify a valid JavaScript file name."), getLocation());
         }
-        builder.setDescriptor(SubDefDescriptorImpl.getInstance(name, parentDescriptor, IncludeDefRef.class));
-        builder.setIncludeDescriptor(definitionService.getDefDescriptor(
-                String.format("%s.%s", parentDescriptor.getNamespace(), name), IncludeDef.class, parentDescriptor));
+        builder.setDescriptor(definitionService.getDefDescriptor(String.format("%s.%s", parentDescriptor.getNamespace(), name), IncludeDef.class, parentDescriptor));
 
         String importNames = getAttributeValue(ATTRIBUTE_IMPORTS);
         if (!AuraTextUtil.isNullEmptyOrWhitespace(importNames)) {
-            List<DefDescriptor<IncludeDef>> imports = Lists.newLinkedList();
+            List<DefDescriptor<IncludeDef>> imports = new LinkedList<>();
             for (String importName : Arrays.asList(importNames.trim().split("\\s*\\,\\s*"))) {
                 String[] parts = importName.split(":");
                 if (parts.length == 1) { // local import
                     imports.add(definitionService.getDefDescriptor(
-                            String.format("%s.%s", parentDescriptor.getNamespace(), importName), IncludeDef.class,
-                            parentDescriptor));
+                            String.format("%s.%s", parentDescriptor.getNamespace(), importName), 
+                            IncludeDef.class, parentDescriptor));
                 } else if (parts.length == 3) { // external import
                     DefDescriptor<LibraryDef> externalLibrary = definitionService.getDefDescriptor(
                             String.format("%s:%s", parts[0], parts[1]), LibraryDef.class);
@@ -102,6 +102,11 @@ public class IncludeDefRefHandler extends XMLHandler<IncludeDefRefImpl> {
                 }
             }
             builder.setImports(imports);
+        }
+
+        String aliases = getAttributeValue(ATTRIBUTE_ALIASES);
+        if (!AuraTextUtil.isNullEmptyOrWhitespace(aliases)) {
+            builder.setAliases(AuraUtil.immutableList(Arrays.asList(aliases.trim().split("\\s*\\,\\s*"))));
         }
 
         String export = getAttributeValue(ATTRIBUTE_EXPORT);

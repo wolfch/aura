@@ -25,7 +25,6 @@ import org.auraframework.def.ActionDef.ActionType;
 import org.auraframework.def.ControllerDef;
 import org.auraframework.expression.PropertyReference;
 import org.auraframework.impl.system.DefinitionImpl;
-import org.auraframework.instance.Action;
 import org.auraframework.util.json.Json;
 
 /**

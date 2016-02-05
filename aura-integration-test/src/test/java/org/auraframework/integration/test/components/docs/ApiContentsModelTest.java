@@ -15,21 +15,17 @@
  */
 package org.auraframework.integration.test.components.docs;
 
-import org.auraframework.adapter.ConfigAdapter;
-import org.auraframework.components.ui.TreeNode;
-import org.auraframework.docs.ApiContentsModel;
-import org.auraframework.impl.AuraImplTestCase;
-import org.auraframework.util.resource.ResourceLoader;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.mockito.Mockito;
-
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import javax.inject.Inject;
+import org.auraframework.components.ui.TreeNode;
+import org.auraframework.docs.ApiContentsModel;
+import org.auraframework.impl.AuraImplTestCase;
+import org.auraframework.util.resource.ResourceLoader;
+import org.junit.Test;
+import org.mockito.Mockito;
 
 public class ApiContentsModelTest extends AuraImplTestCase {
 	

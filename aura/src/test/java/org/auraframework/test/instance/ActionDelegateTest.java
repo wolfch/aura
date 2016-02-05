@@ -16,12 +16,10 @@
 package org.auraframework.test.instance;
 
 import com.google.common.collect.Maps;
-import org.auraframework.adapter.ExceptionAdapter;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.instance.Action;
 import org.auraframework.instance.ActionDelegate;
-import org.auraframework.service.LoggingService;
 import org.auraframework.util.test.util.UnitTestCase;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -62,6 +60,7 @@ public class ActionDelegateTest extends UnitTestCase {
         Map<String,Method> methodMap = Maps.newHashMap();
         Map<String,Boolean> calledMap = Maps.newHashMap();
 
+        @SuppressWarnings("unchecked")
         DefDescriptor<ComponentDef> componentDescriptor = mock(DefDescriptor.class);
 
         for (Method m : Action.class.getMethods()) {

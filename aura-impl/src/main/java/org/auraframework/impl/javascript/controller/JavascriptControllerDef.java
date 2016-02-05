@@ -19,15 +19,10 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
-import org.auraframework.def.ActionDef;
 import org.auraframework.def.ControllerDef;
-import org.auraframework.def.DefDescriptor;
 import org.auraframework.expression.PropertyReference;
 import org.auraframework.impl.system.DefinitionImpl;
-import org.auraframework.impl.system.SubDefDescriptorImpl;
 import org.auraframework.impl.util.AuraUtil;
-import org.auraframework.instance.Action;
-import org.auraframework.throwable.quickfix.DefinitionNotFoundException;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.json.Json;
 

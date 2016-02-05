@@ -18,24 +18,20 @@ package org.auraframework.impl.test.mock;
 import java.util.Arrays;
 import java.util.Set;
 
-import org.auraframework.def.ControllerDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.Definition;
 import org.auraframework.def.ModelDef;
 import org.auraframework.def.ProviderDef;
 import org.auraframework.def.ValueDef;
 import org.auraframework.impl.parser.ParserFactory;
-import org.auraframework.instance.Action.State;
 import org.auraframework.instance.ComponentConfig;
 import org.auraframework.service.DefinitionService;
 import org.auraframework.system.Parser;
 import org.auraframework.test.TestContext;
 import org.auraframework.test.TestContextAdapter;
-import org.auraframework.test.mock.MockAction;
 import org.auraframework.test.mock.MockModelDef;
 import org.auraframework.test.mock.MockProviderDef;
 import org.auraframework.test.source.StringSource;
-import org.auraframework.throwable.quickfix.DefinitionNotFoundException;
 import org.auraframework.util.FileMonitor;
 import org.mockito.Mockito;
 

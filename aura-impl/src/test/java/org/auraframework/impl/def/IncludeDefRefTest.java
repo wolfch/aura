@@ -23,16 +23,17 @@ import org.auraframework.def.LibraryDef;
 import org.auraframework.impl.root.library.IncludeDefRefImpl;
 import org.auraframework.impl.root.library.IncludeDefRefImpl.Builder;
 import org.auraframework.impl.root.parser.handler.IncludeDefRefHandler;
+import org.auraframework.impl.system.SubDefDescriptorImpl;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
-import org.auraframework.util.json.JsonEncoder;
 import org.junit.Test;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 
 public class IncludeDefRefTest extends DefinitionTest<IncludeDefRef> {
     @Mock(answer = Answers.RETURNS_MOCKS)
     DefDescriptor<IncludeDefRef> descriptor;
+
+    Builder builder = new IncludeDefRefImpl.Builder();
 
     @Test
     public void testValidateDefintionWithoutDescriptor() throws Exception {
@@ -52,13 +53,48 @@ public class IncludeDefRefTest extends DefinitionTest<IncludeDefRef> {
     public void testValidateDefintionExportIsInvalidIdentifier() throws Exception {
         DefDescriptor<LibraryDef> libDesc = getAuraTestingUtil().createStringSourceDescriptor(null, LibraryDef.class,
                 null);
-        DefDescriptor<IncludeDef> includeDesc = getAuraTestingUtil().createStringSourceDescriptor("invalidSource",
-                IncludeDef.class, libDesc);
-        addSourceAutoCleanup(includeDesc, "function(){}");
+        String name = "invalidSource";
+        builder.setDescriptor(SubDefDescriptorImpl.getInstance(name, libDesc, IncludeDef.class));
+        builder.setAliases(ImmutableList.of("who/came/up/with/this"));
+        IncludeDefRef def = builder.build();
 
-        Builder builder = new IncludeDefRefImpl.Builder();
-        builder.setDescriptor(descriptor);
-        builder.setIncludeDescriptor(includeDesc);
+        try {
+            def.validateDefinition();
+            fail("IncludeDefRef with invalid aliases not validated");
+        } catch (InvalidDefinitionException t) {
+            assertExceptionMessageEndsWith(
+                    t,
+                    InvalidDefinitionException.class,
+                    String.format("%s 'alias' attribute must contain only valid javascript identifiers", IncludeDefRefHandler.TAG));
+        }
+    }
+
+    @Test
+    public void testValidateDefintionExportIsJs() throws Exception {
+        DefDescriptor<LibraryDef> libDesc = getAuraTestingUtil().createStringSourceDescriptor(null, LibraryDef.class,
+                null);
+        String name = "invalidSource";
+        builder.setDescriptor(definitionService.getDefDescriptor(name, IncludeDef.class, libDesc));
+        builder.setAliases(ImmutableList.of("(function(){alert('boo!')})()"));
+        IncludeDefRef def = builder.build();
+
+        try {
+            def.validateDefinition();
+            fail("IncludeDefRef with invalid export not validated");
+        } catch (InvalidDefinitionException t) {
+            assertExceptionMessageEndsWith(
+                    t,
+                    InvalidDefinitionException.class,
+                    String.format("%s 'alias' attribute must contain only valid javascript identifiers", IncludeDefRefHandler.TAG));
+        }
+    }
+
+    @Test
+    public void testValidateReferencesExportedCodeIsInvalid() throws Exception {
+        DefDescriptor<LibraryDef> libDesc = getAuraTestingUtil().createStringSourceDescriptor(null, LibraryDef.class,
+                null);
+        String name = "invalidSource";
+        builder.setDescriptor(SubDefDescriptorImpl.getInstance(name, libDesc, IncludeDef.class));
         builder.setExport("who/came/up/with/this");
         IncludeDefRef def = builder.build();
 
@@ -69,21 +105,16 @@ public class IncludeDefRefTest extends DefinitionTest<IncludeDefRef> {
             assertExceptionMessageEndsWith(
                     t,
                     InvalidDefinitionException.class,
-                    String.format("%s 'export' attribute must be valid javascript identifier", IncludeDefRefHandler.TAG));
+                    String.format("%s 'export' attribute must be a valid javascript identifier", IncludeDefRefHandler.TAG));
         }
     }
 
     @Test
-    public void testValidateDefintionExportIsJs() throws Exception {
+    public void testValidateReferencesNonexportedCodeIsInvalid() throws Exception {
         DefDescriptor<LibraryDef> libDesc = getAuraTestingUtil().createStringSourceDescriptor(null, LibraryDef.class,
                 null);
-        DefDescriptor<IncludeDef> includeDesc = getAuraTestingUtil().createStringSourceDescriptor("invalidSource",
-                IncludeDef.class, libDesc);
-        addSourceAutoCleanup(includeDesc, "function(){}");
-
-        Builder builder = new IncludeDefRefImpl.Builder();
-        builder.setDescriptor(descriptor);
-        builder.setIncludeDescriptor(includeDesc);
+        String name = "invalidSource";
+        builder.setDescriptor(SubDefDescriptorImpl.getInstance(name, libDesc, IncludeDef.class));
         builder.setExport("(function(){alert('boo!')})()");
         IncludeDefRef def = builder.build();
 
@@ -94,292 +125,7 @@ public class IncludeDefRefTest extends DefinitionTest<IncludeDefRef> {
             assertExceptionMessageEndsWith(
                     t,
                     InvalidDefinitionException.class,
-                    String.format("%s 'export' attribute must be valid javascript identifier", IncludeDefRefHandler.TAG));
+                    String.format("%s 'export' attribute must be a valid javascript identifier", IncludeDefRefHandler.TAG));
         }
-    }
-
-    @Test
-    public void testValidateReferencesExportedCodeIsInvalid() throws Exception {
-        DefDescriptor<LibraryDef> libDesc = getAuraTestingUtil().createStringSourceDescriptor(null, LibraryDef.class,
-                null);
-        DefDescriptor<IncludeDef> includeDesc = getAuraTestingUtil().createStringSourceDescriptor("invalidSource",
-                IncludeDef.class, libDesc);
-        addSourceAutoCleanup(includeDesc, "this is garbage");
-
-        Builder builder = new IncludeDefRefImpl.Builder();
-        builder.setDescriptor(descriptor);
-        builder.setIncludeDescriptor(includeDesc);
-        builder.setExport("someVar");
-        IncludeDefRef def = builder.build();
-        try {
-            def.validateReferences();
-            fail("IncludeDef with invalid code not validated");
-        } catch (InvalidDefinitionException t) {
-            assertExceptionMessageEndsWith(t, InvalidDefinitionException.class,
-                    String.format(": Parse error. missing ; before statement\n", IncludeDefRefHandler.TAG));
-        }
-    }
-
-    @Test
-    public void testValidateReferencesNonexportedCodeIsInvalid() throws Exception {
-        DefDescriptor<LibraryDef> libDesc = getAuraTestingUtil().createStringSourceDescriptor(null, LibraryDef.class,
-                null);
-        DefDescriptor<IncludeDef> includeDesc = getAuraTestingUtil().createStringSourceDescriptor("invalidSource",
-                IncludeDef.class, libDesc);
-        addSourceAutoCleanup(includeDesc, "this is garbage");
-
-        Builder builder = new IncludeDefRefImpl.Builder();
-        builder.setDescriptor(descriptor);
-        builder.setIncludeDescriptor(includeDesc);
-        IncludeDefRef def = builder.build();
-        try {
-            def.validateReferences();
-            fail("IncludeDef with invalid code not validated");
-        } catch (InvalidDefinitionException t) {
-            assertExceptionMessageEndsWith(t, InvalidDefinitionException.class,
-                    String.format(": Parse error. missing ; before statement\n", IncludeDefRefHandler.TAG));
-        }
-    }
-
-    @Test
-    public void testSerializeMinimal() throws Exception {
-        DefDescriptor<LibraryDef> libDesc = getAuraTestingUtil().createStringSourceDescriptor(null, LibraryDef.class,
-                null);
-        DefDescriptor<IncludeDef> includeDesc = getAuraTestingUtil().createStringSourceDescriptor("minimal",
-                IncludeDef.class, libDesc);
-        Mockito.doReturn(includeDesc.getName()).when(descriptor).getName();
-        addSourceAutoCleanup(includeDesc, "function(){}");
-
-        StringBuffer buffer = new StringBuffer();
-        JsonEncoder json = JsonEncoder.createJsonStream(buffer, contextService.getCurrentContext()
-                .getJsonSerializationContext());
-
-        Builder builder = new IncludeDefRefImpl.Builder();
-        builder.setDescriptor(descriptor);
-        builder.setIncludeDescriptor(includeDesc);
-        IncludeDefRef def = builder.build();
-
-        def.validateDefinition();
-        json.writeMapBegin();
-        def.serialize(json);
-        json.writeMapEnd();
-        json.close();
-
-        assertEquals(
-                String.format("{\n" +
-                        "function(){arguments[0](\"%s:%s\", \nfunction(){}\n)}\n" +
-                        "}",
-                        libDesc.getDescriptorName(), includeDesc.getName()), buffer.toString());
-    }
-
-    @Test
-    public void testSerializeWithSingleComments() throws Exception {
-        String source = "//this doc should be helpful\nfunction(){\n//fix later\nreturn this;}//last word";
-        DefDescriptor<LibraryDef> libDesc = getAuraTestingUtil().createStringSourceDescriptor(null, LibraryDef.class,
-                null);
-        DefDescriptor<IncludeDef> includeDesc = getAuraTestingUtil().createStringSourceDescriptor("singleComments",
-                IncludeDef.class, libDesc);
-        Mockito.doReturn(includeDesc.getName()).when(descriptor).getName();
-        addSourceAutoCleanup(includeDesc, source);
-
-        StringBuffer buffer = new StringBuffer();
-        JsonEncoder json = JsonEncoder.createJsonStream(buffer, contextService.getCurrentContext()
-                .getJsonSerializationContext());
-
-        Builder builder = new IncludeDefRefImpl.Builder();
-        builder.setDescriptor(descriptor);
-        builder.setIncludeDescriptor(includeDesc);
-        IncludeDefRef def = builder.build();
-
-        def.validateDefinition();
-        json.writeMapBegin();
-        def.serialize(json);
-        json.writeMapEnd();
-        json.close();
-
-        assertEquals(
-                String.format("{\n" +
-                        "function(){arguments[0](\"%s:%s\", \n%s\n)}\n" +
-                        "}",
-                        libDesc.getDescriptorName(), includeDesc.getName(), source), buffer.toString());
-    }
-
-    @Test
-    public void testSerializeWithMultiComments() throws Exception {
-        String source = "/*this doc should be helpful*/function(){/*fix later*/return this;}/*last word*/";
-        DefDescriptor<LibraryDef> libDesc = getAuraTestingUtil().createStringSourceDescriptor(null, LibraryDef.class,
-                null);
-        DefDescriptor<IncludeDef> includeDesc = getAuraTestingUtil().createStringSourceDescriptor("multiComments",
-                IncludeDef.class, libDesc);
-        Mockito.doReturn(includeDesc.getName()).when(descriptor).getName();
-        addSourceAutoCleanup(includeDesc, source);
-
-        StringBuffer buffer = new StringBuffer();
-        JsonEncoder json = JsonEncoder.createJsonStream(buffer, contextService.getCurrentContext()
-                .getJsonSerializationContext());
-
-        Builder builder = new IncludeDefRefImpl.Builder();
-        builder.setDescriptor(descriptor);
-        builder.setIncludeDescriptor(includeDesc);
-        IncludeDefRef def = builder.build();
-
-        def.validateDefinition();
-        json.writeMapBegin();
-        def.serialize(json);
-        json.writeMapEnd();
-        json.close();
-
-        assertEquals(
-                String.format("{\n" +
-                        "function(){arguments[0](\"%s:%s\", \n%s\n)}\n" +
-                        "}",
-                        libDesc.getDescriptorName(), includeDesc.getName(), source), buffer.toString());
-    }
-
-    @Test
-    public void testSerializeWithImport() throws Exception {
-        DefDescriptor<LibraryDef> libDesc = getAuraTestingUtil().createStringSourceDescriptor(null, LibraryDef.class,
-                null);
-        DefDescriptor<IncludeDef> importDesc = getAuraTestingUtil().createStringSourceDescriptor("firstimport",
-                IncludeDef.class, libDesc);
-        DefDescriptor<IncludeDef> includeDesc = getAuraTestingUtil().createStringSourceDescriptor("hasImport",
-                IncludeDef.class, libDesc);
-        Mockito.doReturn(includeDesc.getName()).when(descriptor).getName();
-        addSourceAutoCleanup(includeDesc, "function(){}");
-
-        StringBuffer buffer = new StringBuffer();
-        JsonEncoder json = JsonEncoder.createJsonStream(buffer, contextService.getCurrentContext()
-                .getJsonSerializationContext());
-
-        Builder builder = new IncludeDefRefImpl.Builder();
-        builder.setDescriptor(descriptor);
-        builder.setIncludeDescriptor(includeDesc);
-        builder.setImports(ImmutableList.of(importDesc));
-        IncludeDefRef def = builder.build();
-
-        def.validateDefinition();
-        json.writeMapBegin();
-        def.serialize(json);
-        json.writeMapEnd();
-        json.close();
-
-        assertEquals(
-                String.format("{\n" +
-                        "function(){arguments[0](\"%s:%s\", \"%s\", \nfunction(){}\n)}\n" +
-                        "}",
-                        libDesc.getDescriptorName(), includeDesc.getName(), importDesc.getName()), buffer.toString());
-    }
-
-    @Test
-    public void testSerializeWithExternalImport() throws Exception {
-        DefDescriptor<LibraryDef> libDesc = getAuraTestingUtil().createStringSourceDescriptor(null, LibraryDef.class,
-                null);
-        DefDescriptor<LibraryDef> extLibDesc = getAuraTestingUtil().createStringSourceDescriptor(null,
-                LibraryDef.class, null);
-        DefDescriptor<IncludeDef> importDesc = getAuraTestingUtil().createStringSourceDescriptor("firstimport",
-                IncludeDef.class, extLibDesc);
-        DefDescriptor<IncludeDef> includeDesc = getAuraTestingUtil().createStringSourceDescriptor("hasImport",
-                IncludeDef.class, libDesc);
-        Mockito.doReturn(includeDesc.getName()).when(descriptor).getName();
-        addSourceAutoCleanup(includeDesc, "function(){}");
-
-        StringBuffer buffer = new StringBuffer();
-        JsonEncoder json = JsonEncoder.createJsonStream(buffer, contextService.getCurrentContext()
-                .getJsonSerializationContext());
-
-        Builder builder = new IncludeDefRefImpl.Builder();
-        builder.setDescriptor(descriptor);
-        builder.setIncludeDescriptor(includeDesc);
-        builder.setImports(ImmutableList.of(importDesc));
-        IncludeDefRef def = builder.build();
-
-        def.validateDefinition();
-        json.writeMapBegin();
-        def.serialize(json);
-        json.writeMapEnd();
-        json.close();
-
-        assertEquals(
-                String.format("{\n" +
-                        "function(){arguments[0](\"%s:%s\", \"%s:%s\", \nfunction(){}\n)}\n" +
-                        "}",
-                        libDesc.getDescriptorName(), includeDesc.getName(), extLibDesc.getDescriptorName(),
-                        importDesc.getName()), buffer.toString());
-    }
-
-    @Test
-    public void testSerializeWithMultipleImports() throws Exception {
-        DefDescriptor<LibraryDef> libDesc = getAuraTestingUtil().createStringSourceDescriptor(null, LibraryDef.class,
-                null);
-        DefDescriptor<LibraryDef> extLibDesc = getAuraTestingUtil().createStringSourceDescriptor(null,
-                LibraryDef.class, null);
-        DefDescriptor<IncludeDef> import1Desc = getAuraTestingUtil().createStringSourceDescriptor("firstimport",
-                IncludeDef.class, libDesc);
-        DefDescriptor<IncludeDef> import2Desc = getAuraTestingUtil().createStringSourceDescriptor("secondimport",
-                IncludeDef.class, libDesc);
-        DefDescriptor<IncludeDef> import3Desc = getAuraTestingUtil().createStringSourceDescriptor("thirdimport",
-                IncludeDef.class, extLibDesc);
-
-        DefDescriptor<IncludeDef> includeDesc = getAuraTestingUtil().createStringSourceDescriptor("hasImports",
-                IncludeDef.class, libDesc);
-        Mockito.doReturn(includeDesc.getName()).when(descriptor).getName();
-        addSourceAutoCleanup(includeDesc, "function(){}");
-
-        StringBuffer buffer = new StringBuffer();
-        JsonEncoder json = JsonEncoder.createJsonStream(buffer, contextService.getCurrentContext()
-                .getJsonSerializationContext());
-
-        Builder builder = new IncludeDefRefImpl.Builder();
-        builder.setDescriptor(descriptor);
-        builder.setIncludeDescriptor(includeDesc);
-        builder.setImports(ImmutableList.of(import1Desc, import2Desc, import3Desc));
-        IncludeDefRef def = builder.build();
-
-        def.validateDefinition();
-        json.writeMapBegin();
-        def.serialize(json);
-        json.writeMapEnd();
-        json.close();
-
-        assertEquals(
-                String.format("{\n" +
-                        "function(){arguments[0](\"%s:%s\", \"%s\", \"%s\", \"%s:%s\", \nfunction(){}\n)}\n" +
-                        "}",
-                        libDesc.getDescriptorName(), includeDesc.getName(), import1Desc.getName(),
-                        import2Desc.getName(), extLibDesc.getDescriptorName(), import3Desc.getName()),
-                buffer.toString());
-    }
-
-    @Test
-    public void testSerializeWithExports() throws Exception {
-        DefDescriptor<LibraryDef> libDesc = getAuraTestingUtil().createStringSourceDescriptor(null, LibraryDef.class,
-                null);
-        DefDescriptor<IncludeDef> includeDesc = getAuraTestingUtil().createStringSourceDescriptor("hasExports",
-                IncludeDef.class, libDesc);
-        Mockito.doReturn(includeDesc.getName()).when(descriptor).getName();
-        addSourceAutoCleanup(includeDesc, "var myexpt=function(){return 'something'}");
-
-        StringBuffer buffer = new StringBuffer();
-        JsonEncoder json = JsonEncoder.createJsonStream(buffer, contextService.getCurrentContext()
-                .getJsonSerializationContext());
-
-        Builder builder = new IncludeDefRefImpl.Builder();
-        builder.setDescriptor(descriptor);
-        builder.setIncludeDescriptor(includeDesc);
-        builder.setExport("myexpt");
-        IncludeDefRef def = builder.build();
-
-        def.validateDefinition();
-        json.writeMapBegin();
-        def.serialize(json);
-        json.writeMapEnd();
-        json.close();
-
-        assertEquals(
-                String.format("{\n" +
-                        "function(){arguments[0](\"%s:%s\", function(){\nvar myexpt=function(){return 'something'}\n" +
-                        "return myexpt})}\n" +
-                        "}",
-                        libDesc.getDescriptorName(), includeDesc.getName()), buffer.toString());
     }
 }

@@ -467,8 +467,8 @@ public class Panel2ModalOverlayUITest extends WebDriverTestCase {
             auraUITestingUtil.waitUntil(new ExpectedCondition<Boolean>() {
                 @Override
                 public Boolean apply(WebDriver d) {
-                    WebElement activeElement = (WebElement) auraUITestingUtil.getEval(ACTIVE_ELEMENT);
-                    return activeElement != prevActiveElement;
+                    WebElement localActiveElement = (WebElement) auraUITestingUtil.getEval(ACTIVE_ELEMENT);
+                    return localActiveElement != prevActiveElement;
                 }
             }, String.format("Tab event was not fired for element with className: %s", prevActiveElement.getAttribute("class")));
         }

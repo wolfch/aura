@@ -15,12 +15,19 @@
  */
 package org.auraframework.impl.root.parser.handler;
 
-import com.google.common.collect.ImmutableSet;
+import java.util.Set;
+
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+
 import org.auraframework.def.DefDescriptor;
+import org.auraframework.def.DefDescriptor.DefType;
 import org.auraframework.def.LibraryDef;
+import org.auraframework.def.LibraryDefRef;
 import org.auraframework.def.RootDefinition;
 import org.auraframework.impl.DefinitionAccessImpl;
-import org.auraframework.impl.root.library.ImportDefImpl;
+import org.auraframework.impl.root.library.LibraryDefRefImpl;
 import org.auraframework.service.DefinitionService;
 import org.auraframework.system.AuraContext;
 import org.auraframework.system.Source;
@@ -28,12 +35,9 @@ import org.auraframework.throwable.quickfix.InvalidDefinitionException;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.AuraTextUtil;
 
-import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import java.util.Set;
+import com.google.common.collect.ImmutableSet;
 
-public class ImportDefHandler extends XMLHandler<ImportDefImpl> {
+public class LibraryDefRefHandler extends XMLHandler<LibraryDefRef> {
 
     public static final String TAG = "aura:import";
 
@@ -44,24 +48,26 @@ public class ImportDefHandler extends XMLHandler<ImportDefImpl> {
             RootTagHandler.ATTRIBUTE_DESCRIPTION);
 
     private RootTagHandler<? extends RootDefinition> parentHandler;
-    private final ImportDefImpl.Builder builder = new ImportDefImpl.Builder();
+    private final LibraryDefRefImpl.Builder builder = new LibraryDefRefImpl.Builder();
 
-    public ImportDefHandler() {
+    public LibraryDefRefHandler() {
         super();
     }
 
-    public ImportDefHandler(RootTagHandler<? extends RootDefinition> parentHandler, XMLStreamReader xmlReader,
+    public LibraryDefRefHandler(RootTagHandler<? extends RootDefinition> parentHandler, XMLStreamReader xmlReader,
                             Source<?> source, DefinitionService definitionService) {
         super(xmlReader, source, definitionService);
         this.parentHandler = parentHandler;
     }
 
     @Override
-    public ImportDefImpl getElement() throws XMLStreamException, QuickFixException {
+    public LibraryDefRef getElement() throws XMLStreamException, QuickFixException {
         validateAttributes();
 
-        DefDescriptor<? extends RootDefinition> defDescriptor = parentHandler.getDefDescriptor();
-        builder.setParentDescriptor(defDescriptor);
+        DefDescriptor<? extends RootDefinition> parentDescriptor = parentHandler.getDefDescriptor();
+        if (parentDescriptor.getDefType() != DefType.APPLICATION && parentDescriptor.getDefType() != DefType.COMPONENT) {
+            throw new InvalidDefinitionException("aura:import may only be set in an application or a component.", getLocation());
+        }
         builder.setLocation(getLocation());
 
         String library = getAttributeValue(ATTRIBUTE_LIBRARY);

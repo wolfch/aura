@@ -30,7 +30,7 @@ import org.auraframework.def.DefinitionAccess;
 import org.auraframework.def.DependencyDef;
 import org.auraframework.def.EventHandlerDef;
 import org.auraframework.def.HelperDef;
-import org.auraframework.def.ImportDef;
+import org.auraframework.def.LibraryDefRef;
 import org.auraframework.def.InterfaceDef;
 import org.auraframework.def.ModelDef;
 import org.auraframework.def.RegisterEventDef;
@@ -89,7 +89,7 @@ public abstract class BaseComponentDefImplUnitTest<I extends BaseComponentDefImp
     protected List<DefDescriptor<ControllerDef>> controllerDescriptors;
     protected Map<String, RegisterEventDef> events;
     protected List<EventHandlerDef> eventHandlers;
-    protected List<ImportDef> imports;
+    protected List<LibraryDefRef> imports;
     protected List<AttributeDefRef> facets;
     protected Set<PropertyReference> expressionRefs;
     protected String render;
