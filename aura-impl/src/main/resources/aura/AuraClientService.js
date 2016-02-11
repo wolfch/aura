@@ -713,41 +713,41 @@ AuraClientService.prototype.isDevMode = function() {
     return !$A.util.isUndefined(context) && context.getMode() === "DEV";
 };
 
-
-/**
- * Clears actions and ComponentDefStorage stores then reloads the page.
- */
-AuraClientService.prototype.dumpCachesAndReload = function() {
-    // reload even if storage clear fails
-    var actionStorage = Action.getStorage();
-    var actionClear = actionStorage && actionStorage.isPersistent() ? actionStorage.clear() : Promise["resolve"]([]);
-
-    actionClear.then(
-        undefined, // noop on success
-        function() {
-            $A.log("Failed to clear persistent actions cache");
-            // do not rethrow to return to resolve state
-        }
-    ).then(
-        function() {
-            return $A.componentService.clearDefsFromStorage();
-        }
-    ).then(
-        undefined, // noop on success
-        function() {
-            $A.log("Failed to clear persistent component def storage");
-            // do not rethrow to return to resolve state
-        }
-    ).then(
-        function() {
-            window.location.reload(true);
-        }
-    );
-};
-
 AuraClientService.prototype.handleAppCache = function() {
 
     var acs = this;
+
+
+    /**
+     * Clears actions and ComponentDefStorage stores then reloads the page.
+     */
+    function dumpCachesAndReload() {
+        // reload even if storage clear fails
+        var actionStorage = Action.getStorage();
+        var actionClear = actionStorage && actionStorage.isPersistent() ? actionStorage.clear() : Promise["resolve"]([]);
+
+        actionClear.then(
+            undefined, // noop on success
+            function() {
+                $A.log("Failed to clear persistent actions cache");
+                // do not rethrow to return to resolve state
+            }
+        ).then(
+            function() {
+                return $A.componentService.clearDefsFromStorage();
+            }
+        ).then(
+            undefined, // noop on success
+            function() {
+                $A.log("Failed to clear persistent component def storage");
+                // do not rethrow to return to resolve state
+            }
+        ).then(
+            function() {
+                window.location.reload(true);
+            }
+        );
+    }
 
     function showProgress(progress) {
         var progressContEl = document.getElementById("auraAppcacheProgress");
@@ -777,7 +777,7 @@ AuraClientService.prototype.handleAppCache = function() {
                 // protect against InvalidStateError with swapCache even when UPDATEREADY (weird)
             }
         }
-        acs.dumpCachesAndReload();
+        dumpCachesAndReload();
     }
 
     function handleAppcacheError(e) {
@@ -809,7 +809,7 @@ AuraClientService.prototype.handleAppCache = function() {
         if (acs.appcacheDownloadingEventFired && acs.isOutdated) {
             // Hard reload if we error out trying to download new appcache
             $A.log("Outdated.");
-            acs.dumpCachesAndReload();
+            dumpCachesAndReload();
         }
     }
 
@@ -868,7 +868,7 @@ AuraClientService.prototype.setOutdated = function() {
     this.isOutdated = true;
     var appCache = window.applicationCache;
     if (!appCache || (appCache && (appCache.status === appCache.UNCACHED || appCache.status === appCache.OBSOLETE))) {
-        this.dumpCachesAndReload();
+        window.location.reload(true);
     } else if (appCache.status === appCache.IDLE || appCache.status > appCache.DOWNLOADING) {
         // call update when there is a cache ie IDLE (status = 1) or cache is not being checked (status = 2) or downloaded (status = 3)
         appCache.update();
