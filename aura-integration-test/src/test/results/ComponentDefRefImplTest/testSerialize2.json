@@ -33,7 +33,7 @@
           "s":4,
           "v":{
             "name":"value",
-            "type":"aura://String"
+            "type": "aura://String"
           }
         }
       ],
@@ -60,7 +60,7 @@
                       "s":7,
                       "v":{
                         "name":"truncate",
-                        "type":"aura://Integer"
+                        "type": "aura://Integer"
                       }
                     },
                     {
@@ -83,7 +83,7 @@
                   "interfaces":[
                     "markup://aura:rootComponent"
                   ],
-                  "componentClass":"function(){$A.componentService.addComponentClass(\"markup://aura:text\",function () {\nvar aura$text = {\n  \"meta\":{\n    \"name\":\"aura$text\"\n  },\n  \"renderer\":{\n    \"render\":function(component) {\n        var value = component.get(\"v.value\");\n        \n        var trunc = component.get(\"v.truncate\");\n        var truncateByWord = $A.util.getBooleanValue(component.get(\"v.truncateByWord\"));\n        var ellipsis = $A.util.getBooleanValue(component.get(\"v.ellipsis\"));\n        \n        if(trunc){\n            trunc = 1 * trunc;\n            value = $A.util.truncate(value, trunc, ellipsis, truncateByWord);\n        }\n        return [document.createTextNode($A.util.isUndefinedOrNull(value)?'':value)];\n    },\n    \"rerender\":function(component) {\n        var element=component.getElement();\n        \n        if (element && element.parentNode) {\n        \tvar textValue = component.get(\"v.value\");\n            textValue = $A.util.isUndefinedOrNull(textValue) ? '' : textValue;\n            \n            if (element.nodeValue !== textValue) {\n                element.nodeValue = textValue;\n            }\n        }\n    }\n  }\n};\nreturn aura$text;\n});\n}"
+                  "componentClass": "function(){$A.componentService.addComponentClass(\"markup://aura:text\",function () {\nvar def = $A.componentService.getDef(\"markup://aura:text\");var locker = $A.lockerService.createForDef(\n\"var aura$text = {\\n  \\\"meta\\\":{\\n    \\\"name\\\":\\\"aura$text\\\"\\n  },\\n  \\\"renderer\\\":{\\n    \\\"render\\\":function(component) {\\n        var value = component.get(\\\"v.value\\\");\\n        \\n        var trunc = component.get(\\\"v.truncate\\\");\\n        var truncateByWord = $A.util.getBooleanValue(component.get(\\\"v.truncateByWord\\\"));\\n        var ellipsis = $A.util.getBooleanValue(component.get(\\\"v.ellipsis\\\"));\\n        \\n        if(trunc){\\n            trunc = 1 * trunc;\\n            value = $A.util.truncate(value, trunc, ellipsis, truncateByWord);\\n        }\\n        return [document.createTextNode($A.util.isUndefinedOrNull(value)?\\'\\':value)];\\n    },\\n    \\\"rerender\\\":function(component) {\\n        var element=component.getElement();\\n        \\n        if (element && element.parentNode) {\\n        \tvar textValue = component.get(\\\"v.value\\\");\\n            textValue = $A.util.isUndefinedOrNull(textValue) ? \\'\\' : textValue;\\n            \\n            if (element.nodeValue !== textValue) {\\n                element.nodeValue = textValue;\\n            }\\n        }\\n    }\\n  }\\n};\\nreturn aura$text;\\n\", def);\nreturn locker.$result;\n});\n}"
                 }
               },
               "attributes":{
@@ -165,7 +165,7 @@
                                   "s":17,
                                   "v":{
                                     "name":"attr",
-                                    "type":"aura://String"
+                                    "type": "aura://String"
                                   }
                                 }
                               ],
@@ -192,7 +192,7 @@
                                           "interfaces":[
                                             "markup://aura:rootComponent"
                                           ],
-                                          "componentClass":"function(){$A.componentService.addComponentClass(\"markup://aura:expression\",function () {\nvar aura$expression = {\n  \"meta\":{\n    \"name\":\"aura$expression\"\n  },\n  \"renderer\":{\n    \"render\":function(component) {\n\t\tvar value = component.get(\"v.value\");\n        if($A.util.isUndefinedOrNull(value)){\n            value = \"\";\n        }\n        if(!($A.util.isComponent(value)||$A.util.isArray(value))){\n            \n            component._lastRenderedValue=value=$A.newCmp({componentDef:'aura:text', attributes:{values:{value:value}}});\n        }\n        return $A.renderingService.renderFacet(component,value);\n\t},\n    \"afterRender\":function(component) {\n\t\tvar value = component.get(\"v.value\");\n\t\tif ($A.util.isComponent(value)||$A.util.isArray(value)) {\n\t\t\t$A.afterRender(value);\n\t\t}\n\t},\n    \"rerender\":function(component) {\n        var ret=[];\n\t\tif (component.isRendered()) {\n            var value = component.get(\"v.value\");\n            if(!($A.util.isComponent(value)||$A.util.isArray(value))){\n                if($A.util.isUndefinedOrNull(value)){\n                    value = \"\";\n                }\n                if(component._lastRenderedValue && component._lastRenderedValue.isValid()){\n                    \n                    component._lastRenderedValue.set(\"v.value\",value,true);\n                    value=component._lastRenderedValue;\n                    return $A.rerender(value);\n                }else {\n                    value = $A.newCmp({componentDef: 'aura:text', attributes: {values: {value: value}}});\n                }\n            }\n            ret=$A.renderingService.rerenderFacet(component, value);\n        }\n        return ret;\n    },\n    \"unrender\":function(component) {\n        $A.renderingService.unrenderFacet(component);\n        if (component._lastRenderedValue) {\n            component._lastRenderedValue.destroy();\n            component._lastRenderedValue = null;\n        }\n\t}\n  }\n};\nreturn aura$expression;\n});\n}"
+                                          "componentClass": "function(){$A.componentService.addComponentClass(\"markup://aura:expression\",function () {\nvar def = $A.componentService.getDef(\"markup://aura:expression\");var locker = $A.lockerService.createForDef(\n\"var aura$expression = {\\n  \\\"meta\\\":{\\n    \\\"name\\\":\\\"aura$expression\\\"\\n  },\\n  \\\"renderer\\\":{\\n    \\\"render\\\":function(component) {\\n\t\tvar value = component.get(\\\"v.value\\\");\\n        if($A.util.isUndefinedOrNull(value)){\\n            value = \\\"\\\";\\n        }\\n        if(!($A.util.isComponent(value)||$A.util.isArray(value))){\\n            \\n            component._lastRenderedValue=value=$A.newCmp({componentDef:\\'aura:text\\', attributes:{values:{value:value}}});\\n        }\\n        return $A.renderingService.renderFacet(component,value);\\n\t},\\n    \\\"afterRender\\\":function(component) {\\n\t\tvar value = component.get(\\\"v.value\\\");\\n\t\tif ($A.util.isComponent(value)||$A.util.isArray(value)) {\\n\t\t\t$A.afterRender(value);\\n\t\t}\\n\t},\\n    \\\"rerender\\\":function(component) {\\n        var ret=[];\\n\t\tif (component.isRendered()) {\\n            var value = component.get(\\\"v.value\\\");\\n            if(!($A.util.isComponent(value)||$A.util.isArray(value))){\\n                if($A.util.isUndefinedOrNull(value)){\\n                    value = \\\"\\\";\\n                }\\n                if(component._lastRenderedValue && component._lastRenderedValue.isValid()){\\n                    \\n                    component._lastRenderedValue.set(\\\"v.value\\\",value,true);\\n                    value=component._lastRenderedValue;\\n                    return $A.rerender(value);\\n                }else {\\n                    value = $A.newCmp({componentDef: \\'aura:text\\', attributes: {values: {value: value}}});\\n                }\\n            }\\n            ret=$A.renderingService.rerenderFacet(component, value);\\n        }\\n        return ret;\\n    },\\n    \\\"unrender\\\":function(component) {\\n        $A.renderingService.unrenderFacet(component);\\n        if (component._lastRenderedValue) {\\n            component._lastRenderedValue.destroy();\\n            component._lastRenderedValue = null;\\n        }\\n\t}\\n  }\\n};\\nreturn aura$expression;\\n\", def);\nreturn locker.$result;\n});\n}"
                                         }
                                       },
                                       "attributes":{

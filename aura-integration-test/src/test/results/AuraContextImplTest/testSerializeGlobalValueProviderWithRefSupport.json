@@ -1,1 +1,16 @@
-{"mode":"PROD","fwuid":"#FAKEUID#","globalValueProviders":[{"type":"$REFS","hasRefs":true,"values":{"data":{"s":1,"v":"identity"}}}]}
+{
+  "mode": "PROD",
+  "fwuid": "#FAKEUID#",
+  "globalValueProviders": [
+    {
+      "type": "$REFS",
+      "hasRefs": true,
+      "values": {
+        "data": {
+          "s": 1,
+          "v": "identity"
+        }
+      }
+    }
+  ]
+}

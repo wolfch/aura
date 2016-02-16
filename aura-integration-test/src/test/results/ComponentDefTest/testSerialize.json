@@ -38,6 +38,6 @@
         }
       }
     ],
-    "componentClass":"function(){$A.componentService.addComponentClass(\"markup://aura:test\",function () {\nvar aura$test = {\n  \"meta\":{\n    \"name\":\"aura$test\",\n    \"extends\":\"markup://aura:component\"\n  }\n};\nreturn aura$test;\n});\n}"
+    "componentClass": "function(){$A.componentService.addComponentClass(\"markup://aura:test\",function () {\nvar def = $A.componentService.getDef(\"markup://aura:test\");var locker = $A.lockerService.createForDef(\n\"var aura$test = {\\n  \\\"meta\\\":{\\n    \\\"name\\\":\\\"aura$test\\\",\\n    \\\"extends\\\":\\\"markup://aura:component\\\"\\n  }\\n};\\nreturn aura$test;\\n\", def);\nreturn locker.$result;\n});\n}"
   }
 }
