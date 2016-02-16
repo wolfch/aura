@@ -21,7 +21,7 @@ import org.auraframework.def.ProviderDef;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
 /**
- * Instance of a Renderer
+ * Instance of a Provider
  */
 public interface ProviderInstance extends Instance<ProviderDef> {
 
