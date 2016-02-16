@@ -15,35 +15,37 @@
  */
 package org.auraframework.impl.adapter.format.css;
 
-import static org.mockito.Mockito.spy;
-
-import java.io.IOException;
-
-import org.auraframework.Aura;
+import com.google.common.collect.Lists;
 import org.auraframework.clientlibrary.Combinable;
 import org.auraframework.impl.AuraImplTestCase;
 import org.auraframework.system.AuraContext.Authentication;
 import org.auraframework.system.AuraContext.Format;
 import org.auraframework.system.AuraContext.Mode;
+import org.junit.Test;
 
-import com.google.common.collect.Lists;
+import java.io.IOException;
+
+import static org.mockito.Mockito.spy;
 
 public class ClientLibraryCSSFormatAdapterTest extends AuraImplTestCase {
-    public ClientLibraryCSSFormatAdapterTest(String name){
-        super(name, false);
+    public ClientLibraryCSSFormatAdapterTest() {
+        super();
+        setShouldSetupContext(false);
     }
-    
+
+    @Test
     public void testValuesAreCombinedAndCompressedInNonDevAndNonTestModes() throws Exception{
-        Aura.getContextService().startContext(Mode.PTEST, Format.JSON, Authentication.AUTHENTICATED);
+        contextService.startContext(Mode.PTEST, Format.JSON, Authentication.AUTHENTICATED);
         assertValuesAreNotCompressed();
     }
-    
+
+    @Test
     public void testValuesAreNotCompressedInDevOrTestModes() throws Exception{
-        Aura.getContextService().startContext(Mode.UTEST, Format.JSON, Authentication.AUTHENTICATED);
+        contextService.startContext(Mode.UTEST, Format.JSON, Authentication.AUTHENTICATED);
         assertValuesAreNotCompressed();
-        Aura.getContextService().endContext();
-        
-        Aura.getContextService().startContext(Mode.DEV, Format.JSON, Authentication.AUTHENTICATED);
+        contextService.endContext();
+
+        contextService.startContext(Mode.DEV, Format.JSON, Authentication.AUTHENTICATED);
         assertValuesAreNotCompressed();
     }    
         

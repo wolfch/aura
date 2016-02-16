@@ -15,16 +15,9 @@
  */
 package org.auraframework.test.util;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
@@ -43,7 +36,8 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
-import org.auraframework.Aura;
+import org.auraframework.adapter.ConfigAdapter;
+import org.auraframework.adapter.ExceptionAdapter;
 import org.auraframework.def.ActionDef;
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.BaseComponentDef;
@@ -52,6 +46,7 @@ import org.auraframework.def.DefDescriptor;
 import org.auraframework.http.AuraBaseServlet;
 import org.auraframework.instance.Action;
 import org.auraframework.instance.InstanceStack;
+import org.auraframework.service.LoggingService;
 import org.auraframework.system.AuraContext.EncodingStyle;
 import org.auraframework.system.AuraContext.Format;
 import org.auraframework.system.AuraContext.Mode;
@@ -62,20 +57,25 @@ import org.auraframework.util.json.Json;
 import org.auraframework.util.json.JsonEncoder;
 import org.auraframework.util.json.JsonReader;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import javax.inject.Inject;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Base class with some helper methods specific to Aura.
  */
 @SuppressWarnings("deprecation")
 public abstract class AuraHttpTestCase extends IntegrationTestCase {
-
-    public AuraHttpTestCase(String name) {
-        super(name);
-    }
-
+    @Inject
+    private ConfigAdapter configAdapter;
+    
     /**
      * Given a URL to post a GET request, this method compares the actual status code of the response with an expected
      * status code.
@@ -109,7 +109,7 @@ public abstract class AuraHttpTestCase extends IntegrationTestCase {
      * @param allowInline Allows inline script-src and style-src
      */
     protected void assertDefaultAntiClickjacking(HttpResponse response, boolean guarded, boolean allowInline) {
-        String adapterClassName = Aura.getConfigAdapter().getClass().getName();
+        String adapterClassName = configAdapter.getClass().getName();
         if (adapterClassName.equals("org.auraframework.impl.adapter.ConfigAdapterImpl") ||
                 adapterClassName.equals("org.auraframework.impl.adapter.MockConfigAdapterImpl")) {
             Header[] headers = response.getHeaders("X-FRAME-OPTIONS");
@@ -166,7 +166,7 @@ public abstract class AuraHttpTestCase extends IntegrationTestCase {
     }
 
     protected String getHost() throws Exception {
-        return getTestServletConfig().getBaseUrl().getHost();
+        return testServletConfig.getBaseUrl().getHost();
     }
 
     /**
@@ -332,7 +332,7 @@ public abstract class AuraHttpTestCase extends IntegrationTestCase {
             throws MalformedURLException, URISyntaxException,
             UnsupportedEncodingException {
 
-        HttpPost post = new HttpPost(getTestServletConfig().getBaseUrl()
+        HttpPost post = new HttpPost(testServletConfig.getBaseUrl()
                 .toURI().resolve(path).toString());
 
         List<NameValuePair> nvps = Lists.newArrayList();
@@ -377,7 +377,7 @@ public abstract class AuraHttpTestCase extends IntegrationTestCase {
         }
         if (!postParams.containsKey("aura.context")) {
             postParams
-            .put("aura.context", Aura.getContextService().getCurrentContext().serialize(EncodingStyle.Normal));
+                    .put("aura.context", contextService.getCurrentContext().serialize(EncodingStyle.Normal));
         }
         HttpPost post = obtainPostMethod("/aura", postParams);
         perform(post);
@@ -437,7 +437,7 @@ public abstract class AuraHttpTestCase extends IntegrationTestCase {
             String desc, Class<? extends BaseComponentDef> type,
             Map<String, String> params, Header[] headers)
                     throws QuickFixException, MalformedURLException, URISyntaxException {
-        return obtainAuraGetMethod(mode, format, Aura.getDefinitionService()
+        return obtainAuraGetMethod(mode, format, definitionService
                 .getDefDescriptor(desc, type), params, headers);
     }
 
@@ -554,7 +554,7 @@ public abstract class AuraHttpTestCase extends IntegrationTestCase {
         }
 
         public ServerAction setApp(String name, Class<? extends BaseComponentDef> clazz) {
-            app = Aura.getDefinitionService().getDefDescriptor(name, clazz);
+            app = definitionService.getDefDescriptor(name, clazz);
             return this;
         }
 
@@ -593,14 +593,14 @@ public abstract class AuraHttpTestCase extends IntegrationTestCase {
                     actionInstanceArray.add(actionInstance);
                 }
                 if (app == null) {
-                    app = Aura.getDefinitionService().getDefDescriptor("auratest:test_SimpleServerRenderedPage",
+                    app = definitionService.getDefDescriptor("auratest:test_SimpleServerRenderedPage",
                             ApplicationDef.class);
                 }
                 message.put("actions", actionInstanceArray.toArray());
                 String jsonMessage = JsonEncoder.serialize(message);
                 Map<String, String> params = Maps.newHashMap();
                 params.put("message", jsonMessage);
-                params.put("aura.token", getTestServletConfig().getCsrfToken());
+                params.put("aura.token", testServletConfig.getCsrfToken());
 
                 params.put("aura.context", getAuraTestingUtil().buildContextForPost(mode, app, null, dn));
                 post = obtainPostMethod("/aura", params);
@@ -610,7 +610,7 @@ public abstract class AuraHttpTestCase extends IntegrationTestCase {
 
         @Override
         public DefDescriptor<ActionDef> getDescriptor() {
-            return Aura.getDefinitionService().getDefDescriptor(qualifiedName.get(0),
+            return definitionService.getDefDescriptor(qualifiedName.get(0),
                     ActionDef.class);
         }
 
@@ -619,7 +619,7 @@ public abstract class AuraHttpTestCase extends IntegrationTestCase {
         }
 
         public DefDescriptor<ActionDef> getDescriptor(String qualifiedName) {
-            return Aura.getDefinitionService().getDefDescriptor(qualifiedName, ActionDef.class);
+            return definitionService.getDefDescriptor(qualifiedName, ActionDef.class);
         }
 
         @Override
@@ -638,7 +638,7 @@ public abstract class AuraHttpTestCase extends IntegrationTestCase {
 
         @SuppressWarnings("unchecked")
         @Override
-        public void run() throws AuraExecutionException {
+        public void run(LoggingService loggingService, ExceptionAdapter exceptionAdapter) throws AuraExecutionException {
             try {
                 HttpPost post = getPostMethod();
                 HttpResponse response = getHttpClient().execute(post);
@@ -748,7 +748,7 @@ public abstract class AuraHttpTestCase extends IntegrationTestCase {
         }
 
         @Override
-        public void setCallingDescriptor(String caller) {
+        public void setCallingDescriptor(DefDescriptor<ComponentDef> descriptor) {
         }
 
 		@Override

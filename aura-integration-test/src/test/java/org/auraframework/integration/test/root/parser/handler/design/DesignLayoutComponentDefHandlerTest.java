@@ -15,13 +15,13 @@
  */
 package org.auraframework.integration.test.root.parser.handler.design;
 
-import org.auraframework.Aura;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.design.DesignDef;
 import org.auraframework.def.design.DesignLayoutItemDef;
 import org.auraframework.impl.AuraImplTestCase;
 import org.auraframework.throwable.quickfix.DefinitionNotFoundException;
+import org.junit.Test;
 
 import java.util.Iterator;
 import java.util.Set;
@@ -30,15 +30,9 @@ public class DesignLayoutComponentDefHandlerTest extends AuraImplTestCase {
     private final static String COMPONENT = "<design:layoutComponent name=\"%s\"/>";
     private final static String VALID_COMPONENT = "ui:button";
     private final static String ANOTHER_VALID_COMPONENT = "ui:input";
-    private final static DefDescriptor<ComponentDef> VALID_CMP_DEF =
-            Aura.getDefinitionService().getDefDescriptor(VALID_COMPONENT, ComponentDef.class);
-    private final static DefDescriptor<ComponentDef> ANOTHER_VALID_CMP_DEF =
-            Aura.getDefinitionService().getDefDescriptor(ANOTHER_VALID_COMPONENT, ComponentDef.class);
 
-    public DesignLayoutComponentDefHandlerTest(String name) {
-        super(name);
-    }
 
+    @Test
     public void testLayoutComponentWithInvalidComponent() throws Exception {
         try {
             setupDesignLayoutComponentDef(String.format(COMPONENT, "NotAComponent"));
@@ -48,6 +42,7 @@ public class DesignLayoutComponentDefHandlerTest extends AuraImplTestCase {
         }
     }
 
+    @Test
     public void testLayoutComponent() throws Exception {
         Set<DesignLayoutItemDef> items = setupDesignLayoutComponentDef(String.format(COMPONENT, VALID_COMPONENT));
         assertTrue("Design component was not discovered", items.size() == 1);
@@ -57,7 +52,13 @@ public class DesignLayoutComponentDefHandlerTest extends AuraImplTestCase {
 
     }
 
+    @Test
     public void testLayoutComponentOrder() throws Exception {
+        DefDescriptor<ComponentDef> VALID_CMP_DEF = definitionService.getDefDescriptor(VALID_COMPONENT,
+                ComponentDef.class);
+        DefDescriptor<ComponentDef> ANOTHER_VALID_CMP_DEF = definitionService.getDefDescriptor(ANOTHER_VALID_COMPONENT,
+                ComponentDef.class);
+        
         StringBuilder items = new StringBuilder();
         items.append(String.format(COMPONENT, VALID_COMPONENT));
         items.append(String.format(COMPONENT, ANOTHER_VALID_COMPONENT));
@@ -85,7 +86,7 @@ public class DesignLayoutComponentDefHandlerTest extends AuraImplTestCase {
                 ComponentDef.class, null);
         getAuraTestingUtil().addSourceAutoCleanup(cmpDesc, String.format(baseComponentTag, "", ""));
 
-        DefDescriptor<DesignDef> designDesc = Aura.getDefinitionService().getDefDescriptor(cmpDesc.getQualifiedName(),
+        DefDescriptor<DesignDef> designDesc = definitionService.getDefDescriptor(cmpDesc.getQualifiedName(),
                 DesignDef.class);
         getAuraTestingUtil().addSourceAutoCleanup(designDesc, String.format("<design:component><design:layout>" +
                 "<design:section><design:layoutItems>%s</design:layoutItems></design:section>" +

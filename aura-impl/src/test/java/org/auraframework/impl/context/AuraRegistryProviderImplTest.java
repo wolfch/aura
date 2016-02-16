@@ -15,28 +15,30 @@
  */
 package org.auraframework.impl.context;
 
+import org.auraframework.adapter.ComponentLocationAdapter;
+import org.auraframework.impl.AuraImplTestCase;
+import org.auraframework.util.test.annotation.UnAdaptableTest;
+import org.junit.Test;
+
+import javax.inject.Inject;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.auraframework.adapter.ComponentLocationAdapter;
-import org.auraframework.impl.AuraImplTestCase;
-import org.auraframework.util.test.annotation.UnAdaptableTest;
-
 public class AuraRegistryProviderImplTest extends AuraImplTestCase {
-    public AuraRegistryProviderImplTest(String name) {
-        super(name);
-    }
-
+    @Inject
+    private AuraRegistryProviderImpl auraRegistryProviderImpl;
+    
     // Stop running the test in SFDC integration build. The test includes all component location
     // adapters. It's often broke by other teams.
     @UnAdaptableTest("Prevent this test running with SFDC integration build. W-2820492")
+    @Test
     public void testAllRegistries() throws Exception {
         Collection<ComponentLocationAdapter> markupLocations;
         List<File> broken = new ArrayList<>();
 
-        markupLocations = new AuraRegistryProviderImpl().getAllComponentLocationAdapters();
+        markupLocations = auraRegistryProviderImpl.getAllComponentLocationAdapters();
         for (ComponentLocationAdapter location : markupLocations) {
             if (location != null) {
                 File file = location.getComponentSourceDir();

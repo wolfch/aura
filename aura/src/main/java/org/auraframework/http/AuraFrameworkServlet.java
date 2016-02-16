@@ -15,34 +15,43 @@
  */
 package org.auraframework.http;
 
+import org.apache.http.HttpHeaders;
+import org.auraframework.adapter.ConfigAdapter;
+import org.auraframework.adapter.ServletUtilAdapter;
+import org.auraframework.util.IOUtil;
+import org.auraframework.util.resource.ResourceLoader;
+
+import javax.activation.MimetypesFileTypeMap;
+import javax.inject.Inject;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.http.HttpHeaders;
-import org.auraframework.Aura;
-import org.auraframework.util.IOUtil;
-import org.auraframework.util.resource.ResourceLoader;
-
 public class AuraFrameworkServlet extends AuraBaseServlet {
+    private static final long serialVersionUID = 4464645638180535126L;
 
-    private static final long serialVersionUID = 6034969764380397480L;
-    private static final ResourceLoader resourceLoader = Aura.getConfigAdapter().getResourceLoader();
-    private static final String MINIFIED_FILE_SUFFIX = ".min";
+    private final static String MINIFIED_FILE_SUFFIX = ".min";
 
     // RESOURCES_PATTERN format:
     // /required_root/optional_nonce/required_rest_of_path
-    private static final Pattern RESOURCES_PATTERN = Pattern.compile("^/([^/]+)(/[-_0-9a-zA-Z]+)?(/.*)$");
+    private final static Pattern RESOURCES_PATTERN = Pattern.compile("^/([^/]+)(/[-_0-9a-zA-Z]+)?(/.*)$");
+    private final static String JAVASCRIPT_CONTENT_TYPE = "text/javascript";
 
-    public static final String RESOURCES_FORMAT = "%s/auraFW/resources/%s/%s";
+    private static MimetypesFileTypeMap mimeTypesMap = new MimetypesFileTypeMap();
 
+    public final static String RESOURCES_FORMAT = "%s/auraFW/resources/%s/%s";
+
+    private ConfigAdapter configAdapter;
+    private ServletUtilAdapter servletUtilAdapter;
+    
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        ResourceLoader resourceLoader = configAdapter.getResourceLoader();
+
         // defend against directory traversal attack
         // getPathInfo() has already resolved all ".." * "%2E%2E" relative
         // references in the path
@@ -54,7 +63,7 @@ public class AuraFrameworkServlet extends AuraBaseServlet {
             return;
         }
         long ifModifiedSince = request.getDateHeader(HttpHeaders.IF_MODIFIED_SINCE);
-        setBasicHeaders(null, request,  response);
+        servletUtilAdapter.setCSPHeaders(null, request, response);
         InputStream in = null;
         try {
 
@@ -62,9 +71,9 @@ public class AuraFrameworkServlet extends AuraBaseServlet {
             // Careful with race conditions here, we should only call regenerateAuraJS
             // _before_ we get the nonce.
             //
-            Aura.getConfigAdapter().regenerateAuraJS();
+            configAdapter.regenerateAuraJS();
             // framework uid is combination of aura js and resources uid
-            String currentUid = Aura.getConfigAdapter().getAuraFrameworkNonce();
+            String currentUid = configAdapter.getAuraFrameworkNonce();
             // match entire path once, looking for root, optional nonce, and
             // rest-of-path
             Matcher matcher = RESOURCES_PATTERN.matcher(path);
@@ -150,7 +159,7 @@ public class AuraFrameworkServlet extends AuraBaseServlet {
 
             // Checks for a minified version of the external resource file
             // Uses the minified version if in production mode.
-            if (resStr.startsWith("/aura/resources/") && Aura.getConfigAdapter().isProduction()) {
+            if (resStr.startsWith("/aura/resources/") && configAdapter.isProduction()) {
                 int extIndex = resStr.lastIndexOf(".");
                 if (extIndex > 0) {
                     String minFile = resStr.substring(0, extIndex) + MINIFIED_FILE_SUFFIX + resStr.substring(extIndex);
@@ -172,7 +181,7 @@ public class AuraFrameworkServlet extends AuraBaseServlet {
                 return;
             }
             response.reset();
-            setBasicHeaders(null, request, response);
+            servletUtilAdapter.setCSPHeaders(null, request, response);
 
             // handle any MIME content type, using only file name (not contents)
             String mimeType = mimeTypesMap.getContentType(path);
@@ -193,7 +202,7 @@ public class AuraFrameworkServlet extends AuraBaseServlet {
                 // If we had a mismatched UID or we had none, and are requesting js (legacy) we set a short
                 // cache response.
                 //
-                setNoCache(response);
+                servletUtilAdapter.setNoCache(response);
             } else if (matchedUid || js) {
                 //
                 // If we have a known good state, we send a long expire. Warning, this means that resources other
@@ -202,12 +211,12 @@ public class AuraFrameworkServlet extends AuraBaseServlet {
                 // TODO: if we want to have things not included in the fw uid use the fw-uid nonce,
                 // we need to adjust to drop the matchedUid.
                 //
-                setLongCache(response);
+                servletUtilAdapter.setLongCache(response);
             } else {
                 //
                 // By default we use short expire. (1 day)
                 //
-                setShortCache(response);
+                servletUtilAdapter.setShortCache(response);
             }
 
             IOUtil.copyStream(in, response.getOutputStream());
@@ -220,5 +229,15 @@ public class AuraFrameworkServlet extends AuraBaseServlet {
                 }
             }
         }
+    }
+
+    @Inject
+    void setConfigAdapter(ConfigAdapter configAdapter) {
+        this.configAdapter = configAdapter;
+    }
+
+    @Inject
+    void setServletUtilAdapter(ServletUtilAdapter servletUtilAdapter) {
+        this.servletUtilAdapter = servletUtilAdapter;
     }
 }

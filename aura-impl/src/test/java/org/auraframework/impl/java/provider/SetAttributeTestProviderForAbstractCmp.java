@@ -15,16 +15,18 @@
  */
 package org.auraframework.impl.java.provider;
 
+import org.auraframework.Aura;
+import org.auraframework.annotations.Annotations.ServiceComponentProvider;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.ComponentDescriptorProvider;
 import org.auraframework.def.DefDescriptor;
-import org.auraframework.impl.system.DefDescriptorImpl;
 import org.auraframework.system.Annotations.Provider;
 
+@ServiceComponentProvider
 @Provider
 public class SetAttributeTestProviderForAbstractCmp implements ComponentDescriptorProvider {
     @Override
     public DefDescriptor<ComponentDef> provide() {
-        return DefDescriptorImpl.getInstance("setAttributesTest:abstractCmpExtension", ComponentDef.class);
+        return Aura.getDefinitionService().getDefDescriptor("setAttributesTest:abstractCmpExtension", ComponentDef.class);
     }
 }

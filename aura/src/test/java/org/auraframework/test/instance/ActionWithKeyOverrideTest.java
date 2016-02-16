@@ -15,27 +15,26 @@
  */
 package org.auraframework.test.instance;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyListOf;
-import static org.mockito.Mockito.*;
+import org.auraframework.adapter.ExceptionAdapter;
+import org.auraframework.instance.Action;
+import org.auraframework.instance.ActionWithKeyOverride;
+import org.auraframework.service.LoggingService;
+import org.auraframework.util.json.JsonEncoder;
+import org.auraframework.util.test.util.UnitTestCase;
+import org.junit.Test;
 
 import java.util.Collections;
 
-import org.auraframework.instance.Action;
-import org.auraframework.instance.ActionWithKeyOverride;
-import org.auraframework.util.json.JsonEncoder;
-import org.auraframework.util.test.util.UnitTestCase;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyListOf;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 public class ActionWithKeyOverrideTest extends UnitTestCase {
 
-    public ActionWithKeyOverrideTest() {
-        super();
-    }
-
-    public ActionWithKeyOverrideTest(String name) {
-        super(name);
-    }
-
+    @Test
     public void testConstructingWithNullActionAsKey() {
         try {
             new ActionWithKeyOverride(null, null);
@@ -44,6 +43,7 @@ public class ActionWithKeyOverrideTest extends UnitTestCase {
         }
     }
 
+    @Test
     public void testConstructingWithNullActionToExecute() {
         final Action actionAsKey = mock(Action.class);
 
@@ -54,6 +54,7 @@ public class ActionWithKeyOverrideTest extends UnitTestCase {
         }
     }
 
+    @Test
     public void testConstruction() {
         final Action actionAsKey = mock(Action.class);
         final Action actionToExecute = mock(Action.class);
@@ -66,9 +67,12 @@ public class ActionWithKeyOverrideTest extends UnitTestCase {
         assertNotNull("ActionWithKeyOverride was not properly created.", action);
     }
 
+    @Test
     public void testDelegations() throws Exception {
         final Action actionAsKey = mock(Action.class);
         final Action actionToExecute = mock(Action.class);
+        final LoggingService loggingService = mock(LoggingService.class);
+        final ExceptionAdapter exceptionAdapter = mock(ExceptionAdapter.class);
 
         Action action = new ActionWithKeyOverride(actionAsKey, actionToExecute);
 
@@ -82,7 +86,7 @@ public class ActionWithKeyOverrideTest extends UnitTestCase {
         action.setId("test");
         action.getInstanceStack();
 
-        action.run();
+        action.run(loggingService, exceptionAdapter);
         action.add(Collections.<Action>emptyList());
         action.getActions();
         action.getReturnValue();
@@ -110,7 +114,7 @@ public class ActionWithKeyOverrideTest extends UnitTestCase {
         verify(actionToExecute, times(2)).setStorable();
 
         // Delegates to actionToExecute
-        verify(actionToExecute, times(1)).run();
+        verify(actionToExecute, times(1)).run(any(LoggingService.class), any(ExceptionAdapter.class));
         verify(actionToExecute, times(1)).add(anyListOf(Action.class));
         verify(actionToExecute, times(1)).getActions();
         verify(actionToExecute, times(1)).getReturnValue();

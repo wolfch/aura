@@ -15,15 +15,16 @@
  */
 package org.auraframework.util.javascript;
 
+import org.auraframework.util.IOUtil;
+import org.auraframework.util.test.util.UnitTestCase;
+import org.auraframework.util.text.Hash;
+import org.junit.Test;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-
-import org.auraframework.util.IOUtil;
-import org.auraframework.util.test.util.UnitTestCase;
-import org.auraframework.util.text.Hash;
 
 /**
  * Tests for CommonJavascriptGroupImpl class {@link CommonJavascriptGroupImpl}. This class has implementation of some
@@ -31,15 +32,12 @@ import org.auraframework.util.text.Hash;
  * verifying the implementation of javascript grouping functionality.
  */
 public class CommonJavascriptGroupImplTest extends UnitTestCase {
-    public CommonJavascriptGroupImplTest(String name) {
-        super(name);
-    }
-
     /**
      * Test basic initialization and other exposed public methods of CommonJavascriptGroupImpl.java.
      * 
      * @throws Exception
      */
+    @Test
     public void testBasicInitialization() throws Exception {
         getResourceFile("/testdata/javascript/head.js");
         getResourceFile("/testdata/javascript/JSfilterValidation.junk.js");
@@ -120,6 +118,7 @@ public class CommonJavascriptGroupImplTest extends UnitTestCase {
      * value should only depend on the file content which is defined in the test and shouldn't depend on file names or
      * other external factors.
      */
+    @Test
     public void testGetGroupHash() throws Exception {
         File newFile = getResourceFile("/testdata/javascript/testGetGroupHash.js");
         newFile.getParentFile().mkdirs();

@@ -15,12 +15,8 @@
  */
 package org.auraframework.impl.root.parser.handler.design;
 
-import java.util.Collections;
-import java.util.Set;
-
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
+import org.auraframework.adapter.ConfigAdapter;
+import org.auraframework.adapter.DefinitionParserAdapter;
 import org.auraframework.def.design.DesignDef;
 import org.auraframework.def.design.DesignItemsDef;
 import org.auraframework.def.design.DesignLayoutAttributeDef;
@@ -29,9 +25,15 @@ import org.auraframework.impl.design.DesignItemsDefImpl;
 import org.auraframework.impl.root.parser.handler.ContainerTagHandler;
 import org.auraframework.impl.root.parser.handler.ParentedTagHandler;
 import org.auraframework.impl.system.DefDescriptorImpl;
+import org.auraframework.service.DefinitionService;
 import org.auraframework.system.Source;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.AuraTextUtil;
+
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.util.Collections;
+import java.util.Set;
 
 public class DesignItemsDefHandler extends ParentedTagHandler<DesignItemsDef, DesignDef>{
     public final static String TAG = "design:layoutitems";
@@ -43,21 +45,26 @@ public class DesignItemsDefHandler extends ParentedTagHandler<DesignItemsDef, De
         super();
     }
 
-    public DesignItemsDefHandler(ContainerTagHandler<DesignDef> parentHandler, XMLStreamReader xmlReader, Source<?> source) {
-        super(parentHandler, xmlReader, source);
+    public DesignItemsDefHandler(ContainerTagHandler<DesignDef> parentHandler, XMLStreamReader xmlReader, Source<?> source,
+                                 boolean isInPrivilegedNamespace, DefinitionService definitionService,
+                                 ConfigAdapter configAdapter, DefinitionParserAdapter definitionParserAdapter) {
+        super(parentHandler, xmlReader, source, isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter);
         builder.setDescriptor(DefDescriptorImpl.getAssociateDescriptor(getParentDefDescriptor(), DesignItemsDef.class,
                 TAG));
+        builder.setAccess(getAccess(isInPrivilegedNamespace));
     }
 
     @Override
     protected void handleChildTag() throws XMLStreamException, QuickFixException {
         String tag = getTagName();
         if (DesignLayoutAttributeDefHandler.TAG.equalsIgnoreCase(tag)) {
-            DesignLayoutAttributeDef item = new DesignLayoutAttributeDefHandler(getParentHandler(), xmlReader, source).getElement();
+            DesignLayoutAttributeDef item = new DesignLayoutAttributeDefHandler(getParentHandler(), xmlReader, source,
+                    isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter).getElement();
             builder.addAttribute(item);
         } else if(isInPrivilegedNamespace() && DesignLayoutComponentDefHandler.TAG.equalsIgnoreCase(tag)) {
             //Component injection is only allowed in privileged namespaces
-            DesignLayoutComponentDef cmp = new DesignLayoutComponentDefHandler(getParentHandler(), xmlReader, source).getElement();
+            DesignLayoutComponentDef cmp = new DesignLayoutComponentDefHandler(getParentHandler(), xmlReader, source,
+                    isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter).getElement();
             builder.addComponent(cmp);
         } else {
             throw new XMLStreamException(String.format("<%s> can not contain tag %s", getHandledTag(), tag));

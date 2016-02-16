@@ -15,8 +15,6 @@
  */
 package org.auraframework.integration.test.components.ui.tabset;
 
-import java.util.List;
-
 import org.auraframework.test.util.WebDriverTestCase;
 import org.auraframework.test.util.WebDriverUtil.BrowserType;
 import org.openqa.selenium.By;
@@ -25,6 +23,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.util.List;
 
 public class TabsetUITest extends WebDriverTestCase {
     private final String URL = "/uitest/tabset_Test.cmp";
@@ -35,10 +35,6 @@ public class TabsetUITest extends WebDriverTestCase {
     private final String[] BODY_ARRAY = {"tab 1 contents", "tab 2 contents", "tab 3 contents", "tab 4 contents",
             "tab 5 contents", "tab 6 contents", "tab 7 contents"};
     private int NUMBER_OF_TABS = 7;
-
-    public TabsetUITest(String name) {
-        super(name);
-    }
 
     /********************************************** HELPER FUNCTIONS ******************************************/
 

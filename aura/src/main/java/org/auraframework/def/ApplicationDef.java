@@ -15,9 +15,11 @@
  */
 package org.auraframework.def;
 
-import java.util.List;
-
+import org.auraframework.adapter.ExceptionAdapter;
+import org.auraframework.service.LoggingService;
 import org.auraframework.throwable.quickfix.QuickFixException;
+
+import java.util.List;
 
 /**
  */
@@ -32,7 +34,7 @@ public interface ApplicationDef extends BaseComponentDef {
 
     Boolean isAppcacheEnabled() throws QuickFixException;
 
-    List<String> getAdditionalAppCacheURLs() throws QuickFixException;
+    List<String> getAdditionalAppCacheURLs(LoggingService loggingService, ExceptionAdapter exceptionAdapter) throws QuickFixException;
 
     Boolean isOnePageApp() throws QuickFixException;
 }

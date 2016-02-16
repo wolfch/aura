@@ -15,21 +15,21 @@
  */
 package org.auraframework.impl.expression;
 
-import static org.auraframework.impl.expression.functions.BooleanFunctions.AND;
-import static org.auraframework.impl.expression.functions.BooleanFunctions.NOT;
-import static org.auraframework.impl.expression.functions.BooleanFunctions.OR;
-import static org.auraframework.impl.expression.functions.MathFunctions.SUBTRACT;
-import static org.auraframework.impl.expression.functions.MultiFunctions.ADD;
-
-import java.math.BigDecimal;
-
+import com.google.common.collect.ImmutableList;
 import org.auraframework.expression.Expression;
 import org.auraframework.expression.ExpressionType;
 import org.auraframework.expression.PropertyReference;
 import org.auraframework.instance.ValueProvider;
 import org.auraframework.system.Location;
+import org.junit.Test;
 
-import com.google.common.collect.ImmutableList;
+import java.math.BigDecimal;
+
+import static org.auraframework.impl.expression.functions.BooleanFunctions.AND;
+import static org.auraframework.impl.expression.functions.BooleanFunctions.NOT;
+import static org.auraframework.impl.expression.functions.BooleanFunctions.OR;
+import static org.auraframework.impl.expression.functions.MathFunctions.SUBTRACT;
+import static org.auraframework.impl.expression.functions.MultiFunctions.ADD;
 
 /**
  * Tests of expression evaluation
@@ -61,10 +61,7 @@ public class ExpressionTest extends AuraImplExpressionTestCase {
         }
     };
 
-    public ExpressionTest(String name) {
-        super(name);
-    }
-
+    @Test
     public void testNumberExpression() throws Exception {
         Expression e = new FunctionCallImpl(ADD, ImmutableList.<Expression> of(i314, i235325), l);
         Object o = e.evaluate(values);
@@ -81,6 +78,7 @@ public class ExpressionTest extends AuraImplExpressionTestCase {
         assertEquals(((314.0 + 235325) - (314 + 314)) - 17, o);
     }
 
+    @Test
     public void testBooleanComplex() throws Exception {
         Expression e;
         Object o;
@@ -94,10 +92,12 @@ public class ExpressionTest extends AuraImplExpressionTestCase {
         assertFalse("Expected boolean expression to be false", o);
     }
 
+    @Test
     public void testLiteralNull() throws Exception {
         verifyEvaluateResult("null", ExpressionType.LITERAL, null, null);
     }
 
+    @Test
     public void testPropertyEvaluatesToNull() throws Exception {
         ValueProvider vp = new ValueProvider() {
             @Override
@@ -111,6 +111,7 @@ public class ExpressionTest extends AuraImplExpressionTestCase {
         verifyEvaluateResult("nothing.here != null", ExpressionType.FUNCTION, vp, false);
     }
 
+    @Test
     public void testPropertyIsNotNull() throws Exception {
         ValueProvider vp = new ValueProvider() {
             @Override
@@ -123,6 +124,7 @@ public class ExpressionTest extends AuraImplExpressionTestCase {
         verifyEvaluateResult("something.here != null", ExpressionType.FUNCTION, vp, true);
     }
 
+    @Test
     public void testFunctionWithNullOperands() throws Exception {
         verifyEvaluateResult("true && null", ExpressionType.FUNCTION, null, null);
         verifyEvaluateResult("null + 1", ExpressionType.FUNCTION, null, 1);
@@ -141,6 +143,7 @@ public class ExpressionTest extends AuraImplExpressionTestCase {
     // verifyEvaluateException("add()", "??????????");
     // }
 
+    @Test
     public void testFunctionMismatchedOperands() throws Exception {
         // Note the 3.0 on this
         verifyEvaluateResult("3 + ' little piggies'", ExpressionType.FUNCTION, null, "3 little piggies");
@@ -149,15 +152,18 @@ public class ExpressionTest extends AuraImplExpressionTestCase {
         verifyEvaluateResult("'2' == 2", ExpressionType.FUNCTION, null, false);
     }
 
+    @Test
     public void testFunctionEvaluatesToNaN() throws Exception {
         verifyEvaluateResult("0 / 0", ExpressionType.FUNCTION, null, Double.NaN);
     }
 
+    @Test
     public void testFunctionEvaluatesToInfinity() throws Exception {
         verifyEvaluateResult("-2 / -0.0", ExpressionType.FUNCTION, null, Double.POSITIVE_INFINITY);
         verifyEvaluateResult("-5 / 0", ExpressionType.FUNCTION, null, Double.NEGATIVE_INFINITY);
     }
 
+    @Test
     public void testMultilineFunction() throws Exception {
         verifyEvaluateResult("5 +\r\n1\r\n!=\r\n'null'", ExpressionType.FUNCTION, null, true);
     }

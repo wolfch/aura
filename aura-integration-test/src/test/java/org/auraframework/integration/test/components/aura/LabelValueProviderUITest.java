@@ -15,42 +15,43 @@
  */
 package org.auraframework.integration.test.components.aura;
 
-import java.util.Map;
-
 import org.auraframework.test.controller.TestLoggingAdapterController;
 import org.auraframework.test.util.WebDriverTestCase;
 import org.auraframework.util.test.annotation.ThreadHostileTest;
 import org.auraframework.util.test.annotation.UnAdaptableTest;
+import org.junit.Test;
 import org.openqa.selenium.By;
+
+import javax.inject.Inject;
+import java.util.Map;
 
 /**
  * UI Test for LabelValueProvider.js
  */
 public class LabelValueProviderUITest extends WebDriverTestCase {
 
+    @Inject
+    private TestLoggingAdapterController testLoggingAdapterController;
+
     // URL string to go to
     private final String URL = "/gvpTest/labelProvider.cmp";
     private By label1 = By.xpath("//div[@id='div1']");
-
-    public LabelValueProviderUITest(String name) {
-        super(name);
-    }
 
     /**
      * Test we have one java call for each valid label request.
      * @throws Exception
      */
     @ThreadHostileTest("TestLoggingAdapter not thread-safe")
-    // TODO(W-2903378): re-enable when we are able to inject TestLoggingAdapter.
+    @Test
     @UnAdaptableTest
     public void testEfficientActionRequests() throws Exception {
-        TestLoggingAdapterController.beginCapture();
+        testLoggingAdapterController.beginCapture();
         open(URL);
         auraUITestingUtil.waitForElementText(label1, "simplevalue1: Today", true);
         
         Long callCount = 0L;
         boolean isLabelControllerCalled = false;
-        for (Map<String, Object> log : TestLoggingAdapterController.endCapture()) {
+        for (Map<String, Object> log : testLoggingAdapterController.endCapture()) {
             if(log.containsKey("action_1$aura://LabelController/ACTION$getLabel")) {
                 callCount = (Long) log.get("JavaCallCount");
                 isLabelControllerCalled = true;
@@ -60,5 +61,4 @@ public class LabelValueProviderUITest extends WebDriverTestCase {
         assertTrue("Fail: LabelController should be called", isLabelControllerCalled);
         assertTrue("Fail: There should be two calls to LabelController "+callCount.toString(), callCount == 2L);
     }
-
 }

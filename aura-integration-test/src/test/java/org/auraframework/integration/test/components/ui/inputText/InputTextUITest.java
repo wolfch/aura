@@ -36,10 +36,6 @@ public class InputTextUITest extends WebDriverTestCase {
     public static final String TEST_CMP = "/uitest/inputtext_updateontest.cmp";
     public static final String TEST_CMP_WITH_LABELS = "/uitest/inputtext_updateonwithlabeltest.cmp";
 
-    public InputTextUITest(String name) {
-        super(name);
-    }
-
     @ExcludeBrowsers({ BrowserType.ANDROID_PHONE, BrowserType.ANDROID_TABLET })
     public void testUpdateOnAttribute_UsingStringSource() throws Exception {
         String event = "blur";

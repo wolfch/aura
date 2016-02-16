@@ -15,26 +15,31 @@
  */
 package org.auraframework.integration.test.css;
 
+import org.auraframework.Aura;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.TokenDescriptorProvider;
 import org.auraframework.def.TokensDef;
 import org.auraframework.impl.css.StyleTestCase;
 import org.auraframework.impl.java.provider.TestTokenDescriptorProvider;
-import org.auraframework.impl.system.DefDescriptorImpl;
+import org.auraframework.service.DefinitionService;
 import org.auraframework.system.Annotations.Provider;
 import org.auraframework.throwable.quickfix.DefinitionNotFoundException;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
 import org.auraframework.throwable.quickfix.QuickFixException;
+import org.junit.Test;
+
+import javax.inject.Inject;
 
 public class JavaTokenProviderDefTest extends StyleTestCase {
-    public JavaTokenProviderDefTest(String name) {
-        super(name);
-    }
 
+    @Inject
+    DefinitionService definitionService;
+
+    @Test
     public void testProviderBasic() throws Exception {
         DefDescriptor<TokensDef> desc = addSeparateTokens(tokens().descriptorProvider(TestTokenDescriptorProvider.REF));
         DefDescriptor<TokensDef> concrete = desc.getDef().getConcreteDescriptor();
-        DefDescriptor<TokensDef> expected = DefDescriptorImpl.getInstance(TestTokenDescriptorProvider.DESC, TokensDef.class);
+        DefDescriptor<TokensDef> expected = definitionService.getDefDescriptor(TestTokenDescriptorProvider.DESC, TokensDef.class);
         assertEquals(expected, concrete);
     }
 
@@ -42,7 +47,7 @@ public class JavaTokenProviderDefTest extends StyleTestCase {
     public static final class P1 implements TokenDescriptorProvider {
         @Override
         public DefDescriptor<TokensDef> provide() throws QuickFixException {
-            return DefDescriptorImpl.getInstance("tokenProviderTest:javaProviderTest2", TokensDef.class);
+            return Aura.getDefinitionService().getDefDescriptor("tokenProviderTest:javaProviderTest2", TokensDef.class);
         }
     }
 
@@ -50,15 +55,16 @@ public class JavaTokenProviderDefTest extends StyleTestCase {
     public static final class P2 implements TokenDescriptorProvider {
         @Override
         public DefDescriptor<TokensDef> provide() throws QuickFixException {
-            return DefDescriptorImpl.getInstance("tokenProviderTest:javaProviderTest3", TokensDef.class);
+            return Aura.getDefinitionService().getDefDescriptor("tokenProviderTest:javaProviderTest3", TokensDef.class);
         }
     }
 
+    @Test
     public void testMultipleLevelProvider() throws Exception {
-        DefDescriptor<TokensDef> initial = DefDescriptorImpl.getInstance("tokenProviderTest:javaProviderTest1",
+        DefDescriptor<TokensDef> initial = definitionService.getDefDescriptor("tokenProviderTest:javaProviderTest1",
                 TokensDef.class);
 
-        DefDescriptor<TokensDef> expected = DefDescriptorImpl.getInstance("tokenProviderTest:javaProviderTest3",
+        DefDescriptor<TokensDef> expected = definitionService.getDefDescriptor("tokenProviderTest:javaProviderTest3",
                 TokensDef.class);
 
         DefDescriptor<TokensDef> concrete = initial.getDef().getConcreteDescriptor();
@@ -78,6 +84,7 @@ public class JavaTokenProviderDefTest extends StyleTestCase {
         }
     }
 
+    @Test
     public void testProviderThrowsDuringInstantiation() throws Exception {
         try {
             addSeparateTokens(tokens().descriptorProvider("java://" + ProviderThrowsOnInstantiate.class.getName()))
@@ -96,6 +103,7 @@ public class JavaTokenProviderDefTest extends StyleTestCase {
         }
     }
 
+    @Test
     public void testProviderThrowsQFE() throws Exception {
         try {
             addSeparateTokens(tokens().descriptorProvider("java://" + ProviderThrowsOnProvide.class.getName()))
@@ -117,6 +125,7 @@ public class JavaTokenProviderDefTest extends StyleTestCase {
         }
     }
 
+    @Test
     public void testProviderWithoutNoArgConstructor() throws Exception {
         try {
             addSeparateTokens(tokens().descriptorProvider("java://" + ProviderConstructorArg.class.getName()))
@@ -138,6 +147,7 @@ public class JavaTokenProviderDefTest extends StyleTestCase {
         }
     }
 
+    @Test
     public void testProviderWithPrivateConstructor() throws Exception {
         try {
             addSeparateTokens(tokens().descriptorProvider("java://" + ProviderPrivateConstructor.class.getName()))
@@ -152,10 +162,11 @@ public class JavaTokenProviderDefTest extends StyleTestCase {
     public static final class ProviderNonexistent implements TokenDescriptorProvider {
         @Override
         public DefDescriptor<TokensDef> provide() throws QuickFixException {
-            return DefDescriptorImpl.getInstance("s:s", TokensDef.class);
+            return Aura.getDefinitionService().getDefDescriptor("s:s", TokensDef.class);
         }
     }
 
+    @Test
     public void testProviderReturnsNonexistentDef() throws Exception {
         try {
             addSeparateTokens(tokens().descriptorProvider("java://" + ProviderNonexistent.class.getName()))
@@ -170,6 +181,7 @@ public class JavaTokenProviderDefTest extends StyleTestCase {
     public static final class MissingInterface {
     }
 
+    @Test
     public void testProviderMissingInterface() throws Exception {
         try {
             addSeparateTokens(tokens().descriptorProvider("java://" + MissingInterface.class.getName()))
@@ -183,10 +195,11 @@ public class JavaTokenProviderDefTest extends StyleTestCase {
     public static final class MissingAnnotation implements TokenDescriptorProvider {
         @Override
         public DefDescriptor<TokensDef> provide() throws QuickFixException {
-            return DefDescriptorImpl.getInstance("test:fakeTokens", TokensDef.class);
+            return Aura.getDefinitionService().getDefDescriptor("test:fakeTokens", TokensDef.class);
         }
     }
 
+    @Test
     public void testProviderMissingAnnotation() throws Exception {
         try {
             addSeparateTokens(tokens().descriptorProvider("java://" + MissingAnnotation.class.getName()))

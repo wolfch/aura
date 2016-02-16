@@ -15,8 +15,7 @@
  */
 package org.auraframework.integration.test.css;
 
-import java.util.Set;
-
+import com.google.common.collect.Sets;
 import org.auraframework.Aura;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
@@ -24,39 +23,44 @@ import org.auraframework.def.FlavoredStyleDef;
 import org.auraframework.def.TokensDef;
 import org.auraframework.impl.css.StyleTestCase;
 import org.auraframework.impl.css.util.Flavors;
-import org.auraframework.impl.system.DefDescriptorImpl;
+import org.auraframework.service.DefinitionService;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
 import org.auraframework.throwable.quickfix.QuickFixException;
+import org.junit.Test;
 
-import com.google.common.collect.Sets;
+import javax.inject.Inject;
+import java.util.Set;
 
 /**
  * Unit tests for {@link FlavoredStyleDef}.
  */
 public class FlavoredStyleDefImplTest extends StyleTestCase {
-    public FlavoredStyleDefImplTest(String name) {
-        super(name);
-    }
+
+    @Inject
+    DefinitionService definitionService;
 
     /** basic loading of a standard flavor within the component bundle */
+    @Test
     public void testLoadStandardFlavor() throws Exception {
-        DefDescriptor<ComponentDef> component = DefDescriptorImpl.getInstance("flavorTest:x_sample", ComponentDef.class);
+        DefDescriptor<ComponentDef> component = definitionService.getDefDescriptor("flavorTest:x_sample", ComponentDef.class);
         DefDescriptor<FlavoredStyleDef> flavor = Flavors.standardFlavorDescriptor(component);
         assertTrue("expected to find bundle flavor def", flavor.exists());
         Aura.getDefinitionService().getDefinition(flavor); // no errors with loading
     }
 
     /** basic loading of a custom flavor within another namespace */
+    @Test
     public void testLoadCustomFlavor() throws Exception {
-        DefDescriptor<ComponentDef> component = DefDescriptorImpl.getInstance("flavorTest:x_sample", ComponentDef.class);
+        DefDescriptor<ComponentDef> component = definitionService.getDefDescriptor("flavorTest:x_sample", ComponentDef.class);
         DefDescriptor<FlavoredStyleDef> flavor = Flavors.customFlavorDescriptor(component, "flavorTestAlt", "flavors");
         assertTrue("expected to find namespace flavor def", flavor.exists());
         Aura.getDefinitionService().getDefinition(flavor); // no errors with loading
     }
 
     /** test that flavor names are found in the css file and stored */
+    @Test
     public void testGetFlavorNamesFromStandardFlavor() throws Exception {
-        DefDescriptor<ComponentDef> component = DefDescriptorImpl.getInstance("flavorTest:x_sample", ComponentDef.class);
+        DefDescriptor<ComponentDef> component = definitionService.getDefDescriptor("flavorTest:x_sample", ComponentDef.class);
         DefDescriptor<FlavoredStyleDef> flavor = Flavors.standardFlavorDescriptor(component);
         Set<String> flavorNames = Aura.getDefinitionService().getDefinition(flavor).getFlavorNames();
 
@@ -68,8 +72,9 @@ public class FlavoredStyleDefImplTest extends StyleTestCase {
     }
 
     /** test that flavor names are found in the css file and stored */
+    @Test
     public void testGetFlavorNamesFromCustomFlavor() throws Exception {
-        DefDescriptor<ComponentDef> component = DefDescriptorImpl.getInstance("flavorTest:x_sample", ComponentDef.class);
+        DefDescriptor<ComponentDef> component = definitionService.getDefDescriptor("flavorTest:x_sample", ComponentDef.class);
         DefDescriptor<FlavoredStyleDef> flavor = Flavors.customFlavorDescriptor(component, "flavorTestAlt", "flavors");
         Set<String> flavorNames = Aura.getDefinitionService().getDefinition(flavor).getFlavorNames();
 
@@ -82,8 +87,9 @@ public class FlavoredStyleDefImplTest extends StyleTestCase {
     }
 
     /** test that we don't get confused from non-flavor class names */
+    @Test
     public void testGetFlavorNamesVariations() throws Exception {
-        DefDescriptor<ComponentDef> component = DefDescriptorImpl.getInstance("flavorTest:x_landmark", ComponentDef.class);
+        DefDescriptor<ComponentDef> component = definitionService.getDefDescriptor("flavorTest:x_landmark", ComponentDef.class);
         DefDescriptor<FlavoredStyleDef> flavor = Flavors.standardFlavorDescriptor(component);
         Set<String> flavorNames = Aura.getDefinitionService().getDefinition(flavor).getFlavorNames();
 
@@ -97,6 +103,7 @@ public class FlavoredStyleDefImplTest extends StyleTestCase {
     }
 
     /** references to a token add the namespace-default tokens to the deps */
+    @Test
     public void testTokenDependencies() throws QuickFixException {
         DefDescriptor<TokensDef> nsTokens = addNsTokens(tokens().token("color", "red"));
         DefDescriptor<ComponentDef> cmp = addComponentDef("<aura:component><div aura:flavorable='true'></div></aura:component>");
@@ -108,6 +115,7 @@ public class FlavoredStyleDefImplTest extends StyleTestCase {
     }
 
     /** custom flavors have a dependency on the component, standard flavors do not */
+    @Test
     public void testFlavorDependencies() throws QuickFixException {
         DefDescriptor<ComponentDef> cmp = addComponentDef("<aura:component><div aura:flavorable='true'></div></aura:component>");
         DefDescriptor<FlavoredStyleDef> standard = addStandardFlavor(cmp, ".THIS--test {color:red}");
@@ -124,6 +132,7 @@ public class FlavoredStyleDefImplTest extends StyleTestCase {
     }
 
     /** keeps track of token names */
+    @Test
     public void testGetTokensNames() throws Exception {
         addNsTokens(tokens().token("color", "red").token("margin1", "10px"));
         DefDescriptor<ComponentDef> cmp = addComponentDef("<aura:component><div aura:flavorable='true'></div></aura:component>");
@@ -137,6 +146,7 @@ public class FlavoredStyleDefImplTest extends StyleTestCase {
     }
 
     /** test that it throws an error if flavoring something that isn't flavorable */
+    @Test
     public void testNotFlavorableWithStandardFlavor() throws Exception {
         DefDescriptor<ComponentDef> cmp = addComponentDef("<aura:component/>");
         DefDescriptor<FlavoredStyleDef> custom = addStandardFlavor(cmp, ".THIS--test {color:red}");
@@ -150,6 +160,7 @@ public class FlavoredStyleDefImplTest extends StyleTestCase {
     }
 
     /** test that it throws an error if flavoring something that isn't flavorable */
+    @Test
     public void testNotFlavorableWithCustomFlavor() throws Exception {
         DefDescriptor<ComponentDef> cmp = addComponentDef("<aura:component/>");
         DefDescriptor<FlavoredStyleDef> custom = addCustomFlavor(cmp, ".THIS--test {color:red}");

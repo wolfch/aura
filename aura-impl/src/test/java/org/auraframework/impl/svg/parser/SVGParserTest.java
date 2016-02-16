@@ -15,7 +15,6 @@
  */
 package org.auraframework.impl.svg.parser;
 
-import org.auraframework.Aura;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.SVGDef;
@@ -23,10 +22,11 @@ import org.auraframework.impl.AuraImplTestCase;
 import org.auraframework.system.Source;
 import org.auraframework.test.source.StringSource;
 import org.auraframework.throwable.quickfix.QuickFixException;
+import org.junit.Test;
 
+import javax.inject.Inject;
 
 public class SVGParserTest extends AuraImplTestCase {
-
     private static final String INVALID_ATTR = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n"+
             "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\"\n"+
             "  \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n"+
@@ -156,28 +156,26 @@ public class SVGParserTest extends AuraImplTestCase {
             "     id=\"rect3146\" />\n" +
             "</svg>";
 
+    @Inject
     private SVGParser parser;
-
-    public SVGParserTest(String name) {
-        super(name);
-    }
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        parser = SVGParser.getInstance();
     }
 
+    @Test
     public void testValidTags() throws QuickFixException {
         DefDescriptor<SVGDef> descriptor = setupSimpleSVGDef(VALID_SVG);
-        Source<SVGDef> source = new StringSource<>(descriptor, VALID_SVG, "test", null);
+        Source<SVGDef> source = new StringSource<>(null, descriptor, VALID_SVG, "test", null);
         parser.parse(descriptor,source);
     }
 
+    @Test
     public void testInvalidTags() {
         try {
             DefDescriptor<SVGDef> descriptor = setupSimpleSVGDef(INVALID_SCRIPT);
-            Source<SVGDef> source = new StringSource<>(descriptor, INVALID_SCRIPT, "test", null);
+            Source<SVGDef> source = new StringSource<>(null, descriptor, INVALID_SCRIPT, "test", null);
             parser.parse(descriptor,source);
         } catch (QuickFixException e) {
             assertTrue(e.getMessage().contains("script"));
@@ -186,10 +184,11 @@ public class SVGParserTest extends AuraImplTestCase {
         fail("SVG can not contain script tags");
     }
 
+    @Test
     public void testInvalidCharacters() {
         try {
             DefDescriptor<SVGDef> descriptor = setupSimpleSVGDef(INVALID_CHAR);
-            Source<SVGDef> source = new StringSource<>(descriptor, INVALID_CHAR, "test", null);
+            Source<SVGDef> source = new StringSource<>(null, descriptor, INVALID_CHAR, "test", null);
             parser.parse(descriptor,source);
         } catch (QuickFixException e) {
             assertTrue(e.getMessage().contains("<"));
@@ -198,10 +197,11 @@ public class SVGParserTest extends AuraImplTestCase {
         fail("SVG can not contain characters, &, /, <, > ");
     }
 
+    @Test
     public void testInvalidXML() {
         try {
             DefDescriptor<SVGDef> descriptor = setupSimpleSVGDef(INVALID_XML);
-            Source<SVGDef> source = new StringSource<>(descriptor, INVALID_XML, "test", null);
+            Source<SVGDef> source = new StringSource<>(null, descriptor, INVALID_XML, "test", null);
             parser.parse(descriptor,source);
         } catch (QuickFixException e) {
             assertTrue(e.getMessage().contains("ParseError"));
@@ -210,11 +210,12 @@ public class SVGParserTest extends AuraImplTestCase {
         fail("SVG Should not be able to parse invalid xml");
     }
 
+    @Test
     public void testInvalidAttribute() {
         try {
 
             DefDescriptor<SVGDef> descriptor = setupSimpleSVGDef(INVALID_ATTR);
-            Source<SVGDef> source = new StringSource<>(descriptor, INVALID_ATTR, "test", null);
+            Source<SVGDef> source = new StringSource<>(null, descriptor, INVALID_ATTR, "test", null);
             parser.parse(descriptor,source);
         } catch (QuickFixException e) {
             assertTrue(e.getMessage().contains("onclick"));
@@ -226,7 +227,7 @@ public class SVGParserTest extends AuraImplTestCase {
     private DefDescriptor<SVGDef> setupSimpleSVGDef(String markup) {
         DefDescriptor<ComponentDef> cmpDesc = getAuraTestingUtil().createStringSourceDescriptor(null,
                 ComponentDef.class, null);
-        DefDescriptor<SVGDef> desc = Aura.getDefinitionService().getDefDescriptor(cmpDesc.getQualifiedName(),
+        DefDescriptor<SVGDef> desc = definitionService.getDefDescriptor(cmpDesc.getQualifiedName(),
                 SVGDef.class);
         return desc;
     }

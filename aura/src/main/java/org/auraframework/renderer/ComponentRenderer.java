@@ -15,17 +15,23 @@
  */
 package org.auraframework.renderer;
 
+import org.auraframework.annotations.Annotations.ServiceComponentRenderer;
+import org.auraframework.def.Renderer;
+import org.auraframework.instance.BaseComponent;
+import org.auraframework.service.RenderingService;
+import org.auraframework.throwable.quickfix.QuickFixException;
+
+import javax.inject.Inject;
 import java.io.IOException;
 import java.util.List;
 
-import org.auraframework.Aura;
-import org.auraframework.def.Renderer;
-import org.auraframework.instance.BaseComponent;
-import org.auraframework.throwable.quickfix.QuickFixException;
-
 /**
  */
+@ServiceComponentRenderer
 public class ComponentRenderer implements Renderer {
+
+    @Inject
+    private RenderingService renderingService;
 
     @SuppressWarnings("unchecked")
     @Override
@@ -34,7 +40,7 @@ public class ComponentRenderer implements Renderer {
         if(bodyAttribute !=null && bodyAttribute instanceof List) {
             List<BaseComponent<?, ?>> body = (List<BaseComponent<?, ?>>) bodyAttribute;
             for (BaseComponent<?, ?> c : body) {
-                Aura.getRenderingService().render(c, out);
+                renderingService.render(c, out);
             }
         }
     }

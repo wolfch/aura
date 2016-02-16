@@ -15,10 +15,6 @@
  */
 package org.auraframework.def;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.auraframework.def.design.DesignAttributeDef;
 import org.auraframework.def.design.DesignDef;
 import org.auraframework.def.design.DesignItemsDef;
@@ -32,6 +28,10 @@ import org.auraframework.def.design.DesignTemplateRegionDef;
 import org.auraframework.throwable.AuraRuntimeException;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.json.JsonSerializable;
+
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A descriptor "handle" for a definition. For applications which care about sorting, such as generating a unique hash
@@ -253,10 +253,12 @@ public interface DefDescriptor<T extends Definition> extends JsonSerializable,
     /**
      * Gets the actual definition described by this descriptor, compiling it if necessary, from Aura's definition
      * service.
+     * THIS METHOD IS DEPRECATED. USE Use definitionService.getDefinition(descriptor); on the consumption side.
      *
      * @return the definition (compiles it if necessary)
      * @throws QuickFixException if the definition is not found
      */
+    @Deprecated 
     T getDef() throws QuickFixException;
 
     /**

@@ -15,22 +15,22 @@
  */
 package org.auraframework.adapter;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Set;
+import org.auraframework.Aura;
+import org.auraframework.def.DefDescriptor;
+import org.auraframework.def.DefDescriptor.DefType;
+import org.auraframework.system.AuraContext;
+import org.auraframework.system.AuraContext.Format;
+import org.auraframework.system.AuraContext.Mode;
+import org.auraframework.system.AuraResource;
+import org.auraframework.throwable.quickfix.QuickFixException;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.auraframework.Aura;
-import org.auraframework.def.DefDescriptor;
-import org.auraframework.def.DefDescriptor.DefType;
-import org.auraframework.system.*;
-import org.auraframework.system.AuraContext.Format;
-import org.auraframework.system.AuraContext.Mode;
-import org.auraframework.throwable.quickfix.QuickFixException;
+import java.io.IOException;
+import java.util.List;
+import java.util.Set;
 
 /**
  * <p>
@@ -39,9 +39,9 @@ import org.auraframework.throwable.quickfix.QuickFixException;
  * Instances of all AuraServices should be retrieved from {@link Aura} </p> Note that this service is rather incomplete
  * and should be expanded to include more of the support routines from the servlets.
  */
-public interface ServletUtilAdapter extends AuraAdapter {
-    public static final String AURA_PREFIX = "aura.";
-    public static final String CSRF_PROTECT = "while(1);\n";
+public interface ServletUtilAdapter {
+    String AURA_PREFIX = "aura.";
+    String CSRF_PROTECT = "while(1);\n";
 
     /**
      * Hook at the beginning of any resource request.

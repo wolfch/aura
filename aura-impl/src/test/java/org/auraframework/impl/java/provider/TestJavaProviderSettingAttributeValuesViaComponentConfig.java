@@ -15,37 +15,42 @@
  */
 package org.auraframework.impl.java.provider;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.auraframework.Aura;
+import org.auraframework.annotations.Annotations.ServiceComponentProvider;
 import org.auraframework.def.ComponentConfigProvider;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor.DefType;
-import org.auraframework.impl.system.DefDescriptorImpl;
 import org.auraframework.instance.BaseComponent;
 import org.auraframework.instance.Component;
 import org.auraframework.instance.ComponentConfig;
+import org.auraframework.service.InstanceService;
 import org.auraframework.system.Annotations.Provider;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import javax.inject.Inject;
+import java.util.HashMap;
+import java.util.Map;
 
+@ServiceComponentProvider
 @Provider
 public class TestJavaProviderSettingAttributeValuesViaComponentConfig implements ComponentConfigProvider {
+    @Inject
+    private InstanceService instanceService;
+
     @Override
     public ComponentConfig provide() throws QuickFixException {
         ComponentConfig c = new ComponentConfig();
 
-        c.setDescriptor(DefDescriptorImpl.getInstance(
+        c.setDescriptor(Aura.getDefinitionService().getDefDescriptor(
                 "test:testJavaProviderSettingAttributeValuesViaComponentConfigHelper", ComponentDef.class));
         c.setAttributes(provideAttributes());
 
         return c;
     }
 
-    private static Map<String, Object> provideAttributes() throws QuickFixException {
+    private Map<String, Object> provideAttributes() throws QuickFixException {
         Map<String, Object> attributes = new HashMap<>();
         attributes.put("a1", "a1Provider");
         attributes.put("a2", null);
@@ -64,7 +69,7 @@ public class TestJavaProviderSettingAttributeValuesViaComponentConfig implements
                                              * PropertyReferenceImpl("v.value",
                                              * null)
                                              */);
-        Component facet = (Component) Aura.getInstanceService().getInstance("ui:outputText", facetAttributes,
+        Component facet = (Component) instanceService.getInstance("ui:outputText", facetAttributes,
                 DefType.COMPONENT);
         attributes.put("facet", Lists.newArrayList(facet));
 

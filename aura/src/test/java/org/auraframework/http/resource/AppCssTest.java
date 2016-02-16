@@ -16,21 +16,20 @@
 
 package org.auraframework.http.resource;
 
-import org.auraframework.test.util.DummyHttpServletResponse;
-import org.auraframework.util.test.util.UnitTestCase;
-import org.mockito.Mockito;
-
-import java.io.Writer;
-import java.util.HashSet;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.auraframework.adapter.ServletUtilAdapter;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.service.ServerService;
 import org.auraframework.system.AuraContext;
 import org.auraframework.system.AuraContext.Format;
+import org.auraframework.test.util.DummyHttpServletResponse;
+import org.auraframework.util.test.util.UnitTestCase;
+import org.junit.Test;
+import org.mockito.Mockito;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.Writer;
+import java.util.HashSet;
 
 /**
  * Simple (non-integration) test case for {@link AppCss}, most useful for exercising hard-to-reach error
@@ -39,22 +38,18 @@ import org.auraframework.system.AuraContext.Format;
  * for now.
  */
 public class AppCssTest extends UnitTestCase {
-
-    public AppCssTest(String name) {
-        super(name);
-    }
-
     /**
      * Name is API!.
      */
+    @Test
     public void testName() {
-    	
         assertEquals("app.css", new AppCss().getName());
     }
 
     /**
      * Format is API!.
      */
+    @Test
     public void testFormat() {
         assertEquals(Format.CSS, new AppCss().getFormat());
     }
@@ -66,6 +61,7 @@ public class AppCssTest extends UnitTestCase {
      * is an exception in the writing of the CSS.
      */
     @SuppressWarnings("unchecked")
+    @Test
     public void testExceptionInWrite() throws Exception {
         ServletUtilAdapter servletUtilAdapter = Mockito.mock(ServletUtilAdapter.class);
         ServerService serverService = Mockito.mock(ServerService.class);
@@ -109,6 +105,7 @@ public class AppCssTest extends UnitTestCase {
      *
      * This test will need to change if the internals change, but null should mean that nothing gets called.
      */
+    @Test
     public void testNullDependencies() throws Exception {
         ServletUtilAdapter servletUtilAdapter = Mockito.mock(ServletUtilAdapter.class);
         ServerService serverService = Mockito.mock(ServerService.class);
@@ -137,14 +134,15 @@ public class AppCssTest extends UnitTestCase {
     /**
      * Verify that we set the correct contentType to response
      */
+    @Test
     public void testSetContentType() {
-    	AppCss appCss = new AppCss();
-    	ServletUtilAdapter servletUtilAdapter = Mockito.mock(ServletUtilAdapter.class);
-    	appCss.setServletUtilAdapter(servletUtilAdapter);
-    	Mockito.when(servletUtilAdapter.getContentType(AuraContext.Format.CSS))
-        .thenReturn("text/css");
-    	
-    	DummyHttpServletResponse response = new DummyHttpServletResponse() {
+        AppCss appCss = new AppCss();
+        ServletUtilAdapter servletUtilAdapter = Mockito.mock(ServletUtilAdapter.class);
+        appCss.setServletUtilAdapter(servletUtilAdapter);
+        Mockito.when(servletUtilAdapter.getContentType(AuraContext.Format.CSS))
+                .thenReturn("text/css");
+
+        DummyHttpServletResponse response = new DummyHttpServletResponse() {
             String contentType = "defaultType";
 
             @Override
@@ -157,9 +155,9 @@ public class AppCssTest extends UnitTestCase {
                 this.contentType = contentType;
             }
         };
-    	
-    	appCss.setContentType(response);
-    	
-    	assertEquals("text/css", response.getContentType());
+
+        appCss.setContentType(response);
+
+        assertEquals("text/css", response.getContentType());
     }
 }

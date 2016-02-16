@@ -16,15 +16,15 @@
 
 package org.auraframework.integration.test.components.ui.dialogUITest;
 
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-
 import org.auraframework.test.util.WebDriverTestCase;
 import org.auraframework.test.util.WebDriverUtil.BrowserType;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 
 /**
  * Non-supported browsers:
@@ -57,10 +57,6 @@ public class DialogUITest extends WebDriverTestCase {
     private final String NOT_SUBMITTED = "Data Not Submitted";
     private final String RESULT_LABEL = "input[class*='resultLabel']";
     private final String LAUNCH_DIALOG = "launchDialogButton uiButton";
-
-    public DialogUITest(String name) {
-        super(name);
-    }
 
     /***********************************************************************************************
      *********************************** HELPER FUNCTIONS********************************************

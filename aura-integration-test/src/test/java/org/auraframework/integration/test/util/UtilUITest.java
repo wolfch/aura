@@ -18,14 +18,12 @@ package org.auraframework.integration.test.util;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.test.util.WebDriverTestCase;
+import org.junit.Test;
 import org.openqa.selenium.By;
 
 public class UtilUITest extends WebDriverTestCase {
 
-	public UtilUITest(String name) {
-		super(name);
-	}
-
+	@Test
 	public void testRemoveOn() throws Exception {
 		DefDescriptor<ComponentDef> cmpDesc = addSourceAutoCleanup(
 				ComponentDef.class, String.format(baseComponentTag,

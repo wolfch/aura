@@ -15,20 +15,19 @@
  */
 package org.auraframework.adapter;
 
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.auraframework.system.AuraContext.Mode;
 import org.auraframework.util.resource.ResourceLoader;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Set;
 
 public interface ConfigAdapter extends AuraAdapter {
 
     boolean isTestAllowed();
 
     boolean isProduction();
-
-    boolean isSysAdmin();
+//
+//    boolean isSysAdmin();
 
     Set<Mode> getAvailableModes();
 
@@ -91,7 +90,8 @@ public interface ConfigAdapter extends AuraAdapter {
     boolean isPrivilegedNamespace(String namespace);
     Set<String> getPrivilegedNamespaces();
     String getDefaultNamespace();
-	boolean isUnsecuredPrefix(String prefix);
+
+    boolean isUnsecuredPrefix(String prefix);
 
 	@Deprecated
 	boolean isUnsecuredNamespace(String namespace);

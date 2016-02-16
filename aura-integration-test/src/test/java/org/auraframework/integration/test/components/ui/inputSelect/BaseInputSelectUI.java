@@ -35,8 +35,8 @@ public class BaseInputSelectUI extends WebDriverTestCase{
 
     
     public BaseInputSelectUI(String url, By sel_loc, String opt_loc, String [] opts, String sel_id) {
-        super(url);
-        // TODO Auto-generated constructor stub
+        super();
+        setName(url);
         
         this.URL = url;
         this.SELECT_LOCATOR = sel_loc;

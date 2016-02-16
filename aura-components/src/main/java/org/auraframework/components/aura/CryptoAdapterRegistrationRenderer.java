@@ -15,23 +15,29 @@
  */
 package org.auraframework.components.aura;
 
-import org.auraframework.Aura;
+import org.auraframework.adapter.ConfigAdapter;
+import org.auraframework.annotations.Annotations.ServiceComponentRenderer;
 import org.auraframework.def.Renderer;
 import org.auraframework.instance.BaseComponent;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
+import javax.inject.Inject;
 import java.io.IOException;
 
 /**
  * Renders client side registration and key retrieval of CryptoAdapter for auraStorage:crypto
  */
+@ServiceComponentRenderer
 public class CryptoAdapterRegistrationRenderer implements Renderer {
+    @Inject
+    private ConfigAdapter configAdapter;
+
     @Override
     public void render(BaseComponent<?, ?> component, Appendable appendable) throws IOException, QuickFixException {
 
         Boolean debug = (Boolean) component.getAttributes().getValue("debugLoggingEnabled");
 
-        String encryptionKeyUrl = Aura.getConfigAdapter().getEncryptionKeyURL();
+        String encryptionKeyUrl = configAdapter.getEncryptionKeyURL();
         appendable
             .append("<script>\n")
             .append("(function(){\n")

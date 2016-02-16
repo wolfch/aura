@@ -15,64 +15,65 @@
  */
 package org.auraframework.impl.java.controller;
 
-import java.io.IOException;
-
+import org.auraframework.annotations.Annotations.ServiceComponent;
+import org.auraframework.ds.servicecomponent.Controller;
 import org.auraframework.system.Annotations.AuraEnabled;
 import org.auraframework.system.Annotations.BackgroundAction;
-import org.auraframework.system.Annotations.Controller;
 import org.auraframework.system.Annotations.Key;
 import org.auraframework.throwable.ClientOutOfSyncException;
 import org.auraframework.util.json.Json;
 import org.auraframework.util.json.JsonSerializable;
 
-@Controller
-public class ParallelActionTestController {
+import java.io.IOException;
 
-	private static int recordObjCounter = 0;
-	
-	@AuraEnabled
-	public static void executeInForeground() {
-		
-	}
+@ServiceComponent
+public class ParallelActionTestController implements Controller {
+
+    private int recordObjCounter = 0;
 
     @AuraEnabled
-    public static Record errorInForeground() {
+    public void executeInForeground() {
+
+    }
+
+    @AuraEnabled
+    public Record errorInForeground() {
         int foo[] = new int[2];
         // Throw our error:
         foo[42] = 42;
         return null;
     }
 
-	@AuraEnabled
-	@BackgroundAction
-	public static void executeInBackground() {
-		
-	}
-	
-	@AuraEnabled
-	public static Record executeInForegroundWithReturn(@Key("i")int i) {
-		return new Record(i);
-	}
-	
-	@AuraEnabled
-	@BackgroundAction
-	public static Record executeInBackgroundWithReturn(@Key("i")int i) {
-		return new Record(i);
-	}
+    @AuraEnabled
+    @BackgroundAction
+    public void executeInBackground() {
+
+    }
 
     @AuraEnabled
-    public static void throwsClientOutOfSyncException() {
+    public Record executeInForegroundWithReturn(@Key("i") int i) {
+        return new Record(i);
+    }
+
+    @AuraEnabled
+    @BackgroundAction
+    public Record executeInBackgroundWithReturn(@Key("i") int i) {
+        return new Record(i);
+    }
+
+    @AuraEnabled
+    public void throwsClientOutOfSyncException() {
         throw new ClientOutOfSyncException("Testing Exception.");
     }
 
     /**
      * Object to represent return value for controller.
      */
-    static class Record implements JsonSerializable {
+    class Record implements JsonSerializable {
         Integer counterValue;
 
         Record(Integer counter) {
-        	recordObjCounter ++;
+            recordObjCounter++;
             this.counterValue = counter;
         }
 

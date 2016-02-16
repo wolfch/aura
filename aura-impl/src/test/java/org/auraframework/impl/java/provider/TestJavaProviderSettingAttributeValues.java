@@ -15,28 +15,29 @@
  */
 package org.auraframework.impl.java.provider;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.auraframework.Aura;
+import org.auraframework.annotations.Annotations.ServiceComponentProvider;
 import org.auraframework.def.ComponentConfigProvider;
 import org.auraframework.def.ComponentDef;
-import org.auraframework.impl.system.DefDescriptorImpl;
 import org.auraframework.instance.BaseComponent;
 import org.auraframework.instance.ComponentConfig;
 import org.auraframework.system.Annotations.Provider;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  */
 
+@ServiceComponentProvider
 @Provider
 public class TestJavaProviderSettingAttributeValues implements ComponentConfigProvider {
     @Override
     public ComponentConfig provide() throws QuickFixException {
         ComponentConfig config = new ComponentConfig();
 
-        config.setDescriptor(DefDescriptorImpl.getInstance("test:testJavaProviderSettingAttributeValuesHelper",
+        config.setDescriptor(Aura.getDefinitionService().getDefDescriptor("test:testJavaProviderSettingAttributeValuesHelper",
                     ComponentDef.class));
         Map<String, Object> attributes = new HashMap<>();
         attributes.put("a1", "a1Provider");

@@ -15,14 +15,9 @@
  */
 package org.auraframework.impl;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.List;
-
-import org.auraframework.Aura;
+import org.auraframework.adapter.ConfigAdapter;
 import org.auraframework.def.DefinitionAccess;
+import org.auraframework.system.AuraContext;
 import org.auraframework.system.AuraContext.Access;
 import org.auraframework.system.AuraContext.Authentication;
 import org.auraframework.throwable.AuraRuntimeException;
@@ -30,30 +25,41 @@ import org.auraframework.throwable.quickfix.InvalidAccessValueException;
 import org.auraframework.util.AuraTextUtil;
 import org.auraframework.util.json.Json;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.List;
+
 public class DefinitionAccessImpl implements DefinitionAccess {
     private static final long serialVersionUID = 8409052764733035151L;
+    private Authentication authentication = null;
+    private Access access = null;
+    private transient Method accessMethod = null;
+    private final String namespace;
+    private final String accessString;
 
-    static public DefinitionAccess defaultAccess(String namespace) {
-        return new DefinitionAccessImpl(Aura.getConfigAdapter().isPrivilegedNamespace(namespace));
+    public DefinitionAccessImpl(AuraContext.Access access) {
+        assert access != null : "You must specify the access level, null is not allowed.";
+        this.namespace = null;
+        this.accessString = access.toString();
+        this.access = access;
     }
 
-    public DefinitionAccessImpl(String namespace, String access) throws InvalidAccessValueException {
+    public DefinitionAccessImpl(String namespace, String access, boolean isPrivilegedNamespace) throws InvalidAccessValueException {
+        assert access != null : "You must specify the access level, null is not allowed.";
         this.namespace = namespace;
         this.accessString = access;
         parseAccess(namespace, access);
-        defaultAccess(Aura.getConfigAdapter().isPrivilegedNamespace(namespace));
-    }
-    
-    private DefinitionAccessImpl(boolean isPrivilegedNamespace) {
-        this.namespace = null;
-        this.accessString = null;
         defaultAccess(isPrivilegedNamespace);
     }
 
     private void parseAccess(String namespace, String accessValue) throws InvalidAccessValueException {
         List<String> items = AuraTextUtil.splitSimpleAndTrim(accessValue, ",", 10);
-        for (String item: items) {
-            parseAccessItem(namespace, item);
+        if (items != null) {
+            for (String item : items) {
+                parseAccessItem(namespace, item);
+            }
         }
     }
     
@@ -104,9 +110,7 @@ public class DefinitionAccessImpl implements DefinitionAccess {
                 }
                 this.accessMethod = meth;
                 return;
-            } catch (ClassNotFoundException e) {
-            } catch (SecurityException e) {
-            } catch (NoSuchMethodException e) {
+            } catch (ClassNotFoundException | SecurityException | NoSuchMethodException ignored) {
             }
             throw new InvalidAccessValueException("\"" + item + "\" is not a valid public method reference");
         }
@@ -140,9 +144,9 @@ public class DefinitionAccessImpl implements DefinitionAccess {
     }
 
     @Override
-    public void validate(String namespace, boolean allowAuth, boolean allowPrivate)
+    public void validate(String namespace, boolean allowAuth, boolean allowPrivate, ConfigAdapter configAdapter)
             throws InvalidAccessValueException {
-        boolean isPrivNamespace = Aura.getConfigAdapter().isPrivilegedNamespace(namespace);
+        boolean isPrivNamespace = configAdapter.isPrivilegedNamespace(namespace);
         if (authentication != null && (!allowAuth || !isPrivNamespace)) {
             throw new InvalidAccessValueException("Invalid access attribute value \"" + authentication.name() + "\"");
         }
@@ -206,11 +210,4 @@ public class DefinitionAccessImpl implements DefinitionAccess {
             }
         }
     }
-
-    private Authentication authentication = null;
-    private Access access = null;
-    private transient Method accessMethod = null;
-    private final String namespace;
-    private final String accessString;
-
 }

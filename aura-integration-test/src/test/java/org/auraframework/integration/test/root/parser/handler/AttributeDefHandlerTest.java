@@ -15,13 +15,7 @@
  */
 package org.auraframework.integration.test.root.parser.handler;
 
-import java.util.List;
-
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
-import org.auraframework.Aura;
+import org.auraframework.adapter.DefinitionParserAdapter;
 import org.auraframework.def.AttributeDef;
 import org.auraframework.def.AttributeDef.SerializeToType;
 import org.auraframework.def.AttributeDefRef;
@@ -39,13 +33,22 @@ import org.auraframework.system.Parser.Format;
 import org.auraframework.test.source.StringSource;
 import org.auraframework.throwable.AuraRuntimeException;
 import org.auraframework.throwable.quickfix.DefinitionNotFoundException;
+import org.auraframework.util.FileMonitor;
+import org.junit.Test;
+
+import javax.inject.Inject;
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.util.List;
 
 public class AttributeDefHandlerTest extends AuraImplTestCase {
+    @Inject
+    private FileMonitor fileMonitor;
 
-    public AttributeDefHandlerTest(String name) {
-        super(name);
-    }
-
+    @Inject
+    private DefinitionParserAdapter definitionParserAdapter;
+    
     DefDescriptor<AttributeDef> desc = null;
     StringSource<AttributeDef> componentSource = null;
     XMLStreamReader componentXmlReader = null;
@@ -54,12 +57,14 @@ public class AttributeDefHandlerTest extends AuraImplTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        desc = Aura.getDefinitionService().getDefDescriptor("mystring", AttributeDef.class);
-        componentSource = new StringSource<>(desc, "<aura:component/>", "myID", Format.XML);
+        desc = definitionService.getDefDescriptor("mystring", AttributeDef.class);
+        componentSource = new StringSource<>(fileMonitor, desc, "<aura:component/>", "myID", Format.XML);
         componentXmlReader = getXmlReader(componentSource);
-        cdh = new ComponentDefHandler(null, componentSource, componentXmlReader);
+        cdh = new ComponentDefHandler(null, componentSource, componentXmlReader, true, definitionService, contextService,
+                configAdapter, definitionParserAdapter);
     }
 
+    @Test
     public void testGetElement() throws Exception {
         AttributeDefImpl ad = getElement("<aura:attribute name='mystring' type='java://String' default='testing'/>");
         assertEquals("mystring", ad.getName());
@@ -67,6 +72,7 @@ public class AttributeDefHandlerTest extends AuraImplTestCase {
         assertEquals("testing", ad.getDefaultValue().getValue());
     }
 
+    @Test
     public void testDefaultValueExpression() throws Exception {
         AttributeDefImpl ad = getElement("<aura:attribute name='mystring' type='java://String' default='{!blah.some.expression}'/>");
         assertEquals("mystring", ad.getName());
@@ -76,6 +82,7 @@ public class AttributeDefHandlerTest extends AuraImplTestCase {
         assertEquals("blah.some.expression", ((PropertyReference) value).toString());
     }
 
+    @Test
     public void testDefaultValueEmptyString() throws Exception {
         AttributeDefImpl ad = getElement("<aura:attribute name='emptyString' type='java://String' default=''/>");
         assertEquals("emptyString", ad.getName());
@@ -83,6 +90,7 @@ public class AttributeDefHandlerTest extends AuraImplTestCase {
         assertEquals("Attribute does not reflect empty string as default value.", "", ad.getDefaultValue().getValue());
     }
 
+    @Test
     public void testDefaultValueWhitespace() throws Exception {
         AttributeDefImpl ad = getElement("<aura:attribute name='spaces' type='java://String' default='    '/>");
         assertEquals("spaces", ad.getName());
@@ -90,6 +98,7 @@ public class AttributeDefHandlerTest extends AuraImplTestCase {
         assertEquals("Attribute does not reflect spaces as default value.", " ", ad.getDefaultValue().getValue());
     }
 
+    @Test
     public void testGetElementWithTextBetweenTags() throws Exception {
         AttributeDefImpl ad = getElement("<aura:attribute name='mystring' type='Aura.Component[]'>valid Text which is really a defref</aura:attribute>");
         assertEquals("mystring", ad.getName());
@@ -103,6 +112,7 @@ public class AttributeDefHandlerTest extends AuraImplTestCase {
         assertEquals("valid Text which is really a defref", adr.getValue());
     }
 
+    @Test
     public void testInvalidSystemAttributeName() throws Exception {
         try {
             getElement("<aura:attribute foo='bar' name='mystring' type='java://String' default='{!blah.some.expression}'/>");
@@ -112,6 +122,7 @@ public class AttributeDefHandlerTest extends AuraImplTestCase {
         }
     }
 
+    @Test
     public void testInvalidSystemAttributePrefix() throws Exception {
         try {
             getElement("<aura:attribute name='mystring' type='java://String' other:default='{!blah.some.expression}'/>");
@@ -122,51 +133,61 @@ public class AttributeDefHandlerTest extends AuraImplTestCase {
         }
     }
 
+    @Test
     public void testRequired() throws Exception {
         AttributeDefImpl ad = getElement("<aura:attribute name='required' type='String' required='true'/>");
         assertEquals(true, ad.isRequired());
     }
 
+    @Test
     public void testRequiredDefault() throws Exception {
         AttributeDefImpl ad = getElement("<aura:attribute name='required' type='String'/>");
         assertEquals(false, ad.isRequired());
     }
 
+    @Test
     public void testRequiredMixedCase() throws Exception {
         AttributeDefImpl ad = getElement("<aura:attribute name='required' type='String' ReQuireD='true'/>");
         assertEquals(true, ad.isRequired());
     }
 
+    @Test
     public void testSerializeTo() throws Exception {
         AttributeDefImpl ad = getElement("<aura:attribute name='lower' type='String' serializeTo='server'/>");
         assertEquals(SerializeToType.SERVER, ad.getSerializeTo());
     }
 
+    @Test
     public void testSerializeToMixedCase() throws Exception {
         AttributeDefImpl ad = getElement("<aura:attribute name='mixed' type='String' serializeTo='nONe'/>");
         assertEquals(SerializeToType.NONE, ad.getSerializeTo());
     }
 
+    @Test
     public void testSerializeToPadded() throws Exception {
         AttributeDefImpl ad = getElement("<aura:attribute name='mixed' type='String' serializeTo=' server '/>");
         assertEquals(SerializeToType.SERVER, ad.getSerializeTo());
     }
 
+    @Test
     public void testSerializeToDefault() throws Exception {
         AttributeDefImpl ad = getElement("<aura:attribute name='lower' type='String'/>");
         assertEquals(SerializeToType.BOTH, ad.getSerializeTo());
     }
 
+    @Test
     public void testSerializeToInvalid() throws Exception {
         AttributeDefImpl ad = getElement("<aura:attribute name='invalid' type='String' serializeTo='client'/>");
         assertEquals(SerializeToType.INVALID, ad.getSerializeTo());
     }
 
+    @Test
     public void testSerializeToEmptyString() throws Exception {
         AttributeDefImpl ad = getElement("<aura:attribute name='invalid' type='String' serializeTo=''/>");
         assertEquals(SerializeToType.INVALID, ad.getSerializeTo());
     }
 
+    @Test
     public void testTypeInvalidJavaType() throws Exception {
         AttributeDefImpl ad = getElement("<aura:attribute name='type' type='java://invalid'/>");
         try {
@@ -177,6 +198,7 @@ public class AttributeDefHandlerTest extends AuraImplTestCase {
         }
     }
 
+    @Test
     public void testTypeInvalidAuraType() throws Exception {
         AttributeDefImpl ad = getElement("<aura:attribute name='type' type='aura://invalid'/>");
         try {
@@ -187,6 +209,7 @@ public class AttributeDefHandlerTest extends AuraImplTestCase {
         }
     }
 
+    @Test
     public void testTypeMissing() throws Exception {
         AttributeDefHandler<ComponentDef> adHandler = getHandler("<aura:attribute name='type'/>");
         try {
@@ -197,6 +220,7 @@ public class AttributeDefHandlerTest extends AuraImplTestCase {
         }
     }
 
+    @Test
     public void testTypeEmptyString() throws Exception {
         AttributeDefHandler<ComponentDef> adHandler = getHandler("<aura:attribute name='type' type=''/>");
         try {
@@ -215,11 +239,11 @@ public class AttributeDefHandlerTest extends AuraImplTestCase {
     }
 
     private AttributeDefHandler<ComponentDef> getHandler(String attrMarkup) throws Exception {
-        StringSource<AttributeDef> attributeSource = new StringSource<>(desc, attrMarkup, "myID",
-                Format.XML);
+        StringSource<AttributeDef> attributeSource = new StringSource<>(fileMonitor, desc, attrMarkup,
+                "myID", Format.XML);
         XMLStreamReader attributeXmlReader = getXmlReader(attributeSource);
-        return new AttributeDefHandler<>(cdh, attributeXmlReader,
-                attributeSource);
+        return new AttributeDefHandler<>(cdh, attributeXmlReader, attributeSource, true, definitionService,
+                configAdapter, definitionParserAdapter);
     }
 
     private AttributeDefImpl getElement(String attrMarkup) throws Exception {

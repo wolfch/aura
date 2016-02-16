@@ -15,22 +15,20 @@
  */
 package org.auraframework.impl.adapter;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.google.common.collect.Maps;
 import org.auraframework.Aura;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.TypeDef;
 import org.auraframework.expression.PropertyReference;
-import org.auraframework.impl.system.DefDescriptorImpl;
-import org.auraframework.instance.GlobalValueProvider;
 import org.auraframework.instance.AuraValueProviderType;
+import org.auraframework.instance.GlobalValueProvider;
 import org.auraframework.instance.ValueProviderType;
 import org.auraframework.throwable.quickfix.InvalidExpressionException;
 import org.auraframework.util.AuraTextUtil;
 
-import com.google.common.collect.Maps;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Value provider for $Label
@@ -72,7 +70,7 @@ public class LabelValueProvider implements GlobalValueProvider {
 
     @Override
     public DefDescriptor<TypeDef> getReturnTypeDef() {
-        return DefDescriptorImpl.getInstance("String", TypeDef.class);
+        return Aura.getDefinitionService().getDefDescriptor("String", TypeDef.class);
     }
 
     @Override

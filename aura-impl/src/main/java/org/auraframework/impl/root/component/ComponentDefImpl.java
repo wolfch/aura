@@ -15,13 +15,13 @@
  */
 package org.auraframework.impl.root.component;
 
-import java.io.IOException;
-
 import org.auraframework.builder.ComponentDefBuilder;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.impl.system.DefDescriptorImpl;
 import org.auraframework.util.json.Json;
+
+import java.io.IOException;
 
 /**
  * The definition of a component. Holds all information about a given type of
@@ -39,8 +39,8 @@ public class ComponentDefImpl extends BaseComponentDefImpl<ComponentDef> impleme
      * The Descriptor for the component that all non-root components eventually
      * must extend. Similar to java.lang.Object in java.
      */
-    public static final DefDescriptor<ComponentDef> PROTOTYPE_COMPONENT = DefDescriptorImpl.getInstance(
-            "markup://aura:component", ComponentDef.class);
+    public static final DefDescriptor<ComponentDef> PROTOTYPE_COMPONENT = new DefDescriptorImpl<>("markup", "aura",
+            "component", ComponentDef.class);
 
     public static class Builder extends BaseComponentDefImpl.Builder<ComponentDef> implements ComponentDefBuilder {
 

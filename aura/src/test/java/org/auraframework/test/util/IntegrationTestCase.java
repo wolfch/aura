@@ -15,11 +15,6 @@
  */
 package org.auraframework.test.util;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.nio.charset.Charset;
-
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -32,12 +27,12 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
-import org.auraframework.Aura;
+import org.auraframework.AuraConfiguration;
+import org.auraframework.adapter.ConfigAdapter;
 import org.auraframework.def.BaseComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.DefDescriptor.DefType;
 import org.auraframework.http.CSP;
-import org.auraframework.service.ContextService;
 import org.auraframework.system.AuraContext;
 import org.auraframework.system.AuraContext.Authentication;
 import org.auraframework.system.AuraContext.Format;
@@ -45,19 +40,38 @@ import org.auraframework.system.AuraContext.Mode;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.test.annotation.IntegrationTest;
 import org.auraframework.util.test.configuration.TestServletConfig;
+import org.junit.runner.RunWith;
+import org.junit.runners.BlockJUnit4ClassRunner;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.ContextHierarchy;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+
+import javax.inject.Inject;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 
 /**
  * Base class for all Aura integration tests.
  */
 @SuppressWarnings("deprecation")
 @IntegrationTest
+@RunWith(BlockJUnit4ClassRunner.class)
+@TestExecutionListeners(listeners = {DependencyInjectionTestExecutionListener.class})
+@ContextHierarchy({
+        @ContextConfiguration(name = "parent", classes = {AuraConfiguration.class}),
+        @ContextConfiguration(name = "child", classes = {IntegrationTestCaseOverrides.class})
+})
 public abstract class IntegrationTestCase extends AuraTestCase {
-    private TestServletConfig servletConfig = null;
+
+    @Inject
+    protected TestServletConfig testServletConfig;
     private HttpClient httpClient = null;
 
-    public IntegrationTestCase(String name) {
-        super(name);
-    }
+    @Inject
+    protected ConfigAdapter configAdapter;
 
     @Override
     public void tearDown() throws Exception {
@@ -70,20 +84,13 @@ public abstract class IntegrationTestCase extends AuraTestCase {
 
     protected HttpClient getHttpClient() throws Exception {
         if (httpClient == null) {
-            httpClient = getTestServletConfig().getHttpClient();
+            httpClient = testServletConfig.getHttpClient();
         }
         return httpClient;
     }
 
     protected String getCsrfToken() throws Exception {
-        return getTestServletConfig().getCsrfToken();
-    }
-
-    protected TestServletConfig getTestServletConfig() {
-        if (servletConfig == null) {
-            servletConfig = Aura.get(TestServletConfig.class);
-        }
-        return servletConfig;
+        return testServletConfig.getCsrfToken();
     }
 
     /**
@@ -91,9 +98,8 @@ public abstract class IntegrationTestCase extends AuraTestCase {
      */
     protected AuraContext setupContext(Mode mode, Format format, DefDescriptor<? extends BaseComponentDef> desc)
             throws QuickFixException {
-        ContextService contextService = Aura.getContextService();
         AuraContext ctxt = contextService.startContext(mode, format, Authentication.AUTHENTICATED, desc);
-        ctxt.setFrameworkUID(Aura.getConfigAdapter().getAuraFrameworkNonce());
+        ctxt.setFrameworkUID(configAdapter.getAuraFrameworkNonce());
         String uid = ctxt.getDefRegistry().getUid(null, desc);
         ctxt.addLoaded(desc, uid);
         return ctxt;
@@ -111,7 +117,7 @@ public abstract class IntegrationTestCase extends AuraTestCase {
      */
     protected HttpGet obtainGetMethod(String path, boolean followRedirects,
             Header[] headers) throws MalformedURLException, URISyntaxException {
-        String url = getTestServletConfig().getBaseUrl().toURI().resolve(path)
+        String url = testServletConfig.getBaseUrl().toURI().resolve(path)
                 .toString();
 
         HttpGet get = new HttpGet(url);

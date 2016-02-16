@@ -15,25 +15,22 @@
  */
 package org.auraframework.integration.test.validation;
 
-import java.util.List;
-
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.ControllerDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.StyleDef;
-import org.auraframework.impl.system.DefDescriptorImpl;
 import org.auraframework.impl.validation.AuraValidationTestCase;
 import org.auraframework.impl.validation.ValidationEngine;
 import org.auraframework.util.validation.ValidationError;
+import org.junit.Test;
+
+import java.util.List;
 
 public final class ValidationEngineTest extends AuraValidationTestCase {
 
-    public ValidationEngineTest(String name) {
-        super(name);
-    }
-
+    @Test
     public void testValidateDescriptorJavaScript() throws Exception {
-        DefDescriptor<?> descriptor = DefDescriptorImpl.getInstance("js://validationTest.basic", ControllerDef.class);
+        DefDescriptor<?> descriptor = definitionService.getDefDescriptor("js://validationTest.basic", ControllerDef.class);
         List<ValidationError> errors = new ValidationEngine().validate(descriptor);
         assertEquals(2, errors.size());
 
@@ -56,12 +53,13 @@ public final class ValidationEngineTest extends AuraValidationTestCase {
         assertEquals(20, error.getStartColumn());
     }
 
+    @Test
     public void testValidateDescriptorCSS() {
         if (System.getProperty("java.version").startsWith("1.6")) {
             return; // csslint doesn't work with 1.6
         }
 
-        DefDescriptor<?> descriptor = DefDescriptorImpl.getInstance("css://validationTest.basic", StyleDef.class);
+        DefDescriptor<?> descriptor = definitionService.getDefDescriptor("css://validationTest.basic", StyleDef.class);
         List<ValidationError> errors = new ValidationEngine().validate(descriptor);
         assertEquals(2, errors.size());
 
@@ -82,9 +80,10 @@ public final class ValidationEngineTest extends AuraValidationTestCase {
         assertEquals(5, csslintError.getStartColumn());
     }
 
+    @Test
     public void testValidateCmp() {
-        DefDescriptor<?> descriptor = DefDescriptorImpl
-                .getInstance("markup://validationTest:basic", ComponentDef.class);
+        DefDescriptor<?> descriptor = definitionService
+                .getDefDescriptor("markup://validationTest:basic", ComponentDef.class);
         List<ValidationError> errors = new ValidationEngine().validate(descriptor);
         assertEquals(1, errors.size());
         assertError(

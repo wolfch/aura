@@ -15,28 +15,37 @@
  */
 package org.auraframework.impl.java.controller;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import org.auraframework.annotations.Annotations.ServiceComponent;
+import org.auraframework.def.ActionDef;
+import org.auraframework.def.ComponentDef;
+import org.auraframework.ds.servicecomponent.Controller;
+import org.auraframework.instance.Action;
+import org.auraframework.instance.Component;
+import org.auraframework.service.ContextService;
+import org.auraframework.service.InstanceService;
+import org.auraframework.system.Annotations.AuraEnabled;
+import org.auraframework.system.Annotations.Key;
+
+import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.auraframework.Aura;
-import org.auraframework.def.ActionDef;
-import org.auraframework.def.ComponentDef;
-import org.auraframework.instance.Action;
-import org.auraframework.instance.Component;
-import org.auraframework.system.Annotations.AuraEnabled;
-import org.auraframework.system.Annotations.Controller;
-import org.auraframework.system.Annotations.Key;
+@ServiceComponent
+public class ServerStorableActionController implements Controller {
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+    @Inject
+    private ContextService contextService;
 
-@Controller
-public class ServerStorableActionController {
-    public static ConcurrentHashMap<String, Integer> staticCounter = new ConcurrentHashMap<>();
+    @Inject
+    private InstanceService instanceService;
+
+    public ConcurrentHashMap<String, Integer> staticCounter = new ConcurrentHashMap<>();
     @AuraEnabled
-    public static void resetCounter(@Key("testName") String testName) {
+    public void resetCounter(@Key("testName") String testName) {
         if (testName != null) {
             staticCounter.remove(testName);
             return;
@@ -50,8 +59,8 @@ public class ServerStorableActionController {
      * Specify actions to be marked as storable.
      */
     @AuraEnabled
-    public static void setStorable(@Key("testName") String testName, @Key("actionsToMark") List<String> actionsToMark) throws Exception {
-        Action currentAction = Aura.getContextService().getCurrentContext().getCurrentAction();
+    public void setStorable(@Key("testName") String testName, @Key("actionsToMark") List<String> actionsToMark) throws Exception {
+        Action currentAction = contextService.getCurrentContext().getCurrentAction();
         List<Action> actions = Lists.newArrayList();
         for(String actionCursor : actionsToMark){
             if(actionCursor.equals("java://org.auraframework.impl.java.controller.ServerStorableActionController/ACTION$storedAction")){
@@ -92,24 +101,25 @@ public class ServerStorableActionController {
         }
         currentAction.add(actions);
     }
-    static void runActionAndMarkStorable(List<Action> actions, String actionName, Map<String, Object> params, boolean storable) throws Exception{
-        Action action = Aura.getInstanceService().getInstance( actionName, ActionDef.class, params);
+
+    void runActionAndMarkStorable(List<Action> actions, String actionName, Map<String, Object> params, boolean storable) throws Exception {
+        Action action = instanceService.getInstance(actionName, ActionDef.class, params);
         if(storable){action.setStorable();}
         actions.add(action);
     }
     @AuraEnabled
-    public static String storedAction(@Key("message") String message) throws Exception {
+    public String storedAction(@Key("message") String message) throws Exception {
         return "[from server] " + message;
     }
 
     @AuraEnabled
-    public static String simpleValuesAsParams(@Key("testName") String testName, @Key("year")int year, @Key("mvp")String mvp){
+    public String simpleValuesAsParams(@Key("testName") String testName, @Key("year") int year, @Key("mvp") String mvp) {
         incrementCounter(testName);
         return String.format("Message %s : %s was the MVP in %s", staticCounter.get(testName), mvp, year);
     }
 
     @AuraEnabled
-    public static String complexValuesAsParams(@Key("testName")String testName, @Key("players")List<String> players){
+    public String complexValuesAsParams(@Key("testName") String testName, @Key("players") List<String> players) {
         incrementCounter(testName);
         StringBuffer s = new StringBuffer();
         for(String player: players){
@@ -119,39 +129,41 @@ public class ServerStorableActionController {
     }
 
     @AuraEnabled
-    public static void returnNothing(@Key("param1")String param1){
+    public void returnNothing(@Key("param1") String param1) {
         return;
     }
 
     @AuraEnabled
-    public static void throwsException(@Key("testName")String testName) throws Exception{
+    public void throwsException(@Key("testName") String testName) throws Exception {
         incrementCounter(testName);
         throw new Exception(String.format("Message %s", staticCounter.get(testName)));
     }
 
     @AuraEnabled
-    public static String unStoredAction(@Key("testName") String testName)throws Exception{
+    public String unStoredAction(@Key("testName") String testName) throws Exception {
         incrementCounter(testName);
         return String.format("Message %s : Fresh response each time.", staticCounter.get(testName));
     }
-    @AuraEnabled
+
     /**
      * Return a component instance with a simple model.
      */
-    public static Component getComponent(@Key("testName")String testName)throws Exception{
+    @AuraEnabled
+    public Component getComponent(@Key("testName") String testName) throws Exception {
         incrementCounter(testName);
         Map<String, Object> attr = Maps.newHashMap();
         attr.put("value", ""+staticCounter.get(testName));
-        Component cmp = Aura.getInstanceService().getInstance("auraStorageTest:teamFacet", ComponentDef.class, attr);
+        Component cmp = instanceService.getInstance("auraStorageTest:teamFacet", ComponentDef.class, attr);
         return cmp;
     }
     @AuraEnabled
-    public static String markingSelfAsStorable(){
-        Action currentAction = Aura.getContextService().getCurrentContext().getCurrentAction();
+    public String markingSelfAsStorable() {
+        Action currentAction = contextService.getCurrentContext().getCurrentAction();
         currentAction.setStorable();
         return "Marking my self as storable";
     }
-    static void incrementCounter(String testName){
+
+    void incrementCounter(String testName) {
         staticCounter.putIfAbsent(testName, 0);
         staticCounter.put(testName, new Integer(staticCounter.get(testName).intValue() + 1));
     }

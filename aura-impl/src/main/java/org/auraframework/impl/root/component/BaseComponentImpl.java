@@ -15,14 +15,8 @@
  */
 package org.auraframework.impl.root.component;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.auraframework.Aura;
 import org.auraframework.def.AttributeDef;
 import org.auraframework.def.AttributeDefRef;
@@ -46,7 +40,11 @@ import org.auraframework.instance.Component;
 import org.auraframework.instance.Instance;
 import org.auraframework.instance.InstanceStack;
 import org.auraframework.instance.Model;
+import org.auraframework.instance.RendererInstance;
 import org.auraframework.instance.ValueProvider;
+import org.auraframework.service.ContextService;
+import org.auraframework.service.ConverterService;
+import org.auraframework.service.DefinitionService;
 import org.auraframework.service.LoggingService;
 import org.auraframework.system.AuraContext;
 import org.auraframework.system.MasterDefRegistry;
@@ -58,11 +56,38 @@ import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.AuraTextUtil;
 import org.auraframework.util.json.Json;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public abstract class BaseComponentImpl<D extends BaseComponentDef, I extends BaseComponent<D, I>> implements
 BaseComponent<D, I> {
+
+    protected final DefDescriptor<D> originalDescriptor;
+    protected DefDescriptor<D> descriptor;
+    protected DefDescriptor<? extends RootDefinition> intfDescriptor;
+    private final String globalId;
+    private final String path;
+    protected String localId;
+    protected final AttributeSet attributeSet;
+    private Model model;
+    protected I superComponent;
+    protected I concreteComponent;
+    protected boolean remoteProvider = false;
+    private final Map<String, List<String>> index = Maps.newLinkedHashMap();
+    // FIXME - the values should be ValueProviders, but first we need to wrap non-m/v/c providers.
+    protected final Map<String, Object> valueProviders = new LinkedHashMap<>();
+    protected boolean hasLocalDependencies = false;
+    protected boolean hasProvidedAttributes;
+    protected final LoggingService loggingService;
+    protected final ContextService contextService;
+    protected final DefinitionService definitionService;
+    protected final ConverterService converterService;
+    
     /**
      * Top level component instance with attributes passed in. Builds out the tree recursively, but only after the
      * attribute values are all set.
@@ -73,7 +98,6 @@ BaseComponent<D, I> {
      */
     public BaseComponentImpl(DefDescriptor<D> descriptor, Map<String, Object> attributes) throws QuickFixException {
         this(descriptor, null, (Map<String, Object>) null, null, null);
-        LoggingService loggingService = Aura.getLoggingService();
         loggingService.startTimer(LoggingService.TIMER_COMPONENT_CREATION);
         try {
             this.attributeSet.set(attributes);
@@ -81,13 +105,12 @@ BaseComponent<D, I> {
         } finally {
             loggingService.stopTimer(LoggingService.TIMER_COMPONENT_CREATION);
         }
-        Aura.getContextService().getCurrentContext().getInstanceStack().popInstance(this);
+        contextService.getCurrentContext().getInstanceStack().popInstance(this);
     }
 
     @SuppressWarnings("unchecked")
     public <T extends D> BaseComponentImpl(T def, Map<String, Object> attributes) throws QuickFixException {
         this((DefDescriptor<D>) def.getDescriptor(), null, (Map<String, Object>) null, null, def);
-        LoggingService loggingService = Aura.getLoggingService();
         loggingService.startTimer(LoggingService.TIMER_COMPONENT_CREATION);
         try {
             this.attributeSet.set(attributes);
@@ -95,7 +118,7 @@ BaseComponent<D, I> {
         } finally {
             loggingService.stopTimer(LoggingService.TIMER_COMPONENT_CREATION);
         }
-        Aura.getContextService().getCurrentContext().getInstanceStack().popInstance(this);
+        contextService.getCurrentContext().getInstanceStack().popInstance(this);
     }
 
     /**
@@ -107,7 +130,6 @@ BaseComponent<D, I> {
     public BaseComponentImpl(DefDescriptor<D> descriptor, Collection<AttributeDefRef> attributeDefRefs,
             BaseComponent<?, ?> attributeValueProvider, String localId) throws QuickFixException {
         this(descriptor, attributeValueProvider, null, null, null);
-        LoggingService loggingService = Aura.getLoggingService();
         loggingService.startTimer(LoggingService.TIMER_COMPONENT_CREATION);
         try {
             this.attributeSet.set(attributeDefRefs);
@@ -115,7 +137,7 @@ BaseComponent<D, I> {
         } finally {
             loggingService.stopTimer(LoggingService.TIMER_COMPONENT_CREATION);
         }
-        Aura.getContextService().getCurrentContext().getInstanceStack().popInstance(this);
+        contextService.getCurrentContext().getInstanceStack().popInstance(this);
         this.localId = localId;
     }
 
@@ -124,10 +146,8 @@ BaseComponent<D, I> {
      *
      * @throws QuickFixException
      */
-    protected BaseComponentImpl(DefDescriptor<D> descriptor, I extender, BaseComponent<?, ?> attributeValueProvider,
-            I concreteComponent) throws QuickFixException {
+    protected BaseComponentImpl(DefDescriptor<D> descriptor, I extender, BaseComponent<?, ?> attributeValueProvider, I concreteComponent) throws QuickFixException {
         this(descriptor, attributeValueProvider, null, extender, null);
-        LoggingService loggingService = Aura.getLoggingService();
         loggingService.startTimer(LoggingService.TIMER_COMPONENT_CREATION);
         try {
             this.concreteComponent = concreteComponent;
@@ -136,7 +156,7 @@ BaseComponent<D, I> {
         } finally {
             loggingService.stopTimer(LoggingService.TIMER_COMPONENT_CREATION);
         }
-        Aura.getContextService().getCurrentContext().getInstanceStack().popInstance(this);
+        contextService.getCurrentContext().getInstanceStack().popInstance(this);
     }
 
     /**
@@ -149,7 +169,13 @@ BaseComponent<D, I> {
      */
     private BaseComponentImpl(DefDescriptor<D> descriptor, BaseComponent<?, ?> attributeValueProvider,
             Map<String, Object> valueProviders, I extender, D def) throws QuickFixException {
-        AuraContext context = Aura.getContextService().getCurrentContext();
+
+        this.contextService = Aura.getContextService();
+        this.definitionService = Aura.getDefinitionService();
+        this.converterService = Aura.getConverterService();
+        this.loggingService = Aura.getLoggingService();
+
+        AuraContext context = contextService.getCurrentContext();
         DefDescriptor<? extends RootDefinition> desc = null;
 
         InstanceStack instanceStack = context.getInstanceStack();
@@ -175,13 +201,12 @@ BaseComponent<D, I> {
             desc = descriptor;
         }
 
-        MasterDefRegistry defRegistry = Aura.getDefinitionService().getDefRegistry();
+        MasterDefRegistry defRegistry = definitionService.getDefRegistry();
         if (accessParent != null) {
             // Insure that the access 'Parent' is allowed to create an instance of this component
             defRegistry.assertAccess(accessParent.getDescriptor(), desc.getDef());
         }
 
-        LoggingService loggingService = Aura.getLoggingService();
         loggingService.startTimer(LoggingService.TIMER_COMPONENT_CREATION);
         try {
             this.globalId = getNextGlobalId();
@@ -212,7 +237,7 @@ BaseComponent<D, I> {
     }
 
     protected void finishInit() throws QuickFixException {
-        AuraContext context = Aura.getContextService().getCurrentContext();
+        AuraContext context = contextService.getCurrentContext();
 
         injectComponent();
         createModel();
@@ -249,7 +274,7 @@ BaseComponent<D, I> {
         if (missingAttributes != null && !missingAttributes.isEmpty()) {
             for (AttributeDef attr : missingAttributes) {
                 if (this.findValue(attr.getName()) == null) {
-                    DefDescriptor<? extends RootDefinition> desc = attributeSet.getRootDefDescriptor();
+                    DefDescriptor<?> desc = attributeSet.getRootDefDescriptor();
                     if (attributeSet.getValueProvider() != null) {
                         desc = attributeSet.getValueProvider().getDescriptor();
                     }
@@ -297,7 +322,7 @@ BaseComponent<D, I> {
      */
     @Override
     public void serialize(Json json) throws IOException {
-        AuraContext context = Aura.getContextService().getCurrentContext();
+        AuraContext context = contextService.getCurrentContext();
         BaseComponent<?, ?> oldComponent = context.setCurrentComponent(this);
 
         try {
@@ -333,7 +358,7 @@ BaseComponent<D, I> {
                 RendererDef rendererDef = def.getRendererDescriptor().getDef();
                 if (rendererDef.isLocal()) {
                     StringWriter sw = new StringWriter();
-                    rendererDef.render(this, sw);
+                    ((RendererInstance) Aura.getInstanceService().getInstance(def.getRendererDescriptor())).render(this, sw);
                     // Not writing directly to json.appendable because then it wouldn't get escaped.
                     // ideally Json would have a FilterWriter that escapes that we could use here.
                     json.writeMapEntry("rendering", sw.toString());
@@ -374,13 +399,13 @@ BaseComponent<D, I> {
      * @throws QuickFixException
      */
     private void createModel() throws QuickFixException {
-        AuraContext context = Aura.getContextService().getCurrentContext();
+        AuraContext context = contextService.getCurrentContext();
         context.pushCallingDescriptor(descriptor);
         BaseComponent<?, ?> oldComponent = context.setCurrentComponent(this);
         try {
             ModelDef modelDef = getComponentDef().getModelDef();
             if (modelDef != null) {
-                Aura.getDefinitionService().getDefRegistry().assertAccess(descriptor, modelDef);
+                definitionService.getDefRegistry().assertAccess(descriptor, modelDef);
 
                 model = modelDef.newInstance();
                 if (modelDef.hasMembers()) {
@@ -397,9 +422,9 @@ BaseComponent<D, I> {
     /**
      * @return the next id to use, the ordering must match exactly what is generated client side
      */
-    private static String getNextGlobalId() {
-        AuraContext context = Aura.getContextService().getCurrentContext();
-        String num = Aura.getContextService().getCurrentContext().getNum();
+    private String getNextGlobalId() {
+        AuraContext context = contextService.getCurrentContext();
+        String num = context.getNum();
         Action action = context.getCurrentAction();
         int id;
         String suffix;
@@ -426,7 +451,7 @@ BaseComponent<D, I> {
 
     @Override
     public Object getValue(PropertyReference expr) throws QuickFixException {
-        AuraContext context = Aura.getContextService().getCurrentContext();
+        AuraContext context = contextService.getCurrentContext();
         BaseComponent<?, ?> oldComponent = context.setCurrentComponent(this);
         try {
             String prefix = expr.getRoot();
@@ -500,11 +525,11 @@ BaseComponent<D, I> {
         //
         BaseComponentDef def = descriptor.getDef();
         if (componentArrType == null) {
-            componentArrType = Aura.getDefinitionService().getDefDescriptor("aura://Aura.Component[]", TypeDef.class);
+            componentArrType = definitionService.getDefDescriptor("aura://Aura.Component[]", TypeDef.class);
         }
 
         if(componentDefRefArrayType == null) {
-            componentDefRefArrayType = Aura.getDefinitionService().getDefDescriptor("aura://Aura.ComponentDefRef[]", TypeDef.class);
+            componentDefRefArrayType = definitionService.getDefDescriptor("aura://Aura.ComponentDefRef[]", TypeDef.class);
         }
 
         createModel();
@@ -552,20 +577,4 @@ BaseComponent<D, I> {
         }
     }
 
-    protected final DefDescriptor<D> originalDescriptor;
-    protected DefDescriptor<D> descriptor;
-    protected DefDescriptor<? extends RootDefinition> intfDescriptor;
-    private final String globalId;
-    private final String path;
-    protected String localId;
-    protected final AttributeSet attributeSet;
-    private Model model;
-    protected I superComponent;
-    protected I concreteComponent;
-    protected boolean remoteProvider = false;
-    private final Map<String, List<String>> index = Maps.newLinkedHashMap();
-    // FIXME - the values should be ValueProviders, but first we need to wrap non-m/v/c providers.
-    protected final Map<String, Object> valueProviders = new LinkedHashMap<>();
-    protected boolean hasLocalDependencies = false;
-    protected boolean hasProvidedAttributes;
 }

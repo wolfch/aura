@@ -15,11 +15,8 @@
  */
 package org.auraframework.components.aura;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import org.auraframework.Aura;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.impl.AuraImplTestCase;
@@ -29,19 +26,16 @@ import org.auraframework.throwable.quickfix.InvalidExpressionException;
 import org.auraframework.throwable.quickfix.InvalidReferenceException;
 import org.auraframework.throwable.quickfix.MissingRequiredAttributeException;
 import org.junit.Ignore;
+import org.junit.Test;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Server-side aura:iteration tests
  */
 public class IterationTest extends AuraImplTestCase {
-
-    public IterationTest(String name) {
-        super(name);
-    }
-
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -50,10 +44,11 @@ public class IterationTest extends AuraImplTestCase {
     private Component getIterationComponent(String innerSource, Map<String, Object> attributes) throws Exception {
         DefDescriptor<ComponentDef> def = addSourceAutoCleanup(ComponentDef.class, String.format(
                 "<aura:component><aura:attribute name='items' type='List'/>%s</aura:component>", innerSource));
-        Component cmp = Aura.getInstanceService().getInstance(def, attributes);
+        Component cmp = instanceService.getInstance(def, attributes);
         return (Component) ((List<?>) cmp.getSuper().getAttributes().getValue("body")).get(0);
     }
 
+    @Test
     public void testItemsMissing() throws Exception {
         String source = "<aura:iteration var='x'>lalala</aura:iteration>";
         try {
@@ -64,6 +59,7 @@ public class IterationTest extends AuraImplTestCase {
         }
     }
 
+    @Test
     public void testItemsNull() throws Exception {
         String source = "<aura:iteration items='{!v.items}' var='x'>{!x}lalala</aura:iteration>";
         Map<String, Object> attributes = Maps.newHashMap();
@@ -72,6 +68,7 @@ public class IterationTest extends AuraImplTestCase {
         assertEquals("", getRenderedBaseComponent(iteration));
     }
 
+    @Test
     public void testItemsEmpty() throws Exception {
         String source = "<aura:iteration items='{!v.items}' var='x'>{!x}lalala</aura:iteration>";
         Map<String, Object> attributes = Maps.newHashMap();
@@ -80,6 +77,7 @@ public class IterationTest extends AuraImplTestCase {
         assertEquals("", getRenderedBaseComponent(iteration));
     }
 
+    @Test
     public void testItemsWrongType() throws Exception {
         String source = "<aura:attribute name='stringAttr' type='String' default='someString'/>"
                 + "<aura:iteration items='{!v.stringAttr}' var='x'>{!x}lalala</aura:iteration>";
@@ -93,6 +91,7 @@ public class IterationTest extends AuraImplTestCase {
         }
     }
 
+    @Test
     public void testVarMissing() throws Exception {
         String source = "<aura:iteration items='{!v.items}'>G</aura:iteration>";
         Map<String, Object> attributes = Maps.newHashMap();
@@ -105,6 +104,7 @@ public class IterationTest extends AuraImplTestCase {
         }
     }
 
+    @Test
     public void testVarEmpty() throws Exception {
         String source = "<aura:iteration items='{!v.items}' var='' indexVar='i'>{!i}</aura:iteration>";
         Map<String, Object> attributes = Maps.newHashMap();
@@ -113,6 +113,7 @@ public class IterationTest extends AuraImplTestCase {
         assertEquals("012", getRenderedBaseComponent(iteration));
     }
 
+    @Test
     public void testVarInvalid() throws Exception {
         String source = "<aura:iteration items='{!v.items}' var='99bottles'>{!99bottles}</aura:iteration>";
         Map<String, Object> attributes = Maps.newHashMap();
@@ -134,6 +135,7 @@ public class IterationTest extends AuraImplTestCase {
         assertEquals("qrs", getRenderedBaseComponent(iteration));
     }
 
+    @Test
     public void testVarShadow() throws Exception {
         String source = "<aura:attribute name='other' type='String' default='huzzah'/><aura:iteration items='{!v.items}' var='v' indexVar='i'>{!i}{!v}|</aura:iteration>";
         Map<String, Object> attributes = Maps.newHashMap();
@@ -142,6 +144,7 @@ public class IterationTest extends AuraImplTestCase {
         assertEquals("0q|1r|2s|", getRenderedBaseComponent(iteration));
     }
 
+    @Test
     public void testVarShadowError() throws Exception {
         String source = "<aura:attribute name='other' type='String' default='huzzah'/><aura:iteration items='{!v.items}' var='v' indexVar='i'>{!i}{!v}{!v.other}|</aura:iteration>";
         Map<String, Object> attributes = Maps.newHashMap();
@@ -155,6 +158,7 @@ public class IterationTest extends AuraImplTestCase {
         }
     }
 
+    @Test
     public void testVarWrongType() throws Exception {
         String source = "<aura:iteration items='{!v.items}' var='{!v.items}'>{!x}lalala</aura:iteration>";
         Map<String, Object> attributes = Maps.newHashMap();
@@ -167,6 +171,7 @@ public class IterationTest extends AuraImplTestCase {
         }
     }
 
+    @Test
     public void testIndexVarEmpty() throws Exception {
         String source = "<aura:iteration items='{!v.items}' var='x' indexVar=''>{!x}</aura:iteration>";
         Map<String, Object> attributes = Maps.newHashMap();
@@ -175,6 +180,7 @@ public class IterationTest extends AuraImplTestCase {
         assertEquals("qrs", getRenderedBaseComponent(iteration));
     }
 
+    @Test
     public void testIndexVarInvalid() throws Exception {
         String source = "<aura:iteration items='{!v.items}' var='x' indexVar='99bottles'>{!99bottles}</aura:iteration>";
         Map<String, Object> attributes = Maps.newHashMap();
@@ -196,6 +202,7 @@ public class IterationTest extends AuraImplTestCase {
         assertEquals("012", getRenderedBaseComponent(iteration));
     }
 
+    @Test
     public void testIndexVarShadow() throws Exception {
         String source = "<aura:attribute name='other' type='String' default='huzzah'/><aura:iteration items='{!v.items}' var='x' indexVar='v'>{!x}{!v}|</aura:iteration>";
         Map<String, Object> attributes = Maps.newHashMap();
@@ -204,6 +211,7 @@ public class IterationTest extends AuraImplTestCase {
         assertEquals("q0|r1|s2|", getRenderedBaseComponent(iteration));
     }
 
+    @Test
     public void testIndexVarShadowError() throws Exception {
         String source = "<aura:attribute name='other' type='String' default='huzzah'/><aura:iteration items='{!v.items}' var='x' indexVar='v'>{!x}{!v}{!v.other}|</aura:iteration>";
         Map<String, Object> attributes = Maps.newHashMap();
@@ -217,6 +225,7 @@ public class IterationTest extends AuraImplTestCase {
         }
     }
 
+    @Test
     public void testIndexVarWrongType() throws Exception {
         String source = "<aura:iteration items='{!v.items}' var='x' indexVar='{!v.items}'>{!x}lalala</aura:iteration>";
         Map<String, Object> attributes = Maps.newHashMap();
@@ -229,6 +238,7 @@ public class IterationTest extends AuraImplTestCase {
         }
     }
 
+    @Test
     public void testStartGreaterThanLength() throws Exception {
         String source = "<aura:iteration start='4' items='{!v.items}' var='x' indexVar='i'>{!i}{!x+'|'}</aura:iteration>";
         Map<String, Object> attributes = Maps.newHashMap();
@@ -237,6 +247,7 @@ public class IterationTest extends AuraImplTestCase {
         assertEquals("", getRenderedBaseComponent(iteration));
     }
 
+    @Test
     public void testStartNegative() throws Exception {
         String source = "<aura:iteration items='{!v.items}' var='x' indexVar='i' start='-9'>{!i}{!x+'|'}</aura:iteration>";
         Map<String, Object> attributes = Maps.newHashMap();
@@ -245,6 +256,7 @@ public class IterationTest extends AuraImplTestCase {
         assertEquals("0q|1r|2s|", getRenderedBaseComponent(iteration));
     }
 
+    @Test
     public void testStartGreaterThanEnd() throws Exception {
         String source = "<aura:iteration start='1' end='0' items='{!v.items}' var='x' indexVar='i'>{!i}{!x+'|'}</aura:iteration>";
         Map<String, Object> attributes = Maps.newHashMap();
@@ -253,6 +265,7 @@ public class IterationTest extends AuraImplTestCase {
         assertEquals("", getRenderedBaseComponent(iteration));
     }
 
+    @Test
     public void testStartNotANumber() throws Exception {
         String source = "<aura:iteration start='one' items='{!v.items}' var='x' indexVar='i'>{!i}{!x+'|'}</aura:iteration>";
         Map<String, Object> attributes = Maps.newHashMap();
@@ -265,6 +278,7 @@ public class IterationTest extends AuraImplTestCase {
         }
     }
 
+    @Test
     public void testStartDecimal() throws Exception {
         String source = "<aura:iteration start='1.1' items='{!v.items}' var='x' indexVar='i'>{!i}{!x+'|'}</aura:iteration>";
         Map<String, Object> attributes = Maps.newHashMap();
@@ -274,6 +288,7 @@ public class IterationTest extends AuraImplTestCase {
         assertEquals(1, iteration.getAttributes().getValue("start"));
     }
 
+    @Test
     public void testEndGreaterThanLength() throws Exception {
         String source = "<aura:iteration end='4' items='{!v.items}' var='x' indexVar='i'>{!i}{!x+'|'}</aura:iteration>";
         Map<String, Object> attributes = Maps.newHashMap();
@@ -282,6 +297,7 @@ public class IterationTest extends AuraImplTestCase {
         assertEquals("0q|1r|2s|", getRenderedBaseComponent(iteration));
     }
 
+    @Test
     public void testEndNegative() throws Exception {
         String source = "<aura:iteration items='{!v.items}' var='x' indexVar='i' end='-9'>{!i}{!x+'|'}</aura:iteration>";
         Map<String, Object> attributes = Maps.newHashMap();
@@ -290,6 +306,7 @@ public class IterationTest extends AuraImplTestCase {
         assertEquals("", getRenderedBaseComponent(iteration));
     }
 
+    @Test
     public void testEndNotANumber() throws Exception {
         String source = "<aura:iteration end='one' items='{!v.items}' var='x' indexVar='i'>{!i}{!x+'|'}</aura:iteration>";
         Map<String, Object> attributes = Maps.newHashMap();
@@ -302,6 +319,7 @@ public class IterationTest extends AuraImplTestCase {
         }
     }
 
+    @Test
     public void testEndDecimal() throws Exception {
         String source = "<aura:iteration end='2.2' items='{!v.items}' var='x' indexVar='i'>{!i}{!x+'|'}</aura:iteration>";
         Map<String, Object> attributes = Maps.newHashMap();
@@ -314,8 +332,9 @@ public class IterationTest extends AuraImplTestCase {
     /**
      * Verify that iteams, var and body are required attributes.
      */
+    @Test
     public void testRequiredAttributes() throws Exception {
-        ComponentDef def = Aura.getDefinitionService().getDefinition("aura:iteration", ComponentDef.class);
+        ComponentDef def = definitionService.getDefinition("aura:iteration", ComponentDef.class);
         assertNotNull(def);
         assertTrue("Cannot use iteration component with something to iterate through.", def.getAttributeDef("items")
                 .isRequired());
@@ -329,12 +348,13 @@ public class IterationTest extends AuraImplTestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testRequiredAttributesWhenLazyLoading() throws Exception {
         // Similar to BaseComponentDefTest.testLazyLoadingFacets()
         DefDescriptor<ComponentDef> desc = addSourceAutoCleanup(ComponentDef.class,
                 String.format(baseComponentTag, "", "<aura:iteration aura:load='LAZY'><aura:text/></aura:iteration>"));
         try {
-            Aura.getInstanceService().getInstance(desc);
+            instanceService.getInstance(desc);
             fail("Should not be able to pass non simple attribute values to lazy loading facets.");
         } catch (Exception e) {
             checkExceptionFull(e, InvalidReferenceException.class,

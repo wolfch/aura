@@ -15,25 +15,22 @@
  */
 package org.auraframework.integration.test.root.parser.handler.design;
 
-import org.auraframework.Aura;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.design.DesignAttributeDef;
 import org.auraframework.def.design.DesignDef;
 import org.auraframework.impl.AuraImplTestCase;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
+import org.junit.Test;
 
 public class DesignDefHandlerTest extends AuraImplTestCase {
-
-    public DesignDefHandlerTest(String name) {
-        super(name);
-    }
-
+    @Test
     public void testGetElement() throws Exception {
         DesignDef element = setupSimpleDesignDef("<design:component label=\"some label\" />").getDef();
         assertEquals("some label", element.getLabel());
     }
 
+    @Test
     public void testRetrieveSingleAttributeDesign() throws Exception {
         DesignDef element = setupSimpleDesignDef(
                 "<design:component><design:attribute name=\"mystring\" required=\"true\"/></design:component>")
@@ -43,6 +40,7 @@ public class DesignDefHandlerTest extends AuraImplTestCase {
         assertTrue(child.isRequired());
     }
 
+    @Test
     public void testMultipleDesignTemplatesFailure() throws Exception {
         try {
             setupSimpleDesignDef(
@@ -55,6 +53,7 @@ public class DesignDefHandlerTest extends AuraImplTestCase {
         }
     }
 
+    @Test
     public void testInvalidSystemAttributeName() throws Exception {
         try {
             setupSimpleDesignDef("<design:component foo=\"bar\" />").getDef();
@@ -64,6 +63,7 @@ public class DesignDefHandlerTest extends AuraImplTestCase {
         }
     }
 
+    @Test
     public void testInvalidSystemAttributePrefix() throws Exception {
         try {
             setupSimpleDesignDef("<design:component other:label=\"some label\" />").getDef();
@@ -80,7 +80,7 @@ public class DesignDefHandlerTest extends AuraImplTestCase {
         String cmpBody = "<aura:attribute name='mystring' type='String' />";
         addSourceAutoCleanup(cmpDesc, String.format(baseComponentTag, "", cmpBody));
 
-        DefDescriptor<DesignDef> desc = Aura.getDefinitionService().getDefDescriptor(cmpDesc.getQualifiedName(),
+        DefDescriptor<DesignDef> desc = definitionService.getDefDescriptor(cmpDesc.getQualifiedName(),
                 DesignDef.class);
         addSourceAutoCleanup(desc, markup);
         return desc;

@@ -15,31 +15,31 @@
  */
 package org.auraframework.impl.system;
 
-import java.util.Map;
-
-import org.auraframework.Aura;
+import com.google.common.collect.ImmutableMap;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.Definition;
 import org.auraframework.def.DefinitionAccess;
 import org.auraframework.impl.DefinitionAccessImpl;
 import org.auraframework.impl.system.DefinitionImpl.RefBuilderImpl;
+import org.auraframework.service.ContextService;
 import org.auraframework.system.AuraContext;
 import org.auraframework.system.AuraContext.Authentication;
 import org.auraframework.system.AuraContext.Format;
 import org.auraframework.system.AuraContext.Mode;
 import org.auraframework.system.Location;
 import org.auraframework.system.SubDefDescriptor;
+import org.auraframework.test.util.AuraTestCase;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
-import org.auraframework.util.test.util.UnitTestCase;
 import org.auraframework.util.text.Hash;
+import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
-import com.google.common.collect.ImmutableMap;
+import javax.inject.Inject;
+import java.util.Map;
 
 public abstract class DefinitionImplUnitTest<I extends DefinitionImpl<D>, D extends Definition, R extends Definition, B extends RefBuilderImpl<D, R>>
-extends UnitTestCase {
-
+        extends AuraTestCase {
     protected String qualifiedDescriptorName;
     @Mock
     protected DefDescriptor<D> descriptor;
@@ -54,31 +54,35 @@ extends UnitTestCase {
 
     protected AuraContext testAuraContext;
 
-    public DefinitionImplUnitTest(String name) {
-        super(name);
-    }
+    @Inject
+    private ContextService contextService;
 
+    @Test
     public void testGetDescription() throws Exception {
         this.description = "this is a test Definition";
         String actual = buildDefinition().getDescription();
         assertEquals(this.description, actual);
     }
 
+    @Test
     public void testGetDescriptor() throws Exception {
         Object actual = buildDefinition().getDescriptor();
         assertEquals(this.descriptor, actual);
     }
 
+    @Test
     public void testGetLocation() throws Exception {
         Location actual = buildDefinition().getLocation();
         assertEquals(this.location, actual);
     }
 
+    @Test
     public void testGetName() throws Exception {
         String actual = buildDefinition().getName();
         assertEquals(this.qualifiedDescriptorName, actual);
     }
 
+    @Test
     public void testGetNameNullDescriptor() throws Exception {
         this.descriptor = null;
         R instance = buildDefinition();
@@ -87,6 +91,7 @@ extends UnitTestCase {
         assertEquals(expected, actual);
     }
 
+    @Test
     public void testGetOwnHashWithSourceHash() throws Exception {
         Mockito.doReturn("myhash").when(this.sourceHash).toString();
         Mockito.doReturn(true).when(this.sourceHash).isSet();
@@ -94,6 +99,7 @@ extends UnitTestCase {
         assertEquals("myhash", actual);
     }
 
+    @Test
     public void testGetOwnHashWithOwnHashAndNoSourceHash() throws Exception {
         this.sourceHash = null;
         this.ownHash = "ownhash";
@@ -101,6 +107,7 @@ extends UnitTestCase {
         assertEquals(this.ownHash, actual);
     }
 
+    @Test
     public void testGetSubDefinition() throws Exception {
         @SuppressWarnings("unchecked")
         SubDefDescriptor<?, D> subdesc = Mockito.mock(SubDefDescriptor.class);
@@ -110,12 +117,14 @@ extends UnitTestCase {
         assertEquals(def, actual);
     }
 
+    @Test
     public void testGetSubDefinitionNull() throws Exception {
         this.subDefs = ImmutableMap.of();
         Definition actual = buildDefinition().getSubDefinition(null);
         assertNull(actual);
     }
 
+    @Test
     public void testGetSubDefinitionWithoutSubDefinitions() throws Exception {
         SubDefDescriptor<?, ?> subdesc = Mockito.mock(SubDefDescriptor.class);
         this.subDefs = null;
@@ -123,6 +132,7 @@ extends UnitTestCase {
         assertNull(actual);
     }
 
+    @Test
     public void testGetSubDefinitionNotFound() throws Exception {
         SubDefDescriptor<?, ?> subdesc = Mockito.mock(SubDefDescriptor.class);
         this.subDefs = ImmutableMap.of();
@@ -130,30 +140,35 @@ extends UnitTestCase {
         assertNull(actual);
     }
 
+    @Test
     public void testAccessGlobal() throws Exception {
-        this.access = new DefinitionAccessImpl(null, "global");
+        this.access = new DefinitionAccessImpl(null, "global", false);
         DefinitionAccess actual = buildDefinition().getAccess();
         assertTrue(actual.isGlobal());
     }
 
+    @Test
     public void testAccessGlobalDynamic() throws Exception {
-        this.access = new DefinitionAccessImpl(null, "org.auraframework.impl.test.util.TestAccessMethods.allowGlobal");
+        this.access = new DefinitionAccessImpl(null, "org.auraframework.impl.test.util.TestAccessMethods.allowGlobal", false);
         DefinitionAccess actual = buildDefinition().getAccess();
         assertTrue(actual.isGlobal());
     }
 
-    public void testAccessDefault() throws Exception {
-        this.access = DefinitionAccessImpl.defaultAccess(null);
+    @Test
+    public void testAccessPublic() throws Exception {
+        this.access = new DefinitionAccessImpl(null, "public", false);
         DefinitionAccess actual = buildDefinition().getAccess();
         assertTrue(actual.isPublic());
     }
 
 
+    @Test
     public void testIsValid() throws Exception {
         boolean actual = buildDefinition().isValid();
         assertFalse(actual);
     }
 
+    @Test
     public void testMarkValid() throws Exception {
         R def = buildDefinition();
         def.markValid();
@@ -161,16 +176,18 @@ extends UnitTestCase {
         assertTrue(actual);
     }
 
+    @Test
     public void testValidateDefinition() throws Exception {
         if (testAuraContext != null) {
-            Aura.getContextService().endContext();
+            contextService.endContext();
         }
 
-        testAuraContext = Aura.getContextService().startContext(Mode.PROD, Format.JS, Authentication.AUTHENTICATED);
+        testAuraContext = contextService.startContext(Mode.PROD, Format.JS, Authentication.AUTHENTICATED);
 
         buildDefinition().validateDefinition();
     }
 
+    @Test
     public void testValidateDefinitionNullDescriptor() throws Exception {
         this.descriptor = null;
         try {
@@ -182,12 +199,13 @@ extends UnitTestCase {
     }
 
     // used to setup references to be validated by subclasses
+    @Test
     public void testValidateReferences() throws Exception {
         if (testAuraContext != null) {
-            Aura.getContextService().endContext();
+            contextService.endContext();
         }
 
-        testAuraContext = Aura.getContextService().startContext(Mode.PROD, Format.JS, Authentication.AUTHENTICATED);
+        testAuraContext = contextService.startContext(Mode.PROD, Format.JS, Authentication.AUTHENTICATED);
 
         setupValidateReferences();
         buildDefinition().validateReferences();
@@ -196,7 +214,7 @@ extends UnitTestCase {
     @Override
     public void tearDown() throws Exception {
         if (testAuraContext != null) {
-            Aura.getContextService().endContext();
+            contextService.endContext();
         }
     }
 
@@ -225,6 +243,9 @@ extends UnitTestCase {
         builder.setDescription(this.description);
         builder.hash = this.sourceHash;
         builder.ownHash = this.ownHash;
+        if (this.access == null) {
+            this.access = new DefinitionAccessImpl(AuraContext.Access.INTERNAL);
+        }
         builder.setAccess(this.access);
         return builder.build();
     }

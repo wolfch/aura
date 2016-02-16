@@ -15,22 +15,23 @@
  */
 package org.auraframework.impl.root.parser.handler.design;
 
-import java.util.Set;
-
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
+import com.google.common.collect.ImmutableSet;
+import org.auraframework.adapter.ConfigAdapter;
+import org.auraframework.adapter.DefinitionParserAdapter;
 import org.auraframework.def.design.DesignDef;
 import org.auraframework.def.design.DesignOptionDef;
 import org.auraframework.impl.design.DesignOptionDefImpl;
 import org.auraframework.impl.root.parser.handler.ContainerTagHandler;
 import org.auraframework.impl.root.parser.handler.ParentedTagHandler;
 import org.auraframework.impl.system.DefDescriptorImpl;
+import org.auraframework.service.DefinitionService;
 import org.auraframework.system.Source;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.AuraTextUtil;
 
-import com.google.common.collect.ImmutableSet;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.util.Set;
 
 public class DesignOptionDefHandler extends ParentedTagHandler<DesignOptionDef, DesignDef> {
     public static final String TAG = "design:option";
@@ -44,8 +45,10 @@ public class DesignOptionDefHandler extends ParentedTagHandler<DesignOptionDef, 
         super();
     }
 
-    public DesignOptionDefHandler(ContainerTagHandler<DesignDef> parentHandler, XMLStreamReader xmlReader, Source<?> source) {
-        super(parentHandler, xmlReader, source);
+    public DesignOptionDefHandler(ContainerTagHandler<DesignDef> parentHandler, XMLStreamReader xmlReader, Source<?> source,
+                                  boolean isInPrivilegedNamespace, DefinitionService definitionService,
+                                  ConfigAdapter configAdapter, DefinitionParserAdapter definitionParserAdapter) {
+        super(parentHandler, xmlReader, source, isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter);
         builder.setDescriptor(DefDescriptorImpl.getAssociateDescriptor(getParentDefDescriptor(), DesignOptionDef.class,
                 TAG));
     }
@@ -62,10 +65,9 @@ public class DesignOptionDefHandler extends ParentedTagHandler<DesignOptionDef, 
             error("Attribute '%s' is required on <%s>", ATTRIBUTE_KEY, TAG);
         }
         String value = getAttributeValue(ATTRIBUTE_VALUE);
-        String access = getAttributeValue(ATTRIBUTE_ACCESS);
         builder.setKey(key);
         builder.setValue(value);
-        builder.setAccess(access);
+        builder.setAccess(readAccessAttribute());
     }
 
     @Override

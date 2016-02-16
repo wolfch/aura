@@ -15,7 +15,6 @@
  */
 package org.auraframework.integration.test.root.parser.handler.design;
 
-import org.auraframework.Aura;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.design.DesignDef;
@@ -23,33 +22,33 @@ import org.auraframework.impl.AuraImplTestCase;
 import org.auraframework.test.source.StringSourceLoader;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
 import org.auraframework.util.test.annotation.UnAdaptableTest;
-
+import org.junit.Test;
 
 @UnAdaptableTest("namespace start with c means something special in core")
 public class DesignLayoutDefHandlerTest extends AuraImplTestCase {
     private final static String LAYOUT = "<design:layout> </design:layout>";
     private final static String LAYOUT_NAME = "<design:layout name=\"%s\"> </design:layout>";
 
-    public DesignLayoutDefHandlerTest(String name) {
-        super(name);
-    }
-
+    @Test
     public void testNoLayout() throws Exception {
         DesignDef def = setupDesignLayoutDef("", true);
         assertNull(def.getDefaultDesignLayoutDef());
     }
 
+    @Test
     public void testLayoutDef() throws Exception {
         DesignDef def = setupDesignLayoutDef(LAYOUT, true);
         assertNotNull(def.getDefaultDesignLayoutDef());
     }
 
+    @Test
     public void testLayoutWithName() throws Exception {
         final String name = "name";
         DesignDef def = setupDesignLayoutDef(String.format(LAYOUT_NAME, name), true);
         assertNotNull(def.getDesignLayoutDefs().get(name));
     }
 
+    @Test
     public void testMultipleDefWithSameName() throws Exception {
         final String name = "name";
         String layouts = String.format(LAYOUT_NAME, name) + String.format(LAYOUT_NAME, name);
@@ -61,6 +60,7 @@ public class DesignLayoutDefHandlerTest extends AuraImplTestCase {
         }
     }
 
+    @Test
     public void testLayoutInNonPrivilegedNS() throws Exception {
         try {
             setupDesignLayoutDef(LAYOUT, false);
@@ -71,13 +71,12 @@ public class DesignLayoutDefHandlerTest extends AuraImplTestCase {
         }
     }
 
-
     private DesignDef setupDesignLayoutDef(String markup, boolean addToPrivileged) throws Exception {
         DefDescriptor<ComponentDef> cmpDesc = getAuraTestingUtil().createStringSourceDescriptor(StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":",
                 ComponentDef.class, null);
         getAuraTestingUtil().addSourceAutoCleanup(cmpDesc, String.format(baseComponentTag, "", ""), addToPrivileged);
 
-        DefDescriptor<DesignDef> designDesc = Aura.getDefinitionService().getDefDescriptor(cmpDesc.getQualifiedName(),
+        DefDescriptor<DesignDef> designDesc = definitionService.getDefDescriptor(cmpDesc.getQualifiedName(),
                 DesignDef.class);
         getAuraTestingUtil().addSourceAutoCleanup(designDesc,
                 String.format("<design:component>%s</design:component>", markup), addToPrivileged);

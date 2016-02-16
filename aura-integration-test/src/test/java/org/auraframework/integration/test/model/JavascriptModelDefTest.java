@@ -15,10 +15,7 @@
  */
 package org.auraframework.integration.test.model;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-
-import org.auraframework.Aura;
+import com.google.common.collect.Maps;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.ModelDef;
@@ -29,22 +26,20 @@ import org.auraframework.impl.javascript.model.JavascriptValueDef;
 import org.auraframework.impl.system.DefDescriptorImpl;
 import org.auraframework.instance.Model;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
+import org.junit.Test;
 
-import com.google.common.collect.Maps;
+import java.math.BigDecimal;
+import java.util.ArrayList;
 
 public class JavascriptModelDefTest extends AuraImplTestCase {
-
-    public JavascriptModelDefTest(String name) {
-        super(name);
-    }
-
     /**
      * Verify that javascript model defs are serializable.
      */
+    @Test
     public void testDefaults() throws Exception {
         // Find the model by autowiring
-        Aura.getDefinitionService().getDefinition("test:jsModel", ComponentDef.class);
-        JavascriptModelDef modelDef = (JavascriptModelDef) Aura.getDefinitionService().getDefinition(
+        definitionService.getDefinition("test:jsModel", ComponentDef.class);
+        JavascriptModelDef modelDef = (JavascriptModelDef) definitionService.getDefinition(
                 "js://test.jsModel", ModelDef.class);
 
         // Make sure the properties expected are found on the def
@@ -58,6 +53,7 @@ public class JavascriptModelDefTest extends AuraImplTestCase {
     /**
      * Verify bad value in javascript model throws correct exception.
      */
+    @Test
     public void testBadModelValue() throws Exception {
         DefDescriptor<ComponentDef> cmpDesc = addSourceAutoCleanup(ComponentDef.class, "<aura:component/>");
         DefDescriptor<ModelDef> modelDesc = DefDescriptorImpl.getAssociateDescriptor(cmpDesc, ModelDef.class,

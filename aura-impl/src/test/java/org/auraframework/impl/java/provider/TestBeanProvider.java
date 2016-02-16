@@ -15,20 +15,22 @@
  */
 package org.auraframework.impl.java.provider;
 
+import org.auraframework.Aura;
+import org.auraframework.annotations.Annotations.ServiceComponentProvider;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.ComponentDescriptorProvider;
 import org.auraframework.def.DefDescriptor;
-import org.auraframework.impl.system.DefDescriptorImpl;
 import org.auraframework.system.Annotations.Provider;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
 /**
  * A simple provider
  */
+@ServiceComponentProvider
 @Provider
 public class TestBeanProvider implements ComponentDescriptorProvider {
     @Override
     public DefDescriptor<ComponentDef> provide() throws QuickFixException {
-        return DefDescriptorImpl.getInstance("test:text", ComponentDef.class);
+        return Aura.getDefinitionService().getDefDescriptor("test:text", ComponentDef.class);
     }
 }

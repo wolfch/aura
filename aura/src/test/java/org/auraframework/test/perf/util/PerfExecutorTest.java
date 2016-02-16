@@ -15,6 +15,32 @@ package org.auraframework.test.perf.util;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import com.google.common.collect.ImmutableMap;
+import com.google.gson.Gson;
+import org.auraframework.def.BaseComponentDef;
+import org.auraframework.def.ComponentDef;
+import org.auraframework.def.DefDescriptor;
+import org.auraframework.def.DefDescriptor.DefType;
+import org.auraframework.system.AuraContext;
+import org.auraframework.system.AuraContext.Mode;
+import org.auraframework.test.perf.PerfWebDriverUtil;
+import org.auraframework.test.util.WebDriverTestCase;
+import org.auraframework.test.util.WebDriverTestCase.TargetBrowsers;
+import org.auraframework.test.util.WebDriverUtil.BrowserType;
+import org.auraframework.throwable.quickfix.QuickFixException;
+import org.auraframework.util.AuraFiles;
+import org.auraframework.util.json.JsonEncoder;
+import org.auraframework.util.test.annotation.PerfCmpTest;
+import org.auraframework.util.test.perf.metrics.PerfMetrics;
+import org.auraframework.util.test.perf.metrics.PerfRunsCollector;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -28,36 +54,9 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.auraframework.Aura;
-import org.auraframework.def.BaseComponentDef;
-import org.auraframework.def.ComponentDef;
-import org.auraframework.def.DefDescriptor;
-import org.auraframework.def.DefDescriptor.DefType;
-import org.auraframework.system.AuraContext;
-import org.auraframework.system.AuraContext.Mode;
-import org.auraframework.test.perf.PerfWebDriverUtil;
-import org.auraframework.test.util.WebDriverTestCase;
-import org.auraframework.test.util.WebDriverTestCase.TargetBrowsers;
-import org.auraframework.test.util.WebDriverUtil.BrowserType;
-import org.auraframework.throwable.quickfix.QuickFixException;
-import org.auraframework.util.json.JsonEncoder;
-import org.auraframework.util.AuraFiles;
-import org.auraframework.util.test.annotation.PerfCmpTest;
-import org.auraframework.util.test.perf.metrics.PerfMetrics;
-import org.auraframework.util.test.perf.metrics.PerfRunsCollector;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.WebDriverWait;
-
-import com.google.common.collect.ImmutableMap;
-import com.google.gson.Gson;
-
 @PerfCmpTest
 @TargetBrowsers({ BrowserType.GOOGLECHROME })
-public class PerfExecutorTest extends WebDriverTestCase {
+public abstract class PerfExecutorTest extends WebDriverTestCase {
 
     private static final Logger logger = Logger.getLogger(PerfExecutorTest.class.getSimpleName());
     private DefDescriptor<BaseComponentDef> def;
@@ -70,7 +69,7 @@ public class PerfExecutorTest extends WebDriverTestCase {
     private static int DEFAULT_TIMEOUT = 60; // Webdriver timeout of 60 secs
     
     public PerfExecutorTest(DefDescriptor<BaseComponentDef> def, PerfConfig config, String db) {
-    	super("perf_" + def.getDescriptorName());
+        this.setName("perf_" + def.getDescriptorName());
         this.def = def;
         this.config = config;
         this.setDB(db);
@@ -79,11 +78,11 @@ public class PerfExecutorTest extends WebDriverTestCase {
    
     @Override
     protected void superRunTest() throws Throwable {
-    	try {
+        try {
             int numberOfRuns = config.getNumberOfRuns();
             String customTimeout = config.getOptions().get("timeout");
             if(customTimeout!=null){
-            	DEFAULT_TIMEOUT = Integer.parseInt(customTimeout);
+                DEFAULT_TIMEOUT = Integer.parseInt(customTimeout);
             }
             runsCollector = new PerfRunsCollector();
             while(numberOfRuns-- > 0)
@@ -102,10 +101,10 @@ public class PerfExecutorTest extends WebDriverTestCase {
     }
     
     private void setDB(String dbURI){
-    	this.dbURI = dbURI;
-    	if(dbURI == null) {
-    		this.dbURI = DEFAULT_DB_URI;
-    	}
+        this.dbURI = dbURI;
+        if (dbURI == null) {
+            this.dbURI = DEFAULT_DB_URI;
+        }
     }
     
     /**
@@ -114,25 +113,25 @@ public class PerfExecutorTest extends WebDriverTestCase {
      * @return
      */
     public String resolveComponentDirPath(DefDescriptor<ComponentDef> def) {
-    	String fileName;
-		File moduleDir;
-		String componentsDir = null;
-		try {
-			fileName = def.getDef().getLocation().getFileName();
-			moduleDir = new File(fileName).getCanonicalFile().getParentFile().getParentFile().getParentFile();
-			if(fileName.contains("/core/")){
-				componentsDir = moduleDir.toString();
-			} else {
-				componentsDir =  AuraFiles.Core.getPath() + "/aura-components/src/test/components";
-			}
-		} catch (QuickFixException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}		
-		return componentsDir;
+        String fileName;
+        File moduleDir;
+        String componentsDir = null;
+        try {
+            fileName = def.getDef().getLocation().getFileName();
+            moduleDir = new File(fileName).getCanonicalFile().getParentFile().getParentFile().getParentFile();
+            if (fileName.contains("/core/")) {
+                componentsDir = moduleDir.toString();
+            } else {
+                componentsDir = AuraFiles.Core.getPath() + "/aura-components/src/test/components";
+            }
+        } catch (QuickFixException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return componentsDir;
     }
     
     private void loadComponent(String url, DefDescriptor<BaseComponentDef> descriptor) throws MalformedURLException,
@@ -176,17 +175,17 @@ public class PerfExecutorTest extends WebDriverTestCase {
         return condition;
     }
 
-    private String generateUrl (DefDescriptor<BaseComponentDef> descriptor, Mode mode, String customUrl) throws UnsupportedEncodingException, MalformedURLException, URISyntaxException {    	
-    	// If descriptor is application type, then build the url with .app extension
-    	if (descriptor.getDefType() == DefType.APPLICATION) { 
-    		return new StringBuilder().append("/").append(descriptor.getNamespace())
-    								.append("/").append(descriptor.getName())
-    								.append(".app?aura.mode=").append(mode)
-    								.append(customUrl).toString();
-    	}
-    	
-    	// If descriptor is component type, then attach cmp def to url
-    	StringBuilder relativeUrl = new StringBuilder(RUNNER_BASE_URL);               
+    private String generateUrl(DefDescriptor<BaseComponentDef> descriptor, Mode mode, String customUrl) throws UnsupportedEncodingException, MalformedURLException, URISyntaxException {
+        // If descriptor is application type, then build the url with .app extension
+        if (descriptor.getDefType() == DefType.APPLICATION) {
+            return new StringBuilder().append("/").append(descriptor.getNamespace())
+                    .append("/").append(descriptor.getName())
+                    .append(".app?aura.mode=").append(mode)
+                    .append(customUrl).toString();
+        }
+
+        // If descriptor is component type, then attach cmp def to url
+        StringBuilder relativeUrl = new StringBuilder(RUNNER_BASE_URL);               
         relativeUrl.append("aura.mode=").append(mode).append(customUrl);
         Map<String, String> hash = ImmutableMap.of("componentDef", descriptor.getQualifiedName());
         relativeUrl.append("#").append(URLEncoder.encode(JsonEncoder.serialize(hash), "UTF-8"));        
@@ -195,17 +194,17 @@ public class PerfExecutorTest extends WebDriverTestCase {
     }
 
     public List<String> generateUrl(){
-    	List<String> customUrls = getCustomUrls();    	 
-    	List<String> urls = new ArrayList<>();
+        List<String> customUrls = getCustomUrls();
+        List<String> urls = new ArrayList<>();
         try {
-	    	if(customUrls.size()==0) {
-	    		String url = generateUrl(def, Mode.STATS, "");
-	    		urls.add(url);
-	    		return urls;
-	    	}       	
-        	for(String customUrl: customUrls) {
-        		urls.add(generateUrl(def, Mode.STATS, customUrl));
-        	}
+            if (customUrls.size() == 0) {
+                String url = generateUrl(def, Mode.STATS, "");
+                urls.add(url);
+                return urls;
+            }
+            for (String customUrl : customUrls) {
+                urls.add(generateUrl(def, Mode.STATS, customUrl));
+            }
             return urls;
         }catch (Exception e) {
             return urls;
@@ -213,49 +212,49 @@ public class PerfExecutorTest extends WebDriverTestCase {
     }
 
     private void doRun(String url, DefDescriptor<BaseComponentDef> descriptor) throws Exception {
-    	try {
-	    	setupContext(Mode.STATS, AuraContext.Format.JSON, descriptor);
-	    	logger.info("invoking runner.app: " + url);
-	    	Gson gson = new Gson();
-	    	String json = gson.toJson(config);
-	    	logger.info("component config:" + json);
-	    	      
-	    	try {
-		    	perfMetricsUtil.startCollecting();
-		    	loadComponent(url, descriptor);
-		    	perfMetricsUtil.stopCollecting(); //TODO handle case when component fails to load
-		    	PerfMetrics metrics = perfMetricsUtil.prepareResults();
-		    	runsCollector.addRun(metrics);
-	    	} catch (ThreadDeath td) {
-	    		throw td;
-	    	} catch (Throwable th) {
-		    	if (PerfWebDriverUtil.isInfrastructureError(th)) {
-			    	// retry if a possible infrastructure error
-			    	logger.log(Level.WARNING, "infrastructure error, retrying", th);
-		    	} else {
-		    		throw th;
-		    	}
-	    	}
-	    } finally {
-	    		Aura.getContextService().endContext();
-	    		quitDriver();
-	    }
+        try {
+            setupContext(Mode.STATS, AuraContext.Format.JSON, descriptor);
+            logger.info("invoking runner.app: " + url);
+            Gson gson = new Gson();
+            String json = gson.toJson(config);
+            logger.info("component config:" + json);
+
+            try {
+                perfMetricsUtil.startCollecting();
+                loadComponent(url, descriptor);
+                perfMetricsUtil.stopCollecting(); //TODO handle case when component fails to load
+                PerfMetrics metrics = perfMetricsUtil.prepareResults();
+                runsCollector.addRun(metrics);
+            } catch (ThreadDeath td) {
+                throw td;
+            } catch (Throwable th) {
+                if (PerfWebDriverUtil.isInfrastructureError(th)) {
+                    // retry if a possible infrastructure error
+                    logger.log(Level.WARNING, "infrastructure error, retrying", th);
+                } else {
+                    throw th;
+                }
+            }
+        } finally {
+            contextService.endContext();
+            quitDriver();
+        }
     }
     
     private List<String> getCustomUrls() {
-    	List<Map<String, Map<String, Object>>> options = config.getCustomOptions();
-    	List<String> urls = new ArrayList<>();
-    	
+        List<Map<String, Map<String, Object>>> options = config.getCustomOptions();
+        List<String> urls = new ArrayList<>();
+        
         if(options!=null) {
-        	//For each custom option, generate a unique url
-        	for(Map<String, Map<String, Object>> map: options) {
-        		StringBuilder customUrl = new StringBuilder();
-        		for(Entry<String, Map<String, Object>> entry: map.entrySet()) {        			
-        			for(Entry<String, Object> item: entry.getValue().entrySet())
-        				customUrl.append("&").append(item.getKey()).append("=").append(item.getValue()); 	
-        		}
-        		urls.add(customUrl.toString());
-        	}
+            //For each custom option, generate a unique url
+            for (Map<String, Map<String, Object>> map : options) {
+                StringBuilder customUrl = new StringBuilder();
+                for (Entry<String, Map<String, Object>> entry : map.entrySet()) {
+                    for (Entry<String, Object> item : entry.getValue().entrySet())
+                        customUrl.append("&").append(item.getKey()).append("=").append(item.getValue());
+                }
+                urls.add(customUrl.toString());
+            }
         }
         
         return urls;
@@ -267,13 +266,13 @@ public class PerfExecutorTest extends WebDriverTestCase {
                    
         List<Map<String, Map<String, Object>>> options = config.getCustomOptions();
         if(options!=null) {
-        	List<String> urls = getCustomUrls();
-	        for(String custUrl: urls){
-	        	url = generateUrl(descriptor, mode, custUrl);
-				doRun(url, descriptor);
-				//evaluateResults();
-	        }
-	        return;
+            List<String> urls = getCustomUrls();
+            for (String custUrl : urls) {
+                url = generateUrl(descriptor, mode, custUrl);
+                doRun(url, descriptor);
+                //evaluateResults();
+            }
+            return;
         }
         
         url = generateUrl(descriptor, mode, "");

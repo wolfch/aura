@@ -15,14 +15,16 @@
  */
 package org.auraframework.renderer;
 
-import java.io.IOException;
-
+import org.auraframework.annotations.Annotations.ServiceComponentRenderer;
 import org.auraframework.def.Renderer;
 import org.auraframework.instance.BaseComponent;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
+import java.io.IOException;
+
 /**
  */
+@ServiceComponentRenderer
 public class PlaceholderRenderer implements Renderer {
 
     @Override

@@ -15,31 +15,32 @@
  */
 package org.auraframework.test.instance;
 
+import com.google.common.collect.Maps;
+import org.auraframework.adapter.ExceptionAdapter;
+import org.auraframework.def.ComponentDef;
+import org.auraframework.def.DefDescriptor;
 import org.auraframework.instance.Action;
 import org.auraframework.instance.ActionDelegate;
+import org.auraframework.service.LoggingService;
 import org.auraframework.util.test.util.UnitTestCase;
+import org.junit.Test;
 import org.mockito.Mockito;
-
-import com.google.common.collect.Maps;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
 
-public class ActionDelegateTest extends UnitTestCase {
-    public ActionDelegateTest(String name) throws Exception {
-        super(name);
-    }
+import static org.mockito.Mockito.mock;
 
+public class ActionDelegateTest extends UnitTestCase {
     //
     // A class to remove the 'abstract'
     //
-    private static class MyDelegateAction extends ActionDelegate {
+    private class MyDelegateAction extends ActionDelegate {
         public MyDelegateAction(Action delegate) {
             super(delegate);
         }
-    };
-
+    }
 
     private void oneCall(Map<String, Method> methodMap, Map<String,Boolean> calledMap, String name,
             Object... args) throws Throwable {
@@ -56,9 +57,15 @@ public class ActionDelegateTest extends UnitTestCase {
         calledMap.put(name, Boolean.TRUE);
     }
 
+    @Test
     public void testCallsFunctions() throws Throwable {
         Map<String,Method> methodMap = Maps.newHashMap();
         Map<String,Boolean> calledMap = Maps.newHashMap();
+
+        LoggingService loggingService = mock(LoggingService.class);
+        ExceptionAdapter exceptionAdapter = mock(ExceptionAdapter.class);
+
+        DefDescriptor<ComponentDef> componentDescriptor = mock(DefDescriptor.class);
 
         for (Method m : Action.class.getMethods()) {
             assertFalse("Duplicate method name "+m.getName(), methodMap.containsKey(m.getName()));
@@ -71,7 +78,7 @@ public class ActionDelegateTest extends UnitTestCase {
         
         oneCall(methodMap, calledMap, "getId");
         oneCall(methodMap, calledMap, "setId", new String("id"));
-        oneCall(methodMap, calledMap, "run");
+        oneCall(methodMap, calledMap, "run", loggingService, exceptionAdapter);
         oneCall(methodMap, calledMap, "add", (Object)null);
         oneCall(methodMap, calledMap, "getActions");
         oneCall(methodMap, calledMap, "getReturnValue");
@@ -85,7 +92,7 @@ public class ActionDelegateTest extends UnitTestCase {
         oneCall(methodMap, calledMap, "getInstanceStack");
 
         oneCall(methodMap, calledMap, "getCallingDescriptor");
-        oneCall(methodMap, calledMap, "setCallingDescriptor", new String("descriptor"));
+        oneCall(methodMap, calledMap, "setCallingDescriptor", componentDescriptor);
         
         oneCall(methodMap, calledMap, "getCallerVersion");
         oneCall(methodMap, calledMap, "setCallerVersion", new String("version"));

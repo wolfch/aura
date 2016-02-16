@@ -18,23 +18,21 @@
  */
 package org.auraframework.impl.javascript.renderer;
 
-import static org.auraframework.instance.AuraValueProviderType.LABEL;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Set;
-
+import com.google.common.collect.Sets;
 import org.auraframework.Aura;
 import org.auraframework.def.RendererDef;
 import org.auraframework.expression.PropertyReference;
 import org.auraframework.impl.system.DefinitionImpl;
-import org.auraframework.instance.BaseComponent;
 import org.auraframework.instance.GlobalValueProvider;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.json.JsFunction;
 import org.auraframework.util.json.Json;
 
-import com.google.common.collect.Sets;
+import java.io.IOException;
+import java.util.List;
+import java.util.Set;
+
+import static org.auraframework.instance.AuraValueProviderType.LABEL;
 
 public class JavascriptRendererDef extends DefinitionImpl<RendererDef> implements RendererDef {
     private static final long serialVersionUID = -6937625695562864219L;
@@ -120,11 +118,6 @@ public class JavascriptRendererDef extends DefinitionImpl<RendererDef> implement
     }
 
     @Override
-    public void render(BaseComponent<?, ?> component, Appendable out) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public void retrieveLabels() throws QuickFixException {
         GlobalValueProvider labelProvider = Aura.getContextService().getCurrentContext().getGlobalProviders()
                 .get(LABEL.getPrefix());
@@ -151,5 +144,10 @@ public class JavascriptRendererDef extends DefinitionImpl<RendererDef> implement
         public JavascriptRendererDef build() {
             return new JavascriptRendererDef(this);
         }
+    }
+
+    @Override
+    public Class<?> getJavaType() {
+        return null;
     }
 }

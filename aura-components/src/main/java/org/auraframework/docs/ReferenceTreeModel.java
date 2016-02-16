@@ -15,11 +15,8 @@
  */
 package org.auraframework.docs;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.auraframework.Aura;
 import org.auraframework.adapter.ConfigAdapter;
 import org.auraframework.components.ui.TreeNode;
@@ -34,8 +31,10 @@ import org.auraframework.system.Annotations.Model;
 import org.auraframework.system.MasterDefRegistry;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Model
 public class ReferenceTreeModel {
@@ -77,7 +76,7 @@ public class ReferenceTreeModel {
                 String namespace = desc.getNamespace();
                 if (configAdapter.isDocumentedNamespace(namespace)) {
                     try {
-                        Definition def = desc.getDef();
+                        Definition def = Aura.getDefinitionService().getDefinition(desc);
                         if (hasAccess(def)) {
                             TreeNode namespaceTreeNode = namespaceTreeNodes.get(desc.getNamespace());
                             if (namespaceTreeNode == null) {
@@ -98,7 +97,7 @@ public class ReferenceTreeModel {
 
                             // Preload the def
                             try {
-                                desc.getDef();
+                                Aura.getDefinitionService().getDefinition(desc);
                             } catch (Throwable t) {
                                 // ignore problems, we were only trying to preload
                             }

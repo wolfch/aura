@@ -15,9 +15,7 @@
  */
 package org.auraframework.test.mock;
 
-import java.io.IOException;
-import java.util.Set;
-
+import org.auraframework.adapter.ConfigAdapter;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.Definition;
 import org.auraframework.def.DefinitionAccess;
@@ -29,6 +27,9 @@ import org.auraframework.util.json.Json;
 import org.auraframework.util.json.Serialization;
 import org.auraframework.util.json.Serialization.ReferenceScope;
 import org.auraframework.util.json.Serialization.ReferenceType;
+
+import java.io.IOException;
+import java.util.Set;
 
 /**
  * A simple Definition.
@@ -142,7 +143,7 @@ public abstract class MockDefinition<D extends Definition> implements Definition
 
         @Override
         public void validate(String namespace, boolean allowAuth,
-                boolean allowPrivate) throws InvalidAccessValueException {
+                             boolean allowPrivate, ConfigAdapter configAdapter) throws InvalidAccessValueException {
         }
     }
 

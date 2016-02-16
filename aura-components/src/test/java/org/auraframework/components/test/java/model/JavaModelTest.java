@@ -15,9 +15,6 @@
  */
 package org.auraframework.components.test.java.model;
 
-import java.io.IOException;
-
-import org.auraframework.Aura;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.Definition;
@@ -28,7 +25,6 @@ import org.auraframework.impl.expression.PropertyReferenceImpl;
 import org.auraframework.impl.java.model.JavaModelDefFactory;
 import org.auraframework.impl.system.DefDescriptorImpl;
 import org.auraframework.instance.Model;
-import org.auraframework.service.DefinitionService;
 import org.auraframework.system.Annotations;
 import org.auraframework.system.Location;
 import org.auraframework.test.source.StringSourceLoader;
@@ -37,6 +33,10 @@ import org.auraframework.throwable.NoAccessException;
 import org.auraframework.throwable.quickfix.DefinitionNotFoundException;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
 import org.auraframework.util.json.Json;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import java.io.IOException;
 
 /**
  * This class provides automation for Java models.
@@ -115,16 +115,14 @@ public class JavaModelTest extends AuraImplTestCase {
         }
     };
 
-    public JavaModelTest(String name) {
-        super(name);
-    }
-
+    @Test
     public void testSerializeMetadata() throws Exception {
         JavaModelDefFactory factory = new JavaModelDefFactory();
         ModelDef def = factory.getDef(descriptor);
         serializeAndGoldFile(def);
     }
 
+    @Test
     public void testSerializeData() throws Exception {
         JavaModelDefFactory factory = new JavaModelDefFactory(null);
         ModelDef def = factory.getDef(descriptor);
@@ -137,12 +135,13 @@ public class JavaModelTest extends AuraImplTestCase {
      *
      * @userStory a07B0000000FAmj
      */
+    @Test
     public void testClassLevelAnnotationForJavaModel() throws Exception {
-        DefDescriptor<ModelDef> javaModelDefDesc = DefDescriptorImpl.getInstance(
+        DefDescriptor<ModelDef> javaModelDefDesc = definitionService.getDefDescriptor(
                 "java://org.auraframework.components.test.java.model.TestModel", ModelDef.class);
         assertNotNull(javaModelDefDesc.getDef());
 
-        DefDescriptor<ModelDef> javaModelWOAnnotationDefDesc = DefDescriptorImpl.getInstance(
+        DefDescriptor<ModelDef> javaModelWOAnnotationDefDesc = definitionService.getDefDescriptor(
                 "java://org.auraframework.components.test.java.model.TestModelWithoutAnnotation", ModelDef.class);
         try {
             javaModelWOAnnotationDefDesc.getDef();
@@ -156,8 +155,9 @@ public class JavaModelTest extends AuraImplTestCase {
     /**
      * Test subclassing.
      */
+    @Test
     public void testModelSubclass() throws Exception {
-        DefDescriptor<ModelDef> javaModelDefDesc = DefDescriptorImpl.getInstance(
+        DefDescriptor<ModelDef> javaModelDefDesc = definitionService.getDefDescriptor(
                 "java://org.auraframework.components.test.java.model.TestModelSubclass", ModelDef.class);
         ModelDef def = javaModelDefDesc.getDef();
         assertNotNull(def);
@@ -177,6 +177,7 @@ public class JavaModelTest extends AuraImplTestCase {
     /**
      * Verify that nice exception is thrown if model accessor is void
      */
+    @Test
     public void testModelMethodSignatures() throws Exception {
         String[] failModels = new String[] { "java://org.auraframework.components.test.java.model.TestModelWithVoid",
         "java://org.auraframework.components.test.java.model.TestModelWithStatic" };
@@ -185,7 +186,7 @@ public class JavaModelTest extends AuraImplTestCase {
 
         for (int i = 0; i < failModels.length; i++) {
             try {
-                Aura.getDefinitionService().getDefinition(failModels[i], ModelDef.class);
+                definitionService.getDefinition(failModels[i], ModelDef.class);
                 fail("Expected InvalidDefinitionException on model " + failModels[i]);
             } catch (Exception e) {
                 checkExceptionStart(e, InvalidDefinitionException.class, failMessages[i], failModels[i]);
@@ -196,20 +197,22 @@ public class JavaModelTest extends AuraImplTestCase {
     /**
      * Verify that nice exception is thrown if model def doesn't exist
      */
+    @Test
     public void testModelNotFound() throws Exception {
         DefDescriptor<ComponentDef> dd = addSourceAutoCleanup(ComponentDef.class,
                 "<aura:component model='java://goats'/>");
         try {
-            Aura.getInstanceService().getInstance(dd);
+            instanceService.getInstance(dd);
             fail("Expected DefinitionNotFoundException");
         } catch (DefinitionNotFoundException e) {
-            assertEquals("No MODEL named java://goats found", e.getMessage());
+            assertTrue(e.getMessage().startsWith("No MODEL named java://goats found"));
         }
     }
 
     /**
      * Verify model can be accessed in system namespace
      */
+    @Test
     public void testModelInSystemNamespace() throws Exception {
         String resourceSource = "<aura:component model='java://org.auraframework.components.test.java.model.TestModel'>Hello World!</aura:component>";
 
@@ -217,7 +220,7 @@ public class JavaModelTest extends AuraImplTestCase {
                 StringSourceLoader.DEFAULT_NAMESPACE + ":testComponent", true);
 
         try {
-            Aura.getInstanceService().getInstance(dd);
+            instanceService.getInstance(dd);
         } catch (NoAccessException e) {
             fail("Not Expected NoAccessException");
         }
@@ -226,6 +229,7 @@ public class JavaModelTest extends AuraImplTestCase {
     /**
      * Verify model can not be accessed in custom namespace
      */
+    @Test
     public void testModelInCustomNamespace() throws Exception {
         String resourceSource = "<aura:component model='java://org.auraframework.components.test.java.model.TestModel'>Hello World!</aura:component>";
 
@@ -233,7 +237,7 @@ public class JavaModelTest extends AuraImplTestCase {
                 StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testComponent", false);
 
         try {
-            Aura.getInstanceService().getInstance(dd);
+            instanceService.getInstance(dd);
             fail("Expected NoAccessException");
         } catch (NoAccessException e) {
             String errorMessage = "Access to model 'org.auraframework.components.test.java.model:TestModel' from namespace '"+StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+"' in '"+dd.getQualifiedName()+"(COMPONENT)' disallowed by MasterDefRegistry.assertAccess()";
@@ -244,8 +248,9 @@ public class JavaModelTest extends AuraImplTestCase {
     /**
      * Verify that accessing a non-existing property on model throws Exception.
      */
+    @Test
     public void testNonExistingPropertiesOnModel() throws Exception {
-        DefDescriptor<ModelDef> javaModelDefDesc = DefDescriptorImpl.getInstance(
+        DefDescriptor<ModelDef> javaModelDefDesc = definitionService.getDefDescriptor(
                 "java://org.auraframework.components.test.java.model.TestModel", ModelDef.class);
         ModelDef mDef = javaModelDefDesc.getDef();
         assertNotNull(mDef);
@@ -267,8 +272,7 @@ public class JavaModelTest extends AuraImplTestCase {
     }
 
     private void checkInvalidModel(Class<?> clazz, String message) {
-        DefDescriptor<ModelDef> desc = DefDescriptorImpl.getInstance("java://" + clazz.getName(), ModelDef.class);
-        DefinitionService definitionService = Aura.getDefinitionService();
+        DefDescriptor<ModelDef> desc = definitionService.getDefDescriptor("java://" + clazz.getName(), ModelDef.class);
         try {
             definitionService.getDefinition(desc);
             fail("Expected exception");
@@ -283,6 +287,8 @@ public class JavaModelTest extends AuraImplTestCase {
         }
     };
 
+    @Ignore
+    @Test
     public void testPrivateConstructor() throws Exception {
         checkInvalidModel(ModelPrivateConstructor.class, "Default constructor is not public");
     }
@@ -293,6 +299,8 @@ public class JavaModelTest extends AuraImplTestCase {
         }
     };
 
+    @Ignore
+    @Test
     public void testProtectedConstructor() throws Exception {
         checkInvalidModel(ModelProtectedConstructor.class, "Default constructor is not public");
     }
@@ -303,6 +311,8 @@ public class JavaModelTest extends AuraImplTestCase {
         }
     };
 
+    @Ignore
+    @Test
     public void testBadConstructor() throws Exception {
         checkInvalidModel(ModelBadConstructor.class, "No default constructor found");
     }

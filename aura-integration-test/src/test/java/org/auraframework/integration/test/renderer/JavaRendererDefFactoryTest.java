@@ -15,21 +15,23 @@
  */
 package org.auraframework.integration.test.renderer;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-
 import org.auraframework.Aura;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.Renderer;
 import org.auraframework.def.RendererDef;
 import org.auraframework.impl.AuraImplTestCase;
+import org.auraframework.impl.DefinitionAccessImpl;
 import org.auraframework.impl.java.renderer.JavaRendererDef;
 import org.auraframework.impl.java.renderer.JavaRendererDefFactory;
-import org.auraframework.impl.system.DefDescriptorImpl;
 import org.auraframework.instance.BaseComponent;
+import org.auraframework.system.AuraContext;
 import org.auraframework.throwable.quickfix.DefinitionNotFoundException;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
+import org.junit.Test;
+
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 /**
  * This class has automation for JavaRendererDefFactory. This factory fetches definitions of renderers defined in Java.
@@ -41,10 +43,6 @@ import org.auraframework.throwable.quickfix.InvalidDefinitionException;
 public class JavaRendererDefFactoryTest extends AuraImplTestCase {
     JavaRendererDefFactory factory;
 
-    public JavaRendererDefFactoryTest(String name) {
-        super(name);
-    }
-
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -54,8 +52,9 @@ public class JavaRendererDefFactoryTest extends AuraImplTestCase {
     /**
      * Verify Generation of JavaRendererDef from JavaRendererDefFactory.
      */
+    @Test
     public void testDefGeneration() throws Exception {
-        DefDescriptor<RendererDef> descriptor = DefDescriptorImpl.getInstance(
+        DefDescriptor<RendererDef> descriptor = definitionService.getDefDescriptor(
                 "java://org.auraframework.impl.renderer.sampleJavaRenderers.TestSimpleRenderer", RendererDef.class);
         RendererDef def = factory.getDef(descriptor);
         assertTrue("JavaRendererDefFactory should always generate JavaRendererDefs", def instanceof JavaRendererDef);
@@ -64,9 +63,10 @@ public class JavaRendererDefFactoryTest extends AuraImplTestCase {
     /**
      * Verify that specifying a non existent Java class returns null.
      */
+    @Test
     public void testClassNotFound() throws Exception {
-        DefDescriptor<RendererDef> descriptor = DefDescriptorImpl
-                .getInstance("java://ClassNotFound", RendererDef.class);
+        DefDescriptor<RendererDef> descriptor = definitionService
+                .getDefDescriptor("java://ClassNotFound", RendererDef.class);
         assertNull(factory.getDef(descriptor));
 
         DefDescriptor<ComponentDef> cmpDesc = addSourceAutoCleanup(ComponentDef.class,
@@ -86,6 +86,7 @@ public class JavaRendererDefFactoryTest extends AuraImplTestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testRendererInterfaceProperties() throws Exception {
         try {
             Method renderMethod = Renderer.class.getMethod("render", BaseComponent.class, Appendable.class);
@@ -103,13 +104,14 @@ public class JavaRendererDefFactoryTest extends AuraImplTestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testAbstractClassAsRenderer() throws Exception {
         // 1. Renderers which extend Renderer interface
-        DefDescriptor<RendererDef> descriptor = DefDescriptorImpl.getInstance(
+        DefDescriptor<RendererDef> descriptor = definitionService.getDefDescriptor(
                 "java://org.auraframework.impl.renderer.sampleJavaRenderers.TestAbstractRenderer", RendererDef.class);
         try {
         	Aura.getDefinitionService().getDefinition(descriptor);
-        	fail("JavaRenderers that extend Renderer interface cannot be abstract.");
+            fail("JavaRenderers that extend Renderer interface cannot be abstract.");
         } catch (Exception e) {
             checkExceptionFull(e, InvalidDefinitionException.class,
                     "Cannot instantiate org.auraframework.impl.renderer.sampleJavaRenderers.TestAbstractRenderer",
@@ -120,8 +122,9 @@ public class JavaRendererDefFactoryTest extends AuraImplTestCase {
     /**
      * Verify that a JavaRenderer extending Renderer interface cannot hide its constructor.
      */
+    @Test
     public void testRendererWithPrivateConstructor() throws Exception {
-        DefDescriptor<RendererDef> descriptor = DefDescriptorImpl.getInstance(
+        DefDescriptor<RendererDef> descriptor = definitionService.getDefDescriptor(
                 "java://org.auraframework.impl.renderer.sampleJavaRenderers.TestPrivateConstructorInRendererExtension",
                 RendererDef.class);
         try {
@@ -139,10 +142,12 @@ public class JavaRendererDefFactoryTest extends AuraImplTestCase {
     /**
      * Verify that specifying a Java class not implementing Renderer interface throws runtime exception.
      */
+    @Test
     public void testClassDoesNotImplementRenderer() throws Exception {
         JavaRendererDef.Builder builder = new JavaRendererDef.Builder();
-        builder.setDescriptor(DefDescriptorImpl.getInstance(
+        builder.setDescriptor(definitionService.getDefDescriptor(
                 "java://org.auraframework.impl.renderer.sampleJavaRenderers.TestSimpleRenderer", RendererDef.class));
+        builder.setAccess(new DefinitionAccessImpl(AuraContext.Access.PUBLIC));
         JavaRendererDef def = builder.build();
 
         try {

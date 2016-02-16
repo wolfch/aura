@@ -16,11 +16,6 @@
 
 package org.auraframework.integration.test.javascript.parser;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
-
-import java.util.Map;
-
 import org.auraframework.def.ActionDef;
 import org.auraframework.def.ControllerDef;
 import org.auraframework.def.DefDescriptor;
@@ -31,16 +26,23 @@ import org.auraframework.system.Source;
 import org.auraframework.test.source.StringSourceLoader;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
 import org.auraframework.util.json.JsonEncoder;
+import org.junit.Test;
+
+import javax.inject.Inject;
+import java.util.Map;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
 
 public class JavascriptControllerParserTest extends AuraImplTestCase {
 
-    public JavascriptControllerParserTest(String name) {
-        super(name);
-    }
+    @Inject
+    StringSourceLoader loader;
 
     /**
      * Verify JavascriptControllerParser parsing client controller
      */
+    @Test
     public void testParseNormalJSController() throws Exception {
         String controllerJs =
             "({\n" +
@@ -52,7 +54,7 @@ public class JavascriptControllerParserTest extends AuraImplTestCase {
             "    }\n" +
             "})";
         DefDescriptor<ControllerDef> controllerDesc = addSourceAutoCleanup(ControllerDef.class, controllerJs);
-        Source<ControllerDef> source = StringSourceLoader.getInstance().getSource(controllerDesc);
+        Source<ControllerDef> source = loader.getSource(controllerDesc);
 
         ControllerDef controllerDef = new JavascriptControllerParser().parse(controllerDesc, source);
 
@@ -63,6 +65,7 @@ public class JavascriptControllerParserTest extends AuraImplTestCase {
     /**
      * Verify JavascriptControllerParser parsing client controller with comments
      */
+    @Test
     public void testParseJSControllerWithComments() throws Exception {
         String controllerJs =
             "({\n" +
@@ -77,7 +80,7 @@ public class JavascriptControllerParserTest extends AuraImplTestCase {
             "    }\n" +
             "})";
         DefDescriptor<ControllerDef> controllerDesc = addSourceAutoCleanup(ControllerDef.class, controllerJs);
-        Source<ControllerDef> source = StringSourceLoader.getInstance().getSource(controllerDesc);
+        Source<ControllerDef> source = loader.getSource(controllerDesc);
 
         ControllerDef controllerDef = new JavascriptControllerParser().parse(controllerDesc, source);
 
@@ -88,6 +91,7 @@ public class JavascriptControllerParserTest extends AuraImplTestCase {
     /**
      * Verify when there are multiple controller functions have same name, only keep the later one.
      */
+    @Test
     public void testParseJSControllerWithDuplicateFunction() throws Exception {
         String controllerJs =
                 "({\n" +
@@ -95,7 +99,7 @@ public class JavascriptControllerParserTest extends AuraImplTestCase {
                 "    function1: function(cmp) {var v = 2;}\n" +
                 "})";
         DefDescriptor<ControllerDef> controllerDesc = addSourceAutoCleanup(ControllerDef.class, controllerJs);
-        Source<ControllerDef> source = StringSourceLoader.getInstance().getSource(controllerDesc);
+        Source<ControllerDef> source = loader.getSource(controllerDesc);
 
         ControllerDef controllerDef = new JavascriptControllerParser().parse(controllerDesc, source);
 
@@ -114,13 +118,14 @@ public class JavascriptControllerParserTest extends AuraImplTestCase {
      * Verify parsing invalid client controller with invalid controller syntax. There is a variable declaration.
      * Parser doesn't throw any exception but store the exception. Throwing the exception when validate the definition.
      */
+    @Test
     public void testParseInvalidJSController() throws Exception {
         String controllerJs =
                 "({\n" +
                 "    var global = 'Do everything';\n"+
                 "})";
         DefDescriptor<ControllerDef> controllerDesc = addSourceAutoCleanup(ControllerDef.class, controllerJs);
-        Source<ControllerDef> source = StringSourceLoader.getInstance().getSource(controllerDesc);
+        Source<ControllerDef> source = loader.getSource(controllerDesc);
 
         ControllerDef controllerDef = new JavascriptControllerParser().parse(controllerDesc, source);
         try {
@@ -135,13 +140,14 @@ public class JavascriptControllerParserTest extends AuraImplTestCase {
      * Verify parsing invalid client controller with invalid controller syntax. There is a non function element.
      * Parser doesn't throw any exception but store the exception. Throwing the exception when validate the definition.
      */
+    @Test
     public void testParseControllerWithNonFunctionElement() throws Exception {
         String controllerJs =
                 "({\n" +
                 "    foo: 'do NOthing'\n"+
                 "})";
         DefDescriptor<ControllerDef> controllerDesc = addSourceAutoCleanup(ControllerDef.class, controllerJs);
-        Source<ControllerDef> source = StringSourceLoader.getInstance().getSource(controllerDesc);
+        Source<ControllerDef> source = loader.getSource(controllerDesc);
 
         ControllerDef controllerDef = new JavascriptControllerParser().parse(controllerDesc, source);
         try {

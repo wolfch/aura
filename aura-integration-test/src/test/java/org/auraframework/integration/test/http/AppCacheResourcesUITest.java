@@ -15,21 +15,16 @@
  */
 package org.auraframework.integration.test.http;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
-
-import org.auraframework.Aura;
+import com.google.common.base.Function;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.ControllerDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.Definition;
 import org.auraframework.def.StyleDef;
-import org.auraframework.service.ContextService;
 import org.auraframework.system.AuraContext;
 import org.auraframework.system.AuraContext.Authentication;
 import org.auraframework.system.AuraContext.Format;
@@ -42,6 +37,7 @@ import org.auraframework.util.AuraTextUtil;
 import org.auraframework.util.test.annotation.FreshBrowserInstance;
 import org.auraframework.util.test.annotation.ThreadHostileTest;
 import org.auraframework.util.test.annotation.UnAdaptableTest;
+import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.StaleElementReferenceException;
@@ -49,10 +45,13 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 
-import com.google.common.base.Function;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
+import javax.inject.Inject;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
 
 /**
  * Tests for AppCache functionality by watching the requests received at the server and verifying that the updated
@@ -78,9 +77,8 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
     private String namespace;
     private String cmpName;
 
-    public AppCacheResourcesUITest(String name) {
-        super(name);
-    }
+    @Inject
+    private TestLoggingAdapterController testLoggingAdapterController;
 
     @Override
     public void perBrowserSetUp() {
@@ -136,6 +134,7 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
      * BrowserType.SAFARI is disabled: W-2367702
      */
     @TargetBrowsers({ BrowserType.GOOGLECHROME, BrowserType.IPAD, BrowserType.IPHONE })
+    @Test
     // TODO(W-2903378): re-enable when we are able to inject TestLoggingAdapter.
     @UnAdaptableTest
     public void testNoChanges() throws Exception {
@@ -158,6 +157,7 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
     @TargetBrowsers({ BrowserType.GOOGLECHROME, BrowserType.IPAD, BrowserType.IPHONE })
     // TODO(W-2701964): Flapping in autobuilds, needs to be revisited
     @Flapper
+    @Test
     // TODO(W-2903378): re-enable when we are able to inject TestLoggingAdapter.
     @UnAdaptableTest
     public void testCacheError() throws Exception {
@@ -197,6 +197,7 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
      * BrowserType.SAFARI is disabled: W-2367702
      */
     @TargetBrowsers({ BrowserType.GOOGLECHROME, BrowserType.IPAD, BrowserType.IPHONE })
+    @Test
     // TODO(W-2903378): re-enable when we are able to inject TestLoggingAdapter.
     @UnAdaptableTest
     public void testCacheErrorWithEmptyCache() throws Exception {
@@ -235,6 +236,7 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
     @UnAdaptableTest
     // TODO(W-2701964): Flapping in autobuilds, needs to be revisited
     @Flapper
+    @Test
     public void testManifestRequestLimitExceeded() throws Exception {
         List<Request> logs = loadMonitorAndValidateApp(TOKEN, TOKEN, "", TOKEN);
         assertRequests(getExpectedInitialRequests(), logs);
@@ -270,6 +272,7 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
      */
     @ThreadHostileTest("NamespaceDef modification affects namespace")
     @TargetBrowsers({ BrowserType.GOOGLECHROME, BrowserType.SAFARI, BrowserType.IPAD, BrowserType.IPHONE })
+    @Test
     // TODO(W-2903378): re-enable when we are able to inject TestLoggingAdapter.
     @UnAdaptableTest
     public void testComponentCssChange() throws Exception {
@@ -299,6 +302,7 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
      * Opening cached app after namespace controller change will trigger cache update.
      */
     @TargetBrowsers({ BrowserType.GOOGLECHROME, BrowserType.SAFARI, BrowserType.IPAD, BrowserType.IPHONE })
+    @Test
     // TODO(W-2903378): re-enable when we are able to inject TestLoggingAdapter.
     @UnAdaptableTest
     public void testComponentJsChange() throws Exception {
@@ -328,6 +332,7 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
      * Opening cached app after component markup change will trigger cache update.
      */
     @TargetBrowsers({ BrowserType.GOOGLECHROME, BrowserType.SAFARI, BrowserType.IPAD, BrowserType.IPHONE })
+    @Test
     // TODO(W-2903378): re-enable when we are able to inject TestLoggingAdapter.
     @UnAdaptableTest
     public void testComponentMarkupChange() throws Exception {
@@ -353,6 +358,7 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
      * Persistent storage (IndexedDB) is disabled in Safari so only run in Chrome.
      */
     @TargetBrowsers({ BrowserType.GOOGLECHROME })
+    @Test
     // TODO(W-2903378): re-enable when we are able to inject TestLoggingAdapter.
     @UnAdaptableTest
     public void testStoragesClearedOnAppcacheUpdate() throws Exception {
@@ -459,7 +465,7 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
     }
 
     private <T extends Definition> DefDescriptor<T> createDef(Class<T> defClass, String qualifiedName, String content) {
-        DefDescriptor<T> desc = Aura.getDefinitionService().getDefDescriptor(qualifiedName, defClass);
+        DefDescriptor<T> desc = definitionService.getDefDescriptor(qualifiedName, defClass);
         addSourceAutoCleanup(desc, content);
         return desc;
     }
@@ -483,12 +489,11 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
 
     // provide a test component with TOKENs for replacement to trigger lastMod updates
     private ComponentDef getTargetComponent() throws Exception {
-        ContextService service = Aura.getContextService();
-        AuraContext context = service.getCurrentContext();
+        AuraContext context = contextService.getCurrentContext();
         if (context == null) {
-            context = service.startContext(Mode.SELENIUM, Format.HTML, Authentication.AUTHENTICATED);
+            context = contextService.startContext(Mode.SELENIUM, Format.HTML, Authentication.AUTHENTICATED);
         }
-        return Aura.getDefinitionService().getDefinition(
+        return definitionService.getDefinition(
                 String.format("%s:%s", namespace, cmpName), ComponentDef.class);
     }
 
@@ -568,11 +573,11 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
      * @param markupToken The text to be found in the markup.
      * @param jsToken The text to be found from js
      * @param cssToken The text to be found from css.
-     * @param Token The text to be found from the framework.
+     * @param fwToken The text to be found from the framework.
      */
     private List<Request> loadMonitorAndValidateApp(final String markupToken, String jsToken, String cssToken,
             String fwToken) throws Exception {
-        TestLoggingAdapterController.beginCapture();
+        testLoggingAdapterController.beginCapture();
 
         // Opening a page through WebDriverTestCase adds a nonce to ensure fresh resources. In this case we want to see
         // what's cached, so build our URL and call WebDriver.get() directly.
@@ -660,11 +665,9 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
     // replaces TOKEN found in the source file with the provided replacement
     private void replaceToken(DefDescriptor<?> descriptor, String replacement) throws Exception {
         assertNotNull("Missing descriptor for source replacement!", descriptor);
-        ContextService service = Aura.getContextService();
-        AuraContext context = service.getCurrentContext();
+        AuraContext context = contextService.getCurrentContext();
         if (context == null) {
-            context = service.startContext(Mode.SELENIUM, Format.HTML,
-                    Authentication.AUTHENTICATED);
+            context = contextService.startContext(Mode.SELENIUM, Format.HTML, Authentication.AUTHENTICATED);
         }
         Source<?> source = context.getDefRegistry().getSource(descriptor);
         String originalContent = source.getContents();
@@ -674,7 +677,7 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
 
     private List<Request> endMonitoring() {
         List<Request> logs = Lists.newLinkedList();
-        for (Map<String, Object> log : TestLoggingAdapterController.endCapture()) {
+        for (Map<String, Object> log : testLoggingAdapterController.endCapture()) {
             if (!"GET".equals(log.get("requestMethod"))) {
                 if (debug) {
                     // Log ignored lines so that we can monitor what happens. The line above had nulls as requestMethod,

@@ -15,19 +15,17 @@
  */
 package org.auraframework.integration.test.root;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.DependencyDef;
 import org.auraframework.impl.AuraImplTestCase;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
+import org.junit.Test;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class DependencyDefImplTest extends AuraImplTestCase {
-    public DependencyDefImplTest(String name) {
-        super(name);
-    }
-
+    @Test
     public void testDependencyDefAndValidate() throws Exception {
         DependencyDef testDependencyDef = null;
 
@@ -79,6 +77,7 @@ public class DependencyDefImplTest extends AuraImplTestCase {
      * Since this test looks in a namespace that can be changed over time, the specific names of dependencies may need
      * to be changed as the source code changes.
      */
+    @Test
     public void testAppendDependencies() throws Exception {
         DependencyDef testDependencyDef;
         Set<DefDescriptor<?>> deps = new HashSet<>();

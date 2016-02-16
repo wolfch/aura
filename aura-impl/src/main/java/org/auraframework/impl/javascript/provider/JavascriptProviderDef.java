@@ -15,30 +15,22 @@
  */
 package org.auraframework.impl.javascript.provider;
 
-import java.util.Collection;
-import java.util.Set;
-
-import static org.auraframework.instance.AuraValueProviderType.LABEL;
-
-import java.io.IOException;
-
+import com.google.common.collect.Sets;
 import org.auraframework.Aura;
-
-import org.auraframework.builder.ComponentDefRefBuilder;
-import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.ProviderDef;
-import org.auraframework.def.RootDefinition;
-
 import org.auraframework.expression.PropertyReference;
 import org.auraframework.impl.system.DefinitionImpl;
-import org.auraframework.instance.ComponentConfig;
 import org.auraframework.instance.GlobalValueProvider;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.json.JsFunction;
 import org.auraframework.util.json.Json;
 
-import com.google.common.collect.Sets;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Set;
+
+import static org.auraframework.instance.AuraValueProviderType.LABEL;
 
 /**
  * A javascript provider.
@@ -110,17 +102,12 @@ public class JavascriptProviderDef extends DefinitionImpl<ProviderDef> implement
     }
 
     @Override
-    public ComponentConfig provide(DefDescriptor<? extends RootDefinition> intfDescriptor) throws QuickFixException {
-        return null;
-    }
-
-    @Override
-    public ComponentConfig provide(ComponentDefRefBuilder ref) throws QuickFixException {
-        return null;
-    }
-
-    @Override
     public boolean supportsRefProvide() {
         return false;
+    }
+
+    @Override
+    public Class<?> getJavaType() {
+        return null;
     }
 }

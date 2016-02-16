@@ -17,6 +17,8 @@ package org.auraframework.integration.test;
 
 import org.auraframework.test.util.WebDriverTestCase;
 import org.auraframework.util.test.annotation.ThreadHostileTest;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
@@ -24,10 +26,7 @@ import org.openqa.selenium.WebElement;
 @ThreadHostileTest("Tests modify what namespaces are privileged or not")
 public class AccessChecksUITest extends WebDriverTestCase {
 
-    public AccessChecksUITest(String name) {
-        super(name);
-    }
-
+    @Test
     public void testGlobalComponentAccessibleFromUnprivilegedNamespace() throws Exception {
         getMockConfigAdapter().setUnprivilegedNamespace("componentTest");
         open("/componentTest/accessUnprivilegedNamespace.cmp?cmpToCreate=auratest:accessGlobalComponent");
@@ -41,6 +40,7 @@ public class AccessChecksUITest extends WebDriverTestCase {
      * Note that since auratest:accessPublicComponent IS included as a dependency on accessUnprivilegedNamespace, this
      * will try to the component on the client and fail.
      */
+    @Test
     public void testPublicComponentInaccessibleFromUnprivilegedNamespace() throws Exception {
         getMockConfigAdapter().setUnprivilegedNamespace("componentTest");
         open("/componentTest/accessUnprivilegedNamespace.cmp?cmpToCreate=auratest:accessPublicComponent");
@@ -60,6 +60,7 @@ public class AccessChecksUITest extends WebDriverTestCase {
      * Note that since we did not include auratest:accessInternalComponent as a dependency on
      * accessUnprivilegedNamespace, this will attempt to get the component from the server.
      */
+    @Test
     public void testInternalComponentInaccessibleFromUnprivilegedNamespace() throws Exception {
         getMockConfigAdapter().setUnprivilegedNamespace("componentTest");
         open("/componentTest/accessUnprivilegedNamespace.cmp?cmpToCreate=auratest:accessInternalComponent");
@@ -70,6 +71,7 @@ public class AccessChecksUITest extends WebDriverTestCase {
     /**
      * Component in a privileged namespace can extend a non-privileged namespace component marked PUBLIC
      */
+    @Test
     public void testPrivilegedComponentExtendsUnprivilegedComponent() throws Exception {
         getMockConfigAdapter().setUnprivilegedNamespace("auratest");
         open("/componentTest/accessUnprivilegedNamespace.cmp?cmpToCreate=componentTest:accessExtendsPublic");
@@ -80,6 +82,7 @@ public class AccessChecksUITest extends WebDriverTestCase {
     /**
      * Component in a unprivileged namespace can _not_ extend a privileged namespace component marked PUBLIC
      */
+    @Test
     public void testUnprivilegedComponentExtendsPrivilegedComponent() throws Exception {
         getMockConfigAdapter().setUnprivilegedNamespace("componentTest");
         open("/componentTest/accessUnprivilegedNamespace.cmp?cmpToCreate=componentTest:accessExtendsPublic");
@@ -92,6 +95,7 @@ public class AccessChecksUITest extends WebDriverTestCase {
     /**
      * Unprivileged component cannot access public attribute of privileged namespace
      */
+    @Test
     public void testAccessPublicMarkupOnPrivilegedNamespaceFromUnprivileged() throws Exception {
         getMockConfigAdapter().setUnprivilegedNamespace("componentTest");
         open("/componentTest/accessUnprivilegedNamespace.cmp?cmpToCreate=auratest:accessPublicAttribute");
@@ -99,24 +103,28 @@ public class AccessChecksUITest extends WebDriverTestCase {
 
     }
 
+    @Test
     public void testAccessPublicMarkupOnUnprivilegedNamespaceFromPrivileged() throws Exception {
         getMockConfigAdapter().setUnprivilegedNamespace("auratest");
         open("/componentTest/accessUnprivilegedNamespace.cmp?cmpToCreate=auratest:accessPublicAttribute");
         doAttributeAccessTest("PUBLIC");
     }
 
+    @Test
     public void testAccessGlobalMarkupOnPrivilegedNamespaceFromUnprivileged() throws Exception {
         getMockConfigAdapter().setUnprivilegedNamespace("componentTest");
         open("/componentTest/accessUnprivilegedNamespace.cmp?cmpToCreate=auratest:accessGlobalAttribute");
         doAttributeAccessTest("GLOBAL");
     }
 
+    @Test
     public void testAccessGlobalMarkupOnUnprivilegedNamespaceFromPrivileged() throws Exception {
         getMockConfigAdapter().setUnprivilegedNamespace("auratest");
         open("/componentTest/accessUnprivilegedNamespace.cmp?cmpToCreate=auratest:accessGlobalAttribute");
         doAttributeAccessTest("GLOBAL");
     }
 
+    @Test
     public void testAccessGlobalMarkupOnUnprivilegedNamespaceFromUnprivileged() throws Exception {
         getMockConfigAdapter().setUnprivilegedNamespace("auratest");
         getMockConfigAdapter().setUnprivilegedNamespace("componentTest");
@@ -124,18 +132,21 @@ public class AccessChecksUITest extends WebDriverTestCase {
         doAttributeAccessTest("GLOBAL");
     }
 
+    @Test
     public void testAccessPrivateMarkupOnPrivilegedNamespaceFromUnprivileged() throws Exception {
         getMockConfigAdapter().setUnprivilegedNamespace("componentTest");
         open("/componentTest/accessUnprivilegedNamespace.cmp?cmpToCreate=auratest:accessPrivateAttribute");
         doAttributeAccessTest("undefined");
     }
 
+    @Test
     public void testAccessPrivateMarkupOnUnprivilegedNamespaceFromPrivileged() throws Exception {
         getMockConfigAdapter().setUnprivilegedNamespace("auratest");
         open("/componentTest/accessUnprivilegedNamespace.cmp?cmpToCreate=auratest:accessPrivateAttribute");
         doAttributeAccessTest("undefined");
     }
 
+    @Test
     public void testAccessInternalMarkupOnPrivilegedNamespaceFromUnprivileged() throws Exception {
         getMockConfigAdapter().setUnprivilegedNamespace("componentTest");
         open("/componentTest/accessUnprivilegedNamespace.cmp?cmpToCreate=auratest:accessInternalAttribute");
@@ -145,6 +156,7 @@ public class AccessChecksUITest extends WebDriverTestCase {
     /**
      * Setting an attribute to have access level INTERNAL in a non-privileged namespace will error.
      */
+    @Test
     public void testAccessInternalMarkupOnUnprivilegedNamespace() throws Exception {
         getMockConfigAdapter().setUnprivilegedNamespace("auratest");
         openNoAura("/auratest/accessInternalAttribute.cmp");
@@ -159,6 +171,7 @@ public class AccessChecksUITest extends WebDriverTestCase {
      * verify the internal component access is checked against the global providing component, not the top level
      * unprivileged component.
      */
+    @Test
     public void testAccessGlobalProvidesInternalComponent() throws Exception {
         getMockConfigAdapter().setUnprivilegedNamespace("componentTest");
         open("/componentTest/accessGlobalProvidesInternal.cmp");
@@ -166,30 +179,34 @@ public class AccessChecksUITest extends WebDriverTestCase {
                 getDriver().findElement(By.className("accessInternalComponent")), "auratest:accessInternalComponent");
     }
 
-    // TODO(W-2769151): Not sure if this should work, but if it shouldn't we need a better error message
-    public void _testAccessUnprivilegedProvidesInternalComponent() throws Exception {
+    @Ignore("TODO(W-2769151): Not sure if this should work, but if it shouldn't we need a better error message")
+    @Test
+    public void testAccessUnprivilegedProvidesInternalComponent() throws Exception {
         getMockConfigAdapter().setUnprivilegedNamespace("provider");
         open("/componentTest/accessGlobalProvidesInternal.cmp");
         waitForElementTextContains(
                 getDriver().findElement(By.className("accessInternalComponent")), "auratest:accessInternalComponent");
     }
 
-    // TODO(W-2769151): Not sure if this should work, but if it shouldn't we need a better error message
-    public void _testAccessUnprivilegedProvidesPublicComponent() throws Exception {
+    @Ignore("TODO(W-2769151): Not sure if this should work, but if it shouldn't we need a better error message")
+    @Test
+    public void testAccessUnprivilegedProvidesPublicComponent() throws Exception {
         getMockConfigAdapter().setUnprivilegedNamespace("provider");
         open("/componentTest/accessGlobalProvidesPublic.cmp");
         waitForElementTextContains(
                 getDriver().findElement(By.className("output")), "auratest:accessPublicComponent");
     }
 
-    // TODO(W-2769151): This case should work since the provided cmp is GLOBAL
-    public void _testAccessUnprivilegedProvidesGlobalComponent() throws Exception {
+    @Ignore("TODO(W-2769151): This case should work since the provided cmp is GLOBAL")
+    @Test
+    public void testAccessUnprivilegedProvidesGlobalComponent() throws Exception {
         getMockConfigAdapter().setUnprivilegedNamespace("provider");
         open("/componentTest/accessGlobalProvidesGlobal.cmp");
         waitForElementTextContains(
                 getDriver().findElement(By.className("accessGlobalComponent")), "auratest:accessGlobalComponent");
     }
 
+    @Test
     public void testAccessPrivilegedProvidesPublicComponent() throws Exception {
         getMockConfigAdapter().setUnprivilegedNamespace("auratest");
         open("/componentTest/accessGlobalProvidesPublic.cmp");

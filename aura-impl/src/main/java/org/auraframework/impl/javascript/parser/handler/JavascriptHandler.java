@@ -15,18 +15,14 @@
  */
 package org.auraframework.impl.javascript.parser.handler;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.Map;
-import java.util.Set;
-
 import org.auraframework.builder.DefBuilder;
-
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.Definition;
 import org.auraframework.expression.PropertyReference;
+import org.auraframework.impl.DefinitionAccessImpl;
 import org.auraframework.impl.root.parser.handler.ExpressionContainerHandler;
 import org.auraframework.impl.util.TextTokenizer;
+import org.auraframework.system.AuraContext;
 import org.auraframework.system.Location;
 import org.auraframework.system.Source;
 import org.auraframework.throwable.AuraRuntimeException;
@@ -35,6 +31,11 @@ import org.auraframework.util.json.JsonConstant;
 import org.auraframework.util.json.JsonHandlerProvider;
 import org.auraframework.util.json.JsonStreamReader;
 import org.auraframework.util.json.JsonStreamReader.JsonParseException;
+
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * base class for javascripty source handling gnomes.
@@ -69,6 +70,7 @@ public abstract class JavascriptHandler<D extends Definition, T extends Definiti
         builder.setDescriptor(descriptor);
         builder.setOwnHash(source.getHash());
         builder.setLocation(getLocation());
+        builder.setAccess(new DefinitionAccessImpl(AuraContext.Access.PUBLIC));
     }
 
     public T getDefinition() {

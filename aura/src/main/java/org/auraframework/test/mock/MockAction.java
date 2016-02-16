@@ -15,21 +15,22 @@
  */
 package org.auraframework.test.mock;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
+import com.google.common.collect.Lists;
+import org.auraframework.adapter.ExceptionAdapter;
 import org.auraframework.def.ActionDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.instance.AbstractActionImpl;
 import org.auraframework.instance.Action;
 import org.auraframework.instance.BaseComponent;
+import org.auraframework.service.LoggingService;
 import org.auraframework.system.LoggingContext.KeyValueLogger;
 import org.auraframework.throwable.AuraExecutionException;
 import org.auraframework.util.javascript.Literal;
 import org.auraframework.util.json.Json;
 
-import com.google.common.collect.Lists;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A simple Action used when mocking Controller creations.
@@ -68,7 +69,7 @@ public class MockAction extends AbstractActionImpl<ActionDef> {
     }
 
     @Override
-    public void run() throws AuraExecutionException {
+    public void run(LoggingService loggingService, ExceptionAdapter exceptionAdapter) throws AuraExecutionException {
     }
 
     @Override

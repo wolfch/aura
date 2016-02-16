@@ -15,24 +15,26 @@
  */
 package org.auraframework.impl.context;
 
+import org.auraframework.adapter.LocalizationAdapter;
+import org.auraframework.annotations.Annotations.ServiceComponent;
+import org.auraframework.impl.util.AuraLocaleImpl;
+import org.auraframework.service.ContextService;
+import org.auraframework.system.AuraContext;
+import org.auraframework.util.AuraLocale;
+
+import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
-import org.auraframework.Aura;
-import org.auraframework.adapter.LocalizationAdapter;
-import org.auraframework.ds.serviceloader.AuraServiceProvider;
-import org.auraframework.impl.util.AuraLocaleImpl;
-import org.auraframework.system.AuraContext;
-import org.auraframework.util.AuraLocale;
-
-import aQute.bnd.annotation.component.Component;
-
-@Component (provide=AuraServiceProvider.class)
+@ServiceComponent
 public class LocalizationAdapterImpl implements LocalizationAdapter {
 
+    @Inject
+    private ContextService contextService;
+    
     /**
      * Temporary workaround for localized labels
      */
@@ -95,7 +97,7 @@ public class LocalizationAdapterImpl implements LocalizationAdapter {
      */
     @Override
     public AuraLocale getAuraLocale() {
-        AuraContext context = Aura.getContextService().getCurrentContext();
+        AuraContext context = contextService.getCurrentContext();
         // check for nulls - this happens when AuraContextFilter has not been run
         if (context != null) {
             List<Locale> locales = context.getRequestedLocales();

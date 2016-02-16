@@ -15,15 +15,6 @@
  */
 package org.auraframework.integration.test.clientlibrary;
 
-import java.net.URLDecoder;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.auraframework.Aura;
-import org.auraframework.AuraConfiguration;
 import org.auraframework.clientlibrary.ClientLibraryResolver;
 import org.auraframework.clientlibrary.ClientLibraryService;
 import org.auraframework.def.ApplicationDef;
@@ -34,45 +25,44 @@ import org.auraframework.def.DefDescriptor;
 import org.auraframework.impl.AuraImplTestCase;
 import org.auraframework.impl.clientlibrary.ClientLibraryResolverRegistryImpl;
 import org.auraframework.impl.clientlibrary.ClientLibraryServiceImpl;
-import org.auraframework.service.ContextService;
-import org.auraframework.system.*;
+import org.auraframework.system.AuraContext;
 import org.auraframework.system.AuraContext.Authentication;
 import org.auraframework.system.AuraContext.Format;
 import org.auraframework.system.AuraContext.Mode;
 import org.auraframework.throwable.AuraRuntimeException;
 import org.auraframework.throwable.NoContextException;
-import org.auraframework.throwable.quickfix.ClientLibraryException;
 import org.auraframework.util.json.JsonReader;
 import org.auraframework.util.test.annotation.UnAdaptableTest;
+import org.junit.Test;
+
+import javax.inject.Inject;
+import java.net.URLDecoder;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Unit tests for {@link ClientLibraryServiceImpl}. Coverage should include {@link ClientLibraryResolverRegistryImpl},
  * and framework implementations of {@link org.auraframework.clientlibrary.ClientLibraryResolver}
  */
 public class ClientLibraryServiceImplTest extends AuraImplTestCase {
-    ClientLibraryService clientLibraryService;
-
-    public ClientLibraryServiceImplTest(String name) {
-        super(name);
-        // start spring context for injected ClientLibraryService
-        getAuraTestingUtil().startSpringContext(AuraConfiguration.class);
-    }
+    @Inject
+    private ClientLibraryService clientLibraryService;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        ContextService contextService = Aura.getContextService();
         AuraContext context = contextService.getCurrentContext();
         if (context == null) {
             contextService.startContext(AuraContext.Mode.SELENIUM, AuraContext.Format.HTML,
                     AuraContext.Authentication.AUTHENTICATED);
         }
-        clientLibraryService = Aura.getClientLibraryService();
     }
 
     @Override
     public void tearDown() throws Exception {
-        ContextService contextService = Aura.getContextService();
         AuraContext context = contextService.getCurrentContext();
         if (context != null) {
             contextService.endContext();
@@ -84,17 +74,19 @@ public class ClientLibraryServiceImplTest extends AuraImplTestCase {
      * Verify the ClientLibraryService used by Aura Standalone. It is important that ClientLibraryServiceImpl is used
      * for aura standalone.
      */
+    @Test
+    @UnAdaptableTest
     public void testClientLibraryService() {
-        ClientLibraryService cls = Aura.getClientLibraryService();
-        assertTrue(cls instanceof ClientLibraryServiceImpl);
+        assertTrue(clientLibraryService instanceof ClientLibraryServiceImpl);
     }
 
+    @Test
     public void testWriteResourcesCSS() throws Exception {
-        AuraContext context = Aura.getContextService().getCurrentContext();
-        DefDescriptor<ApplicationDef> appDesc = Aura.getDefinitionService()
+        AuraContext context = contextService.getCurrentContext();
+        DefDescriptor<ApplicationDef> appDesc = definitionService
                 .getDefDescriptor("clientLibraryTest:clientLibraryTest", ApplicationDef.class);
         context.setApplicationDescriptor(appDesc);
-        Aura.getDefinitionService().updateLoaded(appDesc);
+        definitionService.updateLoaded(appDesc);
 
         StringBuilder sb = new StringBuilder();
         clientLibraryService.writeCss(context, sb);
@@ -109,14 +101,15 @@ public class ClientLibraryServiceImplTest extends AuraImplTestCase {
         }
     }
 
+    @Test
     public void testContextPath() throws Exception {
-        AuraContext context = Aura.getContextService().getCurrentContext();
-        DefDescriptor<ApplicationDef> appDesc = Aura.getDefinitionService()
+        AuraContext context = contextService.getCurrentContext();
+        DefDescriptor<ApplicationDef> appDesc = definitionService
                 .getDefDescriptor("clientLibraryTest:clientLibraryTest", ApplicationDef.class);
         context.setApplicationDescriptor(appDesc);
         String coolContext = "/cool";
         context.setContextPath(coolContext);
-        Aura.getDefinitionService().updateLoaded(appDesc);
+        definitionService.updateLoaded(appDesc);
 
         Set<String> urlSet = clientLibraryService.getUrls(context, Type.JS);
         Pattern pattern = Pattern.compile("/auraFW|/l/");
@@ -132,12 +125,13 @@ public class ClientLibraryServiceImplTest extends AuraImplTestCase {
         }
     }
 
+    @Test
     public void testWriteResourcesJS() throws Exception {
-        AuraContext context = Aura.getContextService().getCurrentContext();
-        DefDescriptor<ApplicationDef> appDesc = Aura.getDefinitionService()
+        AuraContext context = contextService.getCurrentContext();
+        DefDescriptor<ApplicationDef> appDesc = definitionService
                 .getDefDescriptor("clientLibraryTest:clientLibraryTest", ApplicationDef.class);
         context.setApplicationDescriptor(appDesc);
-        Aura.getDefinitionService().updateLoaded(appDesc);
+        definitionService.updateLoaded(appDesc);
         StringBuilder sb = new StringBuilder();
 
         clientLibraryService.writeJs(context, sb);
@@ -153,6 +147,7 @@ public class ClientLibraryServiceImplTest extends AuraImplTestCase {
 
     }
 
+    @Test
     public void testGetResolvedUrl() {
         assertNull(clientLibraryService.getResolvedUrl(null));
 
@@ -168,10 +163,12 @@ public class ClientLibraryServiceImplTest extends AuraImplTestCase {
         assertEquals("js://clientLibraryTest.clientLibraryTest", clientLibraryService.getResolvedUrl(urlClientLibrary));
     }
 
+    @Test
     public void testCanCombineIfNull() throws Exception {
         assertFalse(clientLibraryService.canCombine(null));
     }
 
+    @Test
     public void testCanCombineIfEmptyUrlAndResolverAllows() throws Exception {
         ClientLibraryDef combinableURL = vendor.makeClientLibraryDef("combinableUrl_test", "", Type.JS,
                 null, true, null, null);
@@ -205,6 +202,7 @@ public class ClientLibraryServiceImplTest extends AuraImplTestCase {
         assertTrue(clientLibraryService.canCombine(combinableURL));
     }
 
+    @Test
     public void testCanCombineIfEmptyUrlAndResolverDoesNotAllow() throws Exception {
         ClientLibraryDef combinableURL = vendor.makeClientLibraryDef("combinableUrl_test", "", Type.JS,
                 null, true, null, null);
@@ -238,36 +236,42 @@ public class ClientLibraryServiceImplTest extends AuraImplTestCase {
         assertFalse(clientLibraryService.canCombine(combinableURL));
     }
 
+    @Test
     public void testCanCombineIfEmptyUrlAndNoResolverAndDefDoesNotAllow() throws Exception {
         ClientLibraryDef url = vendor.makeClientLibraryDef("fooBar", "", Type.JS, null, false, null, null);
         assertEquals(false, clientLibraryService.canCombine(url));
     }
 
+    @Test
     public void testCanCombineIfEmptyUrlAndNoResolverAndDefAllows() throws Exception {
         ClientLibraryDef url = vendor.makeClientLibraryDef("fooBar", "", Type.JS, null, true, null, null);
         assertEquals(true, clientLibraryService.canCombine(url));
     }
 
+    @Test
     public void testCanCombineIfUrlIsAuraJs() throws Exception {
         ClientLibraryDef url = vendor.makeClientLibraryDef("fooBar", "js://clientLibraryTest.clientLibraryTest",
                 Type.JS, null, false, null, null);
         assertEquals(true, clientLibraryService.canCombine(url));
     }
 
+    @Test
     public void testCanCombineIfUrlIsAuraCss() throws Exception {
         ClientLibraryDef url = vendor.makeClientLibraryDef("fooBar", "css://clientLibraryTest.clientLibraryTest",
                 Type.CSS, null, false, null, null);
         assertEquals(true, clientLibraryService.canCombine(url));
     }
 
+    @Test
     public void testCanCombineIfUrlIsOther() throws Exception {
         ClientLibraryDef url = vendor.makeClientLibraryDef("fooBar", "http://clientLibraryTest.clientLibraryTest",
                 Type.JS, null, true, null, null);
         assertEquals(false, clientLibraryService.canCombine(url));
     }
 
+    @Test
     public void testGetUrlsWithoutEstablishingContext() throws Exception {
-        Aura.getContextService().endContext();
+        contextService.endContext();
         try {
             clientLibraryService.getUrls(null, Type.JS);
             fail("Should not be able to getUrls() without a context.");
@@ -276,16 +280,18 @@ public class ClientLibraryServiceImplTest extends AuraImplTestCase {
         }
     }
 
+    @Test
     public void testGetUrlsWithNullArgument() throws Exception {
-        DefDescriptor<ApplicationDef> appDesc = Aura.getDefinitionService().getDefDescriptor(
+        DefDescriptor<ApplicationDef> appDesc = definitionService.getDefDescriptor(
                 "clientLibraryTest:clientLibraryTest", ApplicationDef.class);
         Set<String> urls = getClientLibraryUrls(appDesc, null);
         assertEquals(0, urls.size());
     }
 
+    @Test
     public void testGetUrlsWithSimpleApp() throws Exception {
         // UTEST mode
-        DefDescriptor<ApplicationDef> appDesc = Aura.getDefinitionService().getDefDescriptor(
+        DefDescriptor<ApplicationDef> appDesc = definitionService.getDefDescriptor(
                 "clientLibraryTest:clientLibraryTest", ApplicationDef.class);
         Set<String> jsUrls = getClientLibraryUrls(appDesc, Type.JS);
         assertEquals(2, jsUrls.size());
@@ -302,10 +308,11 @@ public class ClientLibraryServiceImplTest extends AuraImplTestCase {
     }
 
     @UnAdaptableTest
+    @Test
     public void testGetUrlsChangesWithMode() throws Exception {
-        Aura.getContextService().endContext();
-        Aura.getContextService().startContext(Mode.PTEST, Format.JSON, Authentication.AUTHENTICATED);
-        DefDescriptor<ApplicationDef> appDesc = Aura.getDefinitionService().getDefDescriptor(
+        contextService.endContext();
+        contextService.startContext(Mode.PTEST, Format.JSON, Authentication.AUTHENTICATED);
+        DefDescriptor<ApplicationDef> appDesc = definitionService.getDefDescriptor(
                 "clientLibraryTest:clientLibraryTest", ApplicationDef.class);
         Set<String> jsUrls = getClientLibraryUrls(appDesc, Type.JS);
         assertEquals(2, jsUrls.size());
@@ -315,50 +322,53 @@ public class ClientLibraryServiceImplTest extends AuraImplTestCase {
         assertRootComponentResourceUrl(appDesc, resourceUrl, Type.JS);
     }
 
+    @Test
     public void testCaseSensitiveName() throws Exception {
-        Aura.getContextService().endContext();
-        Aura.getContextService().startContext(Mode.STATS, Format.JSON, Authentication.AUTHENTICATED);
-        DefDescriptor<ApplicationDef> appDesc = Aura.getDefinitionService().getDefDescriptor(
+        contextService.endContext();
+        contextService.startContext(Mode.STATS, Format.JSON, Authentication.AUTHENTICATED);
+        DefDescriptor<ApplicationDef> appDesc = definitionService.getDefDescriptor(
                 "clientLibraryTest:clientLibraryTest", ApplicationDef.class);
 
         Set<String> res = getClientLibraryUrls(appDesc, Type.CSS);
         assertFalse(res.isEmpty());
     }
 
+    @Test
     public void testDifferentModes() throws Exception {
-        DefDescriptor<ApplicationDef> appDesc = Aura.getDefinitionService().getDefDescriptor(
+        DefDescriptor<ApplicationDef> appDesc = definitionService.getDefDescriptor(
                 "clientLibraryTest:testDependencies", ApplicationDef.class);
 
-        Aura.getContextService().endContext();
-        Aura.getContextService().startContext(Mode.PTEST, Format.JSON, Authentication.AUTHENTICATED, laxSecurityApp);
+        contextService.endContext();
+        contextService.startContext(Mode.PTEST, Format.JSON, Authentication.AUTHENTICATED, laxSecurityApp);
         Set<String> jsUrls = getClientLibraryUrls(appDesc, Type.JS);
         assertTrue("Missing library for PTEST mode", jsUrls.contains("http://likeaboss.com/mode.js"));
 
-        Aura.getContextService().endContext();
-        Aura.getContextService()
+        contextService.endContext();
+        contextService
                 .startContext(Mode.CADENCE, Format.JSON, Authentication.UNAUTHENTICATED, laxSecurityApp);
         jsUrls = getClientLibraryUrls(appDesc, Type.JS);
         assertTrue("Missing library for CADENCE mode", jsUrls.contains("http://likeaboss.com/mode.js"));
 
-        Aura.getContextService().endContext();
-        Aura.getContextService().startContext(Mode.DEV, Format.JSON, Authentication.UNAUTHENTICATED, laxSecurityApp);
+        contextService.endContext();
+        contextService.startContext(Mode.DEV, Format.JSON, Authentication.UNAUTHENTICATED, laxSecurityApp);
         jsUrls = getClientLibraryUrls(appDesc, Type.JS);
         assertTrue("Missing library for DEV mode", jsUrls.contains("http://likeaboss.com/mode.js"));
 
-        Aura.getContextService().endContext();
-        Aura.getContextService().startContext(Mode.STATS, Format.JSON, Authentication.UNAUTHENTICATED, laxSecurityApp);
+        contextService.endContext();
+        contextService.startContext(Mode.STATS, Format.JSON, Authentication.UNAUTHENTICATED, laxSecurityApp);
         jsUrls = getClientLibraryUrls(appDesc, Type.JS);
         assertTrue("Missing library for STATS mode", jsUrls.contains("http://likeaboss.com/mode.js"));
 
-        Aura.getContextService().endContext();
-        Aura.getContextService().startContext(Mode.JSTEST, Format.JSON, Authentication.UNAUTHENTICATED, laxSecurityApp);
+        contextService.endContext();
+        contextService.startContext(Mode.JSTEST, Format.JSON, Authentication.UNAUTHENTICATED, laxSecurityApp);
         jsUrls = getClientLibraryUrls(appDesc, Type.JS);
         assertFalse("Library should not be included for JSTEST mode", jsUrls.contains("http://likeaboss.com/mode.js"));
 
     }
 
+    @Test
     public void testGetUrlsForAppWithDependencies() throws Exception {
-        DefDescriptor<ApplicationDef> appDesc = Aura.getDefinitionService().getDefDescriptor(
+        DefDescriptor<ApplicationDef> appDesc = definitionService.getDefDescriptor(
                 "clientLibraryTest:testDependencies", ApplicationDef.class);
         Set<String> jsUrls = getClientLibraryUrls(appDesc, Type.JS);
         assertEquals(6, jsUrls.size());
@@ -401,11 +411,11 @@ public class ClientLibraryServiceImplTest extends AuraImplTestCase {
 
     private Set<String> getClientLibraryUrls(DefDescriptor<? extends BaseComponentDef> desc, Type libraryType)
             throws Exception {
-        AuraContext context = Aura.getContextService().getCurrentContext();
+        AuraContext context = contextService.getCurrentContext();
         context.setApplicationDescriptor(desc);
         // TODO: Why this extra step, should the Client Library service take care of loading the appDesc def and
         // returning the urls?
-        Aura.getDefinitionService().updateLoaded(desc);
+        definitionService.updateLoaded(desc);
         Set<String> urls = clientLibraryService.getUrls(context, libraryType);
         return urls;
     }

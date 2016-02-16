@@ -27,49 +27,6 @@ import org.junit.Test;
 
 @UnAdaptableTest("namespace start with c means something special in core")
 public class ComponentAccessAttributeEnforcementTest extends AuraImplTestCase {
-
-
-    public ComponentAccessAttributeEnforcementTest(String name) {
-        super(name);
-    }
-
-    /**
-     * Template tests start
-     */
-    /**
-     * Verify Creating a Component works with isTemplate='true'
-     * verifyAttributeTestCase System System 
-     */
-    @Test
-    public void testApplicationWithSystemNamespaceImplementsTemplateWithSameSystemNamespace() throws QuickFixException {
-        //create component with system namespace
-        String cmpSource = "<aura:component isTemplate='true' access='GLOBAL'/>";
-        DefDescriptor<? extends Definition> cmpDescriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, cmpSource,
-                StringSourceLoader.DEFAULT_NAMESPACE + ":testcomponent", true);
-        //create application with above component in markup
-        String source = "<aura:application template='" + cmpDescriptor.getNamespace() + ":" + cmpDescriptor.getName() + "'/>";
-        DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class, source,
-                StringSourceLoader.DEFAULT_NAMESPACE + ":testapplication", true);
-        descriptor.getDef();
-    }
-    
-    /**
-     * Verify Creating a Component works with isTemplate='true'
-     * verifyAttributeTestCase System SystemOther 
-     */
-    @Test
-    public void testApplicationWithSystemNamespaceImplementsTemplateWithOtherSystemNamespace() throws QuickFixException {
-        //create component with system namespace
-        String cmpSource = "<aura:component isTemplate='true' access='GLOBAL'/>";
-        DefDescriptor<? extends Definition> cmpDescriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, cmpSource,
-                StringSourceLoader.DEFAULT_NAMESPACE + ":testcomponent", true);
-        //create application with above component in markup
-        String source = "<aura:application template='" + cmpDescriptor.getNamespace() + ":" + cmpDescriptor.getName() + "'/>";
-        DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class, source,
-                StringSourceLoader.OTHER_NAMESPACE + ":testapplication", true);
-        descriptor.getDef();
-    }
-    
     /**
      * Verify Creating a Component works with isTemplate='true'
      * verifyAttributeTestCase Custom System
@@ -86,7 +43,7 @@ public class ComponentAccessAttributeEnforcementTest extends AuraImplTestCase {
                 StringSourceLoader.DEFAULT_NAMESPACE + ":testapplication", true);
         descriptor.getDef();
     }
-    
+
     /**
      * Verify Creating a Component works with isTemplate='true'
      * verifyAttributeTestCase System Custom
@@ -103,7 +60,7 @@ public class ComponentAccessAttributeEnforcementTest extends AuraImplTestCase {
                 StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testapplication", false);
         descriptor.getDef();
     }
-    
+
     /**
      * Verify Creating a Component works with isTemplate='true'
      * verifyAttributeTestCase Custom Custom
@@ -120,7 +77,7 @@ public class ComponentAccessAttributeEnforcementTest extends AuraImplTestCase {
                 StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testapplication", false);
         descriptor.getDef();
     }
-    
+
     /**
      * Verify Creating a Component works with isTemplate='true'
      * verifyAttributeTestCase Custom CustomOther
@@ -137,7 +94,7 @@ public class ComponentAccessAttributeEnforcementTest extends AuraImplTestCase {
                 StringSourceLoader.OTHER_CUSTOM_NAMESPACE + ":testapplication", false);
         descriptor.getDef();
     }
-    
+
 
     /**
      * Abstract tests start
@@ -158,7 +115,7 @@ public class ComponentAccessAttributeEnforcementTest extends AuraImplTestCase {
                 StringSourceLoader.DEFAULT_NAMESPACE + ":testcomponent2", true);
         descriptor.getDef();
     }
-    
+
     /**
      * Verify Creating a Component works with abstract='true'
      * verifyAttributeTestCase System SystemOther
@@ -175,7 +132,7 @@ public class ComponentAccessAttributeEnforcementTest extends AuraImplTestCase {
                 StringSourceLoader.OTHER_NAMESPACE + ":testcomponent2", true);
         descriptor.getDef();
     }
-    
+
     /**
      * Verify Creating a Component works with abstract='true'
      * verifyAttributeTestCase System Custom
@@ -192,7 +149,7 @@ public class ComponentAccessAttributeEnforcementTest extends AuraImplTestCase {
                 StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testcomponent2", false);
         descriptor.getDef();
     }
-    
+
     /**
      * Verify Creating a Component works with abstract='true'
      * verifyAttributeTestCase Custom Custom
@@ -209,7 +166,7 @@ public class ComponentAccessAttributeEnforcementTest extends AuraImplTestCase {
                 StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testcomponent2", false);
         descriptor.getDef();
     }
-    
+
     /**
      * Verify Creating a Component works with abstract='true'
      * verifyAttributeTestCase Custom CustomOther
@@ -226,7 +183,7 @@ public class ComponentAccessAttributeEnforcementTest extends AuraImplTestCase {
                 StringSourceLoader.OTHER_CUSTOM_NAMESPACE + ":testcomponent2", false);
         descriptor.getDef();
     }
-    
+
     /**
      * Verify Creating a Component works with abstract='true'
      * verifyAttributeTestCase Custom System
@@ -245,7 +202,6 @@ public class ComponentAccessAttributeEnforcementTest extends AuraImplTestCase {
     }
 
 
-    
     /**
      * Default access tests start
      */
@@ -266,7 +222,7 @@ public class ComponentAccessAttributeEnforcementTest extends AuraImplTestCase {
                 StringSourceLoader.DEFAULT_NAMESPACE + ":testapplication", true);
         descriptor.getDef();
     }
-    
+
     /**
      * Verify Default access enforcement
      * verifyAccess for Application,System,SystemOther
@@ -284,7 +240,7 @@ public class ComponentAccessAttributeEnforcementTest extends AuraImplTestCase {
                 StringSourceLoader.DEFAULT_NAMESPACE + ":testapplication", true);
         descriptor.getDef();
     }
-    
+
     /**
      * Verify Default access enforcement
      * verifyAccess for Application,System,Custom
@@ -303,15 +259,15 @@ public class ComponentAccessAttributeEnforcementTest extends AuraImplTestCase {
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class, source,
                 StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testapplication", false);
         try {
-        	descriptor.getDef();
-         	fail("component of custom namespace shouldn't be able to include component of system namespace");
-        } catch(Exception e) {
-        	//expect 
-    		//System.out.println(e.getMessage());
-    		//Access to component 'string1:testcomponent1' from namespace 'cstring' in 'markup://cstring:testapplication2(APPLICATION)' disallowed by MasterDefRegistry.assertAccess()
+            descriptor.getDef();
+            fail("component of custom namespace shouldn't be able to include component of system namespace");
+        } catch (Exception e) {
+            //expect
+            //System.out.println(e.getMessage());
+            //Access to component 'string1:testcomponent1' from namespace 'cstring' in 'markup://cstring:testapplication2(APPLICATION)' disallowed by MasterDefRegistry.assertAccess()
         }
     }
-    
+
     /**
      * Verify Default access enforcement
      * verifyAccess for Application,Custom,System
@@ -331,7 +287,7 @@ public class ComponentAccessAttributeEnforcementTest extends AuraImplTestCase {
                 StringSourceLoader.DEFAULT_NAMESPACE + ":testapplication", true);
         descriptor.getDef();
     }
-    
+
     /**
      * Verify Default access enforcement
      * verifyAccess for Application,Custom,Custom
@@ -349,7 +305,7 @@ public class ComponentAccessAttributeEnforcementTest extends AuraImplTestCase {
                 StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testapplication", false);
         descriptor.getDef();
     }
-    
+
     /**
      * Verify Default access enforcement
      * verifyAccess for Application,Custom,CustomOther
@@ -366,18 +322,16 @@ public class ComponentAccessAttributeEnforcementTest extends AuraImplTestCase {
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class, source,
                 StringSourceLoader.OTHER_CUSTOM_NAMESPACE + ":testapplication", false);
         try {
-        	descriptor.getDef();
-        	fail("component of custom namespace shouldn't be able to include componet of another custom namespace");
-        } catch(Exception e) {
-        	//expect 
-    		//System.out.println(e.getMessage());
-    		//Access to component 'cstring:testcomponent1' from namespace 'cstring1' in 'markup://cstring1:testapplication2(APPLICATION)' disallowed by MasterDefRegistry.assertAccess()
+            descriptor.getDef();
+            fail("component of custom namespace shouldn't be able to include componet of another custom namespace");
+        } catch (Exception e) {
+            //expect
+            //System.out.println(e.getMessage());
+            //Access to component 'cstring:testcomponent1' from namespace 'cstring1' in 'markup://cstring1:testapplication2(APPLICATION)' disallowed by MasterDefRegistry.assertAccess()
         }
     }
-    
-    
-    
-    
+
+
     /**
      * Verify Default access enforcement
      * verifyAccess for Application,System,System
@@ -395,7 +349,7 @@ public class ComponentAccessAttributeEnforcementTest extends AuraImplTestCase {
                 StringSourceLoader.DEFAULT_NAMESPACE + ":testcomponentChild", true);
         descriptor.getDef();
     }
-    
+
     /**
      * Verify Default access enforcement
      * verifyAccess for Application,System,SystemOther
@@ -413,7 +367,7 @@ public class ComponentAccessAttributeEnforcementTest extends AuraImplTestCase {
                 StringSourceLoader.DEFAULT_NAMESPACE + ":testcomponentChild", true);
         descriptor.getDef();
     }
-    
+
     /**
      * Verify Default access enforcement
      * verifyAccess for Application,System,Custom
@@ -432,15 +386,15 @@ public class ComponentAccessAttributeEnforcementTest extends AuraImplTestCase {
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, source,
                 StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testcomponentChild", false);
         try {
-        	descriptor.getDef();
-         	fail("component of custom namespace shouldn't be able to include component of system namespace");
-        } catch(Exception e) {
-        	//expect 
-    		//System.out.println(e.getMessage());
-    		//Access to component 'string1:testcomponent1' from namespace 'cstring' in 'markup://cstring:testapplication2(APPLICATION)' disallowed by MasterDefRegistry.assertAccess()
+            descriptor.getDef();
+            fail("component of custom namespace shouldn't be able to include component of system namespace");
+        } catch (Exception e) {
+            //expect
+            //System.out.println(e.getMessage());
+            //Access to component 'string1:testcomponent1' from namespace 'cstring' in 'markup://cstring:testapplication2(APPLICATION)' disallowed by MasterDefRegistry.assertAccess()
         }
     }
-    
+
     /**
      * Verify Default access enforcement
      * verifyAccess for Application,Custom,System
@@ -460,7 +414,7 @@ public class ComponentAccessAttributeEnforcementTest extends AuraImplTestCase {
                 StringSourceLoader.DEFAULT_NAMESPACE + ":testcomponentChild", true);
         descriptor.getDef();
     }
-    
+
     /**
      * Verify Default access enforcement
      * verifyAccess for Application,Custom,Custom
@@ -478,7 +432,7 @@ public class ComponentAccessAttributeEnforcementTest extends AuraImplTestCase {
                 StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testcomponentChild", false);
         descriptor.getDef();
     }
-    
+
     /**
      * Verify Default access enforcement
      * verifyAccess for Application,Custom,CustomOther
@@ -495,16 +449,15 @@ public class ComponentAccessAttributeEnforcementTest extends AuraImplTestCase {
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, source,
                 StringSourceLoader.OTHER_CUSTOM_NAMESPACE + ":testcomponentChild", false);
         try {
-        	descriptor.getDef();
-        	fail("component of custom namespace shouldn't be able to include componet of another custom namespace");
-        } catch(Exception e) {
-        	//expect 
-    		//System.out.println(e.getMessage());
-    		//Access to component 'cstring:testcomponent1' from namespace 'cstring1' in 'markup://cstring1:testapplication2(APPLICATION)' disallowed by MasterDefRegistry.assertAccess()
+            descriptor.getDef();
+            fail("component of custom namespace shouldn't be able to include componet of another custom namespace");
+        } catch (Exception e) {
+            //expect
+            //System.out.println(e.getMessage());
+            //Access to component 'cstring:testcomponent1' from namespace 'cstring1' in 'markup://cstring1:testapplication2(APPLICATION)' disallowed by MasterDefRegistry.assertAccess()
         }
     }
-        
-    
+
 
     /**
      * Verify Public access enforcement
@@ -529,7 +482,7 @@ public class ComponentAccessAttributeEnforcementTest extends AuraImplTestCase {
                 StringSourceLoader.DEFAULT_NAMESPACE + ":testapplication", true);
         descriptor.getDef();
     }
-    
+
     /**
      * Verify Public access enforcement
      * verifyAccess for Application,System,SystemOther
@@ -547,7 +500,7 @@ public class ComponentAccessAttributeEnforcementTest extends AuraImplTestCase {
                 StringSourceLoader.DEFAULT_NAMESPACE + ":testapplication", true);
         descriptor.getDef();
     }
-    
+
     /**
      * Verify Public access enforcement
      * verifyAccess for Application,System,Custom
@@ -566,15 +519,15 @@ public class ComponentAccessAttributeEnforcementTest extends AuraImplTestCase {
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class, source,
                 StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testapplication", false);
         try {
-        	descriptor.getDef();
-         	fail("component of custom namespace shouldn't be able to include component of system namespace");
-        } catch(Exception e) {
-        	//expect 
-    		//System.out.println(e.getMessage());
-    		//Access to component 'string1:testcomponent1' from namespace 'cstring' in 'markup://cstring:testapplication2(APPLICATION)' disallowed by MasterDefRegistry.assertAccess()
+            descriptor.getDef();
+            fail("component of custom namespace shouldn't be able to include component of system namespace");
+        } catch (Exception e) {
+            //expect
+            //System.out.println(e.getMessage());
+            //Access to component 'string1:testcomponent1' from namespace 'cstring' in 'markup://cstring:testapplication2(APPLICATION)' disallowed by MasterDefRegistry.assertAccess()
         }
     }
-    
+
     /**
      * Verify Public access enforcement
      * verifyAccess for Application,Custom,System
@@ -594,7 +547,7 @@ public class ComponentAccessAttributeEnforcementTest extends AuraImplTestCase {
                 StringSourceLoader.DEFAULT_NAMESPACE + ":testapplication", true);
         descriptor.getDef();
     }
-    
+
     /**
      * Verify Public access enforcement
      * verifyAccess for Application,Custom,Custom
@@ -612,7 +565,7 @@ public class ComponentAccessAttributeEnforcementTest extends AuraImplTestCase {
                 StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testapplication", false);
         descriptor.getDef();
     }
-    
+
     /**
      * Verify Public access enforcement
      * verifyAccess for Application,Custom,CustomOther
@@ -629,18 +582,16 @@ public class ComponentAccessAttributeEnforcementTest extends AuraImplTestCase {
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class, source,
                 StringSourceLoader.OTHER_CUSTOM_NAMESPACE + ":testapplication", false);
         try {
-        	descriptor.getDef();
-        	fail("component of custom namespace shouldn't be able to include componet of another custom namespace");
-        } catch(Exception e) {
-        	//expect 
-    		//System.out.println(e.getMessage());
-    		//Access to component 'cstring:testcomponent1' from namespace 'cstring1' in 'markup://cstring1:testapplication2(APPLICATION)' disallowed by MasterDefRegistry.assertAccess()
+            descriptor.getDef();
+            fail("component of custom namespace shouldn't be able to include componet of another custom namespace");
+        } catch (Exception e) {
+            //expect
+            //System.out.println(e.getMessage());
+            //Access to component 'cstring:testcomponent1' from namespace 'cstring1' in 'markup://cstring1:testapplication2(APPLICATION)' disallowed by MasterDefRegistry.assertAccess()
         }
     }
-    
-    
-    
-    
+
+
     /**
      * Verify Public access enforcement
      * verifyAccess for Application,System,System
@@ -658,7 +609,7 @@ public class ComponentAccessAttributeEnforcementTest extends AuraImplTestCase {
                 StringSourceLoader.DEFAULT_NAMESPACE + ":testcomponentChild", true);
         descriptor.getDef();
     }
-    
+
     /**
      * Verify Public access enforcement
      * verifyAccess for Application,System,SystemOther
@@ -676,7 +627,7 @@ public class ComponentAccessAttributeEnforcementTest extends AuraImplTestCase {
                 StringSourceLoader.DEFAULT_NAMESPACE + ":testcomponentChild", true);
         descriptor.getDef();
     }
-    
+
     /**
      * Verify Public access enforcement
      * verifyAccess for Application,System,Custom
@@ -695,15 +646,15 @@ public class ComponentAccessAttributeEnforcementTest extends AuraImplTestCase {
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, source,
                 StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testcomponentChild", false);
         try {
-        	descriptor.getDef();
-         	fail("component of custom namespace shouldn't be able to include component of system namespace");
-        } catch(Exception e) {
-        	//expect 
-    		//System.out.println(e.getMessage());
-    		//Access to component 'string1:testcomponent1' from namespace 'cstring' in 'markup://cstring:testapplication2(APPLICATION)' disallowed by MasterDefRegistry.assertAccess()
+            descriptor.getDef();
+            fail("component of custom namespace shouldn't be able to include component of system namespace");
+        } catch (Exception e) {
+            //expect
+            //System.out.println(e.getMessage());
+            //Access to component 'string1:testcomponent1' from namespace 'cstring' in 'markup://cstring:testapplication2(APPLICATION)' disallowed by MasterDefRegistry.assertAccess()
         }
     }
-    
+
     /**
      * Verify Public access enforcement
      * verifyAccess for Application,Custom,System
@@ -723,7 +674,7 @@ public class ComponentAccessAttributeEnforcementTest extends AuraImplTestCase {
                 StringSourceLoader.DEFAULT_NAMESPACE + ":testcomponentChild", true);
         descriptor.getDef();
     }
-    
+
     /**
      * Verify Public access enforcement
      * verifyAccess for Application,Custom,Custom
@@ -741,7 +692,7 @@ public class ComponentAccessAttributeEnforcementTest extends AuraImplTestCase {
                 StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testcomponentChild", false);
         descriptor.getDef();
     }
-    
+
     /**
      * Verify Public access enforcement
      * verifyAccess for Application,Custom,CustomOther
@@ -758,15 +709,14 @@ public class ComponentAccessAttributeEnforcementTest extends AuraImplTestCase {
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, source,
                 StringSourceLoader.OTHER_CUSTOM_NAMESPACE + ":testcomponentChild", false);
         try {
-        	descriptor.getDef();
-        	fail("component of custom namespace shouldn't be able to include componet of another custom namespace");
-        } catch(Exception e) {
-        	//expect 
-    		//System.out.println(e.getMessage());
-    		//Access to component 'cstring:testcomponent1' from namespace 'cstring1' in 'markup://cstring1:testapplication2(APPLICATION)' disallowed by MasterDefRegistry.assertAccess()
+            descriptor.getDef();
+            fail("component of custom namespace shouldn't be able to include componet of another custom namespace");
+        } catch (Exception e) {
+            //expect
+            //System.out.println(e.getMessage());
+            //Access to component 'cstring:testcomponent1' from namespace 'cstring1' in 'markup://cstring1:testapplication2(APPLICATION)' disallowed by MasterDefRegistry.assertAccess()
         }
     }
-    
 
 
     /**
@@ -789,7 +739,7 @@ public class ComponentAccessAttributeEnforcementTest extends AuraImplTestCase {
                 StringSourceLoader.DEFAULT_NAMESPACE + ":testapplication", true);
         descriptor.getDef();
     }
-    
+
     /**
      * Verify Global access enforcement
      * verifyAccess for Application,System,SystemOther
@@ -807,7 +757,7 @@ public class ComponentAccessAttributeEnforcementTest extends AuraImplTestCase {
                 StringSourceLoader.DEFAULT_NAMESPACE + ":testapplication", true);
         descriptor.getDef();
     }
-    
+
     /**
      * Verify Global access enforcement
      * verifyAccess for Application,System,Custom
@@ -827,7 +777,7 @@ public class ComponentAccessAttributeEnforcementTest extends AuraImplTestCase {
                 StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testapplication", false);
         descriptor.getDef();
     }
-    
+
     /**
      * Verify Global access enforcement
      * verifyAccess for Application,Custom,System
@@ -847,7 +797,7 @@ public class ComponentAccessAttributeEnforcementTest extends AuraImplTestCase {
                 StringSourceLoader.DEFAULT_NAMESPACE + ":testapplication", true);
         descriptor.getDef();
     }
-    
+
     /**
      * Verify Global access enforcement
      * verifyAccess for Application,Custom,Custom
@@ -865,7 +815,7 @@ public class ComponentAccessAttributeEnforcementTest extends AuraImplTestCase {
                 StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testapplication", false);
         descriptor.getDef();
     }
-    
+
     /**
      * Verify Global access enforcement
      * verifyAccess for Application,Custom,CustomOther
@@ -883,10 +833,8 @@ public class ComponentAccessAttributeEnforcementTest extends AuraImplTestCase {
                 StringSourceLoader.OTHER_CUSTOM_NAMESPACE + ":testapplication", false);
         descriptor.getDef();
     }
-    
-    
-    
-    
+
+
     /**
      * Verify Global access enforcement
      * verifyAccess for Application,System,System
@@ -904,7 +852,7 @@ public class ComponentAccessAttributeEnforcementTest extends AuraImplTestCase {
                 StringSourceLoader.DEFAULT_NAMESPACE + ":testcomponentChild", true);
         descriptor.getDef();
     }
-    
+
     /**
      * Verify Global access enforcement
      * verifyAccess for Application,System,SystemOther
@@ -922,7 +870,7 @@ public class ComponentAccessAttributeEnforcementTest extends AuraImplTestCase {
                 StringSourceLoader.DEFAULT_NAMESPACE + ":testcomponentChild", true);
         descriptor.getDef();
     }
-    
+
     /**
      * Verify Global access enforcement
      * verifyAccess for Application,System,Custom
@@ -942,7 +890,7 @@ public class ComponentAccessAttributeEnforcementTest extends AuraImplTestCase {
                 StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testcomponentChild", false);
         descriptor.getDef();
     }
-    
+
     /**
      * Verify Global access enforcement
      * verifyAccess for Application,Custom,System
@@ -962,7 +910,7 @@ public class ComponentAccessAttributeEnforcementTest extends AuraImplTestCase {
                 StringSourceLoader.DEFAULT_NAMESPACE + ":testcomponentChild", true);
         descriptor.getDef();
     }
-    
+
     /**
      * Verify Global access enforcement
      * verifyAccess for Application,Custom,Custom
@@ -979,8 +927,8 @@ public class ComponentAccessAttributeEnforcementTest extends AuraImplTestCase {
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, source,
                 StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testcomponentChild", false);
         descriptor.getDef();
-    }
-    
+    }			
+
     /**
      * Verify Global access enforcement
      * verifyAccess for Application,Custom,CustomOther

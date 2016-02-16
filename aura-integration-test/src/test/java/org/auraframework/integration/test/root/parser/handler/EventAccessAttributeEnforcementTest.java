@@ -27,11 +27,24 @@ import org.junit.Test;
 
 @UnAdaptableTest("namespace start with c means something special in core")
 public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
-    public EventAccessAttributeEnforcementTest(String name) {
-        super(name);
+    /**
+     * Verify Default access enforcement
+     * verifyAccess for Event,System,SystemOther
+     */
+    @Test
+    public void testEventWithSystemNamespaceExtendsEventWithOtherSystemNamespace() throws QuickFixException {
+        //create event with system namespace
+        String eventSource = "<aura:event type='COMPONENT'/>";
+        DefDescriptor<? extends Definition> eventDescriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, eventSource,
+                StringSourceLoader.DEFAULT_NAMESPACE + ":testevent", true);
+        //create event extends the event above
+        String source = "<aura:event type='COMPONENT' extends='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /> ";
+        DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, source,
+                StringSourceLoader.OTHER_NAMESPACE + ":testevent2", true);
+        descriptor.getDef();
     }
 
-    
+
     /**
      * Default Access Tests for one event extends another start
      */
@@ -51,22 +64,7 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
                 StringSourceLoader.DEFAULT_NAMESPACE + ":testevent2", true);
         descriptor.getDef();
     }
-    /**
-     * Verify Default access enforcement
-     * verifyAccess for Event,System,SystemOther
-     */
-    @Test
-    public void testEventWithSystemNamespaceExtendsEventWithOtherSystemNamespace() throws QuickFixException {
-        //create event with system namespace
-        String eventSource = "<aura:event type='COMPONENT'/>";
-        DefDescriptor<? extends Definition> eventDescriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, eventSource,
-                StringSourceLoader.DEFAULT_NAMESPACE + ":testevent", true);
-        //create event extends the event above
-        String source = "<aura:event type='COMPONENT' extends='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /> ";
-        DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, source,
-                StringSourceLoader.OTHER_NAMESPACE + ":testevent2", true);
-        descriptor.getDef();
-    }
+
     /**
      * Verify Default access enforcement
      * verifyAccess for Event,System,Custom
@@ -82,14 +80,15 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, source,
                 StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent2", false);
         try {
-        	descriptor.getDef();
-         	fail("event of custom namespace shouldn't be able to extends event of system namespace");
-        } catch(Exception e) {
-        	//expect 
-    		//System.out.println(e.getMessage());
-    		//Access to event 'string:testevent1' from namespace 'cstring' in 'markup://cstring:testevent22(EVENT)' disallowed by MasterDefRegistry.assertAccess()
+            descriptor.getDef();
+            fail("event of custom namespace shouldn't be able to extends event of system namespace");
+        } catch (Exception e) {
+            //expect
+            //System.out.println(e.getMessage());
+            //Access to event 'string:testevent1' from namespace 'cstring' in 'markup://cstring:testevent22(EVENT)' disallowed by MasterDefRegistry.assertAccess()
         }
     }
+
     /**
      * Verify Default access enforcement
      * verifyAccess for Event,Custom,Custom
@@ -106,29 +105,7 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
                 StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent2", false);
         descriptor.getDef();
     }
-    /**
-     * Verify Default access enforcement
-     * verifyAccess for Event,Custom,CustomOther
-     */
-    @Test
-    public void testEventWithCustomNamespaceExtendsEventWithOtherCustomNamespace() throws QuickFixException {
-        //create event with custom namespace
-        String eventSource = "<aura:event type='COMPONENT'/>";
-        DefDescriptor<? extends Definition> eventDescriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, eventSource,
-                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent", false);
-        //create event extends the event above
-        String source = "<aura:event type='COMPONENT' extends='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /> ";
-        DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, source,
-                StringSourceLoader.OTHER_CUSTOM_NAMESPACE + ":testevent2", false);
-        try {
-        	descriptor.getDef();
-         	fail("event of custom namespace shouldn't be able to extends event of system namespace");
-        } catch(Exception e) {
-        	//expect 
-    		//System.out.println(e.getMessage());
-    		//Access to event 'cstring:testevent1' from namespace 'cstring1' in 'markup://cstring1:testevent22(EVENT)' disallowed by MasterDefRegistry.assertAccess()
-        }
-    }
+
     /**
      * Verify Default access enforcement
      * verifyAccess for Event,Custom,System
@@ -143,14 +120,9 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         String source = "<aura:event type='COMPONENT' extends='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, source,
                 StringSourceLoader.DEFAULT_NAMESPACE + ":testevent2", true);
-        	descriptor.getDef();
+        descriptor.getDef();
     }
-    
-    
 
-    
-    
- 
     /**
      * Default Public Tests for one event extends another start
      */
@@ -201,12 +173,12 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, source,
                 StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent2", false);
         try {
-        	descriptor.getDef();
-         	fail("event of custom namespace shouldn't be able to extends event of system namespace");
-        } catch(Exception e) {
-        	//expect 
-    		//System.out.println(e.getMessage());
-    		//Access to event 'string:testevent1' from namespace 'cstring' in 'markup://cstring:testevent22(EVENT)' disallowed by MasterDefRegistry.assertAccess()
+            descriptor.getDef();
+            fail("event of custom namespace shouldn't be able to extends event of system namespace");
+        } catch (Exception e) {
+            //expect
+            //System.out.println(e.getMessage());
+            //Access to event 'string:testevent1' from namespace 'cstring' in 'markup://cstring:testevent22(EVENT)' disallowed by MasterDefRegistry.assertAccess()
         }
     }
     /**
@@ -240,14 +212,15 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, source,
                 StringSourceLoader.OTHER_CUSTOM_NAMESPACE + ":testevent2", false);
         try {
-        	descriptor.getDef();
-         	fail("event of custom namespace shouldn't be able to extends event of system namespace");
-        } catch(Exception e) {
-        	//expect 
-    		//System.out.println(e.getMessage());
-    		//Access to event 'cstring:testevent1' from namespace 'cstring1' in 'markup://cstring1:testevent22(EVENT)' disallowed by MasterDefRegistry.assertAccess()
+            descriptor.getDef();
+            fail("event of custom namespace shouldn't be able to extends event of system namespace");
+        } catch (Exception e) {
+            //expect
+            //System.out.println(e.getMessage());
+            //Access to event 'cstring:testevent1' from namespace 'cstring1' in 'markup://cstring1:testevent22(EVENT)' disallowed by MasterDefRegistry.assertAccess()
         }
     }
+
     /**
      * Verify PUBLIC access enforcement
      * verifyAccess for Event,Custom,System
@@ -262,14 +235,8 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         String source = "<aura:event type='COMPONENT' extends='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, source,
                 StringSourceLoader.DEFAULT_NAMESPACE + ":testevent2", true);
-        	descriptor.getDef();
+        descriptor.getDef();
     }
-    
-    
-    
-    
-    
-    
 
     /**
      * Default Global Tests for one event extends another start
@@ -290,6 +257,7 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
                 StringSourceLoader.DEFAULT_NAMESPACE + ":testevent2", true);
         descriptor.getDef();
     }
+
     /**
      * Verify GLOBAL access enforcement
      * verifyAccess for Event,System,SystemOther
@@ -306,6 +274,7 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
                 StringSourceLoader.OTHER_NAMESPACE + ":testevent2", true);
         descriptor.getDef();
     }
+
     /**
      * Verify GLOBAL access enforcement
      * verifyAccess for Event,System,Custom
@@ -320,8 +289,9 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         String source = "<aura:event type='COMPONENT' extends='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, source,
                 StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent2", false);
-        	descriptor.getDef();
+        descriptor.getDef();
     }
+
     /**
      * Verify GLOBAL access enforcement
      * verifyAccess for Event,Custom,Custom
@@ -338,6 +308,7 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
                 StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent2", false);
         descriptor.getDef();
     }
+
     /**
      * Verify GLOBAL access enforcement
      * verifyAccess for Event,Custom,CustomOther
@@ -352,8 +323,9 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         String source = "<aura:event type='COMPONENT' extends='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, source,
                 StringSourceLoader.OTHER_CUSTOM_NAMESPACE + ":testevent2", false);
-        	descriptor.getDef();
+        descriptor.getDef();
     }
+
     /**
      * Verify GLOBAL access enforcement
      * verifyAccess for Event,Custom,System
@@ -368,39 +340,9 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         String source = "<aura:event type='COMPONENT' extends='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, source,
                 StringSourceLoader.DEFAULT_NAMESPACE + ":testevent2", true);
-        	descriptor.getDef();
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
-    
-    
-    /**
-     * Default Access Tests for event is registered by aura:registerEvent
-     */
-    /**
-     * Verify Default Access Enforcement
-     * verifyAccess for Component,System,System
-     */
-    @Test
-    public void testComponentWithSystemNamespaceRegistEventWithSameSystemNamespaceInMarkup() throws QuickFixException {
-        //create event with system namespace
-        String eventSource = "<aura:event type='COMPONENT'/>";
-        DefDescriptor<? extends Definition> eventDescriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, eventSource,
-                StringSourceLoader.DEFAULT_NAMESPACE + ":testevent", true);
-        //create component register the event above
-        String source = "<aura:component> <aura:registerEvent name='testevent' type='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /></aura:component> ";
-        DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, source,
-                StringSourceLoader.DEFAULT_NAMESPACE + ":testcomponent", true);
         descriptor.getDef();
     }
+
     /**
      * Verify Default Access Enforcement
      * verifyAccess for Component,System,SystemOther
@@ -432,14 +374,15 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, source,
                 StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testcomponent", false);
         try {
-        	descriptor.getDef();
-          	fail("component of custom namespace shouldn't be able to register event of system namespace");
-        } catch(Exception e) {
-        	//expect 
-    		//System.out.println(e.getMessage());
-    		//Access to event 'string:testevent1' from namespace 'cstring' in 'markup://cstring:testcomponent2(COMPONENT)' disallowed by MasterDefRegistry.assertAccess()
+            descriptor.getDef();
+            fail("component of custom namespace shouldn't be able to register event of system namespace");
+        } catch (Exception e) {
+            //expect
+            //System.out.println(e.getMessage());
+            //Access to event 'string:testevent1' from namespace 'cstring' in 'markup://cstring:testcomponent2(COMPONENT)' disallowed by MasterDefRegistry.assertAccess()
         }
     }
+
     /**
      * Verify Default Access Enforcement
      * verifyAccess for Component,Custom,Custom
@@ -454,8 +397,9 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         String source = "<aura:component> <aura:registerEvent name='testevent' type='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /></aura:component> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, source,
                 StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testcomponent", false);
-        	descriptor.getDef();
+        descriptor.getDef();
     }
+
     /**
      * Verify Default Access Enforcement
      * verifyAccess for Component,Custom,CustomOhter
@@ -471,14 +415,16 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, source,
                 StringSourceLoader.OTHER_CUSTOM_NAMESPACE + ":testcomponent", false);
         try {
-        	descriptor.getDef();
-          	fail("component of custom namespace shouldn't be able to register event of other custom namespace");
-        } catch(Exception e) {
-        	//expect 
-    		//System.out.println(e.getMessage());
-    		//Access to event 'string:testevent1' from namespace 'cstring' in 'markup://cstring:testcomponent2(COMPONENT)' disallowed by MasterDefRegistry.assertAccess()
+            descriptor.getDef();
+            fail("component of custom namespace shouldn't be able to register event of other custom namespace");
+        } catch (Exception e) {
+            //expect
+            //System.out.println(e.getMessage());
+            //Access to event 'string:testevent1' from namespace 'cstring' in 'markup://cstring:testcomponent2(COMPONENT)' disallowed by MasterDefRegistry.assertAccess()
         }
     }
+
+
     /**
      * Verify Default Access Enforcement
      * verifyAccess for Component,Custom,System
@@ -493,17 +439,9 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         String source = "<aura:component> <aura:registerEvent name='testevent' type='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /></aura:component> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, source,
                 StringSourceLoader.DEFAULT_NAMESPACE + ":testcomponent", true);
-        	descriptor.getDef();
+        descriptor.getDef();
     }
-    
-    
-    
-    
-    
-    
-    
 
- 
     /**
      * Default Access Tests for event is registered by aura:registerEvent
      */
@@ -554,12 +492,12 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, source,
                 StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testcomponent", false);
         try {
-        	descriptor.getDef();
-          	fail("component of custom namespace shouldn't be able to register event of system namespace");
-        } catch(Exception e) {
-        	//expect 
-    		//System.out.println(e.getMessage());
-    		//Access to event 'string:testevent1' from namespace 'cstring' in 'markup://cstring:testcomponent2(COMPONENT)' disallowed by MasterDefRegistry.assertAccess()
+            descriptor.getDef();
+            fail("component of custom namespace shouldn't be able to register event of system namespace");
+        } catch (Exception e) {
+            //expect
+            //System.out.println(e.getMessage());
+            //Access to event 'string:testevent1' from namespace 'cstring' in 'markup://cstring:testcomponent2(COMPONENT)' disallowed by MasterDefRegistry.assertAccess()
         }
     }
     /**
@@ -576,8 +514,9 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         String source = "<aura:component> <aura:registerEvent name='testevent' type='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /></aura:component> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, source,
                 StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testcomponent", false);
-        	descriptor.getDef();
+        descriptor.getDef();
     }
+
     /**
      * Verify PUBLIC Access Enforcement
      * verifyAccess for Component,Custom,CustomOhter
@@ -593,14 +532,15 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, source,
                 StringSourceLoader.OTHER_CUSTOM_NAMESPACE + ":testcomponent", false);
         try {
-        	descriptor.getDef();
-          	fail("component of custom namespace shouldn't be able to register event of other custom namespace");
-        } catch(Exception e) {
-        	//expect 
-    		//System.out.println(e.getMessage());
-    		//Access to event 'string:testevent1' from namespace 'cstring' in 'markup://cstring:testcomponent2(COMPONENT)' disallowed by MasterDefRegistry.assertAccess()
+            descriptor.getDef();
+            fail("component of custom namespace shouldn't be able to register event of other custom namespace");
+        } catch (Exception e) {
+            //expect
+            //System.out.println(e.getMessage());
+            //Access to event 'string:testevent1' from namespace 'cstring' in 'markup://cstring:testcomponent2(COMPONENT)' disallowed by MasterDefRegistry.assertAccess()
         }
     }
+
     /**
      * Verify PUBLIC Access Enforcement
      * verifyAccess for Component,Custom,System
@@ -615,18 +555,9 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         String source = "<aura:component> <aura:registerEvent name='testevent' type='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /></aura:component> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, source,
                 StringSourceLoader.DEFAULT_NAMESPACE + ":testcomponent", true);
-        	descriptor.getDef();
+        descriptor.getDef();
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
 
     /**
      * Default Access Tests for event is registered by aura:registerEvent
@@ -647,6 +578,7 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
                 StringSourceLoader.DEFAULT_NAMESPACE + ":testcomponent", true);
         descriptor.getDef();
     }
+
     /**
      * Verify GLOBAL Access Enforcement
      * verifyAccess for Component,System,SystemOther
@@ -663,6 +595,7 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
                 StringSourceLoader.OTHER_NAMESPACE + ":testcomponent", true);
         descriptor.getDef();
     }
+
     /**
      * Verify GLOBAL Access Enforcement
      * verifyAccess for Component,System,Custom
@@ -677,8 +610,9 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         String source = "<aura:component> <aura:registerEvent name='testevent' type='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /></aura:component> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, source,
                 StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testcomponent", false);
-        	descriptor.getDef();
+        descriptor.getDef();
     }
+
     /**
      * Verify GLOBAL Access Enforcement
      * verifyAccess for Component,Custom,Custom
@@ -693,8 +627,9 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         String source = "<aura:component> <aura:registerEvent name='testevent' type='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /></aura:component> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, source,
                 StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testcomponent", false);
-        	descriptor.getDef();
+        descriptor.getDef();
     }
+
     /**
      * Verify GLOBAL Access Enforcement
      * verifyAccess for Component,Custom,CustomOhter
@@ -709,8 +644,9 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         String source = "<aura:component> <aura:registerEvent name='testevent' type='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /></aura:component> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, source,
                 StringSourceLoader.OTHER_CUSTOM_NAMESPACE + ":testcomponent", false);
-        	descriptor.getDef();
+        descriptor.getDef();
     }
+
     /**
      * Verify GLOBAL Access Enforcement
      * verifyAccess for Component,Custom,System
@@ -725,6 +661,6 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         String source = "<aura:component> <aura:registerEvent name='testevent' type='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /></aura:component> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, source,
                 StringSourceLoader.DEFAULT_NAMESPACE + ":testcomponent", true);
-        	descriptor.getDef();
+        descriptor.getDef();
     }
 }

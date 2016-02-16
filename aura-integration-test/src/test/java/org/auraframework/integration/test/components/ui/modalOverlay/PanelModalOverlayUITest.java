@@ -15,10 +15,6 @@
  */
 package org.auraframework.integration.test.components.ui.modalOverlay;
 
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.util.List;
-
 import org.auraframework.test.util.WebDriverTestCase;
 import org.auraframework.test.util.WebDriverTestCase.ExcludeBrowsers;
 import org.auraframework.test.util.WebDriverUtil.BrowserType;
@@ -27,6 +23,10 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
+
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.util.List;
 
 /**
  * WARNING this test is testing deprecated components. Usages of panelManager should be replaced with panelManager2
@@ -45,10 +45,6 @@ public class PanelModalOverlayUITest extends WebDriverTestCase {
     private final String ACTIVE_ELEMENT_TEXT = "return $A.test.getActiveElementText()";
     private final String NEWOVERLAY_BUTTON = ".pressOverlay";
     private final String INPUT_TEXT = ".inputText";
-
-    public PanelModalOverlayUITest(String name) {
-        super(name);
-    }
 
     /**
      * [Accessibility] modal overlay dialog closing on Esc key. Test case for W-2396326

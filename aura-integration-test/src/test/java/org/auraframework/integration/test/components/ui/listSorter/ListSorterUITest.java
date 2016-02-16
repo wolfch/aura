@@ -15,9 +15,6 @@
  */
 package org.auraframework.integration.test.components.ui.listSorter;
 
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-
 import org.auraframework.test.util.WebDriverTestCase;
 import org.auraframework.test.util.WebDriverTestCase.TargetBrowsers;
 import org.auraframework.test.util.WebDriverUtil.BrowserType;
@@ -27,6 +24,9 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 
 /**
  * UI automation for ui:ListSorter.
@@ -42,10 +42,6 @@ public class ListSorterUITest extends WebDriverTestCase {
     private final String ACTIVE_ELEMENT = "return $A.test.getActiveElement()";
     private final String SORT_TRIGGER = "defaultListSorterTrigger";
     private final String SORTER = "defaultListSorter";
-
-    public ListSorterUITest(String name) {
-        super(name);
-    }
 
     /**
      * Tab out should not close the sorter dialog The focus should remain in the Sorter Menu Test case for W-1985435

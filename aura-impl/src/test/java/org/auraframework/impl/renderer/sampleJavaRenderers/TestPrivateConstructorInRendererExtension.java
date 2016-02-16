@@ -15,11 +15,12 @@
  */
 package org.auraframework.impl.renderer.sampleJavaRenderers;
 
-import java.io.IOException;
-
+import org.auraframework.annotations.Annotations.ServiceComponentRenderer;
 import org.auraframework.def.Renderer;
 import org.auraframework.instance.BaseComponent;
 import org.auraframework.throwable.quickfix.QuickFixException;
+
+import java.io.IOException;
 
 /**
  * A Java Renderer that extends Renderer interface and has hidden its
@@ -28,6 +29,7 @@ import org.auraframework.throwable.quickfix.QuickFixException;
  * 
  * @since 0.0.207
  */
+@ServiceComponentRenderer
 public class TestPrivateConstructorInRendererExtension implements Renderer {
 
     private TestPrivateConstructorInRendererExtension() {

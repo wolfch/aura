@@ -15,10 +15,6 @@
  */
 package org.auraframework.integration.test.def;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.auraframework.Aura;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.FlavoredStyleDef;
@@ -27,26 +23,31 @@ import org.auraframework.impl.root.component.BaseComponentDefTest;
 import org.auraframework.throwable.quickfix.FlavorNameNotFoundException;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
 import org.auraframework.util.test.annotation.UnAdaptableTest;
+import org.junit.Test;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class ComponentDefTest extends BaseComponentDefTest<ComponentDef> {
-
-    public ComponentDefTest(String name) {
-        super(name, ComponentDef.class, "aura:component");
+    public ComponentDefTest() {
+        super(ComponentDef.class, "aura:component");
     }
 
     /**
      * InvalidDefinitionException if we try to instantiate an abstract component with no providers.
      */
+    @Test
     public void testAbstractNoProvider() throws Exception {
         try {
             ComponentDef cd = define(baseTag, "abstract='true'", "");
-            Aura.getInstanceService().getInstance(cd);
+            instanceService.getInstance(cd);
             fail("Should not be able to instantiate a component with no providers.");
         } catch (Exception e) {
             checkExceptionContains(e, InvalidDefinitionException.class, "cannot be instantiated directly");
         }
     }
 
+    @Test
     public void testAppendsStandardFlavorToDependencies() throws Exception {
         DefDescriptor<ComponentDef> desc = addSourceAutoCleanup(getDefClass(),
                 String.format(baseTag, "", "<div aura:flavorable='true'></div>"));
@@ -54,7 +55,7 @@ public class ComponentDefTest extends BaseComponentDefTest<ComponentDef> {
                 ".THIS--test{}");
 
         Set<DefDescriptor<?>> dependencies = new HashSet<>();
-        Aura.getDefinitionService().getDefinition(desc).appendDependencies(dependencies);
+        definitionService.getDefinition(desc).appendDependencies(dependencies);
         assertTrue(dependencies.contains(flavor));
     }
 
@@ -62,19 +63,21 @@ public class ComponentDefTest extends BaseComponentDefTest<ComponentDef> {
      * Tests that confirm the specified default flavor exists
      */
 
+    @Test
     public void testErrorsWhenDefaultFlavorDoesntExist() throws Exception {
         DefDescriptor<ComponentDef> desc = addSourceAutoCleanup(getDefClass(),
                 String.format(baseTag, "defaultFlavor='tesst'", "<div aura:flavorable='true'></div>"));
         addSourceAutoCleanup(Flavors.standardFlavorDescriptor(desc), ".THIS--test{}");
 
         try {
-        	Aura.getDefinitionService().getDefinition(desc).validateReferences();
+            definitionService.getDefinition(desc).validateReferences();
             fail("expected to get an exception");
         } catch (Exception e) {
             checkExceptionContains(e, FlavorNameNotFoundException.class, "was not found");
         }
     }
 
+    @Test
     @UnAdaptableTest("W-2929438")
     public void testNoErrorWhenDefaultFlavorExistsOnParent() throws Exception {
         DefDescriptor<ComponentDef> parent = addSourceAutoCleanup(ComponentDef.class,
@@ -85,9 +88,10 @@ public class ComponentDefTest extends BaseComponentDefTest<ComponentDef> {
                 String.format("<aura:component extends='%s' defaultFlavor='fromParent'></aura:component>",
                         parent.getDescriptorName()));
 
-        Aura.getDefinitionService().getDefinition(desc).validateReferences(); // no exception
+        definitionService.getDefinition(desc).validateReferences(); // no exception
     }
 
+    @Test
     @UnAdaptableTest("W-2929438")
     public void testNoErrorWhenDefaultFlavorExistsOnDistantParent() throws Exception {
         // hierarchy two levels deep, up one level doesn't not have flavorable but above that does
@@ -103,16 +107,18 @@ public class ComponentDefTest extends BaseComponentDefTest<ComponentDef> {
                 String.format("<aura:component extends='%s' defaultFlavor='fromParent'></aura:component>",
                         parent.getDescriptorName()));
 
-        Aura.getDefinitionService().getDefinition(desc).validateReferences(); // no exception
+        definitionService.getDefinition(desc).validateReferences(); // no exception
     }
 
+    @Test
     public void testValidatesMultipleDefaultFlavorNamesBothValid() throws Exception {
         DefDescriptor<ComponentDef> desc = addSourceAutoCleanup(getDefClass(),
                 "<aura:component defaultFlavor='test, test2'><div aura:flavorable='true'></div></aura:component>");
         addSourceAutoCleanup(Flavors.standardFlavorDescriptor(desc), ".THIS--test{} .THIS--test2{}");
-        Aura.getDefinitionService().getDefinition(desc).validateReferences(); // no exception
+        definitionService.getDefinition(desc).validateReferences(); // no exception
     }
 
+    @Test
     @UnAdaptableTest("W-2929438")
     public void testValidatesMultipleDefaultFlavorNamesFromParent() throws Exception {
         DefDescriptor<ComponentDef> parent = addSourceAutoCleanup(ComponentDef.class,
@@ -123,16 +129,17 @@ public class ComponentDefTest extends BaseComponentDefTest<ComponentDef> {
                 getDefClass(),
                 String.format("<aura:component extends='%s' defaultFlavor='test, test2'></aura:component>",
                         parent.getDescriptorName()));
-        Aura.getDefinitionService().getDefinition(desc).validateReferences(); // no exception
+        definitionService.getDefinition(desc).validateReferences(); // no exception
     }
 
+    @Test
     public void testValidatesMultipleDefaultFlavorNamesOneInvalid() throws Exception {
         DefDescriptor<ComponentDef> desc = addSourceAutoCleanup(getDefClass(),
                 "<aura:component defaultFlavor='test, bad'><div aura:flavorable='true'></div></aura:component>");
         addSourceAutoCleanup(Flavors.standardFlavorDescriptor(desc), ".THIS--test{} .THIS--test2{}");
 
         try {
-        	Aura.getDefinitionService().getDefinition(desc).validateReferences(); // no exception
+            definitionService.getDefinition(desc).validateReferences(); // no exception
             fail("expected to get an exception");
         } catch (Exception e) {
             checkExceptionContains(e, FlavorNameNotFoundException.class, "was not found");
@@ -140,13 +147,14 @@ public class ComponentDefTest extends BaseComponentDefTest<ComponentDef> {
     }
 
     /** when a default flavor is specified, validation should ensure there is a flavorable element */
+    @Test
     public void testValidatesComponentIsFlavorable() throws Exception {
         DefDescriptor<ComponentDef> desc = addSourceAutoCleanup(getDefClass(),
                 String.format(baseTag, "defaultFlavor='test'", "<div></div>"));
         addSourceAutoCleanup(Flavors.standardFlavorDescriptor(desc), ".THIS--test{}");
 
         try {
-        	Aura.getDefinitionService().getDefinition(desc).validateReferences();
+            definitionService.getDefinition(desc).validateReferences();
             fail("expected to get an exception");
         } catch (Exception e) {
             checkExceptionContains(e, InvalidDefinitionException.class, "The defaultFlavor attribute cannot");
@@ -154,6 +162,7 @@ public class ComponentDefTest extends BaseComponentDefTest<ComponentDef> {
     }
 
     /** if extending from a component with a flavorable element, the validation should pass */
+    @Test
     @UnAdaptableTest("W-2929438")
     public void testValidatesComponentIsFlavorableFromParent() throws Exception {
         DefDescriptor<ComponentDef> parent = addSourceAutoCleanup(ComponentDef.class,
@@ -165,9 +174,10 @@ public class ComponentDefTest extends BaseComponentDefTest<ComponentDef> {
                 String.format("<aura:component extends='%s' defaultFlavor='fromParent'></aura:component>",
                         parent.getDescriptorName()));
 
-        Aura.getDefinitionService().getDefinition(desc).validateReferences(); // no exception
+        definitionService.getDefinition(desc).validateReferences(); // no exception
     }
 
+    @Test
     @UnAdaptableTest("W-2929438")
     public void testValidatesComponentIsFlavorableFromDistantParent() throws Exception {
         // hierarchy two levels deep, up one level doesn't not have flavorable but above that does
@@ -184,9 +194,10 @@ public class ComponentDefTest extends BaseComponentDefTest<ComponentDef> {
                 String.format("<aura:component extends='%s' defaultFlavor='fromParent'></aura:component>",
                         parent.getDescriptorName()));
 
-        Aura.getDefinitionService().getDefinition(desc).validateReferences(); // no exception
+        definitionService.getDefinition(desc).validateReferences(); // no exception
     }
 
+    @Test
     @UnAdaptableTest("W-2929438, this one is passing, but it's only because we are expecting exception anyway")
     public void testValidatesComponentNotFlavorableFromAnyParent() throws Exception {
         DefDescriptor<ComponentDef> distant = addSourceAutoCleanup(ComponentDef.class,
@@ -202,7 +213,7 @@ public class ComponentDefTest extends BaseComponentDefTest<ComponentDef> {
                         parent.getDescriptorName()));
 
         try {
-        	Aura.getDefinitionService().getDefinition(desc).validateReferences();
+            definitionService.getDefinition(desc).validateReferences();
             fail("expected to get an exception");
         } catch (Exception e) {
             checkExceptionContains(e, InvalidDefinitionException.class, "The defaultFlavor attribute cannot");
@@ -214,59 +225,66 @@ public class ComponentDefTest extends BaseComponentDefTest<ComponentDef> {
      * flavorable child (or is marked dynamicallyFlavorable), a flavor file exists, and the flavor file defines a flavor named "default".
      */
 
+    @Test
     public void testImplicitDefaultFlavor() throws Exception {
         DefDescriptor<ComponentDef> desc = addSourceAutoCleanup(getDefClass(),
                 String.format(baseTag, "", "<div aura:flavorable='true'></div>"));
         addSourceAutoCleanup(Flavors.standardFlavorDescriptor(desc), ".THIS--default{}");
-        assertEquals("default", Aura.getDefinitionService().getDefinition(desc).getDefaultFlavorOrImplicit());
+        assertEquals("default", definitionService.getDefinition(desc).getDefaultFlavorOrImplicit());
     }
 
+    @Test
     public void testImplicitDefaultFlavorDynamicallyFlavored() throws Exception {
         DefDescriptor<ComponentDef> desc = addSourceAutoCleanup(getDefClass(),
                 String.format(baseTag, "dynamicallyFlavorable='true'", "<div></div>"));
         addSourceAutoCleanup(Flavors.standardFlavorDescriptor(desc), ".THIS--default{}");
-        assertEquals("default", Aura.getDefinitionService().getDefinition(desc).getDefaultFlavorOrImplicit());
+        assertEquals("default", definitionService.getDefinition(desc).getDefaultFlavorOrImplicit());
     }
 
+    @Test
     public void testImplicitDefaultFlavorShorthand() throws Exception {
         DefDescriptor<ComponentDef> desc = addSourceAutoCleanup(getDefClass(),
                 String.format(baseTag, "", "<div aura:flavorable='true'></div>"));
         addSourceAutoCleanup(Flavors.standardFlavorDescriptor(desc), ".THIS{}");
-        assertEquals("default", Aura.getDefinitionService().getDefinition(desc).getDefaultFlavorOrImplicit());
+        assertEquals("default", definitionService.getDefinition(desc).getDefaultFlavorOrImplicit());
     }
 
+    @Test
     public void testImplicitDefaultFlavorNoFlavoredStyleDef() throws Exception {
         DefDescriptor<ComponentDef> desc = addSourceAutoCleanup(getDefClass(),
                 String.format(baseTag, "", "<div aura:flavorable='true'></div>"));
-        assertNull(Aura.getDefinitionService().getDefinition(desc).getDefaultFlavorOrImplicit());
+        assertNull(definitionService.getDefinition(desc).getDefaultFlavorOrImplicit());
     }
 
+    @Test
     public void testImplicitDefaultFlavorDifferentName() throws Exception {
         DefDescriptor<ComponentDef> desc = addSourceAutoCleanup(getDefClass(),
                 String.format(baseTag, "", "<div aura:flavorable='true'></div>"));
         // flavor name is "test", not "default"
         addSourceAutoCleanup(Flavors.standardFlavorDescriptor(desc), ".THIS--test{}");
-        assertNull(Aura.getDefinitionService().getDefinition(desc).getDefaultFlavorOrImplicit());
+        assertNull(definitionService.getDefinition(desc).getDefaultFlavorOrImplicit());
     }
 
+    @Test
     public void testImplicitDefaultFlavorWithoutFlavorable() throws Exception {
         try {
             DefDescriptor<ComponentDef> desc = addSourceAutoCleanup(getDefClass(),
                     String.format(baseTag, "", "<div></div>"));
             addSourceAutoCleanup(Flavors.standardFlavorDescriptor(desc), ".THIS--default{}");
-            Aura.getDefinitionService().getDefinition(desc).validateDefinition();
+            definitionService.getDefinition(desc).validateDefinition();
             fail("expected to get an exception");
         } catch (Exception e) {
             checkExceptionContains(e, InvalidDefinitionException.class, "must contain at least one aura:flavorable");
         }
     }
 
+    @Test
     public void testExplicitAndImplicitDefaultFlavor() throws Exception {
         DefDescriptor<ComponentDef> desc = addSourceAutoCleanup(getDefClass(),
                 String.format(baseTag, "defaultFlavor='test'", "<div aura:flavorable='true'></div>"));
         addSourceAutoCleanup(Flavors.standardFlavorDescriptor(desc),
                 ".THIS--default{}" +
                         ".THIS--test{}");
-        assertEquals("test", Aura.getDefinitionService().getDefinition(desc).getDefaultFlavorOrImplicit());
+        assertEquals("test", definitionService.getDefinition(desc).getDefaultFlavorOrImplicit());
     }
 }

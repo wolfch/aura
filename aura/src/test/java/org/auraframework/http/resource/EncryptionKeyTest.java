@@ -16,29 +16,25 @@
 
 package org.auraframework.http.resource;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-
 import org.auraframework.adapter.ConfigAdapter;
 import org.auraframework.adapter.ServletUtilAdapter;
 import org.auraframework.system.AuraContext.Format;
 import org.auraframework.test.util.DummyHttpServletResponse;
 import org.auraframework.util.test.util.UnitTestCase;
+import org.junit.Test;
 import org.mockito.Mockito;
 
-public class EncryptionKeyTest extends UnitTestCase{
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
-    public EncryptionKeyTest(String name) {
-        super(name);
-    }
-    
+public class EncryptionKeyTest extends UnitTestCase {
     /**
      * Unit Test, Name is API!.
      */
+    @Test
     public void testName() {
         assertEquals("app.encryptionkey", new EncryptionKey().getName());
     }
@@ -46,6 +42,7 @@ public class EncryptionKeyTest extends UnitTestCase{
     /**
      * Unit Test, Format is API!. notice we use HTML as format, not Format.ENCRYPTIONKEY
      */
+    @Test
     public void testFormat() {
         assertEquals(Format.HTML, new EncryptionKey().getFormat());
     }
@@ -55,9 +52,8 @@ public class EncryptionKeyTest extends UnitTestCase{
      * sanity test : verify we write out encryptionKey to response 
      * Lin TODO: this needs more work
      */
+    @Test
     public void testWriteAppEncryptionKey() throws Exception {
-        //Aura.getContextService().startContext(AuraContext.Mode.UTEST, AuraContext.Format.ENCRYPTIONKEY,
-        //         AuraContext.Authentication.AUTHENTICATED);
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         DummyHttpServletResponse response = new DummyHttpServletResponse() {
             ServletOutputStream out = null;

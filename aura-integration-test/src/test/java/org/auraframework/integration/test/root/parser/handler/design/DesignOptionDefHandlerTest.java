@@ -15,32 +15,31 @@
  */
 package org.auraframework.integration.test.root.parser.handler.design;
 
-import org.auraframework.Aura;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.design.DesignDef;
 import org.auraframework.impl.AuraImplTestCase;
+import org.junit.Test;
 
 public class DesignOptionDefHandlerTest extends AuraImplTestCase {
     private static final String OPTION = "<design:option %s/>";
     private static final String NAME = "name=\"%s\"";
     private static final String VALUE = "value=\"%s\"";
 
-    public DesignOptionDefHandlerTest(String name) {
-        super(name);
-    }
-
+    @Test
     public void testOptionWithNameOnly() throws Exception {
         DesignDef def = setupDesignOptionDef("test", null);
         assertNotNull("Design option should return null when no value is passed in", def.getOption("test"));
         assertEquals("Design option should contain option name", "test", def.getOption("test").get(0).getKey());
     }
 
+    @Test
     public void testOptionWithNameAndValue() throws  Exception {
         DesignDef def = setupDesignOptionDef("name", "value");
         assertEquals("Design option did not return correct value", "value", def.getOption("name").get(0).getValue());
     }
 
+    @Test
     public void testOptionWithNoAttributes() throws Exception {
         try {
             setupDesignOptionDef(null, null);
@@ -50,12 +49,13 @@ public class DesignOptionDefHandlerTest extends AuraImplTestCase {
         }
     }
 
+    @Test
     public void testOptionDoesNotAllowChild() throws Exception {
         DefDescriptor<ComponentDef> cmpDesc = getAuraTestingUtil().createStringSourceDescriptor(null,
                 ComponentDef.class, null);
         addSourceAutoCleanup(cmpDesc, String.format(baseComponentTag, "", ""));
 
-        DefDescriptor<DesignDef> designDesc = Aura.getDefinitionService().getDefDescriptor(cmpDesc.getQualifiedName(),
+        DefDescriptor<DesignDef> designDesc = definitionService.getDefDescriptor(cmpDesc.getQualifiedName(),
                 DesignDef.class);
         addSourceAutoCleanup(designDesc,
                 "<design:component><design:option name=\"name\"><aura:attribute name=\"test\"/></design:option></design:component>");
@@ -72,7 +72,7 @@ public class DesignOptionDefHandlerTest extends AuraImplTestCase {
                 ComponentDef.class, null);
         addSourceAutoCleanup(cmpDesc, String.format(baseComponentTag, "", ""));
 
-        DefDescriptor<DesignDef> designDesc = Aura.getDefinitionService().getDefDescriptor(cmpDesc.getQualifiedName(),
+        DefDescriptor<DesignDef> designDesc = definitionService.getDefDescriptor(cmpDesc.getQualifiedName(),
                 DesignDef.class);
         String des;
         if (name == null && value == null) {

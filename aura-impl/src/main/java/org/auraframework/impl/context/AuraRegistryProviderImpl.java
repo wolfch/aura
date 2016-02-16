@@ -15,6 +15,52 @@
  */
 package org.auraframework.impl.context;
 
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import org.apache.log4j.Logger;
+import org.auraframework.adapter.ComponentLocationAdapter;
+import org.auraframework.adapter.ConfigAdapter;
+import org.auraframework.adapter.RegistryAdapter;
+import org.auraframework.annotations.Annotations.ServiceComponent;
+import org.auraframework.def.ControllerDef;
+import org.auraframework.def.DefDescriptor;
+import org.auraframework.def.DefDescriptor.DefType;
+import org.auraframework.def.Definition;
+import org.auraframework.def.RendererDef;
+import org.auraframework.impl.compound.controller.CompoundControllerDefFactory;
+import org.auraframework.impl.controller.AuraStaticControllerDefRegistry;
+import org.auraframework.impl.java.controller.JavaControllerDefFactory;
+import org.auraframework.impl.java.model.JavaModelDefFactory;
+import org.auraframework.impl.java.provider.JavaProviderDefFactory;
+import org.auraframework.impl.java.provider.JavaTokenDescriptorProviderDefFactory;
+import org.auraframework.impl.java.provider.JavaTokenMapProviderDefFactory;
+import org.auraframework.impl.java.renderer.JavaRendererDefFactory;
+import org.auraframework.impl.java.type.JavaTypeDefFactory;
+import org.auraframework.impl.parser.ParserFactory;
+import org.auraframework.impl.source.SourceFactory;
+import org.auraframework.impl.source.file.FileSourceLoader;
+import org.auraframework.impl.source.resource.ResourceSourceLoader;
+import org.auraframework.impl.system.CacheableDefFactoryImpl;
+import org.auraframework.impl.system.CachingDefRegistryImpl;
+import org.auraframework.impl.system.NonCachingDefRegistryImpl;
+import org.auraframework.impl.system.StaticDefRegistryImpl;
+import org.auraframework.impl.type.AuraStaticTypeDefRegistry;
+import org.auraframework.org.auraframework.di.ImplementationProvider;
+import org.auraframework.service.DefinitionService;
+import org.auraframework.system.AuraContext.Authentication;
+import org.auraframework.system.AuraContext.Mode;
+import org.auraframework.system.CacheableDefFactory;
+import org.auraframework.system.DefFactory;
+import org.auraframework.system.DefRegistry;
+import org.auraframework.system.SourceListener;
+import org.auraframework.system.SourceLoader;
+import org.auraframework.throwable.AuraRuntimeException;
+import org.auraframework.util.FileMonitor;
+import org.auraframework.util.ServiceLocator;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -27,51 +73,25 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.log4j.Logger;
-import org.auraframework.Aura;
-import org.auraframework.adapter.ComponentLocationAdapter;
-import org.auraframework.adapter.RegistryAdapter;
-import org.auraframework.def.ControllerDef;
-import org.auraframework.def.DefDescriptor;
-import org.auraframework.def.DefDescriptor.DefType;
-import org.auraframework.def.Definition;
-import org.auraframework.def.RendererDef;
-import org.auraframework.ds.serviceloader.AuraServiceProvider;
-import org.auraframework.impl.compound.controller.CompoundControllerDefFactory;
-import org.auraframework.impl.controller.AuraStaticControllerDefRegistry;
-import org.auraframework.impl.java.controller.JavaControllerDefFactory;
-import org.auraframework.impl.java.model.JavaModelDefFactory;
-import org.auraframework.impl.java.provider.JavaProviderDefFactory;
-import org.auraframework.impl.java.provider.JavaTokenDescriptorProviderDefFactory;
-import org.auraframework.impl.java.provider.JavaTokenMapProviderDefFactory;
-import org.auraframework.impl.java.renderer.JavaRendererDefFactory;
-import org.auraframework.impl.java.type.JavaTypeDefFactory;
-import org.auraframework.impl.source.SourceFactory;
-import org.auraframework.impl.source.file.FileSourceLoader;
-import org.auraframework.impl.source.resource.ResourceSourceLoader;
-import org.auraframework.impl.system.CacheableDefFactoryImpl;
-import org.auraframework.impl.system.CachingDefRegistryImpl;
-import org.auraframework.impl.system.NonCachingDefRegistryImpl;
-import org.auraframework.impl.system.StaticDefRegistryImpl;
-import org.auraframework.impl.type.AuraStaticTypeDefRegistry;
-import org.auraframework.system.AuraContext.Authentication;
-import org.auraframework.system.AuraContext.Mode;
-import org.auraframework.system.CacheableDefFactory;
-import org.auraframework.system.DefFactory;
-import org.auraframework.system.DefRegistry;
-import org.auraframework.system.SourceListener;
-import org.auraframework.system.SourceLoader;
-import org.auraframework.throwable.AuraRuntimeException;
-import org.auraframework.util.ServiceLocator;
-
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-
-import aQute.bnd.annotation.component.Component;
-
-@Component (provide=AuraServiceProvider.class)
+@ServiceComponent
 public class AuraRegistryProviderImpl implements RegistryAdapter, SourceListener {
+    @Inject
+    private FileMonitor fileMonitor;
+
+    @Inject
+    private DefinitionService definitionService;
+
+    @Inject
+    private ConfigAdapter configAdapter;
+
+    @Inject
+    private ParserFactory parserFactory;
+
+    @Inject
+    private List<ComponentLocationAdapter> locationAdapters;
+
+    private ImplementationProvider implementationProvider;
+
     private static final Logger _log = Logger.getLogger(RegistryAdapter.class);
 
     /**
@@ -140,8 +160,11 @@ public class AuraRegistryProviderImpl implements RegistryAdapter, SourceListener
         }
     };
 
-    public AuraRegistryProviderImpl() {
-        Aura.getDefinitionService().subscribeToChangeNotification(this);
+    @PostConstruct
+    public void init() {
+        if (fileMonitor != null) {
+            fileMonitor.subscribeToChangeNotification(this);
+        }
     }
 
     /**
@@ -227,14 +250,14 @@ public class AuraRegistryProviderImpl implements RegistryAdapter, SourceListener
             if (!components.canRead() || !components.canExecute() || !components.isDirectory()) {
                 _log.error("Unable to find " + components + ", ignored.");
             } else {
-                markupLoaders.add(new FileSourceLoader(components));
+                markupLoaders.add(new FileSourceLoader(components, fileMonitor));
                 File javaBase = new File(components.getParent(), "java");
                 if (javaBase.exists()) {
-                    javaLoaders.add(new FileSourceLoader(javaBase));
+                    javaLoaders.add(new FileSourceLoader(javaBase, fileMonitor));
                 }
                 File generatedJavaBase = location.getJavaGeneratedSourceDir();
                 if (generatedJavaBase != null && generatedJavaBase.exists()) {
-                    FileSourceLoader fsl = new FileSourceLoader(generatedJavaBase);
+                    FileSourceLoader fsl = new FileSourceLoader(generatedJavaBase, fileMonitor);
                     markupLoaders.add(fsl);
                     javaLoaders.add(fsl);
                 }
@@ -258,7 +281,7 @@ public class AuraRegistryProviderImpl implements RegistryAdapter, SourceListener
             // This ensures that we do in the case of static registries. Note that it also
             // allows us to see source on static registries.
             //
-            SourceFactory sf = new SourceFactory(markupLoaders);
+            SourceFactory sf = new SourceFactory(markupLoaders, configAdapter);
             for (DefRegistry<?> reg : staticRegs) {
                 if (reg instanceof StaticDefRegistryImpl) {
                     ((StaticDefRegistryImpl<?>)reg).setSourceFactory(sf);
@@ -291,7 +314,7 @@ public class AuraRegistryProviderImpl implements RegistryAdapter, SourceListener
             List<DefRegistry<?>> regBuild = Lists.newArrayList();
 
             regBuild.add(AuraStaticTypeDefRegistry.INSTANCE);
-            regBuild.add(AuraStaticControllerDefRegistry.INSTANCE);
+            regBuild.add(AuraStaticControllerDefRegistry.getInstance(definitionService, implementationProvider));
             for (ComponentLocationAdapter location : markupLocations) {
                 if (location != null) {
                     SourceLocationInfo sli = getSourceLocationInfo(location);
@@ -310,8 +333,8 @@ public class AuraRegistryProviderImpl implements RegistryAdapter, SourceListener
             }
 
             if (markupLoaders.size() > 0) {
-                SourceFactory markupSourceFactory = new SourceFactory(markupLoaders);
-                CacheableDefFactoryImpl<Definition> factory = new CacheableDefFactoryImpl<>(markupSourceFactory);
+                SourceFactory markupSourceFactory = new SourceFactory(markupLoaders, configAdapter);
+                CacheableDefFactoryImpl<Definition> factory = new CacheableDefFactoryImpl<>(markupSourceFactory, parserFactory);
                 regBuild.add(new CachingDefRegistryImpl<>(factory, markupDefTypes, markupPrefixes));
             }
 
@@ -320,7 +343,8 @@ public class AuraRegistryProviderImpl implements RegistryAdapter, SourceListener
 
             if (javaLoaders.size() > 0) {
                 regBuild.add(AuraRegistryProviderImpl.<ControllerDef>createDefRegistry(
-                        new JavaControllerDefFactory(javaLoaders), DefType.CONTROLLER, DefDescriptor.JAVA_PREFIX));
+                        new JavaControllerDefFactory(javaLoaders, definitionService, implementationProvider),
+                        DefType.CONTROLLER, DefDescriptor.JAVA_PREFIX));
                 regBuild.add(AuraRegistryProviderImpl.<RendererDef>createDefRegistry(
                         new JavaRendererDefFactory(javaLoaders), DefType.RENDERER, DefDescriptor.JAVA_PREFIX));
                 regBuild.add(createDefRegistry(new JavaTypeDefFactory(javaLoaders),
@@ -345,15 +369,15 @@ public class AuraRegistryProviderImpl implements RegistryAdapter, SourceListener
     }
 
     protected Collection<ComponentLocationAdapter> getAllComponentLocationAdapters() {
-        Collection<ComponentLocationAdapter> ret = ServiceLocator.get().getAll(ComponentLocationAdapter.class);
+        List<ComponentLocationAdapter> ret = Lists.newArrayList();
+        ret.addAll(ServiceLocator.get().getAll(ComponentLocationAdapter.class));
+        ret.addAll(locationAdapters);
+
         String prop = System.getProperty("aura.componentDir");
         if (prop != null) {
-            ret = Lists.newArrayList(ret);
             ret.add(new ComponentLocationAdapter.Impl(new File(prop)));
-            return ret;
-        } else {
-            return ret;
         }
+        return ret;
     }
 
     protected static <T extends Definition> DefRegistry<T> createDefRegistry(DefFactory<T> factory, DefType defType,
@@ -387,5 +411,10 @@ public class AuraRegistryProviderImpl implements RegistryAdapter, SourceListener
             }
             registries = null;
         }
+    }
+
+    @Inject
+    public void setImplementationProvider(ImplementationProvider implementationProvider) {
+        this.implementationProvider = implementationProvider;
     }
 }

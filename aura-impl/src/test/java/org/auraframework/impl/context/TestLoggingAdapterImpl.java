@@ -15,16 +15,18 @@
  */
 
 package org.auraframework.impl.context;
-import java.util.List;
-import java.util.Map;
-
-import org.auraframework.impl.LoggingAdapterImpl;
-import org.auraframework.system.LoggingContext;
-import org.auraframework.test.adapter.TestLoggingAdapter;
 
 import com.google.common.cache.CacheStats;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.auraframework.annotations.Annotations.ServiceComponent;
+import org.auraframework.impl.LoggingAdapterImpl;
+import org.auraframework.system.LoggingContext;
+import org.auraframework.test.adapter.TestLoggingAdapter;
+import org.springframework.context.annotation.Primary;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Hook into logger so we can do some basic request monitoring in tests, as
@@ -33,6 +35,8 @@ import com.google.common.collect.Maps;
  * 
  * @since 0.0.224
  */
+@Primary
+@ServiceComponent
 public class TestLoggingAdapterImpl extends LoggingAdapterImpl implements TestLoggingAdapter 
 {
     private static ThreadLocal<LoggingContext> currentContext = new ThreadLocal<>();

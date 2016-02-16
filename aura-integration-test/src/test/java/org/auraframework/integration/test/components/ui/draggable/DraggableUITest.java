@@ -15,10 +15,6 @@
  */
 package org.auraframework.integration.test.components.ui.draggable;
 
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.util.List;
-
 import org.auraframework.test.util.WebDriverTestCase;
 import org.auraframework.test.util.WebDriverTestCase.TargetBrowsers;
 import org.auraframework.test.util.WebDriverUtil.BrowserType;
@@ -26,15 +22,15 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.util.List;
+
 @TargetBrowsers({ BrowserType.GOOGLECHROME, BrowserType.FIREFOX })
 public class DraggableUITest extends WebDriverTestCase{
 
     private static final String DRAGANDDROPTEST_APP = "/uitest/dragAndDrop_Test.cmp";
     private WebDriver driver;
-
-    public DraggableUITest(String name) {
-        super(name);
-    }
 
     /**
      * Tests successful drag and drop draggable and dropzone have matching type.

@@ -15,12 +15,14 @@
  */
 package org.auraframework.util.test.perf.metrics;
 
-import java.util.List;
-
 import org.auraframework.util.test.util.UnitTestCase;
+import org.junit.Test;
+
+import java.util.List;
 
 public final class PerfRunsCollectorTest extends UnitTestCase {
 
+    @Test
     public void testGetMedian() throws Exception {
         PerfMetrics run1 = new PerfMetrics();
         run1.setMetric("paints", 11);

@@ -15,15 +15,8 @@
  */
 package org.auraframework.test.perf.core;
 
-import java.io.Serializable;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URLEncoder;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.auraframework.Aura;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import org.auraframework.def.AttributeDef;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
@@ -42,8 +35,13 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
+import java.io.Serializable;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URLEncoder;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @TargetBrowsers({ BrowserType.GOOGLECHROME })
 public abstract class AbstractPerfTestCase extends WebDriverTestCase {
@@ -52,11 +50,11 @@ public abstract class AbstractPerfTestCase extends WebDriverTestCase {
 
     private String testName;
 
-    public AbstractPerfTestCase(String name) {
-        super(name);
-        // needs to temporarily be set to something non-null as getName() should never return null
-        testName = name;
-    }
+//    public AbstractPerfTestCase(String name) {
+//        super();
+//        // needs to temporarily be set to something non-null as getName() should never return null
+//        testName = name;
+//    }
 
     public void setTestName(String testName) {
         this.testName = testName;
@@ -125,7 +123,7 @@ public abstract class AbstractPerfTestCase extends WebDriverTestCase {
                 }
             }
         } finally {
-            Aura.getContextService().endContext();
+            contextService.endContext();
         }
     }
 
@@ -191,8 +189,8 @@ public abstract class AbstractPerfTestCase extends WebDriverTestCase {
         return params;
     }
 
-    protected static final DefDescriptor<ComponentDef> getDefDescriptor(String qualifiedName) {
-        return Aura.getDefinitionService().getDefDescriptor(qualifiedName, ComponentDef.class);
+    protected final DefDescriptor<ComponentDef> getDefDescriptor(String qualifiedName) {
+        return definitionService.getDefDescriptor(qualifiedName, ComponentDef.class);
     }
 
     protected void profileStart(String name) {

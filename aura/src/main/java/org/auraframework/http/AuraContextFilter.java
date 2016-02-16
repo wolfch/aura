@@ -15,25 +15,11 @@
  */
 package org.auraframework.http;
 
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.google.common.collect.Maps;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpHeaders;
-import org.auraframework.Aura;
+import org.auraframework.AuraDeprecated;
 import org.auraframework.adapter.ConfigAdapter;
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.BaseComponentDef;
@@ -44,6 +30,7 @@ import org.auraframework.http.RequestParam.BooleanParam;
 import org.auraframework.http.RequestParam.EnumParam;
 import org.auraframework.http.RequestParam.InvalidParamException;
 import org.auraframework.http.RequestParam.StringParam;
+import org.auraframework.service.ContextService;
 import org.auraframework.service.DefinitionService;
 import org.auraframework.service.LoggingService;
 import org.auraframework.system.AuraContext;
@@ -53,11 +40,24 @@ import org.auraframework.system.AuraContext.Mode;
 import org.auraframework.system.Client;
 import org.auraframework.util.AuraTextUtil;
 import org.auraframework.util.json.JsonReader;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import com.google.common.collect.Maps;
+import javax.inject.Inject;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class AuraContextFilter implements Filter {
-
     public static final EnumParam<AuraContext.Mode> mode = new EnumParam<>(AuraServlet.AURA_PREFIX
             + "mode", false, AuraContext.Mode.class);
 
@@ -81,16 +81,43 @@ public class AuraContextFilter implements Filter {
 
     protected static final AuraTestFilter testFilter = new AuraTestFilter();
 
+    @Inject
+    private AuraDeprecated auraDeprecated; // force initialization of Aura
+
+    private ContextService contextService;
+    private LoggingService loggingService;
+    private DefinitionService definitionService;
+    private ConfigAdapter configAdapter;
+
+    @Inject
+    public void setContextService(ContextService service) {
+        contextService = service;
+    }
+
+    @Inject
+    public void setLoggingService(LoggingService service) {
+        loggingService = service;
+    }
+
+    @Inject
+    public void setDefinitionService(DefinitionService service) {
+        definitionService = service;
+    }
+
+    @Inject
+    public void setConfigAdapter(ConfigAdapter adapter) {
+        configAdapter = adapter;
+    }
+
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws ServletException, IOException {
 
-        if (Aura.getContextService().isEstablished()) {
+        if (contextService.isEstablished()) {
             LOG.error("Aura context was not released correctly! New context will NOT be created.");
             chain.doFilter(req, res);
             return;
         }
 
-        LoggingService loggingService = Aura.getLoggingService();
         try {
             startContext(req, res, chain);
             HttpServletRequest request = (HttpServletRequest) req;
@@ -147,7 +174,7 @@ public class AuraContextFilter implements Filter {
                 f = Format.JSON;
             }
         }
-        AuraContext context = Aura.getContextService().startContext(m, f, a, appDesc, d);
+        AuraContext context = contextService.startContext(m, f, a, appDesc, d);
 
         String contextPath = request.getContextPath();
         // some appservers (like tomcat) use "/" as the root path, others ""
@@ -199,7 +226,6 @@ public class AuraContextFilter implements Filter {
         }
         @SuppressWarnings("unchecked")
         Map<String, String> loaded = (Map<String, String>) loadedEntry;
-        DefinitionService definitionService = Aura.getDefinitionService();
         Map<DefDescriptor<?>, String> clientLoaded = Maps.newHashMap();
 
         for (Map.Entry<String, String> entry : loaded.entrySet()) {
@@ -263,7 +289,6 @@ public class AuraContextFilter implements Filter {
 
     protected Mode getMode(HttpServletRequest request, Map<String, Object> configMap) {
         Mode m = getModeParam(request, configMap);
-        ConfigAdapter configAdapter = Aura.getConfigAdapter();
 
         if (m == null) {
             m = configAdapter.getDefaultMode();
@@ -289,9 +314,9 @@ public class AuraContextFilter implements Filter {
             }
         }
         if (appName != null) {
-            return Aura.getDefinitionService().getDefDescriptor(appName, ApplicationDef.class);
+            return definitionService.getDefDescriptor(appName, ApplicationDef.class);
         } else if (cmpName != null) {
-            return Aura.getDefinitionService().getDefDescriptor(cmpName, ComponentDef.class);
+            return definitionService.getDefDescriptor(cmpName, ComponentDef.class);
         }
         return null;
     }
@@ -302,7 +327,7 @@ public class AuraContextFilter implements Filter {
     }
 
     protected void endContext() {
-        Aura.getContextService().endContext();
+        contextService.endContext();
     }
 
     protected Boolean getDebugToolParam(HttpServletRequest request) {
@@ -316,10 +341,19 @@ public class AuraContextFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
+        SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this, filterConfig.getServletContext());
         String dirConfig = filterConfig.getInitParameter("componentDir");
         if (!AuraTextUtil.isNullEmptyOrWhitespace(dirConfig)) {
             componentDir = filterConfig.getServletContext().getRealPath("/") + dirConfig;
         }
         testFilter.init(filterConfig);
+    }
+
+    public AuraDeprecated getAuraDeprecated() {
+        return auraDeprecated;
+    }
+
+    public void setAuraDeprecated(AuraDeprecated auraDeprecated) {
+        this.auraDeprecated = auraDeprecated;
     }
 }

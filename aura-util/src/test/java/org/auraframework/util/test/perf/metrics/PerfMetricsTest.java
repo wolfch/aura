@@ -15,17 +15,18 @@
  */
 package org.auraframework.util.test.perf.metrics;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import org.auraframework.util.test.util.UnitTestCase;
+import org.json.JSONObject;
+import org.junit.Test;
+
 import java.util.List;
 import java.util.Map;
 
-import org.auraframework.util.test.util.UnitTestCase;
-import org.json.JSONObject;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
 public final class PerfMetricsTest extends UnitTestCase {
 
+    @Test
     public void testCombine() {
         PerfMetrics m1 = new PerfMetrics();
         m1.setMetric(new PerfMetric("paints", 3));

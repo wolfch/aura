@@ -16,22 +16,18 @@
 
 package org.auraframework.integration.test.error;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.assertThat;
-
 import org.auraframework.test.util.WebDriverTestCase;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.assertThat;
 
 public class AbstractErrorUITestCase extends WebDriverTestCase {
 
     protected final By ERROR_MASK_LOCATOR = By.cssSelector("div[id='auraErrorMask']");
     protected final By ERROR_CLOSE_LOCATOR = By.cssSelector("a[class~='close']");
     protected final By ERROR_MSG_LOCATOR = By.cssSelector("div[id='auraErrorMessage']");
-
-    public AbstractErrorUITestCase(String name) {
-        super(name);
-    }
 
     protected boolean isErrorMaskVisible() {
         WebElement errorMask = findDomElement(ERROR_MASK_LOCATOR);

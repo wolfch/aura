@@ -15,13 +15,13 @@
  */
 package org.auraframework.integration.test.root.component.rendering;
 
+import com.google.common.base.Function;
 import org.auraframework.test.util.WebDriverTestCase;
 import org.auraframework.util.test.annotation.AuraTestLabels;
+import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
-
-import com.google.common.base.Function;
 
 /**
  * This class has tests for rendering components on a page.
@@ -41,15 +41,13 @@ import com.google.common.base.Function;
  */
 @AuraTestLabels("auraSanity")
 public class ComponentRenderingUITest extends WebDriverTestCase {
-    public ComponentRenderingUITest(String name) {
-        super(name);
-    }
 
     /**
      * Verify that text, expressions and HTML can be rendered serverside. Text,
      * Expression and Html are the basic building blocks of aura. These can be
      * rendered server side. This test verifies that.
      */
+    @Test
     public void testServerSideRenderingOfBasicComponents() throws Exception {
         String xpath = "//div[contains(@class,'%s')]";
         String[][] htmlEntities = { { "nonBreakingSpace", " " }, { "copyRight", "©" },
@@ -86,6 +84,7 @@ public class ComponentRenderingUITest extends WebDriverTestCase {
      * Verify that Components that have a server side renderer can still use the
      * render='client' specification.
      */
+    @Test
     public void testCmpWithJavaRendererButRenderEqualsClient() throws Exception {
         open("/test/test_ServerRendererOnly.cmp");
         assertTrue("Aura client engine not present on page. The component had a render='client' specification.",
@@ -125,6 +124,7 @@ public class ComponentRenderingUITest extends WebDriverTestCase {
      *     }
      * </pre>
      */
+    @Test
     public void testFullServerRenderedPage() throws Exception {
         openNoAura("/auratest/test_SimpleServerRenderedPage.app");
         assertFalse(
@@ -149,6 +149,7 @@ public class ComponentRenderingUITest extends WebDriverTestCase {
      * <li>Specifying preload on the component has no significance.</li>
      * </ol>
      */
+    @Test
     public void testForcingServerRenderingOfInteractiveComponents() throws Exception {
         openNoAura("/test/test_ServerRenderingNegative.cmp");
         assertFalse(

@@ -16,27 +16,24 @@
 
 package org.auraframework.http.resource;
 
-import java.util.HashSet;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.auraframework.adapter.ServletUtilAdapter;
 import org.auraframework.clientlibrary.ClientLibraryService;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.system.AuraContext;
 import org.auraframework.system.AuraContext.Format;
 import org.auraframework.util.test.util.UnitTestCase;
+import org.junit.Test;
 import org.mockito.Mockito;
 
-public class ClientLibraryJsTest extends UnitTestCase{
-	public ClientLibraryJsTest(String name) {
-        super(name);
-    }
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.HashSet;
 
+public class ClientLibraryJsTest extends UnitTestCase {
     /**
      * Unit Test, Name is API!.
      */
+    @Test
     public void testName() {
         assertEquals("resources.js", new ClientLibraryJs().getName());
     }
@@ -44,6 +41,7 @@ public class ClientLibraryJsTest extends UnitTestCase{
     /**
      * Unit Test, Format is API!.
      */
+    @Test
     public void testFormat() {
         assertEquals(Format.JS, new ClientLibraryJs().getFormat());
     }
@@ -53,6 +51,7 @@ public class ClientLibraryJsTest extends UnitTestCase{
      * verify when we throw during write, handleServletException of servletUtilAdapter is called
      * @throws Exception
      */
+    @Test
     public void testExceptionInWrite() throws Exception {
         ServletUtilAdapter servletUtilAdapter = Mockito.mock(ServletUtilAdapter.class);
         ClientLibraryService clientLibraryService = Mockito.mock(ClientLibraryService.class);
@@ -95,6 +94,7 @@ public class ClientLibraryJsTest extends UnitTestCase{
      *
      * This test will need to change if the internals change, but null should mean that nothing gets called.
      */
+    @Test
     public void testNullDependencies() throws Exception {
         ServletUtilAdapter servletUtilAdapter = Mockito.mock(ServletUtilAdapter.class);
         ClientLibraryService clientLibraryService = Mockito.mock(ClientLibraryService.class);

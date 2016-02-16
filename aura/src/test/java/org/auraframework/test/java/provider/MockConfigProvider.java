@@ -15,10 +15,9 @@
  */
 package org.auraframework.test.java.provider;
 
-import java.util.Iterator;
-import java.util.Map;
-
+import com.google.common.collect.Maps;
 import org.auraframework.Aura;
+import org.auraframework.annotations.Annotations.ServiceComponentProvider;
 import org.auraframework.def.ComponentConfigProvider;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.instance.Attribute;
@@ -27,8 +26,10 @@ import org.auraframework.instance.BaseComponent;
 import org.auraframework.instance.ComponentConfig;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
-import com.google.common.collect.Maps;
+import java.util.Iterator;
+import java.util.Map;
 
+@ServiceComponentProvider
 public class MockConfigProvider implements ComponentConfigProvider {
 
     @Override

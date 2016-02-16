@@ -32,10 +32,6 @@ public class ScrollerUITest extends WebDriverTestCase{
     //private static final String SCROLLER_CMP4 = "/uitest/scrollerNative.cmp";
     //private WebDriver driver;
 
-    public ScrollerUITest(String name) {
-        super(name);
-    }
-
     public void testScrollingWorkflow() throws Exception {
         open(SCROLLER_CMP1);
         /*

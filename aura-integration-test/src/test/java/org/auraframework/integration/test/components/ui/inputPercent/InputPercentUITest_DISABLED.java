@@ -19,10 +19,6 @@ import org.auraframework.test.util.WebDriverTestCase;
 
 public class InputPercentUITest_DISABLED extends WebDriverTestCase {
 
-    public InputPercentUITest_DISABLED(String name) {
-        super(name);
-    }
-
     // This tests behaviour exhibited by HTML5 input type="number".
     // We are currently rendering ui:inputPercent using type="text" to get
     // around

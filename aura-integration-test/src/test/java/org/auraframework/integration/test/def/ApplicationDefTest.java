@@ -15,76 +15,84 @@
  */
 package org.auraframework.integration.test.def;
 
-import java.util.Set;
-
-import org.auraframework.Aura;
+import com.google.common.collect.Sets;
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.TokensDef;
 import org.auraframework.impl.root.component.BaseComponentDefTest;
+import org.auraframework.service.DefinitionService;
 import org.auraframework.throwable.quickfix.DefinitionNotFoundException;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
 import org.auraframework.throwable.quickfix.QuickFixException;
+import org.junit.Test;
 
-import com.google.common.collect.Sets;
+import javax.inject.Inject;
+import java.util.Set;
 
 public class ApplicationDefTest extends BaseComponentDefTest<ApplicationDef> {
+    @Inject
+    DefinitionService definitionService;
 
-    public ApplicationDefTest(String name) {
-        super(name, ApplicationDef.class, "aura:application");
+    public ApplicationDefTest() {
+        super(ApplicationDef.class, "aura:application");
     }
 
     /**
      * App will inherit useAppcache='false' from aura:application if attribute not specified
      */
+    @Test
     public void testIsAppCacheEnabledInherited() throws Exception {
         DefDescriptor<ApplicationDef> parentDesc = addSourceAutoCleanup(ApplicationDef.class,
                 String.format(baseTag, "useAppcache='true' extensible='true'", ""));
         DefDescriptor<ApplicationDef> desc = addSourceAutoCleanup(ApplicationDef.class,
                 String.format(baseTag, String.format("extends='%s'", parentDesc.getQualifiedName()), ""));
-        ApplicationDef appdef = Aura.getDefinitionService().getDefinition(desc);
+        ApplicationDef appdef = definitionService.getDefinition(desc);
         assertEquals(Boolean.TRUE, appdef.isAppcacheEnabled());
     }
 
     /**
      * App's useAppcache attribute value overrides value from aura:application
      */
+    @Test
     public void testIsAppCacheEnabledOverridesDefault() throws Exception {
         DefDescriptor<ApplicationDef> desc = addSourceAutoCleanup(ApplicationDef.class,
                 String.format(baseTag, "useAppcache='true'", ""));
-        ApplicationDef appdef = Aura.getDefinitionService().getDefinition(desc);
+        ApplicationDef appdef = definitionService.getDefinition(desc);
         assertEquals(Boolean.TRUE, appdef.isAppcacheEnabled());
     }
 
     /**
      * App's useAppcache attribute value overrides value from parent app
      */
+    @Test
     public void testIsAppCacheEnabledOverridesExtends() throws Exception {
         DefDescriptor<ApplicationDef> parentDesc = addSourceAutoCleanup(ApplicationDef.class,
                 String.format(baseTag, "useAppcache='true' extensible='true'", ""));
         DefDescriptor<ApplicationDef> desc = addSourceAutoCleanup(ApplicationDef.class, String.format(baseTag,
                 String.format("extends='%s' useAppcache='false'", parentDesc.getQualifiedName()), ""));
-        ApplicationDef appdef = Aura.getDefinitionService().getDefinition(desc);
+        ApplicationDef appdef = definitionService.getDefinition(desc);
         assertEquals(Boolean.FALSE, appdef.isAppcacheEnabled());
     }
 
     /**
      * App's useAppcache attribute value is empty
      */
+    @Test
     public void testIsAppCacheEnabledUseAppcacheEmpty() throws Exception {
         DefDescriptor<ApplicationDef> desc = addSourceAutoCleanup(ApplicationDef.class,
                 "<aura:application useAppCache=''/>");
-        ApplicationDef appdef = Aura.getDefinitionService().getDefinition(desc);
+        ApplicationDef appdef = definitionService.getDefinition(desc);
         assertEquals(Boolean.FALSE, appdef.isAppcacheEnabled());
     }
 
     /**
      * App's useAppcache attribute value is invalid
      */
+    @Test
     public void testIsAppCacheEnabledUseAppcacheInvalid() throws Exception {
         DefDescriptor<ApplicationDef> desc = addSourceAutoCleanup(ApplicationDef.class,
                 "<aura:application useAppCache='yes'/>");
-        ApplicationDef appdef = Aura.getDefinitionService().getDefinition(desc);
+        ApplicationDef appdef = definitionService.getDefinition(desc);
         assertEquals(Boolean.FALSE, appdef.isAppcacheEnabled());
     }
 
@@ -93,9 +101,10 @@ public class ApplicationDefTest extends BaseComponentDefTest<ApplicationDef> {
      *
      * @throws Exception
      */
+    @Test
     public void testNonExistantNameSpace() throws Exception {
         try {
-            Aura.getDefinitionService().getDefinition("auratest:test_Preload_ScrapNamespace", ApplicationDef.class);
+            definitionService.getDefinition("auratest:test_Preload_ScrapNamespace", ApplicationDef.class);
             fail("Expected Exception");
         } catch (InvalidDefinitionException e) {
             assertEquals("Invalid dependency *://somecrap:*[COMPONENT]", e.getMessage());
@@ -108,49 +117,53 @@ public class ApplicationDefTest extends BaseComponentDefTest<ApplicationDef> {
      *
      * @throws Exception
      */
+    @Test
     public void testIsOnePageApp() throws Exception {
         DefDescriptor<ApplicationDef> desc = addSourceAutoCleanup(ApplicationDef.class,
                 String.format(baseTag, "isOnePageApp='true'", ""));
-        ApplicationDef onePageApp = Aura.getDefinitionService().getDefinition(desc);
+        ApplicationDef onePageApp = definitionService.getDefinition(desc);
         assertEquals(Boolean.TRUE, onePageApp.isOnePageApp());
 
         desc = addSourceAutoCleanup(ApplicationDef.class, String.format(baseTag, "isOnePageApp='false'", ""));
-        ApplicationDef nonOnePageApp = Aura.getDefinitionService().getDefinition(desc);
+        ApplicationDef nonOnePageApp = definitionService.getDefinition(desc);
         assertEquals(Boolean.FALSE, nonOnePageApp.isOnePageApp());
 
         // By default an application is not a onePageApp
         desc = addSourceAutoCleanup(ApplicationDef.class, String.format(baseTag, "", ""));
-        ApplicationDef simpleApp = Aura.getDefinitionService().getDefinition(desc);
+        ApplicationDef simpleApp = definitionService.getDefinition(desc);
         assertEquals(Boolean.FALSE, simpleApp.isOnePageApp());
     }
 
     /** verify that we set tokens explicitly set on the tokens tag */
+    @Test
     public void testExplicitTokenOverrides() throws QuickFixException {
         DefDescriptor<TokensDef> tokens = addSourceAutoCleanup(TokensDef.class, "<aura:tokens></aura:tokens>");
         String src = String.format("<aura:application tokenOverrides=\"%s\"/>", tokens.getDescriptorName());
         DefDescriptor<ApplicationDef> desc = addSourceAutoCleanup(ApplicationDef.class, src);
-        assertEquals(1, Aura.getDefinitionService().getDefinition(desc).getTokenOverrides().size());
-        assertEquals(tokens, Aura.getDefinitionService().getDefinition(desc).getTokenOverrides().get(0));
+        assertEquals(1, definitionService.getDefinition(desc).getTokenOverrides().size());
+        assertEquals(tokens, definitionService.getDefinition(desc).getTokenOverrides().get(0));
     }
 
     /** verify tokens descriptor is added to dependency set */
+    @Test
     public void testTokensAddedToDeps() throws QuickFixException {
         DefDescriptor<TokensDef> tokens = addSourceAutoCleanup(TokensDef.class, "<aura:tokens></aura:tokens>");
         String src = String.format("<aura:application tokenOverrides=\"%s\"/>", tokens.getDescriptorName());
         DefDescriptor<ApplicationDef> desc = addSourceAutoCleanup(ApplicationDef.class, src);
 
         Set<DefDescriptor<?>> deps = Sets.newHashSet();
-        Aura.getDefinitionService().getDefinition(desc).appendDependencies(deps);
+        definitionService.getDefinition(desc).appendDependencies(deps);
         assertTrue(deps.contains(tokens));
     }
 
     /** verify tokens descriptor ref is validated */
+    @Test
     public void testInvalidTokensRef() throws QuickFixException {
         String src = String.format("<aura:application tokenOverrides=\"%s\"/>", "wall:maria");
         DefDescriptor<ApplicationDef> desc = addSourceAutoCleanup(ApplicationDef.class, src);
 
         try {
-        	Aura.getDefinitionService().getDefinition(desc).validateReferences();
+            definitionService.getDefinition(desc).validateReferences();
             fail("expected to get an exception");
         } catch (Exception e) {
             checkExceptionContains(e, DefinitionNotFoundException.class, "No TOKENS");

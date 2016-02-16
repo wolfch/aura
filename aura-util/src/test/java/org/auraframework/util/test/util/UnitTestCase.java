@@ -17,7 +17,9 @@ package org.auraframework.util.test.util;
 
 import com.google.common.collect.Sets;
 import junit.framework.TestCase;
+import org.auraframework.AuraConfiguration;
 import org.auraframework.util.IOUtil;
+import org.auraframework.util.adapter.SourceControlAdapter;
 import org.auraframework.util.json.JsonEncoder;
 import org.auraframework.util.json.JsonSerializationContext;
 import org.auraframework.util.test.annotation.AuraTestLabels;
@@ -25,9 +27,21 @@ import org.auraframework.util.test.annotation.UnitTest;
 import org.auraframework.util.test.diff.GoldFileUtils;
 import org.auraframework.util.test.perf.metrics.PerfMetrics;
 import org.auraframework.util.test.perf.metrics.PerfMetricsComparator;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.rules.TestName;
+import org.junit.runner.RunWith;
+import org.junit.runners.BlockJUnit4ClassRunner;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.context.ApplicationContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestContextManager;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -45,19 +59,50 @@ import java.util.logging.Logger;
  * Base class for all aura tests.
  */
 @UnitTest
+@RunWith(BlockJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {AuraConfiguration.class})
+@TestExecutionListeners(listeners = {DependencyInjectionTestExecutionListener.class})
 public abstract class UnitTestCase extends TestCase {
+    @Inject
+    private ApplicationContext applicationContext;
+
+    @Inject
+    protected SourceControlAdapter sourceControlAdapter;
+
     private static final Logger logger = Logger.getLogger("UnitTestCase");
     private static final GoldFileUtils goldFileUtils = new GoldFileUtils();
-    Collection<File> tempFiles = null;
-    Stack<Runnable> tearDownSteps = null;
+
+    private Collection<File> tempFiles = null;
+    private Stack<Runnable> tearDownSteps = null;
     private PerfMetricsComparator perfMetricsComparator = PerfMetricsComparator.DEFAULT_INSTANCE;
 
-    public UnitTestCase() {
-        super();
+    @Rule
+    public TestName testName = new TestName();
+
+    @Override
+    public String getName() {
+        if (super.getName() == null) {
+            setName(testName.getMethodName());
+        }
+        return super.getName();
     }
 
-    public UnitTestCase(String name) {
-        super(name);
+    /**
+     * Support setUp for legacy tests in JUnit4 runners.
+     */
+    @Before
+    public void legacySetUp() throws Exception {
+        if (applicationContext == null) {
+            TestContextManager testContextManager = new TestContextManager(getClass());
+            testContextManager.prepareTestInstance(this);
+        }
+        setUp();
+    }
+
+    // The new teardown needs to call any legacy teardown methods.
+    @After
+    public void legacyTearDown() throws Exception {
+        tearDown();
     }
 
     @Override
@@ -88,6 +133,11 @@ public abstract class UnitTestCase extends TestCase {
 
     @Override
     public void runBare() throws Throwable {
+        // Support Spring injection in legacy runners
+        if (applicationContext == null) {
+            TestContextManager testContextManager = new TestContextManager(getClass());
+            testContextManager.prepareTestInstance(this);
+        }
         logger.info(String.format("Running: %s.%s", getClass().getName(), getName()));
         super.runBare();
     }
@@ -110,6 +160,10 @@ public abstract class UnitTestCase extends TestCase {
             tearDownSteps = new Stack<>();
         }
         tearDownSteps.push(toRun);
+    }
+
+    public SourceControlAdapter getSourceControlAdapter() {
+        return this.sourceControlAdapter;
     }
 
     /**
@@ -148,11 +202,11 @@ public abstract class UnitTestCase extends TestCase {
      * Overrides the default gold results folder location
      */
     public final void setExplicitPerfResultsFolder(String folder) {
-    	explicitPerfResultsFolder = folder;
+        explicitPerfResultsFolder = folder;
     }
 
     private String explicitPerfResultsFolder;
-    
+
     public String getGoldFileName() {
         return getName();
     }

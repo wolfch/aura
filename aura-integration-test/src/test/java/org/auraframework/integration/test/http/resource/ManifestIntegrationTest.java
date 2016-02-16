@@ -15,6 +15,24 @@
  */
 package org.auraframework.integration.test.http.resource;
 
+import org.auraframework.adapter.ConfigAdapter;
+import org.auraframework.adapter.ServletUtilAdapter;
+import org.auraframework.def.ApplicationDef;
+import org.auraframework.def.ComponentDef;
+import org.auraframework.def.DefDescriptor;
+import org.auraframework.http.resource.Manifest;
+import org.auraframework.impl.AuraImplTestCase;
+import org.auraframework.system.AuraContext;
+import org.junit.Test;
+
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
@@ -25,37 +43,21 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.auraframework.Aura;
-import org.auraframework.adapter.ConfigAdapter;
-import org.auraframework.adapter.ServletUtilAdapter;
-import org.auraframework.def.ApplicationDef;
-import org.auraframework.def.ComponentDef;
-import org.auraframework.def.DefDescriptor;
-import org.auraframework.http.resource.Manifest;
-import org.auraframework.impl.AuraImplTestCase;
-import org.auraframework.system.AuraContext;
-
 public class ManifestIntegrationTest extends AuraImplTestCase {
+    @Inject
+    ServletUtilAdapter servletUtilAdapter;
 
-    public ManifestIntegrationTest(String name) {
-        super(name);
-    }
+    @Inject
+    ConfigAdapter configAdapter;
 
     /**
      * Verify manifest doesn't include null when ResetCss is null.
      */
+    @Test
     public void testManifestNotIncludeNullResetCssURL() throws Exception {
         // Arrange
-        if (Aura.getContextService().isEstablished()) {
-            Aura.getContextService().endContext();
+        if (contextService.isEstablished()) {
+            contextService.endContext();
         }
         String cmpMarkup = String.format(baseComponentTag, "isTemplate='true' extends='aura:template'",
                 "<aura:set attribute='auraResetStyle' value=''/>");
@@ -64,7 +66,7 @@ public class ManifestIntegrationTest extends AuraImplTestCase {
         String appMarkup = String.format(baseApplicationTag, appAttributes, "");
         DefDescriptor<ApplicationDef> appDesc = addSourceAutoCleanup(ApplicationDef.class, appMarkup);
 
-        AuraContext context = Aura.getContextService().startContext(AuraContext.Mode.PROD,
+        AuraContext context = contextService.startContext(AuraContext.Mode.PROD,
                 AuraContext.Format.MANIFEST, AuraContext.Authentication.AUTHENTICATED, appDesc);
         String uid = context.getDefRegistry().getUid(null, appDesc);
         context.addLoaded(appDesc, uid);
@@ -74,9 +76,7 @@ public class ManifestIntegrationTest extends AuraImplTestCase {
         HttpServletResponse response = mock(HttpServletResponse.class);
         when(response.getWriter()).thenReturn(new PrintWriter(stringWriter));
 
-        ServletUtilAdapter servletUtilAdapter = Aura.getServletUtilAdapter();
         ServletUtilAdapter spyServletUtilAdapter = spy(servletUtilAdapter);
-        ConfigAdapter configAdapter = Aura.getConfigAdapter();
         ConfigAdapter spyConfigAdapter = spy(configAdapter);
         doReturn(new ArrayList<String>()).when(spyServletUtilAdapter).getStyles(context);
         doReturn(new ArrayList<String>()).when(spyServletUtilAdapter).getScripts(context);

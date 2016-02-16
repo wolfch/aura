@@ -22,10 +22,6 @@ import org.openqa.selenium.WebElement;
 
 public class InputNumberUITest extends WebDriverTestCase {
 
-    public InputNumberUITest(String name) {
-        super(name);
-    }
-
     public void testInputNumber() throws Exception {
         WebDriver d = getDriver();
         open("/uitest/inputNumber_Test.cmp");

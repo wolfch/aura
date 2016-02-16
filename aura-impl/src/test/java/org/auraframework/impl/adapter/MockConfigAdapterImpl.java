@@ -15,25 +15,26 @@
  */
 package org.auraframework.impl.adapter;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.auraframework.Aura;
+import com.google.common.collect.ImmutableSortedSet;
+import com.google.common.collect.Sets;
 import org.auraframework.adapter.ContentSecurityPolicy;
 import org.auraframework.adapter.DefaultContentSecurityPolicy;
+import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.Definition;
 import org.auraframework.test.TestContext;
 import org.auraframework.test.TestContextAdapter;
 import org.auraframework.test.adapter.MockConfigAdapter;
 import org.auraframework.test.source.StringSourceLoader;
+import org.springframework.context.annotation.Primary;
 
-import com.google.common.collect.ImmutableSortedSet;
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * ConfigAdapter for Aura tests.
@@ -41,7 +42,15 @@ import com.google.common.collect.ImmutableSortedSet;
  * 
  * @since 0.0.178
  */
+@Primary
+@ServiceComponent
 public class MockConfigAdapterImpl extends ConfigAdapterImpl implements MockConfigAdapter {
+
+    @Inject
+    StringSourceLoader stringLoader;
+
+    @Inject
+    TestContextAdapter testContextAdapter;
 
     /**
      * An extension of a ContentSecurityPolicy that adds "odd" test requirements.
@@ -217,18 +226,18 @@ public class MockConfigAdapterImpl extends ConfigAdapterImpl implements MockConf
 
     @Override
     public Set<String> getPrivilegedNamespaces() {
-        Set<String> namespaces = super.getPrivilegedNamespaces();
+        Set<String> namespaces = Sets.newHashSet(super.getPrivilegedNamespaces());
         namespaces.removeAll(unprivilegedNamespaces);
         return namespaces;
     }
 
     @Override
-    public boolean isPrivilegedNamespace(String namespace) {
+    public synchronized boolean isPrivilegedNamespace(String namespace) {
         if (unprivilegedNamespaces.contains(namespace)) {
             return false;
         }
 
-        if (StringSourceLoader.getInstance().isPrivilegedNamespace(namespace)
+        if (stringLoader.isPrivilegedNamespace(namespace)
                 || SYSTEM_TEST_NAMESPACES.contains(namespace) || super.isPrivilegedNamespace(namespace)) {
             return true;
         }
@@ -236,7 +245,6 @@ public class MockConfigAdapterImpl extends ConfigAdapterImpl implements MockConf
         // Check for any local defs with this namespace and consider that as an indicator that we have a privileged
         // namespace
         if (namespace != null) {
-            TestContextAdapter testContextAdapter = Aura.get(TestContextAdapter.class);
             if (testContextAdapter != null) {
                 TestContext testContext = testContextAdapter.getTestContext();
                 if (testContext != null) {

@@ -15,9 +15,7 @@
  */
 package org.auraframework.http;
 
-import java.io.IOException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import org.auraframework.util.AuraTextUtil;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -28,11 +26,9 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-
-import org.auraframework.util.AuraTextUtil;
-
-/**
- */
+import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class AuraResourceRewriteFilter implements Filter {
 
@@ -50,7 +46,6 @@ public class AuraResourceRewriteFilter implements Filter {
 
     @Override
     public void destroy() {
-
     }
 
     private static String createURI(String context, String format, String type, String lookup) {
@@ -99,8 +94,6 @@ public class AuraResourceRewriteFilter implements Filter {
 
     @Override
     public void init(FilterConfig config) throws ServletException {
-
         servletContext = config.getServletContext();
     }
-
 }

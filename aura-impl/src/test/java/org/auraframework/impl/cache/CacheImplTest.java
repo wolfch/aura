@@ -15,14 +15,15 @@
  */
 package org.auraframework.impl.cache;
 
+import org.auraframework.cache.Cache;
+import org.auraframework.util.test.util.UnitTestCase;
+import org.junit.Test;
+import org.mockito.ArgumentMatcher;
+import org.mockito.Mockito;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
-
-import org.auraframework.cache.Cache;
-import org.auraframework.util.test.util.UnitTestCase;
-import org.mockito.ArgumentMatcher;
-import org.mockito.Mockito;
 
 public class CacheImplTest extends UnitTestCase {
 
@@ -47,6 +48,7 @@ public class CacheImplTest extends UnitTestCase {
 		}
 	}
 
+	@Test
 	public void testGetIfPresent() {
 		com.google.common.cache.Cache<Object, Object> backingCache = getMockCache();
 		Cache<Object, Object> cache = new CacheImpl<>(
@@ -59,6 +61,7 @@ public class CacheImplTest extends UnitTestCase {
 		assertEquals(expected, actual);
 	}
 
+	@Test
 	public void testPut() {
 		com.google.common.cache.Cache<Object, Object> backingCache = getMockCache();
 		Cache<Object, Object> cache = new CacheImpl<>(
@@ -70,6 +73,7 @@ public class CacheImplTest extends UnitTestCase {
 		Mockito.verify(backingCache, Mockito.times(1)).put(key, data);
 	}
 
+	@Test
 	public void testInvalidateKey() {
 		com.google.common.cache.Cache<Object, Object> backingCache = getMockCache();
 		Cache<Object, Object> cache = new CacheImpl<>(
@@ -80,6 +84,7 @@ public class CacheImplTest extends UnitTestCase {
 		Mockito.verify(backingCache, Mockito.times(1)).invalidate(key);
 	}
 
+	@Test
 	public void testInvalidateKeys() {
 		com.google.common.cache.Cache<Object, Object> backingCache = getMockCache();
 		Cache<Object, Object> cache = new CacheImpl<>(
@@ -91,6 +96,7 @@ public class CacheImplTest extends UnitTestCase {
 		Mockito.verify(backingCache, Mockito.times(1)).invalidate(keys);
 	}
 
+	@Test
 	public void testInvalidateAll() {
 		com.google.common.cache.Cache<Object, Object> backingCache = getMockCache();
 		Cache<Object, Object> cache = new CacheImpl<>(
@@ -100,6 +106,7 @@ public class CacheImplTest extends UnitTestCase {
 		Mockito.verify(backingCache, Mockito.times(1)).invalidateAll();
 	}
 
+	@Test
 	public void testGetKeySet() {
 		com.google.common.cache.Cache<Object, Object> backingCache = getMockCache();
 		Cache<Object, Object> cache = new CacheImpl<>(
@@ -109,6 +116,7 @@ public class CacheImplTest extends UnitTestCase {
 		assertEquals(backingCache.asMap().keySet(), actualKeySet);
 	}
 
+	@Test
 	public void testInvalidatePartial_NullInput() {
 		com.google.common.cache.Cache<Object, Object> backingCache = getMockCache();
 		Cache<Object, Object> cache = new CacheImpl<>(
@@ -117,6 +125,7 @@ public class CacheImplTest extends UnitTestCase {
 		Mockito.verify(backingCache, Mockito.times(1)).invalidateAll();
 	}
 
+	@Test
 	public void testInvalidatePartial_EmptyString() {
 		com.google.common.cache.Cache<Object, Object> backingCache = getMockCache();
 		Cache<Object, Object> cache = new CacheImpl<>(
@@ -125,6 +134,7 @@ public class CacheImplTest extends UnitTestCase {
 		Mockito.verify(backingCache, Mockito.times(1)).invalidateAll();
 	}
 
+	@Test
 	public void testInvalidatePartial_WhitespaceString() {
 		com.google.common.cache.Cache<Object, Object> backingCache = getMockCache();
 		Cache<Object, Object> cache = new CacheImpl<>(
@@ -135,6 +145,7 @@ public class CacheImplTest extends UnitTestCase {
 				Mockito.anyCollection());
 	}
 
+	@Test
 	public void testInvalidatePartial_SingleMatch() {
 		com.google.common.cache.Cache<Object, Object> backingCache = getMockCache();
 		Cache<Object, Object> cache = new CacheImpl<>(
@@ -145,6 +156,7 @@ public class CacheImplTest extends UnitTestCase {
 				Mockito.argThat(new CollectionContainsAllMatcher<Object>("someKey")));
 	}
 
+	@Test
 	public void testInvalidatePartial_MultipleMatches() {
 		com.google.common.cache.Cache<Object, Object> backingCache = getMockCache();
 		Cache<Object, Object> cache = new CacheImpl<>(
@@ -160,6 +172,7 @@ public class CacheImplTest extends UnitTestCase {
 						"someOtherKey", "someThing")));
 	}
 
+	@Test
 	public void testInvalidatePartial_NoMatch() {
 		com.google.common.cache.Cache<Object, Object> backingCache = getMockCache();
 		Cache<Object, Object> cache = new CacheImpl<>(

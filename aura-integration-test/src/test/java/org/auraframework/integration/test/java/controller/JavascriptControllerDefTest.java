@@ -15,47 +15,50 @@
  */
 package org.auraframework.integration.test.java.controller;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import org.auraframework.Aura;
 import org.auraframework.def.ActionDef;
 import org.auraframework.def.ControllerDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.impl.AuraImplTestCase;
+import org.auraframework.impl.DefinitionAccessImpl;
 import org.auraframework.impl.javascript.controller.JavascriptActionDef;
 import org.auraframework.impl.javascript.controller.JavascriptControllerDef;
 import org.auraframework.impl.javascript.controller.JavascriptPseudoAction;
 import org.auraframework.instance.Action;
+import org.auraframework.system.AuraContext;
 import org.auraframework.throwable.quickfix.DefinitionNotFoundException;
+import org.junit.Test;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
 
 /**
  * Test class to verify implementation of JavascriptControllerDef.
  */
 public class JavascriptControllerDefTest extends AuraImplTestCase {
-    public JavascriptControllerDefTest(String name) {
-        super(name);
-    }
-
     /**
      * Verify JavascriptRendererDef is non-local.
      */
+    @Test
     public void testIsLocalReturnsFalse() {
-        ControllerDef controllerDef = (new JavascriptControllerDef.Builder()).build();
+        JavascriptControllerDef.Builder builder = new JavascriptControllerDef.Builder();
+        builder.setAccess(new DefinitionAccessImpl(AuraContext.Access.PUBLIC));
+        ControllerDef controllerDef = builder.build();
         assertFalse(controllerDef.isLocal());
     }
 
+    @Test
     public void testGetDescriptor() throws Exception {
         DefDescriptor<ControllerDef> expectedControllerDesc = addSourceAutoCleanup(ControllerDef.class, "({})");
-        ControllerDef controllerDef = Aura.getDefinitionService().getDefinition(expectedControllerDesc);
+        ControllerDef controllerDef = definitionService.getDefinition(expectedControllerDesc);
 
         DefDescriptor<ControllerDef> actualControllerDesc = controllerDef.getDescriptor();
         assertSame(expectedControllerDesc, actualControllerDesc);
     }
 
+    @Test
     public void testGetActionDefs() throws Exception {
         String controllerJs = 
                 "({ " +
@@ -78,6 +81,7 @@ public class JavascriptControllerDefTest extends AuraImplTestCase {
         assertEquals("function2", actionDef2.getName());
     }
 
+    @Test
     public void testGetSubDefinition() throws Exception {
         String expected = "function1";
         String controllerJs = "({ function1: function(arg) {} })";
@@ -91,6 +95,7 @@ public class JavascriptControllerDefTest extends AuraImplTestCase {
         assertEquals(expected, actionDef.getName());
     }
 
+    @Test
     public void testSerializeJavascriptControllerDef() throws Exception {
         String controllerJs =
                 "({\n" +
@@ -111,6 +116,7 @@ public class JavascriptControllerDefTest extends AuraImplTestCase {
     /**
      * Verify JavascriptControllerDef creates an JavascriptPseudoAction object on server side.
      */
+    @Test
     public void testCreateAction() throws Exception {
         String controllerJs = "({ function1: function(arg) {} })";
         DefDescriptor<ControllerDef> controllerDesc = addSourceAutoCleanup(ControllerDef.class, controllerJs);
@@ -122,6 +128,7 @@ public class JavascriptControllerDefTest extends AuraImplTestCase {
         assertThat(action, instanceOf(JavascriptPseudoAction.class));
     }
 
+    @Test
     public void testCreateActionThrowsExceptionWhenCreatingNonExsitingAction() throws Exception {
         String controllerJs = "({ function1: function(arg) {} })";
         DefDescriptor<ControllerDef> controllerDesc = addSourceAutoCleanup(ControllerDef.class, controllerJs);

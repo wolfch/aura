@@ -15,15 +15,16 @@
  */
 package org.auraframework.util.javascript.directive.impl;
 
-import java.io.IOException;
-import java.util.EnumSet;
-import java.util.List;
-
 import org.auraframework.util.javascript.JavascriptProcessingError;
 import org.auraframework.util.javascript.JavascriptValidator;
 import org.auraframework.util.javascript.directive.DirectiveBasedJavascriptGroup;
 import org.auraframework.util.javascript.directive.JavascriptGeneratorMode;
 import org.auraframework.util.test.util.UnitTestCase;
+import org.junit.Test;
+
+import java.io.IOException;
+import java.util.EnumSet;
+import java.util.List;
 
 /**
  * Tests for DirectiveImpl {@link DirectiveImpl}. DirectiveImpl Expects to
@@ -31,16 +32,13 @@ import org.auraframework.util.test.util.UnitTestCase;
  * test the basic implementation in DirectiveImpl abstract class.
  */
 public class DirectiveImplTest extends UnitTestCase {
-    public DirectiveImplTest(String name) {
-        super(name);
-    }
-
     /**
      * 1. Testing basic initialization stuff of DirectiveImpl 2. Tests that
      * content cannot be set for a MultiLine Directive
      * 
      * @throws Exception
      */
+    @Test
     public void testDirectiveImpl() throws Exception {
         String s = "{\"modes\": [\"DEVELOPMENT\"], \"thing\": \"stuff\"}";
         TestDirective d = new TestDirective(56, s);
@@ -71,6 +69,7 @@ public class DirectiveImplTest extends UnitTestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testCombinationsOfConfigs() throws Exception {
         String[] sample = { "literal", "{\"mode\": [\"MOCK2\"], \"blah\": \"howdy doody\"}",
                 "{\"modes\":, \"blah\": \"howdy doody\"}", "{\"modes\": [], \"blah\": \"howdy doody\"}",
@@ -148,6 +147,7 @@ public class DirectiveImplTest extends UnitTestCase {
     /**
      * Test excluseModes specification in directive.
      */
+    @Test
     public void testExcludeModes() {
         String[] sample = {
                 // 0: Positive case: Simple excludes mode

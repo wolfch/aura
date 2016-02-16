@@ -15,7 +15,7 @@
  */
 package org.auraframework.impl.def;
 
-import org.auraframework.Aura;
+import com.google.common.collect.ImmutableList;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.IncludeDef;
 import org.auraframework.def.IncludeDefRef;
@@ -25,24 +25,18 @@ import org.auraframework.impl.root.library.IncludeDefRefImpl.Builder;
 import org.auraframework.impl.root.parser.handler.IncludeDefRefHandler;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
 import org.auraframework.util.json.JsonEncoder;
+import org.junit.Test;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
-import com.google.common.collect.ImmutableList;
-
 public class IncludeDefRefTest extends DefinitionTest<IncludeDefRef> {
-
-    Builder builder = new IncludeDefRefImpl.Builder();
-
     @Mock(answer = Answers.RETURNS_MOCKS)
     DefDescriptor<IncludeDefRef> descriptor;
 
-    public IncludeDefRefTest(String name) {
-        super(name);
-    }
-
+    @Test
     public void testValidateDefintionWithoutDescriptor() throws Exception {
+        Builder builder = new IncludeDefRefImpl.Builder();
         IncludeDefRef def = builder.build();
 
         try {
@@ -54,12 +48,15 @@ public class IncludeDefRefTest extends DefinitionTest<IncludeDefRef> {
         }
     }
 
+    @Test
     public void testValidateDefintionExportIsInvalidIdentifier() throws Exception {
         DefDescriptor<LibraryDef> libDesc = getAuraTestingUtil().createStringSourceDescriptor(null, LibraryDef.class,
                 null);
         DefDescriptor<IncludeDef> includeDesc = getAuraTestingUtil().createStringSourceDescriptor("invalidSource",
                 IncludeDef.class, libDesc);
         addSourceAutoCleanup(includeDesc, "function(){}");
+
+        Builder builder = new IncludeDefRefImpl.Builder();
         builder.setDescriptor(descriptor);
         builder.setIncludeDescriptor(includeDesc);
         builder.setExport("who/came/up/with/this");
@@ -76,12 +73,15 @@ public class IncludeDefRefTest extends DefinitionTest<IncludeDefRef> {
         }
     }
 
+    @Test
     public void testValidateDefintionExportIsJs() throws Exception {
         DefDescriptor<LibraryDef> libDesc = getAuraTestingUtil().createStringSourceDescriptor(null, LibraryDef.class,
                 null);
         DefDescriptor<IncludeDef> includeDesc = getAuraTestingUtil().createStringSourceDescriptor("invalidSource",
                 IncludeDef.class, libDesc);
         addSourceAutoCleanup(includeDesc, "function(){}");
+
+        Builder builder = new IncludeDefRefImpl.Builder();
         builder.setDescriptor(descriptor);
         builder.setIncludeDescriptor(includeDesc);
         builder.setExport("(function(){alert('boo!')})()");
@@ -98,12 +98,15 @@ public class IncludeDefRefTest extends DefinitionTest<IncludeDefRef> {
         }
     }
 
+    @Test
     public void testValidateReferencesExportedCodeIsInvalid() throws Exception {
         DefDescriptor<LibraryDef> libDesc = getAuraTestingUtil().createStringSourceDescriptor(null, LibraryDef.class,
                 null);
         DefDescriptor<IncludeDef> includeDesc = getAuraTestingUtil().createStringSourceDescriptor("invalidSource",
                 IncludeDef.class, libDesc);
         addSourceAutoCleanup(includeDesc, "this is garbage");
+
+        Builder builder = new IncludeDefRefImpl.Builder();
         builder.setDescriptor(descriptor);
         builder.setIncludeDescriptor(includeDesc);
         builder.setExport("someVar");
@@ -117,12 +120,15 @@ public class IncludeDefRefTest extends DefinitionTest<IncludeDefRef> {
         }
     }
 
+    @Test
     public void testValidateReferencesNonexportedCodeIsInvalid() throws Exception {
         DefDescriptor<LibraryDef> libDesc = getAuraTestingUtil().createStringSourceDescriptor(null, LibraryDef.class,
                 null);
         DefDescriptor<IncludeDef> includeDesc = getAuraTestingUtil().createStringSourceDescriptor("invalidSource",
                 IncludeDef.class, libDesc);
         addSourceAutoCleanup(includeDesc, "this is garbage");
+
+        Builder builder = new IncludeDefRefImpl.Builder();
         builder.setDescriptor(descriptor);
         builder.setIncludeDescriptor(includeDesc);
         IncludeDefRef def = builder.build();
@@ -135,6 +141,7 @@ public class IncludeDefRefTest extends DefinitionTest<IncludeDefRef> {
         }
     }
 
+    @Test
     public void testSerializeMinimal() throws Exception {
         DefDescriptor<LibraryDef> libDesc = getAuraTestingUtil().createStringSourceDescriptor(null, LibraryDef.class,
                 null);
@@ -144,9 +151,10 @@ public class IncludeDefRefTest extends DefinitionTest<IncludeDefRef> {
         addSourceAutoCleanup(includeDesc, "function(){}");
 
         StringBuffer buffer = new StringBuffer();
-        JsonEncoder json = JsonEncoder.createJsonStream(buffer, Aura.getContextService().getCurrentContext()
+        JsonEncoder json = JsonEncoder.createJsonStream(buffer, contextService.getCurrentContext()
                 .getJsonSerializationContext());
 
+        Builder builder = new IncludeDefRefImpl.Builder();
         builder.setDescriptor(descriptor);
         builder.setIncludeDescriptor(includeDesc);
         IncludeDefRef def = builder.build();
@@ -164,6 +172,7 @@ public class IncludeDefRefTest extends DefinitionTest<IncludeDefRef> {
                         libDesc.getDescriptorName(), includeDesc.getName()), buffer.toString());
     }
 
+    @Test
     public void testSerializeWithSingleComments() throws Exception {
         String source = "//this doc should be helpful\nfunction(){\n//fix later\nreturn this;}//last word";
         DefDescriptor<LibraryDef> libDesc = getAuraTestingUtil().createStringSourceDescriptor(null, LibraryDef.class,
@@ -174,9 +183,10 @@ public class IncludeDefRefTest extends DefinitionTest<IncludeDefRef> {
         addSourceAutoCleanup(includeDesc, source);
 
         StringBuffer buffer = new StringBuffer();
-        JsonEncoder json = JsonEncoder.createJsonStream(buffer, Aura.getContextService().getCurrentContext()
+        JsonEncoder json = JsonEncoder.createJsonStream(buffer, contextService.getCurrentContext()
                 .getJsonSerializationContext());
 
+        Builder builder = new IncludeDefRefImpl.Builder();
         builder.setDescriptor(descriptor);
         builder.setIncludeDescriptor(includeDesc);
         IncludeDefRef def = builder.build();
@@ -194,6 +204,7 @@ public class IncludeDefRefTest extends DefinitionTest<IncludeDefRef> {
                         libDesc.getDescriptorName(), includeDesc.getName(), source), buffer.toString());
     }
 
+    @Test
     public void testSerializeWithMultiComments() throws Exception {
         String source = "/*this doc should be helpful*/function(){/*fix later*/return this;}/*last word*/";
         DefDescriptor<LibraryDef> libDesc = getAuraTestingUtil().createStringSourceDescriptor(null, LibraryDef.class,
@@ -204,9 +215,10 @@ public class IncludeDefRefTest extends DefinitionTest<IncludeDefRef> {
         addSourceAutoCleanup(includeDesc, source);
 
         StringBuffer buffer = new StringBuffer();
-        JsonEncoder json = JsonEncoder.createJsonStream(buffer, Aura.getContextService().getCurrentContext()
+        JsonEncoder json = JsonEncoder.createJsonStream(buffer, contextService.getCurrentContext()
                 .getJsonSerializationContext());
 
+        Builder builder = new IncludeDefRefImpl.Builder();
         builder.setDescriptor(descriptor);
         builder.setIncludeDescriptor(includeDesc);
         IncludeDefRef def = builder.build();
@@ -224,6 +236,7 @@ public class IncludeDefRefTest extends DefinitionTest<IncludeDefRef> {
                         libDesc.getDescriptorName(), includeDesc.getName(), source), buffer.toString());
     }
 
+    @Test
     public void testSerializeWithImport() throws Exception {
         DefDescriptor<LibraryDef> libDesc = getAuraTestingUtil().createStringSourceDescriptor(null, LibraryDef.class,
                 null);
@@ -235,9 +248,10 @@ public class IncludeDefRefTest extends DefinitionTest<IncludeDefRef> {
         addSourceAutoCleanup(includeDesc, "function(){}");
 
         StringBuffer buffer = new StringBuffer();
-        JsonEncoder json = JsonEncoder.createJsonStream(buffer, Aura.getContextService().getCurrentContext()
+        JsonEncoder json = JsonEncoder.createJsonStream(buffer, contextService.getCurrentContext()
                 .getJsonSerializationContext());
 
+        Builder builder = new IncludeDefRefImpl.Builder();
         builder.setDescriptor(descriptor);
         builder.setIncludeDescriptor(includeDesc);
         builder.setImports(ImmutableList.of(importDesc));
@@ -256,6 +270,7 @@ public class IncludeDefRefTest extends DefinitionTest<IncludeDefRef> {
                         libDesc.getDescriptorName(), includeDesc.getName(), importDesc.getName()), buffer.toString());
     }
 
+    @Test
     public void testSerializeWithExternalImport() throws Exception {
         DefDescriptor<LibraryDef> libDesc = getAuraTestingUtil().createStringSourceDescriptor(null, LibraryDef.class,
                 null);
@@ -269,9 +284,10 @@ public class IncludeDefRefTest extends DefinitionTest<IncludeDefRef> {
         addSourceAutoCleanup(includeDesc, "function(){}");
 
         StringBuffer buffer = new StringBuffer();
-        JsonEncoder json = JsonEncoder.createJsonStream(buffer, Aura.getContextService().getCurrentContext()
+        JsonEncoder json = JsonEncoder.createJsonStream(buffer, contextService.getCurrentContext()
                 .getJsonSerializationContext());
 
+        Builder builder = new IncludeDefRefImpl.Builder();
         builder.setDescriptor(descriptor);
         builder.setIncludeDescriptor(includeDesc);
         builder.setImports(ImmutableList.of(importDesc));
@@ -291,6 +307,7 @@ public class IncludeDefRefTest extends DefinitionTest<IncludeDefRef> {
                         importDesc.getName()), buffer.toString());
     }
 
+    @Test
     public void testSerializeWithMultipleImports() throws Exception {
         DefDescriptor<LibraryDef> libDesc = getAuraTestingUtil().createStringSourceDescriptor(null, LibraryDef.class,
                 null);
@@ -309,9 +326,10 @@ public class IncludeDefRefTest extends DefinitionTest<IncludeDefRef> {
         addSourceAutoCleanup(includeDesc, "function(){}");
 
         StringBuffer buffer = new StringBuffer();
-        JsonEncoder json = JsonEncoder.createJsonStream(buffer, Aura.getContextService().getCurrentContext()
+        JsonEncoder json = JsonEncoder.createJsonStream(buffer, contextService.getCurrentContext()
                 .getJsonSerializationContext());
 
+        Builder builder = new IncludeDefRefImpl.Builder();
         builder.setDescriptor(descriptor);
         builder.setIncludeDescriptor(includeDesc);
         builder.setImports(ImmutableList.of(import1Desc, import2Desc, import3Desc));
@@ -332,6 +350,7 @@ public class IncludeDefRefTest extends DefinitionTest<IncludeDefRef> {
                 buffer.toString());
     }
 
+    @Test
     public void testSerializeWithExports() throws Exception {
         DefDescriptor<LibraryDef> libDesc = getAuraTestingUtil().createStringSourceDescriptor(null, LibraryDef.class,
                 null);
@@ -341,9 +360,10 @@ public class IncludeDefRefTest extends DefinitionTest<IncludeDefRef> {
         addSourceAutoCleanup(includeDesc, "var myexpt=function(){return 'something'}");
 
         StringBuffer buffer = new StringBuffer();
-        JsonEncoder json = JsonEncoder.createJsonStream(buffer, Aura.getContextService().getCurrentContext()
+        JsonEncoder json = JsonEncoder.createJsonStream(buffer, contextService.getCurrentContext()
                 .getJsonSerializationContext());
 
+        Builder builder = new IncludeDefRefImpl.Builder();
         builder.setDescriptor(descriptor);
         builder.setIncludeDescriptor(includeDesc);
         builder.setExport("myexpt");

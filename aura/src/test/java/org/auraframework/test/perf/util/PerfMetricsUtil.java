@@ -15,14 +15,6 @@
  */
 package org.auraframework.test.perf.util;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.io.IOUtils;
 import org.auraframework.util.test.perf.metrics.PerfMetric;
 import org.auraframework.util.test.perf.metrics.PerfMetrics;
@@ -33,6 +25,14 @@ import org.auraframework.util.test.perf.rdp.TraceEventUtil;
 import org.json.JSONException;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
 
 public class PerfMetricsUtil {
     private final PerfExecutorTest test;
@@ -167,10 +167,10 @@ public class PerfMetricsUtil {
 	public PerfMetrics prepareResults() {
         PerfMetrics metrics = new PerfMetrics();
         String timeline = config.getOptions().get("timeline");
-        if(timeline!=null && !timeline.equals("disable")) {           
-    		rdpAnalyzer = new RDPAnalyzer(notifications, test.getPerfStartMarker(), test.getPerfEndMarker());
-    		prepareNetworkMetrics(metrics);
-        	prepareTimelineMetrics(metrics);
+        if (timeline != null && !timeline.equals("disable")) {
+            rdpAnalyzer = new RDPAnalyzer(notifications, test.getPerfStartMarker(), test.getPerfEndMarker());
+            prepareNetworkMetrics(metrics);
+            prepareTimelineMetrics(metrics);
         }
         prepareAuraMetrics(metrics);
         return metrics;
@@ -186,7 +186,7 @@ public class PerfMetricsUtil {
         WebDriver driver = test.getWebDriver();
         String timeline = config.getOptions().get("timeline");
         if(timeline!=null && !timeline.equals("disable")) {
-        	notifications = test.getRDPNotifications();
+            notifications = test.getRDPNotifications();
         }
         // TODO auraUITestingUtil unable to execute the js correctly
         Object obj = ((JavascriptExecutor) driver).executeScript("return $A.PerfRunner.getResults()");

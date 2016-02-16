@@ -15,6 +15,15 @@
  */
 package org.auraframework.impl;
 
+import com.ibm.icu.text.NumberFormat;
+import org.auraframework.impl.service.testdata.LocalizationServiceTestData;
+import org.auraframework.service.LocalizationService;
+import org.auraframework.test.util.AuraTestCase;
+import org.auraframework.util.number.AuraNumberFormat;
+import org.auraframework.util.test.annotation.UnAdaptableTest;
+import org.junit.Test;
+
+import javax.inject.Inject;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -25,31 +34,19 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
-import org.auraframework.Aura;
-import org.auraframework.impl.service.testdata.LocalizationServiceTestData;
-import org.auraframework.service.LocalizationService;
-import org.auraframework.test.util.AuraTestCase;
-import org.auraframework.util.number.AuraNumberFormat;
-import org.auraframework.util.test.annotation.UnAdaptableTest;
-
-import com.ibm.icu.text.NumberFormat;
-
 /**
  * Tests for LocalizationServiceImpl.
  */
 public class LocalizationServiceImplTest extends AuraTestCase {
 
-    public LocalizationService localizationService = null;
-
-    public LocalizationServiceImplTest(String name) {
-        super(name);
-        localizationService = Aura.getLocalizationService();
-    }
+    @Inject
+    public LocalizationService localizationService;
 
     /**
      * Tests to verify Date parser across different Locale
      */
     @UnAdaptableTest("Date format on SFDC handles differently than standalone Aura, need to investigate")
+    @Test
     public void testDateTimeParserChangeLocale() throws Exception {
         // API: parseDate(String Date, Locale locale, TimeZone timeZone, int
         // DateStyle)
@@ -88,6 +85,7 @@ public class LocalizationServiceImplTest extends AuraTestCase {
         }
     }
 
+    @Test
     public void testDateTimeParserBorderCases() {
         for (String dt : LocalizationServiceTestData.PASS_DATE_STRINGS) {
             try {
@@ -108,6 +106,7 @@ public class LocalizationServiceImplTest extends AuraTestCase {
     // parseDateTime(...), formatDate(...), formatTime(...), formatDateTime(...)
     //TODO: W-2603913
     @UnAdaptableTest("Date format on SFDC handles differently than standalone Aura, need to investigate")
+    @Test
     public void testDateTimeParserExceptions() throws IllegalArgumentException {
         // Test invalid date strings in format DateFormat.MEDIUM
         {
@@ -171,6 +170,7 @@ public class LocalizationServiceImplTest extends AuraTestCase {
     }
 
     // TODO(W-1482880): same as testDateTimeParserExceptions()
+    @Test
     public void testParseTimeParserExceptions() throws ParseException {
         // Test invalid time strings
         {
@@ -186,6 +186,7 @@ public class LocalizationServiceImplTest extends AuraTestCase {
         }
     }
 
+    @Test
     public void testParsersWithNullArgs() throws ParseException {
         {
             assertNull("parseDate(null) did not return 'null'", localizationService.parseDate(null));
@@ -235,6 +236,7 @@ public class LocalizationServiceImplTest extends AuraTestCase {
         }
     }
 
+    @Test
     public void testParsersWithEmptyString() throws ParseException {
         {
             try {
@@ -321,6 +323,7 @@ public class LocalizationServiceImplTest extends AuraTestCase {
         }
     }
 
+    @Test
     public void testLeniencyCurrencyParser() throws Exception {
         // API: parseCurrency(String currency, Locale l)
         // Locale: US $ -> UK £
@@ -365,6 +368,7 @@ public class LocalizationServiceImplTest extends AuraTestCase {
         }
     }
 
+    @Test
     public void testPercentParserExceptions() throws ParseException {
         // Test invalid Percent strings
         {
@@ -380,6 +384,7 @@ public class LocalizationServiceImplTest extends AuraTestCase {
         }
     }
 
+    @Test
     public void testCurrencyParserExceptions() throws ParseException {
         // Test invalid Currency strings
         {
@@ -419,6 +424,7 @@ public class LocalizationServiceImplTest extends AuraTestCase {
         }
     }
 
+    @Test
     public void testIntParserExceptions() throws ParseException {
         // Test invalid Int strings
         {
@@ -434,6 +440,7 @@ public class LocalizationServiceImplTest extends AuraTestCase {
         }
     }
 
+    @Test
     public void testLongParserExceptions() throws ParseException {
         // Test invalid Long strings
         {
@@ -449,6 +456,7 @@ public class LocalizationServiceImplTest extends AuraTestCase {
         }
     }
 
+    @Test
     public void testFloatParserExceptions() throws ParseException {
         // Test invalid Float strings
         {
@@ -464,6 +472,7 @@ public class LocalizationServiceImplTest extends AuraTestCase {
         }
     }
 
+    @Test
     public void testDoubleParserExceptions() throws ParseException {
         // Test invalid Double strings
         {
@@ -479,6 +488,7 @@ public class LocalizationServiceImplTest extends AuraTestCase {
         }
     }
 
+    @Test
     public void testStrictNumberParsing() throws ParseException {
         NumberFormat nf = null;
         Map<Locale, String[]> strictParserTestNumberStrings = new HashMap<>();
@@ -506,6 +516,7 @@ public class LocalizationServiceImplTest extends AuraTestCase {
     /**
      * Test decimal parsing with delimiters in incorrect places.
      */
+    @Test
     public void testBigNumberParsing() {
         Map<Locale, String[]> testNumbers = new HashMap<>();
         Map<Locale, String[]> testNumbersExpected = new HashMap<>();
@@ -524,6 +535,7 @@ public class LocalizationServiceImplTest extends AuraTestCase {
      * Test decimal parsing with delimiters and passing the strict flag. Should get exceptions thrown because
      * delimiters are in the wrong place.
      */
+    @Test
     public void testStrictBigNumberParsing() {
         Map<Locale, String[]> testNumbers = new HashMap<>();
 

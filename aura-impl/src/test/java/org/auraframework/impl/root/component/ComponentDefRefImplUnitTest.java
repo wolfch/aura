@@ -15,9 +15,6 @@
  */
 package org.auraframework.impl.root.component;
 
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.auraframework.def.AttributeDef;
 import org.auraframework.def.AttributeDefRef;
 import org.auraframework.def.ComponentDef;
@@ -29,6 +26,9 @@ import org.auraframework.impl.root.component.ComponentDefRefImpl.Builder;
 import org.auraframework.impl.system.DefinitionImplUnitTest;
 import org.mockito.Mockito;
 
+import java.util.Map;
+import java.util.Map.Entry;
+
 public class ComponentDefRefImplUnitTest extends
         DefinitionImplUnitTest<ComponentDefImpl, ComponentDef, ComponentDefRef, Builder> {
 
@@ -36,10 +36,6 @@ public class ComponentDefRefImplUnitTest extends
     protected DefDescriptor<InterfaceDef> intfDescriptor;
     protected String localId;
     protected Load load;
-
-    public ComponentDefRefImplUnitTest(String name) {
-        super(name);
-    }
 
     @Override
     protected void setupValidateReferences() throws Exception {

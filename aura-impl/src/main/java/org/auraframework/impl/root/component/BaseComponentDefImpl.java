@@ -16,19 +16,10 @@
 
 package org.auraframework.impl.root.component;
 
-import static org.auraframework.instance.AuraValueProviderType.LABEL;
-
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import org.auraframework.Aura;
 import org.auraframework.builder.BaseComponentDefBuilder;
 import org.auraframework.def.ActionDef;
@@ -80,16 +71,24 @@ import org.auraframework.throwable.quickfix.InvalidExpressionException;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.json.Json;
 
-import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static org.auraframework.instance.AuraValueProviderType.LABEL;
 
 public abstract class BaseComponentDefImpl<T extends BaseComponentDef> extends
-RootDefinitionImpl<T> implements BaseComponentDef, Serializable {
+        RootDefinitionImpl<T> implements BaseComponentDef, Serializable {
 
-    public static final DefDescriptor<InterfaceDef> ROOT_MARKER = DefDescriptorImpl.getInstance(
-            "markup://aura:rootComponent", InterfaceDef.class);
+    public static final DefDescriptor<InterfaceDef> ROOT_MARKER = new DefDescriptorImpl<>(
+            "markup", "aura", "rootComponent", InterfaceDef.class);
 
     private static final long serialVersionUID = -2485193714215681494L;
     private final boolean isAbstract;
@@ -1361,21 +1360,21 @@ RootDefinitionImpl<T> implements BaseComponentDef, Serializable {
             if (this.rendererDescriptors == null) {
                 this.rendererDescriptors = Lists.newArrayList();
             }
-            this.rendererDescriptors.add(DefDescriptorImpl.getInstance(name, RendererDef.class));
+            this.rendererDescriptors.add(Aura.getDefinitionService().getDefDescriptor(name, RendererDef.class));
         }
 
         public void addHelper(String name) {
             if (this.helperDescriptors == null) {
                 this.helperDescriptors = Lists.newArrayList();
             }
-            this.helperDescriptors.add(DefDescriptorImpl.getInstance(name, HelperDef.class));
+            this.helperDescriptors.add(Aura.getDefinitionService().getDefDescriptor(name, HelperDef.class));
         }
 
         public void addResource(String name) {
             if (this.resourceDescriptors == null) {
                 this.resourceDescriptors = Lists.newArrayList();
             }
-            this.resourceDescriptors.add(DefDescriptorImpl.getInstance(name, ResourceDef.class));
+            this.resourceDescriptors.add(Aura.getDefinitionService().getDefDescriptor(name, ResourceDef.class));
         }
 
         @Override
@@ -1488,7 +1487,7 @@ RootDefinitionImpl<T> implements BaseComponentDef, Serializable {
                 this.tokenOverrides = new ArrayList<>();
             }
             for (String name : Splitter.on(',').trimResults().omitEmptyStrings().split(tokenOverrides)) {
-                this.tokenOverrides.add(DefDescriptorImpl.getInstance(name, TokensDef.class));
+                this.tokenOverrides.add(Aura.getDefinitionService().getDefDescriptor(name, TokensDef.class));
             }
             return this;
         }
@@ -1546,6 +1545,7 @@ RootDefinitionImpl<T> implements BaseComponentDef, Serializable {
                     setParseError(e);
                 }
             }
+
         }
     }
 

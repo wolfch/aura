@@ -15,6 +15,46 @@
  */
 package org.auraframework.impl.adapter;
 
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSortedSet;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import org.apache.log4j.Logger;
+import org.auraframework.adapter.ConfigAdapter;
+import org.auraframework.adapter.ContentSecurityPolicy;
+import org.auraframework.adapter.DefaultContentSecurityPolicy;
+import org.auraframework.adapter.LocalizationAdapter;
+import org.auraframework.annotations.Annotations.ServiceComponent;
+import org.auraframework.def.BaseComponentDef;
+import org.auraframework.def.DefDescriptor;
+import org.auraframework.expression.PropertyReference;
+import org.auraframework.impl.javascript.AuraJavascriptGroup;
+import org.auraframework.impl.source.AuraResourcesHashingGroup;
+import org.auraframework.impl.util.AuraImplFiles;
+import org.auraframework.impl.util.BrowserInfo;
+import org.auraframework.instance.BaseComponent;
+import org.auraframework.service.ContextService;
+import org.auraframework.service.InstanceService;
+import org.auraframework.system.AuraContext;
+import org.auraframework.system.AuraContext.Mode;
+import org.auraframework.throwable.AuraError;
+import org.auraframework.throwable.AuraRuntimeException;
+import org.auraframework.throwable.quickfix.QuickFixException;
+import org.auraframework.util.AuraLocale;
+import org.auraframework.util.AuraTextUtil;
+import org.auraframework.util.FileMonitor;
+import org.auraframework.util.IOUtil;
+import org.auraframework.util.javascript.JavascriptGroup;
+import org.auraframework.util.resource.CompiledGroup;
+import org.auraframework.util.resource.FileGroup;
+import org.auraframework.util.resource.ResourceLoader;
+import org.auraframework.util.text.Hash;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
@@ -35,45 +75,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.TimeZone;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.log4j.Logger;
-import org.auraframework.Aura;
-import org.auraframework.adapter.ConfigAdapter;
-import org.auraframework.adapter.ContentSecurityPolicy;
-import org.auraframework.adapter.DefaultContentSecurityPolicy;
-import org.auraframework.adapter.LocalizationAdapter;
-import org.auraframework.annotations.Annotations.ServiceComponent;
-import org.auraframework.def.BaseComponentDef;
-import org.auraframework.def.DefDescriptor;
-import org.auraframework.expression.PropertyReference;
-import org.auraframework.impl.javascript.AuraJavascriptGroup;
-import org.auraframework.impl.source.AuraResourcesHashingGroup;
-import org.auraframework.impl.source.file.AuraFileMonitor;
-import org.auraframework.impl.util.AuraImplFiles;
-import org.auraframework.impl.util.BrowserInfo;
-import org.auraframework.instance.BaseComponent;
-import org.auraframework.system.AuraContext;
-import org.auraframework.system.AuraContext.Mode;
-import org.auraframework.throwable.AuraError;
-import org.auraframework.throwable.AuraRuntimeException;
-import org.auraframework.throwable.quickfix.QuickFixException;
-import org.auraframework.util.AuraLocale;
-import org.auraframework.util.AuraTextUtil;
-import org.auraframework.util.IOUtil;
-import org.auraframework.util.javascript.JavascriptGroup;
-import org.auraframework.util.resource.CompiledGroup;
-import org.auraframework.util.resource.FileGroup;
-import org.auraframework.util.resource.ResourceLoader;
-import org.auraframework.util.text.Hash;
-
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.ImmutableSortedSet;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
 @ServiceComponent
 public class ConfigAdapterImpl implements ConfigAdapter {
 
@@ -82,29 +83,38 @@ public class ConfigAdapterImpl implements ConfigAdapter {
     private static final String VERSION_PROPERTY = "aura.build.version";
     private static final String VALIDATE_CSS_CONFIG = "aura.css.validate";
 
-    private static final Set<String> SYSTEM_NAMESPACES = Sets.newHashSet();
-    private static final Set<String> CANONICAL_NAMESPACES = Sets.newTreeSet();
+    private final Set<String> SYSTEM_NAMESPACES = Sets.newHashSet();
+    private final Set<String> CANONICAL_NAMESPACES = Sets.newTreeSet();
+    private volatile Set<String> CANONICAL_RETURN = Sets.newTreeSet();
 
-    private static final Set<String> UNSECURED_PREFIXES = new ImmutableSortedSet.Builder<>(String.CASE_INSENSITIVE_ORDER).add("aura", "layout").build();
+    private final Set<String> UNSECURED_PREFIXES = new ImmutableSortedSet.Builder<>(String.CASE_INSENSITIVE_ORDER).add("aura", "layout").build();
 
-    private static final Set<String> UNDOCUMENTED_NAMESPACES = new ImmutableSortedSet.Builder<>(String.CASE_INSENSITIVE_ORDER).add("auradocs").build();
+    private final Set<String> UNDOCUMENTED_NAMESPACES = new ImmutableSortedSet.Builder<>(String.CASE_INSENSITIVE_ORDER).add("auradocs").build();
 
-    private static final Set<String> CACHEABLE_PREFIXES = ImmutableSet.of("aura", "java");
+    private final Set<String> CACHEABLE_PREFIXES = ImmutableSet.of("aura", "java");
 
     protected final Set<Mode> allModes = EnumSet.allOf(Mode.class);
-    private final JavascriptGroup jsGroup;
-    private final FileGroup resourcesGroup;
+    private JavascriptGroup jsGroup;
+    private FileGroup resourcesGroup;
     private String jsUid = "";
     private String resourcesUid = "";
     private String fwUid = "";
-    private final ResourceLoader resourceLoader;
-    private final Long buildTimestamp;
+    private ResourceLoader resourceLoader;
+    private Long buildTimestamp;
     private String auraVersionString;
     private boolean lastGenerationHadCompilationErrors = false;
-    private final boolean validateCss;
-    private final Map<String, String> effectiveTimezones;
+    private boolean validateCss;
+    private Map<String, String> effectiveTimezones;
 
-    private LocalizationAdapter localizationAdapter = Aura.getLocalizationAdapter();
+    @Inject
+    private LocalizationAdapter localizationAdapter;
+
+    @Inject
+    private InstanceService instanceService;
+
+    private ContextService contextService;
+    private FileMonitor fileMonitor;
+    private String resourceCacheDir;
 
     public ConfigAdapterImpl() {
         this(getDefaultCacheDir());
@@ -114,7 +124,12 @@ public class ConfigAdapterImpl implements ConfigAdapter {
         return IOUtil.newTempDir("auracache");
     }
 
-    protected ConfigAdapterImpl(String resourceCacheDir) {
+    public ConfigAdapterImpl(String resourceCacheDir) {
+        this.resourceCacheDir = resourceCacheDir;
+    }
+
+    @PostConstruct
+    public void initialize() {
         // can this initialization move to some sort of common initialization dealy?
         try {
             this.resourceLoader = new ResourceLoader(resourceCacheDir, true);
@@ -177,18 +192,21 @@ public class ConfigAdapterImpl implements ConfigAdapter {
 
         effectiveTimezones = readEquivalentTimezones();
 
-        if (!isProduction()) {
-            AuraFileMonitor.start();
-        }
-
-        Aura.getContextService().registerGlobal("isVoiceOver", true, false);
-        Aura.getContextService().registerGlobal("dynamicTypeSize", true, "");
+        contextService.registerGlobal("isVoiceOver", true, false);
+        contextService.registerGlobal("dynamicTypeSize", true, "");
     }
 
     protected FileGroup newAuraResourcesHashingGroup() throws IOException {
-        return new AuraResourcesHashingGroup(true);
+        return new AuraResourcesHashingGroup(fileMonitor, true);
     }
 
+    @PostConstruct
+    public void init() {
+        if (!isProduction()) {
+            fileMonitor.start();
+        }
+    }
+    
     @Override
     public boolean isTestAllowed() {
         return !isProduction();
@@ -205,13 +223,13 @@ public class ConfigAdapterImpl implements ConfigAdapter {
     }
 
     @Override
-    public boolean isPrivilegedNamespace(String namespace) {
+    public synchronized boolean isPrivilegedNamespace(String namespace) {
         return namespace != null && SYSTEM_NAMESPACES.contains(namespace.toLowerCase());
     }
 
     @Override
     public Set<String> getPrivilegedNamespaces(){
-        return CANONICAL_NAMESPACES;
+        return CANONICAL_RETURN;
     }
 
     @Override
@@ -263,7 +281,6 @@ public class ConfigAdapterImpl implements ConfigAdapter {
             } catch (Exception x) {
                 lastGenerationHadCompilationErrors = true;
                 throw new AuraRuntimeException("Unable to regenerate aura javascript", x);
-
             }
         }
     }
@@ -275,7 +292,7 @@ public class ConfigAdapterImpl implements ConfigAdapter {
      */
     @Override
     public String getResetCssURL() {
-        AuraContext context = Aura.getContextService().getCurrentContext();
+        AuraContext context = contextService.getCurrentContext();
         String contextPath = context.getContextPath();
         String uid = context.getFrameworkUID();
         String resetCss = "resetCSS.css";
@@ -284,7 +301,7 @@ public class ConfigAdapterImpl implements ConfigAdapter {
             if (appDesc != null) {
                 BaseComponentDef templateDef = ((BaseComponentDef) appDesc.getDef()).getTemplateDef();
                 if (templateDef.isTemplate()) {
-                    BaseComponent<?, ?> template = (BaseComponent<?, ?>) Aura.getInstanceService().getInstance(templateDef);
+                    BaseComponent<?, ?> template = (BaseComponent<?, ?>) instanceService.getInstance(templateDef);
                     String auraResetStyle=getTemplateValue(template,"auraResetStyle");
                     switch(auraResetStyle){
                         case "reset":
@@ -343,7 +360,7 @@ public class ConfigAdapterImpl implements ConfigAdapter {
         String tz = al.getTimeZone().getID();
         tz = getAvailableTimezone(tz);
         tz = tz.replace("/", "-");
-        AuraContext context = Aura.getContextService().getCurrentContext();
+        AuraContext context = contextService.getCurrentContext();
         String contextPath = context.getContextPath();
         String nonce = context.getFrameworkUID();
         return String.format("%s/auraFW/resources/%s/libs_%s.js", contextPath, nonce, tz);
@@ -388,7 +405,7 @@ public class ConfigAdapterImpl implements ConfigAdapter {
     @Override
     public String getHTML5ShivURL() {
         String ret = null;
-        AuraContext context = Aura.getContextService().getCurrentContext();
+        AuraContext context = contextService.getCurrentContext();
         String ua = context != null ? context.getClient().getUserAgent() : null;
         BrowserInfo b = new BrowserInfo(ua);
         if (b.isIE7() || b.isIE8()) {
@@ -402,7 +419,7 @@ public class ConfigAdapterImpl implements ConfigAdapter {
 
     @Override
     public String getAuraJSURL() {
-        AuraContext context = Aura.getContextService().getCurrentContext();
+        AuraContext context = contextService.getCurrentContext();
         String contextPath = context.getContextPath();
         String suffix = context.getMode().getJavascriptMode().getSuffix();
         String nonce = context.getFrameworkUID();
@@ -414,7 +431,7 @@ public class ConfigAdapterImpl implements ConfigAdapter {
      */
     @Override
     public String getEncryptionKeyURL() {
-        AuraContext context = Aura.getContextService().getCurrentContext();
+        AuraContext context = contextService.getCurrentContext();
         String contextPath = context.getContextPath();
         return String.format("%s/l/{}/app.encryptionkey", contextPath);
     }
@@ -448,10 +465,10 @@ public class ConfigAdapterImpl implements ConfigAdapter {
         return !Boolean.parseBoolean(System.getProperty("aura.noappcache"));
     }
 
-    @Override
-    public boolean isSysAdmin() {
-        return false;
-    }
+//    @Override
+//    public boolean isSysAdmin() {
+//        return false;
+//    }
 
     private static final FileFilter JS_ONLY = new FileFilter() {
         @Override
@@ -469,7 +486,7 @@ public class ConfigAdapterImpl implements ConfigAdapter {
 
     @Override
     public Mode getDefaultMode() {
-        return Aura.getConfigAdapter().isProduction() ? Mode.PROD : Mode.DEV;
+        return this.isProduction() ? Mode.PROD : Mode.DEV;
     }
 
     private Properties loadProperties() {
@@ -542,7 +559,7 @@ public class ConfigAdapterImpl implements ConfigAdapter {
      * AuraJavascriptGroup that experiences synthetic errors.
      */
     protected AuraJavascriptGroup newAuraJavascriptGroup() throws IOException {
-        return new AuraJavascriptGroup(true);
+        return new AuraJavascriptGroup(fileMonitor, true);
     }
 
     @Override
@@ -600,17 +617,19 @@ public class ConfigAdapterImpl implements ConfigAdapter {
     }
 
     @Override
-    public void addPrivilegedNamespace(String namespace) {
+    public synchronized void addPrivilegedNamespace(String namespace) {
         if(namespace != null && !namespace.isEmpty()){
             SYSTEM_NAMESPACES.add(namespace.toLowerCase());
             CANONICAL_NAMESPACES.add(namespace);
+            CANONICAL_RETURN = new ImmutableSet.Builder<String>().addAll(CANONICAL_NAMESPACES).build();
         }
     }
 
     @Override
-    public void removePrivilegedNamespace(String namespace) {
+    public synchronized void removePrivilegedNamespace(String namespace) {
         SYSTEM_NAMESPACES.remove(namespace.toLowerCase());
         CANONICAL_NAMESPACES.remove(namespace);
+        CANONICAL_RETURN = new ImmutableSet.Builder<String>().addAll(CANONICAL_NAMESPACES).build();
     }
 
     @Override
@@ -649,8 +668,21 @@ public class ConfigAdapterImpl implements ConfigAdapter {
         this.localizationAdapter = adapter;
     }
 
-	@Override
-	public boolean isLockerServiceEnabled() {
-		return true;
-	}
+    /**
+     * Injection override.
+     */
+    @Inject
+    public void setContextService(ContextService service) {
+        this.contextService = service;
+    }
+
+    @Inject
+    public void setFileMonitor(FileMonitor fileMonitor) {
+        this.fileMonitor = fileMonitor;
+    }
+
+    @Override
+    public boolean isLockerServiceEnabled() {
+        return true;
+    }
 }

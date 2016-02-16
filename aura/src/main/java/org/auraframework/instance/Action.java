@@ -15,62 +15,64 @@
  */
 package org.auraframework.instance;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
+import org.auraframework.adapter.ExceptionAdapter;
 import org.auraframework.def.ActionDef;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
+import org.auraframework.service.LoggingService;
 import org.auraframework.system.LoggingContext.KeyValueLogger;
 import org.auraframework.throwable.AuraExecutionException;
 import org.auraframework.util.javascript.Literal;
 import org.auraframework.util.json.Json;
 import org.auraframework.util.json.JsonSerializers.NoneSerializer;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
 /**
  * An interface for the server side implementation of an action.
  */
 public interface Action extends Instance<ActionDef> {
 
-    public enum State {
+    enum State {
         ERROR, NEW, RUNNING, SUCCESS
     }
 
     /**
      * Get the ID for the action.
      */
-    public String getId();
+    String getId();
 
     /**
      * Set the ID for the action.
      */
-    public void setId(String id);
+    void setId(String id);
 
     /**
      * run the action.
      */
-    public void run() throws AuraExecutionException;
+    void run(LoggingService loggingService, ExceptionAdapter exceptionAdapter) throws AuraExecutionException;
 
     /**
      * Add actions to run after this one.
      */
-    public void add(List<Action> actions);
+    void add(List<Action> actions);
 
     /**
      * get the current list of actions run after this one.
      */
-    public List<Action> getActions();
+    List<Action> getActions();
 
-    public Object getReturnValue();
+    Object getReturnValue();
 
-    public State getState();
+    State getState();
 
-    public List<Object> getErrors();
+    List<Object> getErrors();
 
-    public static final Serializer SERIALIZER = new Serializer();
+    Serializer SERIALIZER = new Serializer();
 
-    public static class Serializer extends NoneSerializer<Action> {
+    class Serializer extends NoneSerializer<Action> {
 
         @Override
         public void serialize(Json json, Action action) throws IOException {
@@ -119,24 +121,24 @@ public interface Action extends Instance<ActionDef> {
      * Log any params that are useful and safe to log.
      * @param logger
      */
-    public void logParams(KeyValueLogger logger);
+    void logParams(KeyValueLogger logger);
 
-    public boolean isStorable();
+    boolean isStorable();
 
-    public void setStorable();
+    void setStorable();
 
-    public Map<String, Object> getParams();
+    Map<String, Object> getParams();
 
     /**
      * Get the instance stack for this action.
      */
-    public InstanceStack getInstanceStack();
+    InstanceStack getInstanceStack();
 
-    public DefDescriptor<ComponentDef> getCallingDescriptor();
+    DefDescriptor<ComponentDef> getCallingDescriptor();
 
-    public void setCallingDescriptor(String caller);
-    
-    public String getCallerVersion();
+    void setCallingDescriptor(DefDescriptor<ComponentDef> descriptor);
 
-    public void setCallerVersion(String callerVersion);
+    String getCallerVersion();
+
+    void setCallerVersion(String callerVersion);
 }

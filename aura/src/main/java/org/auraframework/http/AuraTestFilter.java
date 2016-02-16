@@ -15,36 +15,16 @@
  */
 package org.auraframework.http;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
-import org.auraframework.Aura;
+import org.auraframework.adapter.ConfigAdapter;
+import org.auraframework.adapter.ExceptionAdapter;
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.BaseComponentDef;
 import org.auraframework.def.ComponentDef;
@@ -56,6 +36,7 @@ import org.auraframework.def.TestSuiteDef;
 import org.auraframework.http.RequestParam.BooleanParam;
 import org.auraframework.http.RequestParam.StringParam;
 import org.auraframework.service.ContextService;
+import org.auraframework.service.DefinitionService;
 import org.auraframework.system.AuraContext;
 import org.auraframework.system.AuraContext.Authentication;
 import org.auraframework.system.AuraContext.Format;
@@ -69,14 +50,38 @@ import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.AuraTextUtil;
 import org.auraframework.util.json.JsonEncoder;
 import org.auraframework.util.json.JsonReader;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
+import javax.inject.Inject;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Supports test framework functionality, primarily for jstest mocks.
  */
 public class AuraTestFilter implements Filter {
+    @Inject
+    private TestContextAdapter testContextAdapter;
+
     private static final Log LOG = LogFactory.getLog(AuraTestFilter.class);
 
     private static final String GET_URI = "/aura?aura.tag=%s:%s&aura.format=HTML&aura.deftype=%s&aura.mode=%s&aura.access=%s";
@@ -107,16 +112,37 @@ public class AuraTestFilter implements Filter {
     // TODO: DELETE this once all existing tests have been updated to have attributes.
     private boolean ENABLE_FREEFORM_TESTS = Boolean.parseBoolean(System.getProperty("aura.jstest.free"));
 
+    @Inject
+    private ContextService contextService;
+
+    @Inject
+    private DefinitionService definitionService;
+
+    @Inject
+    private ConfigAdapter configAdapter;
+
+    @Inject
+    private ExceptionAdapter exceptionAdapter;
+    
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+        servletContext = filterConfig.getServletContext();
+        SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this, servletContext);
+    }
+
+    @Override
+    public void destroy() {
+    }
+
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws ServletException,
             IOException {
 
-        if (!Aura.getConfigAdapter().isTestAllowed()) {
+        if (!configAdapter.isTestAllowed()) {
             chain.doFilter(req, res);
             return;
         }
 
-        TestContextAdapter testContextAdapter = Aura.get(TestContextAdapter.class);
         if (testContextAdapter == null) {
             chain.doFilter(req, res);
             return;
@@ -145,13 +171,13 @@ public class AuraTestFilter implements Filter {
                 DefType type = "app".equals(matcher.group(3)) ? DefType.APPLICATION : DefType.COMPONENT;
                 String namespace = matcher.group(1);
                 String name = matcher.group(2);
-                DefDescriptor<?> targetDescriptor = Aura.getDefinitionService().getDefDescriptor(
+                DefDescriptor<?> targetDescriptor = definitionService.getDefDescriptor(
                         String.format("%s:%s", namespace, name), type.getPrimaryInterface());
 
                 // Check if a single jstest is being requested.
                 String testToRun = jstestToRun.get(request);
                 if (testToRun != null && !testToRun.isEmpty()) {
-                    AuraContext context = Aura.getContextService().getCurrentContext();
+                    AuraContext context = contextService.getCurrentContext();
                     Format format = context.getFormat();
                     switch (format) {
                     case HTML:
@@ -169,7 +195,7 @@ public class AuraTestFilter implements Filter {
                             ((HttpServletResponse) res).setStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR);
                             res.setCharacterEncoding(AuraBaseServlet.UTF_ENCODING);
                             res.getWriter().append(e.getMessage());
-                            Aura.getExceptionAdapter().handleException(e);
+                            exceptionAdapter.handleException(e);
                             return;
                         }
 
@@ -182,7 +208,7 @@ public class AuraTestFilter implements Filter {
                         String capturedResponse = captureResponse(req, res, targetUri);
                         if (capturedResponse != null) {
                             res.setCharacterEncoding(AuraBaseServlet.UTF_ENCODING);
-                            if (!Aura.getContextService().isEstablished()) {
+                            if (!contextService.isEstablished()) {
                                 // There was an error in the original response, so just write the response out.
                                 res.getWriter().write(capturedResponse);
                             } else {
@@ -240,7 +266,6 @@ public class AuraTestFilter implements Filter {
             // During manual testing, the test context adapter may not always get cleared.
             testContextAdapter.clear();
         } else {
-            ContextService contextService = Aura.getContextService();
             if (!contextService.isEstablished()) {
                 LOG.error("Aura context is not established! New context will NOT be created.");
                 chain.doFilter(req, res);
@@ -252,15 +277,6 @@ public class AuraTestFilter implements Filter {
             loadTestMocks(context, doResetTest, testContext.getLocalDefs());
         }
         chain.doFilter(req, res);
-    }
-
-    @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-        servletContext = filterConfig.getServletContext();
-    }
-
-    @Override
-    public void destroy() {
     }
 
     @SuppressWarnings("unchecked")
@@ -291,12 +307,12 @@ public class AuraTestFilter implements Filter {
         if (key == null) {
             return null;
         } else {
-            return Aura.get(TestContextAdapter.class).getTestContext(key);
+            return testContextAdapter.getTestContext(key);
         }
     }
 
     private TestSuiteDef getTestSuite(DefDescriptor<?> targetDescriptor) throws QuickFixException {
-        DefDescriptor<TestSuiteDef> suiteDesc = Aura.getDefinitionService().getDefDescriptor(targetDescriptor,
+        DefDescriptor<TestSuiteDef> suiteDesc = definitionService.getDefDescriptor(targetDescriptor,
                 DefDescriptor.JAVASCRIPT_PREFIX, TestSuiteDef.class);
         return suiteDesc.getDef();
     }
@@ -308,14 +324,14 @@ public class AuraTestFilter implements Filter {
                 return currentTestDef;
             }
         }
-        throw new DefinitionNotFoundException(Aura.getDefinitionService().getDefDescriptor(testCaseName,
+        throw new DefinitionNotFoundException(definitionService.getDefDescriptor(testCaseName,
                 TestCaseDef.class));
     }
 
     private String createURI(String namespace, String name, DefType defType, Mode mode, String access, String qs) {
         if (mode == null) {
             try {
-                mode = Aura.getContextService().getCurrentContext().getMode();
+                mode = contextService.getCurrentContext().getMode();
             } catch (Throwable t) {
                 mode = Mode.AUTOJSTEST; // TODO: default to PROD
             }
@@ -348,7 +364,7 @@ public class AuraTestFilter implements Filter {
             }
         }
         if (error) {
-            Aura.get(TestContextAdapter.class).release();
+            testContextAdapter.release();
         }
     }
 
@@ -391,9 +407,9 @@ public class AuraTestFilter implements Filter {
             final ComponentDef targetTemplate = originalDef.getTemplateDef();
             String newDescriptorString = String
                     .format("%s$%s", targetDescriptor.getDescriptorName(), testDef.getName());
-            final DefDescriptor<ApplicationDef> newDescriptor = Aura.getDefinitionService().getDefDescriptor(
+            final DefDescriptor<ApplicationDef> newDescriptor = definitionService.getDefDescriptor(
                     newDescriptorString, ApplicationDef.class);
-            final ApplicationDef dummyDef = Aura.getDefinitionService().getDefinition("aurajstest:blank",
+            final ApplicationDef dummyDef = definitionService.getDefinition("aurajstest:blank",
                     ApplicationDef.class);
             BaseComponentDef targetDef = (BaseComponentDef) Proxy.newProxyInstance(
                     originalDef.getClass().getClassLoader(),
@@ -414,8 +430,7 @@ public class AuraTestFilter implements Filter {
                             }
                         }
                     });
-            TestContext testContext = Aura.get(TestContextAdapter.class).getTestContext(
-                    testDef.getQualifiedName());
+            TestContext testContext = testContextAdapter.getTestContext(testDef.getQualifiedName());
             testContext.getLocalDefs().add(targetDef);
             return createURI(newDescriptor.getNamespace(), newDescriptor.getName(),
                     newDescriptor.getDefType(), null, Authentication.AUTHENTICATED.name(), null);
@@ -439,7 +454,7 @@ public class AuraTestFilter implements Filter {
         // Inject test framework script tag if it isn't on page already. Unlikely, but framework may not
         // be loaded if the target is server-rendered, or if the target is designed that way (e.g.
         // custom template).
-        String testUrl = Aura.getConfigAdapter().getAuraJSURL(); // Dependent on mode being a test mode
+        String testUrl = configAdapter.getAuraJSURL(); // Dependent on mode being a test mode
         if (original == null
                 || !original.matches(String.format("(?is).*<script\\s*src\\s*=\\s*['\"]%s['\"]\\s*>.*", testUrl))) {
             tag = String.format("\n<script src='%s'></script>", testUrl);

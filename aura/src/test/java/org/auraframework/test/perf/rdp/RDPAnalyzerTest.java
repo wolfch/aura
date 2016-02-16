@@ -15,9 +15,7 @@
  */
 package org.auraframework.test.perf.rdp;
 
-import java.util.List;
-import java.util.Map;
-
+import com.google.common.collect.Lists;
 import org.auraframework.test.perf.core.AbstractPerfTestCase;
 import org.auraframework.test.perf.metrics.PerfMetricsCollector;
 import org.auraframework.util.test.annotation.UnAdaptableTest;
@@ -30,19 +28,16 @@ import org.auraframework.util.test.perf.rdp.TimelineEventStats;
 import org.auraframework.util.test.perf.rdp.TimelineEventUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import com.google.common.collect.Lists;
-
 import org.junit.Ignore;
+import org.junit.Test;
+
+import java.util.List;
+import java.util.Map;
 
 //Roman TODO: remove @UnAdaptableTest once we also use SauceLabs for perf tests in autobuild
 @UnAdaptableTest
 @Ignore("W-2565715")
 public final class RDPAnalyzerTest extends AbstractPerfTestCase {
-
-    public RDPAnalyzerTest(String name) {
-        super(name);
-    }
 
     @Override
     protected boolean runPerfWarmupRun() {
@@ -64,6 +59,7 @@ public final class RDPAnalyzerTest extends AbstractPerfTestCase {
         return 0; // run only the first warmup run
     }
 
+    @Test
     public void testProtocol() throws Exception {
         // run WebDriver test
         openTotallyRaw("/ui/label.cmp?label=foo");
@@ -114,6 +110,7 @@ public final class RDPAnalyzerTest extends AbstractPerfTestCase {
     /**
      * Checks the timeline has the marks we are adding
      */
+    @Test
     public void testTimelineMarks() throws Exception {
         runWithPerfApp(getDefDescriptor("ui:button"));
 
@@ -142,6 +139,7 @@ public final class RDPAnalyzerTest extends AbstractPerfTestCase {
                 marks.toString());
     }
 
+    @Test
     public void testGetDevToolsLog() throws Exception {
         PerfMetricsCollector metricsCollector = new PerfMetricsCollector(this, PerfRunMode.TIMELINE);
         metricsCollector.startCollecting();

@@ -15,21 +15,19 @@
  */
 package org.auraframework.integration.test.components.aura.iteration;
 
-import java.util.List;
-
 import org.auraframework.test.util.WebDriverTestCase;
+import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+
+import java.util.List;
 
 /**
  * aura:interation UI tests.
  */
 public class IterationUITest extends WebDriverTestCase {
 
-    public IterationUITest(String name) {
-        super(name);
-    }
-
+    @Test
     public void testSimpleIteration() throws Exception {
         open("/iterationTest/simpleIteration.cmp");
 
@@ -93,6 +91,7 @@ public class IterationUITest extends WebDriverTestCase {
      * nestedIteration.cmp uses nested iteration, model list of maps, shadowed var/indexVar scoping Compare
      * client-rendered and server-rendered versions, and gold file diff.
      */
+    @Test
     public void testNestedIteration() throws Exception {
         open("/iterationTest/nestedIteration.cmp");
         WebElement root = findDomElement(By.cssSelector(".testRoot"));

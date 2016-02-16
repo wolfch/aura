@@ -15,23 +15,33 @@
  */
 package org.auraframework.impl.root.parser.handler;
 
-import java.util.Collections;
-import java.util.Set;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.*;
-
+import com.google.common.collect.ImmutableSet;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.Definition;
 import org.auraframework.impl.root.parser.XMLParser;
-import org.auraframework.impl.root.parser.handler.design.*;
+import org.auraframework.impl.root.parser.handler.design.DesignAttributeDefHandler;
+import org.auraframework.impl.root.parser.handler.design.DesignDefHandler;
+import org.auraframework.impl.root.parser.handler.design.DesignItemsDefHandler;
+import org.auraframework.impl.root.parser.handler.design.DesignLayoutAttributeDefHandler;
+import org.auraframework.impl.root.parser.handler.design.DesignLayoutComponentDefHandler;
+import org.auraframework.impl.root.parser.handler.design.DesignLayoutDefHandler;
+import org.auraframework.impl.root.parser.handler.design.DesignOptionDefHandler;
+import org.auraframework.impl.root.parser.handler.design.DesignSectionDefHandler;
+import org.auraframework.impl.root.parser.handler.design.DesignTemplateDefHandler;
+import org.auraframework.impl.root.parser.handler.design.DesignTemplateRegionDefHandler;
 import org.auraframework.impl.system.DefDescriptorImpl;
+import org.auraframework.service.DefinitionService;
 import org.auraframework.system.Source;
 import org.auraframework.throwable.AuraRuntimeException;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.AuraTextUtil;
 
-import com.google.common.collect.ImmutableSet;
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * Superclass for all the xml handlers.
@@ -52,6 +62,7 @@ public abstract class XMLHandler<T extends Definition> {
     protected final XMLStreamReader xmlReader;
     protected final XMLStreamWriter xmlWriter;
     protected final Source<?> source;
+    protected final DefinitionService definitionService;
 
     public static class InvalidSystemAttributeException extends AuraRuntimeException {
         private static final long serialVersionUID = -7339542343645451510L;
@@ -62,16 +73,18 @@ public abstract class XMLHandler<T extends Definition> {
         }
     }
 
-    protected XMLHandler(XMLStreamReader xmlReader, Source<?> source) {
+    protected XMLHandler(XMLStreamReader xmlReader, Source<?> source, DefinitionService definitionService) {
         this.xmlReader = xmlReader;
         this.xmlWriter = null;
         this.source = source;
+        this.definitionService = definitionService;
     }
 
     protected XMLHandler() {
         this.xmlReader = null;
         this.xmlWriter = null;
         this.source = null;
+        this.definitionService = null;
     }
 
     /**
@@ -198,12 +211,12 @@ public abstract class XMLHandler<T extends Definition> {
      * @return An instance of a AuraDescriptor for the provided tag with updated ns for sources with default namespace support
      */
     protected <E extends Definition> DefDescriptor<E> getDefDescriptor(String name, Class<E> clazz) {
-        DefDescriptor<E> defDesc = DefDescriptorImpl.getInstance(name, clazz);
+        DefDescriptor<E> defDesc = definitionService.getDefDescriptor(name, clazz);
 
         if (("apex".equals(defDesc.getPrefix()) || "markup".equals(defDesc.getPrefix())) // only needed for apex && markup def descriptors
             && isDefaultNamespaceUsed(defDesc.getNamespace())) {  // and default ns is used
             String qualifiedName =  DefDescriptorImpl.buildQualifiedName(defDesc.getPrefix(), source.getDescriptor().getNamespace(), defDesc.getName());
-            defDesc = DefDescriptorImpl.getInstance(qualifiedName, clazz);
+            defDesc = definitionService.getDefDescriptor(qualifiedName, clazz);
         }
 
         return defDesc;

@@ -38,10 +38,6 @@ public class InputRichTextUITest extends WebDriverTestCase {
     private final String IN_RICHTEXT_BODY = ".inputRichTextBody";
     private final String RT_CMP = "Text";
 
-    public InputRichTextUITest(String name) {
-        super(name);
-    }
-
     /**
      * Able to tab into inputRichText Component.
      */

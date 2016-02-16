@@ -15,12 +15,7 @@
  */
 package org.auraframework.impl.root.parser.handler;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamReader;
-
-import org.auraframework.Aura;
+import org.auraframework.adapter.DefinitionParserAdapter;
 import org.auraframework.def.AttributeDefRef;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.ComponentDefRef;
@@ -32,38 +27,49 @@ import org.auraframework.impl.root.parser.XMLParser;
 import org.auraframework.system.Parser.Format;
 import org.auraframework.test.source.StringSource;
 import org.auraframework.throwable.AuraRuntimeException;
+import org.auraframework.util.FileMonitor;
+import org.junit.Test;
+
+import javax.inject.Inject;
+import javax.xml.stream.XMLStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ComponentDefRefHandlerTest extends AuraImplTestCase {
+    @Inject
+    private FileMonitor fileMonitor;
 
+    @Inject
+    private DefinitionParserAdapter definitionParserAdapter;
+    
     XMLStreamReader xmlReader;
     ComponentDefRefHandler<?> cdrHandler;
-
-    public ComponentDefRefHandlerTest(String name) {
-        super(name);
-    }
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        DefDescriptor<ComponentDef> desc = Aura.getDefinitionService().getDefDescriptor("fake:component",
+        DefDescriptor<ComponentDef> desc = definitionService.getDefDescriptor("fake:component",
                 ComponentDef.class);
         StringSource<ComponentDef> source = new StringSource<>(
+                fileMonitor,
                 desc,
-                "<fake:component attr='attr value'>Child Text<aura:foo/><aura:set attribute='header'>Header Value</aura:set></fake:component>",
-                "myID", Format.XML);
+                "<fake:component attr='attr value'>Child Text<aura:foo/><aura:set attribute='header'>Header Value</aura:set></fake:component>", "myID", Format.XML);
         xmlReader = XMLParser.createXMLStreamReader(source.getHashingReader());
         xmlReader.next();
-        ComponentDefHandler cdh = new ComponentDefHandler(null, source, xmlReader);
-        cdrHandler = new ComponentDefRefHandler<>(cdh, xmlReader, source);
+        ComponentDefHandler cdh = new ComponentDefHandler(null, source, xmlReader, true, definitionService, contextService,
+                configAdapter, definitionParserAdapter);
+        cdrHandler = new ComponentDefRefHandler<>(cdh, xmlReader, source, true, definitionService, configAdapter, definitionParserAdapter);
         cdrHandler.readAttributes();
     }
 
+    @Test
     public void testCreateDefinition() {
         ComponentDefRef cdr = cdrHandler.createDefinition();
         assertEquals("attr value", cdr.getAttributeDefRef("attr").getValue());
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testHandleChildText() throws Exception {
         xmlReader.next();
         cdrHandler.handleChildText();
@@ -75,6 +81,7 @@ public class ComponentDefRefHandlerTest extends AuraImplTestCase {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testHandleChildTag() throws Exception {
         xmlReader.next();
         xmlReader.next();
@@ -85,6 +92,7 @@ public class ComponentDefRefHandlerTest extends AuraImplTestCase {
         assertEquals("foo", compDefs.get(0).getDescriptor().getName());
     }
 
+    @Test
     public void testHandleChildSetTag() throws Exception {
         xmlReader.next();
         xmlReader.next();
@@ -96,6 +104,7 @@ public class ComponentDefRefHandlerTest extends AuraImplTestCase {
         assertEquals("Header Value", value.getAttributeDefRef("value").getValue());
     }
 
+    @Test
     public void testGetHandledTag() {
         assertEquals("Component Reference", cdrHandler.getHandledTag());
     }
@@ -105,6 +114,7 @@ public class ComponentDefRefHandlerTest extends AuraImplTestCase {
      *
      * @throws Exception
      */
+    @Test
     public void testReadSystemAttributes() throws Exception {
         // 1. Verify specifying a invalid load specification
         cdrHandler = createComponentDefHandler("<fake:component aura:load='foo'/>");
@@ -139,23 +149,25 @@ public class ComponentDefRefHandlerTest extends AuraImplTestCase {
                 Load.EXCLUSIVE, cdrHandler.createDefinition().getLoad());
     }
 
+    @Test
     public void testReadFlavorAttribute() throws Exception {
         cdrHandler = createComponentDefHandler("<fake:component aura:flavor='fake'/>");
         cdrHandler.readSystemAttributes();
         cdrHandler.createDefinition();
 
-        Aura.getDefinitionService().getDefDescriptor("fake:component", ComponentDef.class);
+        definitionService.getDefDescriptor("fake:component", ComponentDef.class);
 
         assertEquals("fake", cdrHandler.createDefinition().getFlavor());
     }
 
     private ComponentDefRefHandler<?> createComponentDefHandler(String markup) throws Exception {
-        DefDescriptor<ComponentDef> desc = Aura.getDefinitionService().getDefDescriptor("fake:component",
+        DefDescriptor<ComponentDef> desc = definitionService.getDefDescriptor("fake:component",
                 ComponentDef.class);
-        StringSource<ComponentDef> source = new StringSource<>(desc, markup, "myID", Format.XML);
+        StringSource<ComponentDef> source = new StringSource<>(fileMonitor, desc, markup, "myID", Format.XML);
         xmlReader = XMLParser.createXMLStreamReader(source.getHashingReader());
         xmlReader.next();
-        ComponentDefHandler cdh = new ComponentDefHandler(null, source, xmlReader);
-        return new ComponentDefRefHandler<>(cdh, xmlReader, source);
+        ComponentDefHandler cdh = new ComponentDefHandler(null, source, xmlReader, true, definitionService, contextService,
+                configAdapter, definitionParserAdapter);
+        return new ComponentDefRefHandler<>(cdh, xmlReader, source, true, definitionService, configAdapter, definitionParserAdapter);
     }
 }

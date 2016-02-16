@@ -15,27 +15,34 @@
  */
 package org.auraframework.impl.adapter.format.html;
 
-import java.io.IOException;
-import java.util.Map;
-
-import javax.annotation.concurrent.ThreadSafe;
-
-import org.auraframework.Aura;
+import com.google.common.collect.Maps;
+import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.def.ComponentDef;
-import org.auraframework.ds.serviceloader.AuraServiceProvider;
 import org.auraframework.instance.Component;
+import org.auraframework.service.InstanceService;
+import org.auraframework.service.RenderingService;
+import org.auraframework.service.SerializationService;
 import org.auraframework.throwable.AuraError;
 import org.auraframework.throwable.ClientSideEventException;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
-import com.google.common.collect.Maps;
+import javax.annotation.concurrent.ThreadSafe;
+import javax.inject.Inject;
+import java.io.IOException;
+import java.util.Map;
 
-/**
- */
 @ThreadSafe
-@aQute.bnd.annotation.component.Component (provide=AuraServiceProvider.class)
+@ServiceComponent
 public class ClientSideEventExceptionHTMLFormatAdapter extends HTMLFormatAdapter<ClientSideEventException> {
+    @Inject
+    SerializationService serializationService;
 
+    @Inject
+    InstanceService instanceService;
+
+    @Inject
+    RenderingService renderingService;
+    
     @Override
     public Class<ClientSideEventException> getType() {
         return ClientSideEventException.class;
@@ -48,15 +55,14 @@ public class ClientSideEventExceptionHTMLFormatAdapter extends HTMLFormatAdapter
         Map<String, Object> attribs = Maps.newHashMap();
 
         StringBuilder sb = new StringBuilder();
-        Aura.getSerializationService().write(value, attributes, getType(), sb, "JS");
+        serializationService.write(value, attributes, getType(), sb, "JS");
         attribs.put("auraInitBlock", String.format("<script>%s</script>", sb.toString()));
 
         try {
-            Component c = Aura.getInstanceService().getInstance("aura:template", ComponentDef.class, attribs);
-            Aura.getRenderingService().render(c, out);
+            Component c = instanceService.getInstance("aura:template", ComponentDef.class, attribs);
+            renderingService.render(c, out);
         } catch (QuickFixException e) {
             throw new AuraError(e);
         }
     }
-
 }

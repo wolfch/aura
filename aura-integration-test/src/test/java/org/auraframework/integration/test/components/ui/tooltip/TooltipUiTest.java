@@ -18,49 +18,45 @@ package org.auraframework.integration.test.components.ui.tooltip;
 import org.auraframework.test.util.WebDriverTestCase;
 import org.auraframework.test.util.WebDriverTestCase.ExcludeBrowsers;
 import org.auraframework.test.util.WebDriverUtil.BrowserType;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 
 @ExcludeBrowsers({ BrowserType.ANDROID_PHONE, BrowserType.ANDROID_TABLET, BrowserType.IPHONE, BrowserType.IPAD, BrowserType.IE7, BrowserType.IE8})
 public class TooltipUiTest extends WebDriverTestCase {
-	private final String URL_FULL_CMP = "/uitest/tooltip_FullTest.cmp";
-	
-	public TooltipUiTest(String name) {
-		super(name);
-	}
+    private final String URL_FULL_CMP = "/uitest/tooltip_FullTest.cmp";
 
-	public void testNothing() {
-		
-	}
-	
-	/**
-	 * If tooltip is triggered by click then it should open and close by
-	 * pressing enter on keyboard
-	 * It's a flapper, fix and enable please: W-2846651. also remove testNothing() above.
-	 */
-	public void _testToolTipOpenAndCloseWithEnterKey() throws Exception {
-		open(URL_FULL_CMP);
-		WebElement trigger = findDomElement(By.cssSelector(".triggerClick"));
-		
-		// click on element to gain focus and verify tooltip opens
-		trigger.click();
-		waitForToolTipPresent();
-		
-		// close by sending enter key
-		trigger.sendKeys(Keys.ENTER);
-		waitForToolTipAbsent();
-		
-		// open by sending enter key
-		trigger.sendKeys(Keys.ENTER);
-		waitForToolTipPresent();
-	}
-	
-	private void waitForToolTipPresent() {
-		waitForElementAppear("Tooltip should been present but is not", By.cssSelector(".uiTooltipAdvanced.visible"));
-	}
-	
-	private void waitForToolTipAbsent() {
-		waitForElementDisappear("Tooltip should not be present but is", By.cssSelector(".uiTooltipAdvanced.visible"));
-	}
+    /**
+     * If tooltip is triggered by click then it should open and close by
+     * pressing enter on keyboard
+     * It's a flapper, fix and enable please: W-2846651. also remove testNothing() above.
+     */
+    @Ignore
+    @Test
+    public void testToolTipOpenAndCloseWithEnterKey() throws Exception {
+        open(URL_FULL_CMP);
+        WebElement trigger = findDomElement(By.cssSelector(".triggerClick"));
+
+        // click on element to gain focus and verify tooltip opens
+        trigger.click();
+        waitForToolTipPresent();
+
+        // close by sending enter key
+        trigger.sendKeys(Keys.ENTER);
+        waitForToolTipAbsent();
+
+        // open by sending enter key
+        trigger.sendKeys(Keys.ENTER);
+        waitForToolTipPresent();
+    }
+
+    private void waitForToolTipPresent() {
+        waitForElementAppear("Tooltip should been present but is not", By.cssSelector(".uiTooltipAdvanced.visible"));
+    }
+
+    private void waitForToolTipAbsent() {
+        waitForElementDisappear("Tooltip should not be present but is", By.cssSelector(".uiTooltipAdvanced.visible"));
+    }
 }

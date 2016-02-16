@@ -15,39 +15,42 @@
  */
 package org.auraframework.integration.test.helper;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
-
-import org.auraframework.Aura;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.HelperDef;
 import org.auraframework.impl.AuraImplTestCase;
+import org.auraframework.impl.DefinitionAccessImpl;
 import org.auraframework.impl.javascript.helper.JavascriptHelperDef;
+import org.auraframework.system.AuraContext;
+import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
 
 /**
  * Test class to verify implementation of JavascriptHelperDef.
  */
 public class JavascriptHelperDefTest extends AuraImplTestCase {
-    public JavascriptHelperDefTest(String name) {
-        super(name);
-    }
-
     /**
      * Verify JavascriptHelperDef is non-local.
      */
+    @Test
     public void testIsLocalReturnsFalse() {
-        HelperDef helperDef =  (new JavascriptHelperDef.Builder()).build();
+        JavascriptHelperDef.Builder builder = new JavascriptHelperDef.Builder();
+        builder.setAccess(new DefinitionAccessImpl(AuraContext.Access.PUBLIC));
+        HelperDef helperDef = builder.build();
         assertFalse(helperDef.isLocal());
     }
 
+    @Test
     public void testGetDescriptor() throws Exception {
         DefDescriptor<HelperDef> expectedHelperDesc = addSourceAutoCleanup(HelperDef.class, "({})");
-        HelperDef helperDef = Aura.getDefinitionService().getDefinition(expectedHelperDesc);
+        HelperDef helperDef = definitionService.getDefinition(expectedHelperDesc);
 
         DefDescriptor<HelperDef> actualHelperDesc = helperDef.getDescriptor();
         assertSame(expectedHelperDesc, actualHelperDesc);
     }
 
+    @Test
     public void testSerializeJavascriptHelperDef() throws Exception {
         String helperJS =
                 "({\n" +

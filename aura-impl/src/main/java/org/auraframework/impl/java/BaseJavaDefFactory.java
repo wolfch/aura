@@ -15,20 +15,21 @@
  */
 package org.auraframework.impl.java;
 
-import java.lang.annotation.Annotation;
-import java.util.List;
-
+import com.google.common.collect.Lists;
 import org.auraframework.builder.DefBuilder;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.Definition;
+import org.auraframework.impl.DefinitionAccessImpl;
 import org.auraframework.impl.system.DefFactoryImpl;
+import org.auraframework.system.AuraContext;
 import org.auraframework.system.CacheableDefFactory;
 import org.auraframework.system.DefFactory;
 import org.auraframework.system.Source;
 import org.auraframework.system.SourceLoader;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
-import com.google.common.collect.Lists;
+import java.lang.annotation.Annotation;
+import java.util.List;
 
 /**
  * Base class for {@link DefFactory} implementations for the java://
@@ -120,6 +121,9 @@ public abstract class BaseJavaDefFactory<D extends Definition> extends DefFactor
         builder = getBuilder(descriptor);
         if (builder == null) {
             return null;
+        }
+        if (builder.getAccess() == null) {
+            builder.setAccess(new DefinitionAccessImpl(AuraContext.Access.PUBLIC));
         }
         // FIXME = "need md5 in builder";
         def = builder.build();

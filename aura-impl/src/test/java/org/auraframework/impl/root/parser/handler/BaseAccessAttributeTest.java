@@ -15,8 +15,6 @@
  */
 package org.auraframework.impl.root.parser.handler;
 
-import java.util.ArrayList;
-
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
@@ -35,37 +33,47 @@ import org.auraframework.system.Source;
 import org.auraframework.test.source.StringSourceLoader;
 import org.auraframework.throwable.quickfix.InvalidAccessValueException;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
+import org.junit.Test;
+
+import javax.inject.Inject;
+import java.util.ArrayList;
 
 public abstract class BaseAccessAttributeTest extends AuraImplTestCase {
+    @Inject
+    protected StringSourceLoader stringSourceLoader;
 
-    public BaseAccessAttributeTest(String name) {
-        super(name);
-    }
+    @Inject
+    private ParserFactory parserFactory;
 
+    @Test
     public void testDefaultAccess() throws Exception {
         testCase = TestCase.DEFAULT;
         testNamespace = TestNamespace.System;
         runTestCase();
     }
 
+    @Test
     public void testEmptyAccess() throws Exception {
         testCase = TestCase.EMPTY;
         testNamespace = TestNamespace.System;
         runTestCase();
     }
 
+    @Test
     public void testInvalidAccess() throws Exception {
         testCase = TestCase.INVALID;
         testNamespace = TestNamespace.System;
         runTestCase();
     }
 
+    @Test
     public void testInvalidAccessDynamic() throws Exception {
         testCase = TestCase.INVALID;
         testNamespace = TestNamespace.System;
         runTestCase();
     }
 
+    @Test
     public void testInvalidValidAccess() throws Exception {
         ArrayList<String> failures = new ArrayList<>();
         for (Access access : Access.values()) {
@@ -96,6 +104,7 @@ public abstract class BaseAccessAttributeTest extends AuraImplTestCase {
         }
     }
 
+    @Test
     public void testInvalidValidAuthentication() throws Exception {
         ArrayList<String> failures = new ArrayList<>();
         for (Authentication authentication : Authentication.values()) {
@@ -126,70 +135,86 @@ public abstract class BaseAccessAttributeTest extends AuraImplTestCase {
         }
     }
 
+    @Test
     public void testAccessValueAndStaticMethod() throws Exception {
         testCase = TestCase.VALUE_METHOD;
         testNamespace = TestNamespace.System;
         runTestCase();
     }
 
+    @Test
     public void testStaticMethodAndAuthentication() throws Exception {
         testCase = TestCase.METHOD_AUTHENTICATION;
         testNamespace = TestNamespace.System;
         runTestCase();
     }
 
+    @Test
     public void testSimpleAccessInSystemNamespace() throws Exception {
         verifySimpleAccess(TestNamespace.System, false);
     }
 
+    @Test
     public void testSimpleAccessDynamicInSystemNamespace() throws Exception {
         verifySimpleAccess(TestNamespace.System, true);
     }
 
+    @Test
     public void testCombinationAccessInSystemNamespace() throws Exception {
         verifyCombinationAccess(TestNamespace.System);
     }
 
+    @Test
     public void testSimpleAuthenticationInSystemNamespace() throws Exception {
         verifySimpleAuthentication(TestNamespace.System, false);
     }
 
+    @Test
     public void testSimpleAuthenticationDynamicInSystemNamespace() throws Exception {
         verifySimpleAuthentication(TestNamespace.System, true);
     }
 
+    @Test
     public void testCombinationAuthenticationInSystemNamespace() throws Exception {
         verifyCombinationAuthentication(TestNamespace.System);
     }
 
+    @Test
     public void testAccessAuthenticationInSystemNamespace() throws Exception {
         verifyAccessAuthentication(TestNamespace.System);
     }
 
+    @Test
     public void testSimpleAccessInCustomNamespace() throws Exception {
         verifySimpleAccess(TestNamespace.Custom, false);
     }
 
+    @Test
     public void testSimpleAccessDynamicInCustomNamespace() throws Exception {
         verifySimpleAccess(TestNamespace.Custom, true);
     }
 
+    @Test
     public void testCombinationAccessInCustomNamespace() throws Exception {
         verifyCombinationAccess(TestNamespace.Custom);
     }
 
+    @Test
     public void testSimpleAuthenticationInCustomNamespace() throws Exception {
         verifySimpleAuthentication(TestNamespace.Custom, false);
     }
 
+    @Test
     public void testSimpleAuthenticationDynamicInCustomNamespace() throws Exception {
         verifySimpleAuthentication(TestNamespace.Custom, true);
     }
 
+    @Test
     public void testCombinationAuthenticationInCustomNamespace() throws Exception {
         verifyCombinationAuthentication(TestNamespace.Custom);
     }
 
+    @Test
     public void testAccessAuthenticationInCustomNamespace() throws Exception {
         verifyAccessAuthentication(TestNamespace.Custom);
     }
@@ -336,8 +361,8 @@ public abstract class BaseAccessAttributeTest extends AuraImplTestCase {
             DefDescriptor<D> descriptor = (DefDescriptor<D>)getAuraTestingUtil().addSourceAutoCleanup(getDefClass(),
                     getResourceSource(), getDefDescriptorName(),
                     (testNamespace == TestNamespace.System? true: false));
-            Source<D> source = StringSourceLoader.getInstance().getSource(descriptor);
-            Parser<D> parser = ParserFactory.getParser(Format.XML, descriptor);
+            Source<D> source = stringSourceLoader.getSource(descriptor);
+            Parser<D> parser = parserFactory.getParser(Format.XML, descriptor);
             Definition def = parser.parse(descriptor, source);
             def.validateDefinition();
             //def.validateReferences();

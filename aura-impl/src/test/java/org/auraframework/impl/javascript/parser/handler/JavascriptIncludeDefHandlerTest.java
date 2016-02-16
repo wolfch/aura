@@ -20,48 +20,54 @@ import org.auraframework.def.IncludeDef;
 import org.auraframework.impl.def.DefinitionTest;
 import org.auraframework.test.source.StringSource;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
+import org.auraframework.util.FileMonitor;
+import org.junit.Test;
 import org.mockito.Mock;
 
+import javax.inject.Inject;
+
 public class JavascriptIncludeDefHandlerTest extends DefinitionTest<IncludeDef> {
-
-    public JavascriptIncludeDefHandlerTest(String name) {
-        super(name);
-    }
-
+    @Inject
+    private FileMonitor fileMonitor;
+    
     @Mock
     DefDescriptor<IncludeDef> descriptor;
     private String filename = "dummyPath";
 
+    @Test
     public void testEmpty() throws Exception {
         String code = "";
-        StringSource<IncludeDef> source = new StringSource<>(descriptor, code, filename, null);
+        StringSource<IncludeDef> source = new StringSource<>(fileMonitor, descriptor, code, filename, null);
         JavascriptIncludeDefHandler handler = new JavascriptIncludeDefHandler(descriptor, source);
         IncludeDef def = handler.getDefinition();
         def.validateDefinition();
         assertEquals(code, def.getCode().trim());
     }
 
+    @Test
     public void testFunction() throws Exception {
         String code = "function(){return 'anything'}";
-        StringSource<IncludeDef> source = new StringSource<>(descriptor, code, filename, null);
+        StringSource<IncludeDef> source = new StringSource<>(fileMonitor, descriptor, code, filename, null);
         JavascriptIncludeDefHandler handler = new JavascriptIncludeDefHandler(descriptor, source);
         IncludeDef def = handler.getDefinition();
         def.validateDefinition();
         assertEquals(code, def.getCode());
     }
 
+    @Test
     public void testOtherJsButNotJson() throws Exception {
         String code = "var something = 'borrowed'";
-        StringSource<IncludeDef> source = new StringSource<>(descriptor, code, filename, null);
+        StringSource<IncludeDef> source = new StringSource<>(fileMonitor, descriptor, code, filename, null);
         JavascriptIncludeDefHandler handler = new JavascriptIncludeDefHandler(descriptor, source);
         IncludeDef def = handler.getDefinition();
         def.validateDefinition();
         assertEquals(code, def.getCode());
     }
 
+    @Test
     public void testInvalidTryToBreakOut() throws Exception {
         String code = "function(){\n}}) alert('watch out')";
-        StringSource<IncludeDef> source = new StringSource<>(descriptor, code, filename, null);
+        StringSource<IncludeDef> source = new StringSource<>(fileMonitor, descriptor, code, filename, null);
         JavascriptIncludeDefHandler handler = new JavascriptIncludeDefHandler(descriptor, source);
         IncludeDef def = handler.getDefinition();
         try {
@@ -75,10 +81,11 @@ public class JavascriptIncludeDefHandlerTest extends DefinitionTest<IncludeDef> 
         }
     }
 
+    @Test
     public void testExtraCurlyBrace() throws Exception {
         String code = "var a=66;\n}";
         // source will have an extra curly brace at the end
-        StringSource<IncludeDef> source = new StringSource<>(descriptor, code, filename, null);
+        StringSource<IncludeDef> source = new StringSource<>(fileMonitor, descriptor, code, filename, null);
         JavascriptIncludeDefHandler handler = new JavascriptIncludeDefHandler(descriptor, source);
         IncludeDef def = handler.getDefinition();
         try {
@@ -90,9 +97,10 @@ public class JavascriptIncludeDefHandlerTest extends DefinitionTest<IncludeDef> 
         }
     }
 
+    @Test
     public void testUnClosed() throws Exception {
         String code = "function(){return 66;";
-        StringSource<IncludeDef> source = new StringSource<>(descriptor, code, filename, null);
+        StringSource<IncludeDef> source = new StringSource<>(fileMonitor, descriptor, code, filename, null);
         JavascriptIncludeDefHandler handler = new JavascriptIncludeDefHandler(descriptor, source);
         IncludeDef def = handler.getDefinition();
         try {
@@ -108,9 +116,10 @@ public class JavascriptIncludeDefHandlerTest extends DefinitionTest<IncludeDef> 
         }
     }
 
+    @Test
     public void testWarningIgnoredForNonStandardJsDoc() throws Exception {
         String code = "function(){return 'x'}\n/*!\n * @version 1\n */";
-        StringSource<IncludeDef> source = new StringSource<>(descriptor, code, filename, null);
+        StringSource<IncludeDef> source = new StringSource<>(fileMonitor, descriptor, code, filename, null);
         JavascriptIncludeDefHandler handler = new JavascriptIncludeDefHandler(descriptor, source);
         IncludeDef def = handler.getDefinition();
         def.validateDefinition();

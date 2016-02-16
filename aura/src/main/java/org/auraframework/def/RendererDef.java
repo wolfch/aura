@@ -15,10 +15,9 @@
  */
 package org.auraframework.def;
 
-import java.io.IOException;
-
-import org.auraframework.instance.BaseComponent;
 import org.auraframework.throwable.quickfix.QuickFixException;
+
+import java.io.IOException;
 
 /**
  */
@@ -35,7 +34,9 @@ public interface RendererDef extends Definition {
      * @throws QuickFixException if there is an exception retrieving a
      *             component.
      */
-    void render(BaseComponent<?, ?> component, Appendable out) throws IOException, QuickFixException;
+    //void render(BaseComponent<?, ?> component, Appendable out) throws IOException, QuickFixException;
 
     boolean isLocal();
+
+    Class<?> getJavaType();
 }

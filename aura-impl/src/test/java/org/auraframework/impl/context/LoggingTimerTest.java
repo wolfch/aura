@@ -15,17 +15,14 @@
  */
 package org.auraframework.impl.context;
 
-import java.lang.reflect.Field;
-
 import org.auraframework.impl.context.LoggingContextImpl.Timer;
 import org.auraframework.util.test.util.UnitTestCase;
+import org.junit.Test;
+
+import java.lang.reflect.Field;
 
 public class LoggingTimerTest extends UnitTestCase {
-
-    public LoggingTimerTest(String name) {
-        super(name);
-    }
-    
+    @Test
     public void testTimer() throws Exception {
         Timer timer = new Timer("foo");
         assertEquals("Uninitialized timer has a totalTime", -1, timer.getTime());
@@ -40,7 +37,8 @@ public class LoggingTimerTest extends UnitTestCase {
         timer.reset();
         assertEquals("Reseted timer has a totalTime", -1, timer.getTime());
     }
-    
+
+    @Test
     public void testNesting() throws Exception {
         Timer timer = new Timer("foo");
         
@@ -56,7 +54,8 @@ public class LoggingTimerTest extends UnitTestCase {
         timer.stop();
         assertTrue("Completed timer has no totalTime", timer.getTime() >= 0);
     }
-    
+
+    @Test
     public void testRestart() throws Exception {
         Long skipAhead = 60L * 60L * 1000000000L;
         Timer timer = new Timer("foo");

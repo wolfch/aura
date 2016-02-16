@@ -18,6 +18,8 @@ package org.auraframework.integration.test.http;
 import org.apache.http.HttpStatus;
 import org.auraframework.test.util.AuraHttpTestCase;
 import org.auraframework.util.test.annotation.AuraTestLabels;
+import org.junit.Ignore;
+import org.junit.Test;
 
 /**
  * Automation to verify the handling of urls by AuraRewriteFilter.
@@ -27,11 +29,8 @@ import org.auraframework.util.test.annotation.AuraTestLabels;
  * @since 0.0.125
  */
 public class AuraRewriteFilterHttpTest extends AuraHttpTestCase {
-    public AuraRewriteFilterHttpTest(String name) {
-        super(name);
-    }
-
     @AuraTestLabels("auraSanity")
+    @Test
     public void testDoFilterOfValidURLs() throws Exception {
         assertUrlResponse("Didn't forward url with namespace and component name.", "/aura/text.cmp", HttpStatus.SC_OK);
         assertUrlResponse("Didn't forward url with namespace and application name.", "/test/fakeApplication.app",
@@ -41,8 +40,9 @@ public class AuraRewriteFilterHttpTest extends AuraHttpTestCase {
                 "/aura/text.cmp?value=DUTCH&aura.mode=DEV", HttpStatus.SC_OK);
     }
 
-    // TODO: W-1088932
-    public void _testDoFilterOfMalformedURLs() throws Exception {
+    @Ignore("TODO: W-1088932")
+    @Test
+    public void testDoFilterOfMalformedURLs() throws Exception {
         assertUrlResponse("Shouldn't forward url without namespace.", "//text.cmp", HttpStatus.SC_NOT_FOUND);
         assertUrlResponse("Shouldn't forward url without component name.", "/aura/.cmp?aura.mode=PROD",
                 HttpStatus.SC_NOT_FOUND);

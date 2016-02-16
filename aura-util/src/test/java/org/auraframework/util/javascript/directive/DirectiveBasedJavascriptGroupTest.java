@@ -15,6 +15,10 @@
  */
 package org.auraframework.util.javascript.directive;
 
+import com.google.common.collect.ImmutableList;
+import org.auraframework.util.test.util.UnitTestCase;
+import org.junit.Test;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -23,23 +27,16 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.EnumSet;
 
-import org.auraframework.util.test.util.UnitTestCase;
-
-import com.google.common.collect.ImmutableList;
-
 /**
  * Automation for verifying the implementation in DirectiveBasedJavascriptGroupTest
  * {@link DirectiveBasedJavascriptGroup}. Javascript files can be grouped in modules. This helps in keeping the
  * javascript modularized.
  */
 public class DirectiveBasedJavascriptGroupTest extends UnitTestCase {
-    public DirectiveBasedJavascriptGroupTest(String name) {
-        super(name);
-    }
-
     /**
      * Should not be able to specify a Directory as start file for a Javascript group
      */
+    @Test
     public void testPassingDirForStartFile() throws Exception {
         try {
             DirectiveBasedJavascriptGroup test = new DirectiveBasedJavascriptGroup("test",
@@ -59,6 +56,7 @@ public class DirectiveBasedJavascriptGroupTest extends UnitTestCase {
      * to INCLUDE a new js file using a include directive in on of the files in the group , then isStale() would still
      * work.
      */
+    @Test
     public void testIsStale() throws Exception {
         File newFile = getResourceFile("/testdata/javascript/testIsStale.js");
         newFile.getParentFile().mkdirs();
@@ -97,6 +95,7 @@ public class DirectiveBasedJavascriptGroupTest extends UnitTestCase {
      * Use the javascript processor to generate javascript files in 5 modes. Gold file the five modes and also verify
      * that the file was not created in the 6th mode.
      */
+    @Test
     public void testJavascriptGeneration() throws Exception {
         File file = getResourceFile("/testdata/javascript/testAllKindsOfDirectiveGenerate.js");
         DirectiveBasedJavascriptGroup jg = new DirectiveBasedJavascriptGroup("testDummy", file.getParentFile(),
@@ -150,6 +149,7 @@ public class DirectiveBasedJavascriptGroupTest extends UnitTestCase {
     /**
      * Make sure the processor regeneration stops when there are errors in the source file
      */
+    @Test
     public void testJavascriptReGenerationFails() throws Exception {
         File file = getResourceFile("/testdata/javascript/testJavascriptReGenerationFails.js");
         DirectiveBasedJavascriptGroup jg = new DirectiveBasedJavascriptGroup("regenerationFail", file.getParentFile(),

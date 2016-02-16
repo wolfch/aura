@@ -16,16 +16,14 @@
 package org.auraframework.integration.test.error;
 
 import org.auraframework.system.AuraContext.Mode;
+import org.junit.Test;
 
 public class ServerModelErrorUITest extends AbstractErrorUITestCase {
-
-    public ServerModelErrorUITest(String name) {
-        super(name);
-    }
 
     /*
      * Verify Aura default error handler can handle systemError when an exception is thrown from model.
      */
+    @Test
     public void testDefaultHandleErrorInModelWhenSerialize() throws Exception {
         open("/auratest/errorHandlingErrorModelApp.app", Mode.PROD, false);
         assertDisplayedErrorMessage("Failed to initialize application");

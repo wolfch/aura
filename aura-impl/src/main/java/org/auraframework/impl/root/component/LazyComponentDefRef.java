@@ -15,11 +15,9 @@
  */
 package org.auraframework.impl.root.component;
 
-import java.util.Map;
-import java.util.Set;
-
-import javax.annotation.concurrent.Immutable;
-
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import org.auraframework.Aura;
 import org.auraframework.builder.ComponentDefRefBuilder;
 import org.auraframework.builder.LazyComponentDefRefBuilder;
 import org.auraframework.def.AttributeDef;
@@ -33,16 +31,17 @@ import org.auraframework.impl.system.DefDescriptorImpl;
 import org.auraframework.throwable.quickfix.InvalidReferenceException;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
+import javax.annotation.concurrent.Immutable;
+import java.util.Map;
+import java.util.Set;
 
 @Immutable
 public class LazyComponentDefRef extends ComponentDefRefImpl {
 
     private static final long serialVersionUID = -957235808680675063L;
 
-    public static final DefDescriptor<ComponentDef> PLACEHOLDER_DESC = DefDescriptorImpl.getInstance(
-            "aura:placeholder", ComponentDef.class);
+    public static final DefDescriptor<ComponentDef> PLACEHOLDER_DESC = new DefDescriptorImpl<>("markup", "aura",
+            "placeholder", ComponentDef.class);
 
     private static final Set<String> acceptableAttributeTypes = Sets.newHashSet("Integer", "Long", "Double", "Decimal",
             "Boolean", "String", "Date", "DateTime");
@@ -103,7 +102,7 @@ public class LazyComponentDefRef extends ComponentDefRefImpl {
         @Override
         public Builder setComponentAttribute(String key, Object value) {
             AttributeDefRefImpl.Builder valueBuilder = new AttributeDefRefImpl.Builder();
-            valueBuilder.setDescriptor(DefDescriptorImpl.getInstance(key, AttributeDef.class));
+            valueBuilder.setDescriptor(Aura.getDefinitionService().getDefDescriptor(key, AttributeDef.class));
             valueBuilder.setValue(value);
 
             AttributeDefRef adr = valueBuilder.build();

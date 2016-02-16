@@ -15,10 +15,6 @@
  */
 package org.auraframework.integration.test.components.ui.infiniteListRow;
 
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.util.List;
-
 import org.auraframework.test.util.WebDriverTestCase;
 import org.auraframework.test.util.WebDriverTestCase.TargetBrowsers;
 import org.auraframework.test.util.WebDriverUtil.BrowserType;
@@ -26,6 +22,10 @@ import org.auraframework.util.test.annotation.UnAdaptableTest;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.util.List;
 @UnAdaptableTest
 @TargetBrowsers({ BrowserType.IPHONE })
 public class infiniteListRowUITest extends WebDriverTestCase{
@@ -47,10 +47,6 @@ public class infiniteListRowUITest extends WebDriverTestCase{
 		SWIPE_VERTICAL_UP,
     };
     
-	public infiniteListRowUITest(String name) {
-		super(name);
-	}
-	
 	/**
 	 * Test to verify that logging for swipe works. This is basically checking to make sure that the event fires correctly 
 	 * @throws MalformedURLException

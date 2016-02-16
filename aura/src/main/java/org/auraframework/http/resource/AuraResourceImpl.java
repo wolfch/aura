@@ -16,25 +16,24 @@
 
 package org.auraframework.http.resource;
 
-import java.io.IOException;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.auraframework.Aura;
 import org.auraframework.adapter.ServletUtilAdapter;
-import org.auraframework.service.DefinitionService;
+import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.system.AuraContext;
 import org.auraframework.system.AuraContext.Format;
 import org.auraframework.system.AuraResource;
 
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+@ServiceComponent
 public abstract class AuraResourceImpl implements AuraResource {
     private final String name;
     private final Format format;
     private final boolean CSRFProtect;
 
-    protected DefinitionService definitionService = Aura.getDefinitionService();
-    protected ServletUtilAdapter servletUtilAdapter = Aura.getServletUtilAdapter();
+    protected ServletUtilAdapter servletUtilAdapter;
     
     public AuraResourceImpl(String name, Format format, boolean CSRFProtect) {
         this.name = name;
@@ -44,7 +43,7 @@ public abstract class AuraResourceImpl implements AuraResource {
 
     @Override
     public void setContentType(HttpServletResponse response) {
-    	response.setContentType( this.servletUtilAdapter.getContentType(this.format) );
+        response.setContentType(this.servletUtilAdapter.getContentType(this.format));
     }
     
     @Override
@@ -65,23 +64,9 @@ public abstract class AuraResourceImpl implements AuraResource {
         return CSRFProtect;
     }
 
-    /**
-     * Injection override.
-     *
-     * @param definitionService the definitionService to set
-     */
-    public void setDefinitionService(DefinitionService definitionService) {
-        this.definitionService = definitionService;
-    }
-
-    /**
-     * Injection override.
-     *
-     * @param servletUtilAdapter the servletUtilAdapter to set
-     */
+    @Inject
     public void setServletUtilAdapter(ServletUtilAdapter servletUtilAdapter) {
         this.servletUtilAdapter = servletUtilAdapter;
     }
-
 };
 

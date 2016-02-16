@@ -15,54 +15,68 @@
  */
 package org.auraframework.integration.test.renderer;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
-
-import java.io.StringWriter;
-
-import org.auraframework.Aura;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.RendererDef;
 import org.auraframework.impl.AuraImplTestCase;
+import org.auraframework.impl.DefinitionAccessImpl;
 import org.auraframework.impl.javascript.renderer.JavascriptRendererDef;
+import org.auraframework.instance.RendererInstance;
+import org.auraframework.service.InstanceService;
+import org.auraframework.system.AuraContext;
+import org.auraframework.throwable.AuraRuntimeException;
+import org.junit.Test;
+
+import javax.inject.Inject;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
 
 /**
  * Test class to verify implementation of JavascriptRendererDef.
  */
 public class JavascriptRendererDefTest extends AuraImplTestCase {
-    public JavascriptRendererDefTest(String name) {
-        super(name);
-    }
+    @Inject
+    InstanceService instanceService;
 
     /**
      * Verify JavascriptRendererDef is non-local.
      */
+    @Test
     public void testIsLocalReturnsFalse() {
-        RendererDef rendererDef =  (new JavascriptRendererDef.Builder()).build();
+        JavascriptRendererDef.Builder builder = new JavascriptRendererDef.Builder();
+        builder.setAccess(new DefinitionAccessImpl(AuraContext.Access.PUBLIC));
+        RendererDef rendererDef = builder.build();
         assertFalse(rendererDef.isLocal());
     }
 
+    @Test
     public void testGetDescriptor() throws Exception {
         DefDescriptor<RendererDef> expectedRendererDesc = addSourceAutoCleanup(RendererDef.class, "({})");
-        RendererDef rendererDef = Aura.getDefinitionService().getDefinition(expectedRendererDesc);
+        RendererDef rendererDef = definitionService.getDefinition(expectedRendererDesc);
 
         DefDescriptor<RendererDef> actualRendererDesc = rendererDef.getDescriptor();
         assertSame(expectedRendererDesc, actualRendererDesc);
     }
 
     /**
-     * Verify UnsupportedOperationException is thrown when rendering component locally using client renderer
+     * Verify AuraRuntimeException is thrown when trying to retrieve a renderer instance for a JavascriptRendererDefinition
      */
+    @Test
     public void testThrownExceptionWhenUsingJSRendererLocally() throws Exception {
-        RendererDef rendererDef = (new JavascriptRendererDef.Builder()).build();
+        JavascriptRendererDef.Builder builder = new JavascriptRendererDef.Builder();
+        builder.setAccess(new DefinitionAccessImpl(AuraContext.Access.PUBLIC));
+        RendererDef rendererDef = builder.build();
         try {
-            rendererDef.render(null, new StringWriter());
-            fail("UnsupportedOperationException should be thrown when calling client render() in local.");
-        } catch (Exception e) {
-            checkExceptionFull(e, UnsupportedOperationException.class, null);
+            RendererInstance renderer = instanceService.getInstance(rendererDef);
+            fail("AuraRuntimeException should be thrown when trying to create a javascript renderer client render() in local. renderer=" + renderer);
+        } catch (AuraRuntimeException e) {
+            //checkExceptionFull(e, AuraRuntimeException.class, null);
+        } catch (Exception ex) {
+            fail("Unexpected exception thrown" + ex.getMessage());
         }
     }
 
+    @Test
     public void testSerializeJavascriptRendererDef() throws Exception {
         String rendererJs =
                 "({\n" +
@@ -78,6 +92,7 @@ public class JavascriptRendererDefTest extends AuraImplTestCase {
         serializeAndGoldFile(rendererDef, "_JSRendererDef");
     }
 
+    @Test
     public void testSerializeJavascriptRendererDefHasNoFunction() throws Exception {
         String rendererJs = "({ })";
         DefDescriptor<RendererDef> rendererDesc = addSourceAutoCleanup(RendererDef.class, rendererJs);

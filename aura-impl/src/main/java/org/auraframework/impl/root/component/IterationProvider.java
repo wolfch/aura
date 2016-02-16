@@ -17,10 +17,10 @@
  */
 package org.auraframework.impl.root.component;
 
-import java.util.List;
-import java.util.Map;
-
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.auraframework.Aura;
+import org.auraframework.annotations.Annotations.ServiceComponentProvider;
 import org.auraframework.def.ComponentConfigProvider;
 import org.auraframework.instance.AttributeSet;
 import org.auraframework.instance.BaseComponent;
@@ -31,8 +31,8 @@ import org.auraframework.system.Annotations.Provider;
 import org.auraframework.system.AuraContext;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import java.util.List;
+import java.util.Map;
 
 /**
  * guts of the iteration component. dynamically instantiates the components in
@@ -41,6 +41,7 @@ import com.google.common.collect.Maps;
  *
  * @since 0.0.234
  */
+@ServiceComponentProvider
 @Provider
 public class IterationProvider implements ComponentConfigProvider {
     @Override

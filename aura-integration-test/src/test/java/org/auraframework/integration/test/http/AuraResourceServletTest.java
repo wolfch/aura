@@ -15,19 +15,6 @@
  */
 package org.auraframework.integration.test.http;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.auraframework.Aura;
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.SVGDef;
@@ -35,7 +22,7 @@ import org.auraframework.http.AuraBaseServlet;
 import org.auraframework.http.AuraResourceRewriteFilter;
 import org.auraframework.http.AuraResourceServlet;
 import org.auraframework.http.ManifestUtil;
-import org.auraframework.impl.system.DefDescriptorImpl;
+import org.auraframework.service.DefinitionService;
 import org.auraframework.system.AuraContext;
 import org.auraframework.system.AuraContext.Mode;
 import org.auraframework.system.Client;
@@ -45,8 +32,24 @@ import org.auraframework.test.client.UserAgent;
 import org.auraframework.test.util.AuraTestCase;
 import org.auraframework.test.util.DummyHttpServletRequest;
 import org.auraframework.test.util.DummyHttpServletResponse;
+import org.auraframework.util.FileMonitor;
 import org.auraframework.util.test.annotation.UnAdaptableTest;
-import org.auraframework.util.test.util.AuraPrivateAccessor;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.springframework.test.context.TestContextManager;
+
+import javax.inject.Inject;
+import javax.servlet.ServletConfig;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Simple (non-integration) test case for {@link AuraResourceServlet}, most useful for exercising hard-to-reach error
@@ -55,28 +58,35 @@ import org.auraframework.util.test.util.AuraPrivateAccessor;
  * for now.
  */
 public class AuraResourceServletTest extends AuraTestCase {
+    @Inject
+    private FileMonitor fileMonitor;
+
+    @Inject
+    DefinitionService definitionService;
 
     public static class SimulatedErrorException extends RuntimeException {
         private static final long serialVersionUID = 411181168049748986L;
     }
 
-    public AuraResourceServletTest() {
-        super(AuraResourceServletTest.class.getName());
+    @Mock
+    private ServletConfig servletConfig;
+
+    private AuraResourceServlet getAuraResourceServlet() throws Exception {
+        AuraResourceServlet servlet = new AuraResourceServlet();
+        TestContextManager testContextManager = new TestContextManager(getClass());
+        testContextManager.prepareTestInstance(servlet);
+        return servlet;
     }
 
-    private void doGet(AuraResourceServlet servlet,  HttpServletRequest request, HttpServletResponse response) throws Exception {
-        AuraPrivateAccessor.invoke(servlet, "doGet", request, response);
-    }
-
-    
     /**
      * verify we response SC_NOT_FOUND when getting app.manifest where manifest is not enabled
      * @throws Exception
      */
+    @Test
     public void testWriteManifestException() throws Exception {
         // Start a context to fetch manifests; the other details don't matter
         // much 'cause we'll error out. Then try to fetch one, with that error:
-        Aura.getContextService().startContext(AuraContext.Mode.UTEST, AuraContext.Format.MANIFEST,
+        contextService.startContext(AuraContext.Mode.UTEST, AuraContext.Format.MANIFEST,
                 AuraContext.Authentication.AUTHENTICATED);
 
         HttpServletRequest request = new DummyHttpServletRequest("app.manifest") {
@@ -103,18 +113,19 @@ public class AuraResourceServletTest extends AuraTestCase {
                 return status;
             }
         };
-        AuraResourceServlet servlet = new AuraResourceServlet();
-        doGet(servlet, request, response);
+        AuraResourceServlet servlet = getAuraResourceServlet();
+        servlet.doGet(request, response);
         assertEquals(HttpServletResponse.SC_NOT_FOUND, response.getStatus());
     }
 
+    @Test
     public void testAddAppManifestCookie() throws Exception {
-        Aura.getContextService().startContext(AuraContext.Mode.UTEST, AuraContext.Format.MANIFEST,
+        contextService.startContext(AuraContext.Mode.UTEST, AuraContext.Format.MANIFEST,
                 AuraContext.Authentication.UNAUTHENTICATED);
 
-        DefDescriptor<ApplicationDef> nopreload = DefDescriptorImpl.getInstance("appCache:nopreload",
+        DefDescriptor<ApplicationDef> nopreload = definitionService.getDefDescriptor("appCache:nopreload",
                 ApplicationDef.class);
-        Aura.getContextService().getCurrentContext().setApplicationDescriptor(nopreload);
+        contextService.getCurrentContext().setApplicationDescriptor(nopreload);
 
         DummyHttpServletRequest request = new DummyHttpServletRequest("app.manifest");
         DummyHttpServletResponse response = new DummyHttpServletResponse() {
@@ -130,7 +141,7 @@ public class AuraResourceServletTest extends AuraTestCase {
                 return cookie != null && cookie.getName().equals(name) ? cookie : null;
             }
         };
-        new ManifestUtil().checkManifestCookie(request, response);
+        new ManifestUtil(contextService, configAdapter).checkManifestCookie(request, response);
         String expectedName = Mode.UTEST + "_" + nopreload.getNamespace() + "_" + nopreload.getName() + "_lm";
         Cookie cookie = response.getCookie(expectedName);
         assertEquals(expectedName, cookie.getName());
@@ -163,8 +174,8 @@ public class AuraResourceServletTest extends AuraTestCase {
     private void runTestRequestFromDifferentBrowserOnSamePage(String ua, Type uaType, String cssMsgToVerify) throws Exception {
         String cmpname = "appCache:withpreload";
         String cmporapp = "app";
-        DefDescriptor<ApplicationDef> appDesc = DefDescriptorImpl.getInstance(cmpname, ApplicationDef.class);
-        AuraContext context = Aura.getContextService()
+        DefDescriptor<ApplicationDef> appDesc = definitionService.getDefDescriptor(cmpname, ApplicationDef.class);
+        AuraContext context = contextService
                 .startContext(Mode.DEV, AuraContext.Format.CSS, AuraContext.Authentication.AUTHENTICATED, appDesc);
         Client clientWEBKIT = new Client(ua);
         assertEquals(uaType, clientWEBKIT.getType());
@@ -183,8 +194,8 @@ public class AuraResourceServletTest extends AuraTestCase {
         };
         request.setQueryParam(AuraResourceRewriteFilter.TYPE_PARAM, cmporapp);
         HttpServletResponse response = new DummyHttpServletResponse();
-        AuraResourceServlet servlet = new AuraResourceServlet();
-        doGet(servlet, request, response);
+        AuraResourceServlet servlet = getAuraResourceServlet();
+        servlet.doGet(request, response);
 
         final String key = "CSS:" + context.getClient().getType().name().toLowerCase() + "$" + mKey + uid;
         // Verify something was actually added to cache
@@ -195,6 +206,7 @@ public class AuraResourceServletTest extends AuraTestCase {
         }
     }
 
+    @Test
     public void testRequestFromDifferentBrowserOnSamePage() throws Exception {
         runTestRequestFromDifferentBrowserOnSamePage(UserAgent.IE9.getUserAgentString(), Type.IE9, "");
         // ui:button has special session for IE7 in button.css under @if (IE7){...}
@@ -207,9 +219,10 @@ public class AuraResourceServletTest extends AuraTestCase {
      * source monitor, but we'll just emulate a source change for the sake of speed and simplicity. Original dev caching
      * story: W-1450222
      */
+    @Test
     public void testCssCacheClearedOnSourceChange() throws Exception {
-        DefDescriptor<ApplicationDef> appDesc = DefDescriptorImpl.getInstance("appCache:withpreload", ApplicationDef.class);
-        AuraContext context = Aura.getContextService()
+        DefDescriptor<ApplicationDef> appDesc = definitionService.getDefDescriptor("appCache:withpreload", ApplicationDef.class);
+        AuraContext context = contextService
                 .startContext(Mode.DEV, AuraContext.Format.CSS, AuraContext.Authentication.AUTHENTICATED, appDesc);
         final String uid = context.getDefRegistry().getUid(null, appDesc);
         context.addLoaded(appDesc, uid);
@@ -225,8 +238,8 @@ public class AuraResourceServletTest extends AuraTestCase {
         };
         request.setQueryParam(AuraResourceRewriteFilter.TYPE_PARAM, "app");
         HttpServletResponse response = new DummyHttpServletResponse();
-        AuraResourceServlet servlet = new AuraResourceServlet();
-        doGet(servlet, request, response);
+        AuraResourceServlet servlet = getAuraResourceServlet();
+        servlet.doGet(request, response);
 
         final String key = "CSS:" + context.getClient().getType().name().toLowerCase() + "$" + mKey + uid;
 
@@ -235,7 +248,7 @@ public class AuraResourceServletTest extends AuraTestCase {
         assertNotNull("Nothing added to CSS cache", cssCache);
 
         // Now force a source change event and verify cache is emptied
-        Aura.getDefinitionService().onSourceChanged(null, SourceListener.SourceMonitorEvent.CHANGED, null);
+        fileMonitor.onSourceChanged(null, SourceListener.SourceMonitorEvent.CHANGED, null);
 
         cssCache = context.getDefRegistry().getCachedString(uid, appDesc, key);
 
@@ -247,10 +260,11 @@ public class AuraResourceServletTest extends AuraTestCase {
      *
      * FIXME: this test should not be here.... it should be on MDR.
      */
+    @Test
     @UnAdaptableTest("W-2929438")
     public void testJsCacheClearedOnSourceChange() throws Exception {
-        DefDescriptor<ApplicationDef> appDesc = DefDescriptorImpl.getInstance("appCache:withpreload", ApplicationDef.class);
-        AuraContext context = Aura.getContextService()
+        DefDescriptor<ApplicationDef> appDesc = definitionService.getDefDescriptor("appCache:withpreload", ApplicationDef.class);
+        AuraContext context = contextService
                 .startContext(Mode.DEV, AuraContext.Format.JS, AuraContext.Authentication.AUTHENTICATED, appDesc);
         final String uid = context.getDefRegistry().getUid(null, appDesc);
         context.addLoaded(appDesc, uid);
@@ -266,8 +280,8 @@ public class AuraResourceServletTest extends AuraTestCase {
         };
         request.setQueryParam(AuraResourceRewriteFilter.TYPE_PARAM, "app");
         HttpServletResponse response = new DummyHttpServletResponse();
-        AuraResourceServlet servlet = new AuraResourceServlet();
-        doGet(servlet, request, response);
+        AuraResourceServlet servlet = getAuraResourceServlet();
+        servlet.doGet(request, response);
 
         final String key = "JS:" + mKey + uid;
 
@@ -276,7 +290,7 @@ public class AuraResourceServletTest extends AuraTestCase {
         assertNotNull("Nothing added to JS cache", jsCache);
 
         // Now force a source change event and verify cache is emptied
-        Aura.getDefinitionService().onSourceChanged(null, SourceListener.SourceMonitorEvent.CHANGED, null);
+        fileMonitor.onSourceChanged(null, SourceListener.SourceMonitorEvent.CHANGED, null);
 
         jsCache = context.getDefRegistry().getCachedString(uid, appDesc, key);
         assertNull("JS cache not cleared after source change event", jsCache);
@@ -285,13 +299,14 @@ public class AuraResourceServletTest extends AuraTestCase {
     /**
      * Verify cache of SVG definitions is cleared on source change in DEV mode.
      */
+    @Test
     @UnAdaptableTest("W-2929438")
     public void testSvgCacheClearedOnSourceChange() throws Exception {
-        DefDescriptor<ApplicationDef> appDesc = DefDescriptorImpl.getInstance("appCache:withpreload", ApplicationDef.class);
-        AuraContext context = Aura.getContextService()
+        DefDescriptor<ApplicationDef> appDesc = definitionService.getDefDescriptor("appCache:withpreload", ApplicationDef.class);
+        AuraContext context = contextService
                 .startContext(Mode.DEV, AuraContext.Format.SVG, AuraContext.Authentication.AUTHENTICATED, appDesc);
 
-        DefDescriptor<SVGDef> svgDesc = Aura.getDefinitionService().getDefinition(appDesc).getSVGDefDescriptor();
+        DefDescriptor<SVGDef> svgDesc = definitionService.getDefinition(appDesc).getSVGDefDescriptor();
         final String uid = context.getDefRegistry().getUid(null, svgDesc);
         context.addLoaded(appDesc, uid);
 
@@ -303,8 +318,8 @@ public class AuraResourceServletTest extends AuraTestCase {
         };
         request.setQueryParam(AuraResourceRewriteFilter.TYPE_PARAM, "svg");
         HttpServletResponse response = new DummyHttpServletResponse();
-        AuraResourceServlet servlet = new AuraResourceServlet();
-        doGet(servlet, request, response);
+        AuraResourceServlet servlet = getAuraResourceServlet();
+        servlet.doGet(request, response);
 
         final String key = "SVG:" + context.getClient().getType() + "$" + uid;
 
@@ -313,7 +328,7 @@ public class AuraResourceServletTest extends AuraTestCase {
         assertNotNull("Nothing added to SVG cache", svgCache);
 
         // Now force a source change event and verify cache is emptied
-        Aura.getDefinitionService().onSourceChanged(null, SourceListener.SourceMonitorEvent.CHANGED, null);
+        fileMonitor.onSourceChanged(null, SourceListener.SourceMonitorEvent.CHANGED, null);
 
         svgCache = context.getDefRegistry().getCachedString(uid, svgDesc, key);
         assertNull("SVG cache not cleared after source change event", svgCache);
@@ -322,14 +337,15 @@ public class AuraResourceServletTest extends AuraTestCase {
     /**
      * Verify SVG requests return a correct etag.
      */
+    @Test
     public void testSvgCacheUsesEtag() throws Exception {
-        DefDescriptor<ApplicationDef> appDesc = DefDescriptorImpl.getInstance("appCache:withpreload",
+        DefDescriptor<ApplicationDef> appDesc = definitionService.getDefDescriptor("appCache:withpreload",
                 ApplicationDef.class);
-        AuraContext context = Aura.getContextService()
+        AuraContext context = contextService
                 .startContext(Mode.PROD, AuraContext.Format.SVG, AuraContext.Authentication.AUTHENTICATED, appDesc);
 
-        DefDescriptor<SVGDef> svgDesc = Aura.getDefinitionService().getDefinition(appDesc).getSVGDefDescriptor();
-        String etag = Aura.getDefinitionService().getDefinition(svgDesc).getOwnHash();
+        DefDescriptor<SVGDef> svgDesc = definitionService.getDefinition(appDesc).getSVGDefDescriptor();
+        String etag = definitionService.getDefinition(svgDesc).getOwnHash();
 
         final String uid = context.getDefRegistry().getUid(null, svgDesc);
         context.addLoaded(appDesc, uid);
@@ -362,8 +378,8 @@ public class AuraResourceServletTest extends AuraTestCase {
                 return headers.get(name.toLowerCase());
             }
         };
-        AuraResourceServlet servlet = new AuraResourceServlet();
-        doGet(servlet, request, response);
+        AuraResourceServlet servlet = getAuraResourceServlet();
+        servlet.doGet(request, response);
 
         String etagResponce = response.getHeader("etag");
         assertEquals(etag, etagResponce);
@@ -377,14 +393,15 @@ public class AuraResourceServletTest extends AuraTestCase {
     /**
      * Verify SVG servlet returns 304 if etag's match.
      */
+    @Test
     public void testSvgReturns304() throws Exception {
-        DefDescriptor<ApplicationDef> appDesc = DefDescriptorImpl.getInstance("appCache:withpreload",
+        DefDescriptor<ApplicationDef> appDesc = definitionService.getDefDescriptor("appCache:withpreload",
                 ApplicationDef.class);
-        AuraContext context = Aura.getContextService()
+        AuraContext context = contextService
                 .startContext(Mode.PROD, AuraContext.Format.SVG, AuraContext.Authentication.AUTHENTICATED, appDesc);
 
-        DefDescriptor<SVGDef> svgDesc = Aura.getDefinitionService().getDefinition(appDesc).getSVGDefDescriptor();
-        final String etag = Aura.getDefinitionService().getDefinition(svgDesc).getOwnHash();
+        DefDescriptor<SVGDef> svgDesc = definitionService.getDefinition(appDesc).getSVGDefDescriptor();
+        final String etag = definitionService.getDefinition(svgDesc).getOwnHash();
 
         final String uid = context.getDefRegistry().getUid(null, svgDesc);
         context.addLoaded(appDesc, uid);
@@ -419,8 +436,8 @@ public class AuraResourceServletTest extends AuraTestCase {
                 status = sc;
             }
         };
-        AuraResourceServlet servlet = new AuraResourceServlet();
-        doGet(servlet, request, response);
+        AuraResourceServlet servlet = getAuraResourceServlet();
+        servlet.doGet(request, response);
 
         assertEquals(304, response.getStatus());
     }
@@ -429,13 +446,14 @@ public class AuraResourceServletTest extends AuraTestCase {
      * Verify SVG servlet returns Content-Disposition = attachment; filename=resources.svg if referer header is null
      * This is to prevent any scripts hidden in the SVG from running on the local domain
      */
+    @Test
     public void testSvgNoReferer() throws Exception {
-        DefDescriptor<ApplicationDef> appDesc = DefDescriptorImpl.getInstance("appCache:withpreload",
+        DefDescriptor<ApplicationDef> appDesc = definitionService.getDefDescriptor("appCache:withpreload",
                 ApplicationDef.class);
-        AuraContext context = Aura.getContextService()
+        AuraContext context = contextService
                 .startContext(Mode.PROD, AuraContext.Format.SVG, AuraContext.Authentication.AUTHENTICATED, appDesc);
 
-        DefDescriptor<SVGDef> svgDesc = Aura.getDefinitionService().getDefinition(appDesc).getSVGDefDescriptor();
+        DefDescriptor<SVGDef> svgDesc = definitionService.getDefinition(appDesc).getSVGDefDescriptor();
 
         final String uid = context.getDefRegistry().getUid(null, svgDesc);
         context.addLoaded(appDesc, uid);
@@ -459,8 +477,8 @@ public class AuraResourceServletTest extends AuraTestCase {
                 return headers.get(name.toLowerCase());
             }
         };
-        AuraResourceServlet servlet = new AuraResourceServlet();
-        doGet(servlet, request, response);
+        AuraResourceServlet servlet = getAuraResourceServlet();
+        servlet.doGet(request, response);
 
         assertNotNull("Expected content disposition", response.getHeader("Content-Disposition"));
         assertTrue(response.getHeader("Content-Disposition").contains("attachment; filename"));
@@ -469,14 +487,15 @@ public class AuraResourceServletTest extends AuraTestCase {
     /**
      * Verify that context path is prepended on all Aura urls in appcache manifest
      */
+    @Test
     @UnAdaptableTest("W-2929438")
     public void testManifestContentWithContextPath() throws Exception {
-        if (Aura.getContextService().isEstablished()) {
-            Aura.getContextService().endContext();
+        if (contextService.isEstablished()) {
+            contextService.endContext();
         }
-        DefDescriptor<ApplicationDef> appDesc = DefDescriptorImpl.getInstance("appCache:testApp",
+        DefDescriptor<ApplicationDef> appDesc = definitionService.getDefDescriptor("appCache:testApp",
                 ApplicationDef.class);
-        AuraContext context = Aura.getContextService().startContext(AuraContext.Mode.DEV, AuraContext.Format.MANIFEST,
+        AuraContext context = contextService.startContext(AuraContext.Mode.DEV, AuraContext.Format.MANIFEST,
                 AuraContext.Authentication.AUTHENTICATED, appDesc);
         context.setApplicationDescriptor(appDesc);
         String coolContext = "/cool";
@@ -485,8 +504,8 @@ public class AuraResourceServletTest extends AuraTestCase {
         context.addLoaded(appDesc, uid);
         DummyHttpServletRequest request = new DummyHttpServletRequest("app.manifest");
         DummyHttpServletResponse response = new MyDummyHttpServletResponse();
-        AuraResourceServlet servlet = new AuraResourceServlet();
-        doGet(servlet, request, response);
+        AuraResourceServlet servlet = getAuraResourceServlet();
+        servlet.doGet(request, response);
 
         String content = response.getContentType();
         Pattern pattern = Pattern.compile("/auraFW|/l/");
@@ -498,30 +517,30 @@ public class AuraResourceServletTest extends AuraTestCase {
                 fail("Context path was not prepended to Aura urls");
             }
         }
-
     }
 
     /**
      * Verify framework UID exists in auraFW javascript urls in appcache manifest
      */
+    @Test
     @UnAdaptableTest("W-2929438")
     public void testManifestFwJsUrlContainsFWId() throws Exception {
         // Arrange
-        if (Aura.getContextService().isEstablished()) {
-            Aura.getContextService().endContext();
+        if (contextService.isEstablished()) {
+            contextService.endContext();
         }
-        DefDescriptor<ApplicationDef> appDesc = DefDescriptorImpl.getInstance("appCache:testApp",
+        DefDescriptor<ApplicationDef> appDesc = definitionService.getDefDescriptor("appCache:testApp",
                 ApplicationDef.class);
-        AuraContext context = Aura.getContextService().startContext(AuraContext.Mode.DEV,
+        AuraContext context = contextService.startContext(AuraContext.Mode.DEV,
                 AuraContext.Format.MANIFEST, AuraContext.Authentication.AUTHENTICATED, appDesc);
         String uid = context.getDefRegistry().getUid(null, appDesc);
         context.addLoaded(appDesc, uid);
         DummyHttpServletRequest request = new DummyHttpServletRequest("app.manifest");
         DummyHttpServletResponse response = new MyDummyHttpServletResponse();
-        AuraResourceServlet servlet = new AuraResourceServlet();
+        AuraResourceServlet servlet = getAuraResourceServlet();
 
         // Act
-        doGet(servlet, request, response);
+        servlet.doGet(request, response);
 
         // Assert
         String content = response.getContentType();
@@ -540,8 +559,6 @@ public class AuraResourceServletTest extends AuraTestCase {
         }
     }
     
-    
-
     private static class MyDummyHttpServletResponse extends DummyHttpServletResponse {
         StringWriter stringWriter = new StringWriter();
         PrintWriter writer = new PrintWriter(stringWriter);

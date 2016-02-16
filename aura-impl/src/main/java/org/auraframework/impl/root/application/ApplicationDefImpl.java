@@ -15,12 +15,8 @@
  */
 package org.auraframework.impl.root.application;
 
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
 import org.auraframework.Aura;
+import org.auraframework.adapter.ExceptionAdapter;
 import org.auraframework.builder.ApplicationDefBuilder;
 import org.auraframework.def.ActionDef;
 import org.auraframework.def.ApplicationDef;
@@ -34,11 +30,17 @@ import org.auraframework.impl.root.component.BaseComponentDefImpl;
 import org.auraframework.impl.system.DefDescriptorImpl;
 import org.auraframework.impl.util.TextTokenizer;
 import org.auraframework.instance.Action;
+import org.auraframework.service.LoggingService;
 import org.auraframework.system.AuraContext;
 import org.auraframework.throwable.AuraRuntimeException;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.json.Json;
+
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 /**
  * The definition of an Application. Holds all information about a given type of application. ApplicationDefs are
@@ -46,8 +48,8 @@ import org.auraframework.util.json.Json;
  */
 public class ApplicationDefImpl extends BaseComponentDefImpl<ApplicationDef> implements ApplicationDef {
 
-    public static final DefDescriptor<ApplicationDef> PROTOTYPE_APPLICATION = DefDescriptorImpl.getInstance(
-            "markup://aura:application", ApplicationDef.class);
+    public static final DefDescriptor<ApplicationDef> PROTOTYPE_APPLICATION = new DefDescriptorImpl<>(
+            "markup", "aura", "application", ApplicationDef.class);
 
     protected ApplicationDefImpl(Builder builder) {
         super(builder);
@@ -130,7 +132,7 @@ public class ApplicationDefImpl extends BaseComponentDefImpl<ApplicationDef> imp
     }
 
     @Override
-    public List<String> getAdditionalAppCacheURLs() throws QuickFixException {
+    public List<String> getAdditionalAppCacheURLs(LoggingService loggingService, ExceptionAdapter exceptionAdapter) throws QuickFixException {
         List<String> urls = Collections.emptyList();
 
         if (additionalAppCacheURLs != null) {
@@ -151,7 +153,7 @@ public class ApplicationDefImpl extends BaseComponentDefImpl<ApplicationDef> imp
             AuraContext context = Aura.getContextService().getCurrentContext();
             Action previous = context.setCurrentAction(action);
             try {
-                action.run();
+                action.run(loggingService, exceptionAdapter);
             } finally {
                 context.setCurrentAction(previous);
             }

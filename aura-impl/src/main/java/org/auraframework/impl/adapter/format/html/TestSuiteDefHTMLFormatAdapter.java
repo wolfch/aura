@@ -15,27 +15,39 @@
  */
 package org.auraframework.impl.adapter.format.html;
 
-import java.io.IOException;
-import java.util.Map;
-
-import javax.annotation.concurrent.ThreadSafe;
-
+import com.google.common.collect.Maps;
 import org.auraframework.Aura;
+import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.TestSuiteDef;
-import org.auraframework.ds.serviceloader.AuraServiceProvider;
 import org.auraframework.instance.Component;
+import org.auraframework.service.ContextService;
+import org.auraframework.service.InstanceService;
+import org.auraframework.service.RenderingService;
+import org.auraframework.service.SerializationService;
 import org.auraframework.system.AuraContext;
 import org.auraframework.throwable.AuraError;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
-import com.google.common.collect.Maps;
+import javax.annotation.concurrent.ThreadSafe;
+import javax.inject.Inject;
+import java.io.IOException;
+import java.util.Map;
 
-/**
- */
 @ThreadSafe
-@aQute.bnd.annotation.component.Component (provide=AuraServiceProvider.class)
+@ServiceComponent
 public class TestSuiteDefHTMLFormatAdapter extends HTMLFormatAdapter<TestSuiteDef> {
+    @Inject
+    private ContextService contextService;
+
+    @Inject
+    private InstanceService instanceService;
+
+    @Inject
+    private RenderingService renderingService;
+
+    @Inject
+    private SerializationService serializationService;
 
     @Override
     public Class<TestSuiteDef> getType() {
@@ -45,7 +57,7 @@ public class TestSuiteDefHTMLFormatAdapter extends HTMLFormatAdapter<TestSuiteDe
     @Override
     public void write(TestSuiteDef value, Map<String, Object> attributes, Appendable out) throws IOException,
             QuickFixException {
-        AuraContext context = Aura.getContextService().getCurrentContext();
+        AuraContext context = contextService.getCurrentContext();
         Map<String, Object> attribs = Maps.newHashMap();
         attribs.put("autoInitialize", "false");
         attribs.put("bodyClass", " ");
@@ -59,12 +71,12 @@ public class TestSuiteDefHTMLFormatAdapter extends HTMLFormatAdapter<TestSuiteDe
         attribs.put("auraScriptTags", sb.toString());
 
         sb = new StringBuilder();
-        Aura.getSerializationService().write(value, attributes, getType(), sb, "JSON");
+        serializationService.write(value, attributes, getType(), sb, "JSON");
         attribs.put("auraInitBlock", String.format("<script>aura.test.init(%s);</script>", sb.toString()));
 
         try {
-            Component c = Aura.getInstanceService().getInstance("aura:template", ComponentDef.class, attribs);
-            Aura.getRenderingService().render(c, out);
+            Component c = instanceService.getInstance("aura:template", ComponentDef.class, attribs);
+            renderingService.render(c, out);
         } catch (QuickFixException e) {
             throw new AuraError(e);
         }

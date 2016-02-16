@@ -20,7 +20,7 @@
         "s":3,
         "v":{
           "name":"testString",
-          "type":"aura://String",
+          "type": "java://testString",
           "xs":"P",
           "required":true
         }
@@ -29,7 +29,7 @@
         "s":4,
         "v":{
           "name":"testInt",
-          "type":"aura://Integer",
+          "type": "java://testInt",
           "xs":"P",
           "required":true
         }

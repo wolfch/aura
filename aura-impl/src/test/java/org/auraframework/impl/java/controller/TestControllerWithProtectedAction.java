@@ -15,22 +15,23 @@
  */
 package org.auraframework.impl.java.controller;
 
+import org.auraframework.annotations.Annotations.ServiceComponent;
+import org.auraframework.ds.servicecomponent.Controller;
 import org.auraframework.system.Annotations.AuraEnabled;
-import org.auraframework.system.Annotations.Controller;
 import org.auraframework.system.Annotations.Key;
 
-@Controller
-public class TestControllerWithProtectedAction {
+@ServiceComponent
+public class TestControllerWithProtectedAction implements Controller {
     @AuraEnabled
-    protected static String appendStrings(@Key("a") String a, @Key("b") String b) {
+    protected String appendStrings(@Key("a") String a, @Key("b") String b) {
         return a + b;
     }
 
     @AuraEnabled
-    static void doSomething() {
+    void doSomething() {
     }
 
     @AuraEnabled
-    public static void doNothing() {
+    public void doNothing() {
     }
 }

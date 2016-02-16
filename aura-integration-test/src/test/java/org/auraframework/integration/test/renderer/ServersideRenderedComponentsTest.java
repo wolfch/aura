@@ -15,17 +15,19 @@
  */
 package org.auraframework.integration.test.renderer;
 
-import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.auraframework.Aura;
 import org.auraframework.def.BaseComponentDef;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.impl.AuraImplTestCase;
 import org.auraframework.instance.BaseComponent;
+import org.auraframework.service.RenderingService;
 import org.junit.Ignore;
+import org.junit.Test;
+
+import javax.inject.Inject;
+import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class has unit tests to verify rendering of components server side.
@@ -42,9 +44,8 @@ import org.junit.Ignore;
  * </ul>
  */
 public class ServersideRenderedComponentsTest extends AuraImplTestCase {
-    public ServersideRenderedComponentsTest(String name) {
-        super(name);
-    }
+    @Inject
+    RenderingService renderingService;
 
     private final String ATTR_COMPONENT_ARRAY = "<aura:attribute name='componentArray' type='Aura.Component[]'><div>am a div</div>just text<span>am a span</span></aura:attribute>";
     //private final String ATTR_STRING_ARRAY = "<aura:attribute name='stringArray' type='String[]' default='first,second,third'/>";
@@ -54,10 +55,10 @@ public class ServersideRenderedComponentsTest extends AuraImplTestCase {
             Map<String, Object> attributes) throws Exception {
         DefDescriptor<? extends BaseComponentDef> testCmpDef = addSourceAutoCleanup(defType, markup);
         assertTrue(testCmpDef.getDef().isLocallyRenderable());
-        BaseComponent<?, ?> instance = (BaseComponent<?, ?>) Aura.getInstanceService().getInstance(testCmpDef,
+        BaseComponent<?, ?> instance = (BaseComponent<?, ?>) instanceService.getInstance(testCmpDef,
                 attributes);
         StringWriter sw = new StringWriter();
-        Aura.getRenderingService().render(instance, sw);
+        renderingService.render(instance, sw);
         return sw.toString().trim();
     }
 
@@ -67,22 +68,26 @@ public class ServersideRenderedComponentsTest extends AuraImplTestCase {
         assertEquals(expected, render);
     }
 
+    @Test
     public void testComponentArray() throws Exception {
         assertRenderedHTML(String.format(baseComponentTag, "", ATTR_COMPONENT_ARRAY + "{!v.componentArray}"),
                 ComponentDef.class, null, "<div>am a div</div>just text<span>am a span</span>");
     }
 
+    @Test
     public void testArrayLength() throws Exception {
         assertRenderedHTML(String.format(baseComponentTag, "", ATTR_COMPONENT_ARRAY + "{!v.componentArray.length}"),
                 ComponentDef.class, null, "3");
     }
 
     @Ignore("W-1428200")
+    @Test
     public void testComponentArrayIndex() throws Exception {
         assertRenderedHTML(String.format(baseComponentTag, "", ATTR_COMPONENT_ARRAY + "{!v.componentArray[2]}"),
                 ComponentDef.class, null, "<span>am a span</span>");
     }
 /*
+    @Test
     public void testForEachStringArray() throws Exception {
         assertRenderedHTML(
                 String.format(baseComponentTag, "", ATTR_STRING_ARRAY
@@ -90,6 +95,7 @@ public class ServersideRenderedComponentsTest extends AuraImplTestCase {
                 null, "[first][second][third]");
     }
 
+    @Test
     public void testForEachStringList() throws Exception {
         assertRenderedHTML(String.format(baseComponentTag,
                 "model='java://org.auraframework.components.test.java.model.TestJavaModel'",
@@ -97,6 +103,7 @@ public class ServersideRenderedComponentsTest extends AuraImplTestCase {
                 null, "[one][two][three]");
     }
 
+    @Test
     public void testForEachUnsetArray() throws Exception {
         assertRenderedHTML(
                 String.format(baseComponentTag, "", ATTR_STRING_ARRAY_WITHOUTDEFAULT
@@ -104,6 +111,7 @@ public class ServersideRenderedComponentsTest extends AuraImplTestCase {
                 null, "");
     }
 */
+@Test
     public void testUnsetArrayLength() throws Exception {
         assertRenderedHTML(
                 String.format(baseComponentTag, "", ATTR_STRING_ARRAY_WITHOUTDEFAULT + "{!v.isNotSet.length}"),
@@ -111,24 +119,28 @@ public class ServersideRenderedComponentsTest extends AuraImplTestCase {
 
     }
 /*
+    @Test
     public void testForEachEmptyList() throws Exception {
         assertRenderedHTML(String.format(baseComponentTag,
                 "model='java://org.auraframework.components.test.java.model.TestJavaModel'",
                 "<aura:iteration items='{!m.emptyList}' var='x'>[{!x}]</aura:iteration>"), ComponentDef.class, null, "");
     }
 */
+@Test
     public void testEmptyListLength() throws Exception {
         assertRenderedHTML(String.format(baseComponentTag,
                 "model='java://org.auraframework.components.test.java.model.TestJavaModel'", "{!m.emptyList.length}"),
                 ComponentDef.class, null, "0");
     }
 
+    @Test
     public void testMultidimListLength() throws Exception {
         assertRenderedHTML(String.format(baseComponentTag,
                 "model='java://org.auraframework.components.test.java.model.TestJavaModel'", "{!m.listOfList.length}"),
                 ComponentDef.class, null, "3");
     }
 /*
+    @Test
     public void testForEachMultidimList() throws Exception {
         assertRenderedHTML(
                 String.format(
@@ -138,6 +150,7 @@ public class ServersideRenderedComponentsTest extends AuraImplTestCase {
                 ComponentDef.class, null, "3:[one][two][three]3:[un][do][tres]3:[ek][do][theen]");
     }
 
+    @Test
     public void testForEachMultidimListIndex() throws Exception {
         assertRenderedHTML(String.format(baseComponentTag,
                 "model='java://org.auraframework.components.test.java.model.TestJavaModel'",

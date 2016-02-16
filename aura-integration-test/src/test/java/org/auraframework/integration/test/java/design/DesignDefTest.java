@@ -15,7 +15,6 @@
  */
 package org.auraframework.integration.test.java.design;
 
-import org.auraframework.Aura;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.InterfaceDef;
@@ -29,42 +28,42 @@ import org.auraframework.def.design.DesignTemplateDef;
 import org.auraframework.def.design.DesignTemplateRegionDef;
 import org.auraframework.impl.AuraImplTestCase;
 import org.auraframework.throwable.quickfix.DefinitionNotFoundException;
+import org.junit.Test;
 
 import java.util.Iterator;
 import java.util.Map;
 
 public class DesignDefTest extends AuraImplTestCase {
-
-    public DesignDefTest(String name) {
-        super(name);
-    }
-
+    @Test
     public void testLoadFakeDesignDefinition() throws Exception {
-        DesignDef c = Aura.getDefinitionService().getDefinition("test:fakeComponent", DesignDef.class);
+        DesignDef c = definitionService.getDefinition("test:fakeComponent", DesignDef.class);
         assertNotNull("DesignDef not found!", c);
         assertTrue("DesignDef not found!", c.getDescriptor().exists());
     }
 
+    @Test
     public void testVerifyDesignDefLabel() throws Exception {
-        DesignDef c = Aura.getDefinitionService().getDefinition("test:fakeDesign", DesignDef.class);
+        DesignDef c = definitionService.getDefinition("test:fakeDesign", DesignDef.class);
         assertNotNull("DesignDef not found!", c);
         assertTrue("DesignDef not found!", c.getDescriptor().exists());
         assertEquals("DesignDef label is incorrect.", "some label", c.getLabel());
     }
 
+    @Test
     public void testVerifyDesignDefDoesNotExist() throws Exception {
         try {
-            Aura.getDefinitionService().getDefinition("test:thisDesignDoesNotExist", DesignDef.class);
+            definitionService.getDefinition("test:thisDesignDoesNotExist", DesignDef.class);
             fail("DesignDef for 'test:thisDesignDoesNotExist' should not exist.");
         } catch (DefinitionNotFoundException e) {
-            DefDescriptor<DesignDef> desc = Aura.getDefinitionService().getDefDescriptor("test:thisDesignDoesNotExist",
+            DefDescriptor<DesignDef> desc = definitionService.getDefDescriptor("test:thisDesignDoesNotExist",
                     DesignDef.class);
             assertFalse("DesignDef for 'test:thisDesignDoesNotExist' should not exist.", desc.exists());
         }
     }
 
+    @Test
     public void testLoadFakeDesignWithAttributes() throws Exception {
-        DesignDef c = Aura.getDefinitionService().getDefinition("test:fakeDesign", DesignDef.class);
+        DesignDef c = definitionService.getDefinition("test:fakeDesign", DesignDef.class);
         assertNotNull("DesignDef not found!", c);
         assertTrue("DesignDef not found!", c.getDescriptor().exists());
         Map<DefDescriptor<DesignAttributeDef>, DesignAttributeDef> attrs = c.getAttributeDesignDefs();
@@ -73,8 +72,9 @@ public class DesignDefTest extends AuraImplTestCase {
         assertNotNull("AttributeDesignDef something not found!", attr);
     }
 
+    @Test
     public void testAttributeDesignProperties() throws Exception {
-        DesignDef c = Aura.getDefinitionService().getDefinition("test:fakeDesign", DesignDef.class);
+        DesignDef c = definitionService.getDefinition("test:fakeDesign", DesignDef.class);
         assertNotNull("DesignDef not found!", c);
         assertTrue("DesignDef not found!", c.getDescriptor().exists());
         Map<DefDescriptor<DesignAttributeDef>, DesignAttributeDef> attrs = c.getAttributeDesignDefs();
@@ -97,8 +97,9 @@ public class DesignDefTest extends AuraImplTestCase {
         assertFalse("AttributeDesignDef 'entities' readonly is incorrect.", attr2.isReadOnly());
     }
 
+    @Test
     public void testAttributeDesignDataSource() throws Exception {
-        DesignDef c = Aura.getDefinitionService().getDefinition("test:fakeDesign", DesignDef.class);
+        DesignDef c = definitionService.getDefinition("test:fakeDesign", DesignDef.class);
         assertNotNull("DesignDef not found!", c);
         assertTrue("DesignDef not found!", c.getDescriptor().exists());
         Map<DefDescriptor<DesignAttributeDef>, DesignAttributeDef> attrs = c.getAttributeDesignDefs();
@@ -109,8 +110,9 @@ public class DesignDefTest extends AuraImplTestCase {
                 attr.getDataSource());
     }
 
+    @Test
     public void testDesignTemplateWithRegions() throws Exception {
-        ComponentDef cmp = Aura.getDefinitionService().getDefinition("test:fakeDesign", ComponentDef.class);
+        ComponentDef cmp = definitionService.getDefinition("test:fakeDesign", ComponentDef.class);
         DesignDef c = cmp.getDesignDefDescriptor().getDef();
         assertNotNull("DesignDef not found!", c);
         DesignTemplateDef template = c.getDesignTemplateDef();
@@ -143,8 +145,9 @@ public class DesignDefTest extends AuraImplTestCase {
      * functionality of the design system.
      * @throws Exception
      */
+    @Test
     public void testDesignLayoutWithMultipleSectionsAndItems() throws Exception {
-        ComponentDef cmp = Aura.getDefinitionService().getDefinition("test:fakeDesign", ComponentDef.class);
+        ComponentDef cmp = definitionService.getDefinition("test:fakeDesign", ComponentDef.class);
         DesignDef c = cmp.getDesignDefDescriptor().getDef();
         //Get default layout (empty string is default)
         DesignLayoutDef layout = c.getDefaultDesignLayoutDef();
@@ -174,22 +177,24 @@ public class DesignDefTest extends AuraImplTestCase {
         assertEquals("Name of the first layout attribute is incorrect", "something", firstLayoutItem.getAttribute().getName());
         DesignLayoutItemDef secondLayoutItem = layoutItems.next();
         assertFalse("Second item should be a component, got attribute instead", secondLayoutItem.isAttribute());
-        DefDescriptor<ComponentDef> cmpDef = Aura.getDefinitionService().getDefDescriptor("ui:button", ComponentDef.class);
+        DefDescriptor<ComponentDef> cmpDef = definitionService.getDefDescriptor("ui:button", ComponentDef.class);
         assertEquals("Second layout components name incorrect", cmpDef, secondLayoutItem.getComponent().getComponentDef());
 
     }
 
+    @Test
     public void testDesignOption() throws Exception {
-        ComponentDef cmp = Aura.getDefinitionService().getDefinition("test:fakeDesign", ComponentDef.class);
+        ComponentDef cmp = definitionService.getDefinition("test:fakeDesign", ComponentDef.class);
         DesignDef c = cmp.getDesignDefDescriptor().getDef();
 
         assertNotNull("Expected to receive a value with option", c.getOption("filter").get(0).getValue());
         assertNull("Expected option to return null value", c.getOption("desktopEnabled").get(0).getValue());
     }
 
+    @Test
     public void testDesignTemplateWithNonExistentInterface() throws Exception {
         try {
-            Aura.getDefinitionService().getDefinition("test:fakeDesignNonExistentInterface", ComponentDef.class);
+            definitionService.getDefinition("test:fakeDesignNonExistentInterface", ComponentDef.class);
             fail("InterfaceDef should not exist and throw validation error");
         } catch (Exception t) {
             assertExceptionMessageStartsWith(t, DefinitionNotFoundException.class,

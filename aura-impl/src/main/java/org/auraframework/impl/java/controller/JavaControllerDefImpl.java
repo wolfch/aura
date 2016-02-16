@@ -15,10 +15,6 @@
  */
 package org.auraframework.impl.java.controller;
 
-import java.io.IOException;
-import java.util.Map;
-import java.util.Set;
-
 import org.auraframework.def.ActionDef;
 import org.auraframework.def.ControllerDef;
 import org.auraframework.def.DefDescriptor;
@@ -31,9 +27,12 @@ import org.auraframework.impl.system.SubDefDescriptorImpl;
 import org.auraframework.impl.util.AuraUtil;
 import org.auraframework.instance.Action;
 import org.auraframework.system.SubDefDescriptor;
-import org.auraframework.throwable.AuraRuntimeException;
 import org.auraframework.throwable.quickfix.DefinitionNotFoundException;
 import org.auraframework.util.json.Json;
+
+import java.io.IOException;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * The default implementation for a java controller def.
@@ -42,11 +41,15 @@ public class JavaControllerDefImpl extends DefinitionImpl<ControllerDef> impleme
     private static final long serialVersionUID = -8294844909051767366L;
     private final Class<?> controllerClass;
     private final Map<String, JavaActionDef> actionMap;
+    private final Object controllerInstance;
 
     protected JavaControllerDefImpl(Builder builder) {
         super(builder);
         this.controllerClass = builder.controllerClass;
         this.actionMap = AuraUtil.immutableMap(builder.actionMap);
+        this.controllerInstance = builder.controllerInstance;
+        assert this.controllerInstance != null : String.format("Controller instance of %s cannot be null",
+                this.controllerClass.toString());
     }
 
     /**
@@ -99,14 +102,8 @@ public class JavaControllerDefImpl extends DefinitionImpl<ControllerDef> impleme
             DefDescriptor<ActionDef> desc = SubDefDescriptorImpl.getInstance(actionName, getDescriptor(), ActionDef.class);
             throw new DefinitionNotFoundException(desc);
         }
-        Object controller = null;
-        try {
-            controller = this.getJavaType().newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            // ignore since it's okay to pass in a null controller instance
-        }
 
-        return new JavaAction(getDescriptor(), actionDef, controller, paramValues);
+        return new JavaAction(getDescriptor(), actionDef, this.controllerInstance, paramValues);
     }
 
     @Override
@@ -122,6 +119,7 @@ public class JavaControllerDefImpl extends DefinitionImpl<ControllerDef> impleme
 
         private Class<?> controllerClass;
         private Map<String, JavaActionDef> actionMap;
+        private Object controllerInstance;
 
         @Override
         public JavaControllerDefImpl build() {
@@ -140,6 +138,10 @@ public class JavaControllerDefImpl extends DefinitionImpl<ControllerDef> impleme
          */
         public void setActionMap(Map<String, JavaActionDef> actionMap) {
             this.actionMap = actionMap;
+        }
+
+        public void setControllerInstance(Object controllerInstance) {
+            this.controllerInstance = controllerInstance;
         }
     }
 

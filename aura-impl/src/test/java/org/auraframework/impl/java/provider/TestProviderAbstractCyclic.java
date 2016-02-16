@@ -17,20 +17,22 @@
  */
 package org.auraframework.impl.java.provider;
 
+import org.auraframework.Aura;
+import org.auraframework.annotations.Annotations.ServiceComponentProvider;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.ComponentDescriptorProvider;
 import org.auraframework.def.DefDescriptor;
-import org.auraframework.impl.system.DefDescriptorImpl;
 import org.auraframework.system.Annotations.Provider;
 
 /**
  * Returns the same descriptor that called this provider to cause a cyclic
  * dependency
  */
+@ServiceComponentProvider
 @Provider
 public class TestProviderAbstractCyclic implements ComponentDescriptorProvider {
     @Override
     public DefDescriptor<ComponentDef> provide() {
-        return DefDescriptorImpl.getInstance("test:test_Provider_AbstractCyclic", ComponentDef.class);
+        return Aura.getDefinitionService().getDefDescriptor("test:test_Provider_AbstractCyclic", ComponentDef.class);
     }
 }

@@ -16,15 +16,13 @@
 package org.auraframework.impl.source.resource;
 
 import org.auraframework.impl.AuraImplTestCase;
+import org.junit.Test;
 
 public class ResourceSourceLoaderTest extends AuraImplTestCase {
-    public ResourceSourceLoaderTest(String name){
-        super(name);
-    }
-    
     /**
      * All namespaces loaded by ResourceSourceLoader are privileged, verify that ResourceSourceLoader says so.
      */
+    @Test
     public void testIsPrivilegedNamespace(){
         ResourceSourceLoader rs = new ResourceSourceLoader(null);
         assertTrue("All namespaces loaded by ResourceSourceLoader are to be privileged",

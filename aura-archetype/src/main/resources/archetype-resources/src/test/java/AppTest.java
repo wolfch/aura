@@ -24,6 +24,7 @@ public class AppTest extends TestCase {
         super(name);
     }
 
+    @Test
     public void testApp() throws Exception {
         DefaultHttpClient http = new DefaultHttpClient();
         HttpGet get = new HttpGet("http://localhost:8080/${artifactId}/${artifactId}.app");

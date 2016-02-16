@@ -16,6 +16,7 @@
 package org.auraframework.docs;
 
 import org.auraframework.Aura;
+import org.auraframework.annotations.Annotations.ServiceComponentProvider;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.ComponentDescriptorProvider;
 import org.auraframework.def.DefDescriptor;
@@ -27,6 +28,8 @@ import org.auraframework.throwable.quickfix.QuickFixException;
 /**
  *  Provide component def for the example component to render its output
  */
+
+@ServiceComponentProvider
 @Provider
 public class ExampleComponentProvider implements ComponentDescriptorProvider {
 

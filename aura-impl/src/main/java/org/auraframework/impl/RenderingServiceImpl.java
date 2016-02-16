@@ -15,31 +15,39 @@
  */
 package org.auraframework.impl;
 
-import java.io.IOException;
-
-import org.auraframework.Aura;
+import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.def.BaseComponentDef;
 import org.auraframework.def.RendererDef;
-import org.auraframework.ds.serviceloader.AuraServiceProvider;
 import org.auraframework.instance.BaseComponent;
+import org.auraframework.instance.RendererInstance;
+import org.auraframework.service.ContextService;
+import org.auraframework.service.InstanceService;
 import org.auraframework.service.RenderingService;
 import org.auraframework.throwable.AuraRuntimeException;
 import org.auraframework.throwable.quickfix.QuickFixException;
+import org.springframework.context.annotation.Primary;
 
-import aQute.bnd.annotation.component.Component;
+import javax.inject.Inject;
+import java.io.IOException;
 
 /**
  */
-@Component (provide=AuraServiceProvider.class)
+@ServiceComponent
+@Primary
 public class RenderingServiceImpl implements RenderingService {
+    @Inject
+    ContextService contextService;
 
+    @Inject
+    InstanceService instanceService;
+    
     /**
      */
     private static final long serialVersionUID = 1663840391180454913L;
 
     @Override
     public void render(BaseComponent<?, ?> component, Appendable out) throws QuickFixException, IOException {
-        Aura.getContextService().assertEstablished();
+        contextService.assertEstablished();
 
         BaseComponent<?, ?> renderable = null;
         BaseComponent<?, ?> tmpRenderable = component;
@@ -63,7 +71,9 @@ public class RenderingServiceImpl implements RenderingService {
             throw new AuraRuntimeException(String.format("No local RendererDef found for %s", component));
         }
 
-        rendererDef.render(renderable, out);
+        RendererInstance renderer = (RendererInstance) instanceService.getInstance(rendererDef);
+
+        renderer.render(renderable, out);
     }
 
 }

@@ -16,24 +16,28 @@
 
 package org.auraframework.http.resource;
 
-import java.io.IOException;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.auraframework.Aura;
+import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.SVGDef;
 import org.auraframework.http.AuraServlet;
 import org.auraframework.http.RequestParam.StringParam;
+import org.auraframework.service.DefinitionService;
 import org.auraframework.service.ServerService;
 import org.auraframework.system.AuraContext;
 import org.auraframework.system.AuraContext.Format;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+@ServiceComponent
 public class ResourceSvg extends AuraResourceImpl {
     private static final StringParam lookup = new StringParam(AuraServlet.AURA_PREFIX + "lookup", 0, false);
-    private ServerService serverService = Aura.getServerService();
+
+    private DefinitionService definitionService;
+    private ServerService serverService;
 
     public ResourceSvg() {
         super("resources.svg", Format.SVG, false);
@@ -75,11 +79,14 @@ public class ResourceSvg extends AuraResourceImpl {
         }
     }
 
-    /**
-     * @param serverService the serverService to set
-     */
+    @Inject
     public void setServerService(ServerService serverService) {
         this.serverService = serverService;
+    }
+
+    @Inject
+    public void setDefinitionService(DefinitionService definitionService) {
+        this.definitionService = definitionService;
     }
 }
 

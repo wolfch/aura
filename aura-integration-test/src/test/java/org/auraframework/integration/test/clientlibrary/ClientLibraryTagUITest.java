@@ -18,17 +18,12 @@ package org.auraframework.integration.test.clientlibrary;
 import org.auraframework.system.AuraContext.Mode;
 import org.auraframework.test.util.WebDriverTestCase;
 import org.auraframework.test.util.WebDriverTestCase.CheckAccessibility;
+import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
-import com.ibm.icu.util.Calendar;
-
 @CheckAccessibility(false)
 public class ClientLibraryTagUITest extends WebDriverTestCase {
-    public ClientLibraryTagUITest(String name) {
-        super(name);
-    }
-
     /**
      * Verify that Javascript and Style resources marked as combinable are available at the client.
      * clientLibraryTest:clientLibraryTest Moment, Walltime, js://clientLibraryTest.clientLibraryTest are marked as
@@ -36,6 +31,7 @@ public class ClientLibraryTagUITest extends WebDriverTestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testCombinableResources() throws Exception {
         open("/clientLibraryTest/clientLibraryTest.app");
         waitForAuraFrameworkReady();
@@ -58,6 +54,7 @@ public class ClientLibraryTagUITest extends WebDriverTestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testNonCombinableResources() throws Exception {
         open("/clientLibraryTest/clientLibraryTest.app");
         waitForAuraFrameworkReady();
@@ -68,6 +65,7 @@ public class ClientLibraryTagUITest extends WebDriverTestCase {
     /**
      * Verify that resource change depending on Mode. Mixture of combinable and uncombinable resources
      */
+    @Test
     public void testModeDependentResources() throws Exception {
         open("/clientLibraryTest/clientLibraryTest.app", Mode.PTEST);
 

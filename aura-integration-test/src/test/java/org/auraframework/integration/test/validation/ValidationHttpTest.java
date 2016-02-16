@@ -15,23 +15,27 @@
  */
 package org.auraframework.integration.test.validation;
 
+import com.google.common.collect.Maps;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.auraframework.adapter.ExceptionAdapter;
+import org.auraframework.service.LoggingService;
+import org.auraframework.test.util.AuraHttpTestCase;
+import org.auraframework.util.json.Json;
+import org.junit.Test;
+
+import javax.inject.Inject;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.http.client.methods.HttpRequestBase;
-import org.auraframework.test.util.AuraHttpTestCase;
-
-import com.google.common.collect.Maps;
-
-import org.auraframework.util.json.Json;
-
 public final class ValidationHttpTest extends AuraHttpTestCase {
 
-    private HttpRequestBase method;
+    @Inject
+    private LoggingService loggingService;
 
-    public ValidationHttpTest(String name) {
-        super(name);
-    }
+    @Inject
+    private ExceptionAdapter exceptionAdapter;
+
+    private HttpRequestBase method;
 
     @Override
     public void tearDown() throws Exception {
@@ -46,6 +50,7 @@ public final class ValidationHttpTest extends AuraHttpTestCase {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testLintApp() throws Exception {
         Map<String, Object> attributes = Maps.newHashMap();
         attributes.put("name", "lintTest:basic");
@@ -53,7 +58,7 @@ public final class ValidationHttpTest extends AuraHttpTestCase {
         actionParams.put("name", "markup://auradev:lintc");
         actionParams.put("attributes", attributes);
         ServerAction action = new ServerAction("aura://ComponentController/ACTION$getComponent", actionParams);
-        action.run();
+        action.run(loggingService, exceptionAdapter);
         Map<String,Object> returnValue = (Map<String,Object>)action.getReturnValue();
         Map<String,Object> value = (Map<String,Object>)returnValue.get(Json.ApplicationKey.VALUE.toString());
         Map<String,Object> model = (Map<String,Object>)value.get("model");

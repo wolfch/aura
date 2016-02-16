@@ -15,10 +15,8 @@
  */
 package org.auraframework.impl.renderer.sampleJavaRenderers;
 
-import java.io.IOException;
-import java.util.Map;
-
 import org.auraframework.Aura;
+import org.auraframework.annotations.Annotations.ServiceComponentRenderer;
 import org.auraframework.def.Renderer;
 import org.auraframework.integration.Integration;
 import org.auraframework.service.ContextService;
@@ -27,6 +25,10 @@ import org.auraframework.system.AuraContext.Mode;
 import org.auraframework.throwable.AuraRuntimeException;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
+import java.io.IOException;
+import java.util.Map;
+
+@ServiceComponentRenderer
 public abstract class AbstractRendererForTestingIntegrationService implements Renderer {
 
     protected void injectComponent(String tag, Map<String, Object> attributes, String localId, String locatorDomId,

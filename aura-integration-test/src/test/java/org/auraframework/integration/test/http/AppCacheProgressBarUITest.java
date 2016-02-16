@@ -20,6 +20,7 @@ import org.auraframework.test.util.WebDriverTestCase;
 import org.auraframework.test.util.WebDriverTestCase.TargetBrowsers;
 import org.auraframework.test.util.WebDriverUtil.BrowserType;
 import org.auraframework.util.test.annotation.FreshBrowserInstance;
+import org.junit.Test;
 import org.openqa.selenium.By;
 
 /**
@@ -41,13 +42,10 @@ public class AppCacheProgressBarUITest extends WebDriverTestCase {
 
     private final By appCacheProgressDiv = By.cssSelector("div[id='auraAppcacheProgress']");
 
-    public AppCacheProgressBarUITest(String name) {
-        super(name);
-    }
-
     /**
      * Verify that progress bar shows true progress by simulating the progress event.
      */
+    @Test
     public void testProgressBarBySimulatingProgressEvents() throws Exception {
         open("/appCache/testApp.app", Mode.DEV);
         waitForElementAbsent("Progress bar for appCache is visible even after aura is ready.",
@@ -74,6 +72,7 @@ public class AppCacheProgressBarUITest extends WebDriverTestCase {
     /**
      * Verify that when a noupdate event is fired for appcache, the progress bar doesn't show up.
      */
+    @Test
     public void testNoUpdateBySimulatingEvents() throws Exception {
         open("/appCache/testApp.app", Mode.DEV);
 
@@ -91,6 +90,7 @@ public class AppCacheProgressBarUITest extends WebDriverTestCase {
      * Verify that the progress bar doesn't show up in PROD mode.
      */
     @FreshBrowserInstance
+    @Test
     public void testProgressbarNotVisibleInPRODMode() throws Exception {
         open("/appCache/testApp.app", Mode.PROD);
 

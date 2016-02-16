@@ -15,29 +15,33 @@
  */
 package org.auraframework.integration.test.coql;
 
-import org.auraframework.controller.java.ServletConfigController;
 import org.auraframework.system.AuraContext.Mode;
+import org.auraframework.test.adapter.MockConfigAdapter;
 import org.auraframework.test.util.WebDriverTestCase;
 import org.auraframework.util.test.annotation.ThreadHostileTest;
 import org.auraframework.util.test.annotation.UnAdaptableTest;
+import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
+
+import javax.inject.Inject;
 
 /**
  * Automation for COQL (Component Query Language). COQL is available in all modes except PRODUCTION
  */
 public class ComponentQueryLanguageUITest extends WebDriverTestCase {
-    public ComponentQueryLanguageUITest(String name) {
-        super(name);
-    }
+
+    @Inject
+    MockConfigAdapter mockConfigAdapter;
 
     /**
      * Verify that query language is not available in PROD mode.
      */
     @ThreadHostileTest("PRODUCTION")
+    @Test
     public void testQueryLanguageNotAvailableInprodMode() throws Exception {
-        ServletConfigController.setProductionConfig(true);
+        mockConfigAdapter.setIsProduction(true);
         open("/test/laxSecurity.app", Mode.PROD);
         Object query = auraUITestingUtil.getEval("return window.$A.getQueryStatement");
         assertNull("Query language should not be available in PROD mode.", query);
@@ -47,6 +51,7 @@ public class ComponentQueryLanguageUITest extends WebDriverTestCase {
      * Verify that query language is available in non prod mode. For the rest of the test cases, look at
      * js://cmpQueryLanguage.query
      */
+    @Test
     public void testQueryLanguageAvailableInNonprodMode() throws Exception {
         open("/test/laxSecurity.app");
         Boolean query = auraUITestingUtil.getBooleanEval("return $A.hasOwnProperty('getQueryStatement');");
@@ -60,6 +65,7 @@ public class ComponentQueryLanguageUITest extends WebDriverTestCase {
      * only available in STATS mode.
      */
     @UnAdaptableTest("SFDC iOS autobuilds seem to be having issues. Passes locally and when run on iOS SauceLabs.")
+    @Test
     public void testRerenderingsQuery() throws Exception {
         final String rowQuery = "return $A.getQueryStatement().from('rerenderings').query().rowCount;";
         open("/attributesTest/simpleValue.cmp", Mode.STATS);

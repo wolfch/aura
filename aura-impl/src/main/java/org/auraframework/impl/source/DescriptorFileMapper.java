@@ -15,18 +15,21 @@
  */
 package org.auraframework.impl.source;
 
-import java.util.*;
-
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import org.auraframework.Aura;
-import org.auraframework.def.*;
+import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.DefDescriptor.DefType;
+import org.auraframework.def.Definition;
+import org.auraframework.impl.system.DefDescriptorImpl;
 import org.auraframework.system.Parser.Format;
 import org.auraframework.system.SourceLoader;
 import org.auraframework.throwable.AuraRuntimeException;
 import org.auraframework.util.AuraTextUtil;
 
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Abstract superclass to {@link SourceLoader} implementations, providing common descriptor and filename utilities.
@@ -152,18 +155,15 @@ public class DescriptorFileMapper {
         String last = names.get(names.size() - 1);
         String name = names.get(names.size() - 2);
         String ns = names.get(names.size() - 3);
-        //
+
         // First try the bundled type.
-        //
         ExtensionInfo ei;
         if (last.startsWith(name)) {
             String ext;
             ext = last.substring(name.length());
             ei = byExtension.get(ext.toLowerCase());
             if (ei != null) {
-                String format = DefDescriptor.MARKUP_PREFIX.equals(ei.prefix) ? "%s://%s:%s" : "%s://%s.%s";
-                return Aura.getDefinitionService().getDefDescriptor(
-                        String.format(format, ei.prefix, ns, name), ei.defType.getPrimaryInterface());
+                return new DefDescriptorImpl<>(ei.prefix, ns, name, ei.defType.getPrimaryInterface());
             }
         }
 
@@ -174,12 +174,9 @@ public class DescriptorFileMapper {
             ei = bundledExtras.get("." + ext.get(1));
 
             if (ei != null && ei.bundleDefType != null) {
-                DefDescriptor<? extends Definition> bundle = Aura.getDefinitionService().getDefDescriptor(
-                        String.format("%s://%s:%s", DefDescriptor.MARKUP_PREFIX, ns, name), ei.bundleDefType.getPrimaryInterface());
-
-                String format = DefDescriptor.MARKUP_PREFIX.equals(ei.prefix) ? "%s://%s:%s" : "%s://%s.%s";
-                return Aura.getDefinitionService().getDefDescriptor(
-                        String.format(format, ei.prefix, ns, ext.get(0)), ei.defType.getPrimaryInterface(), bundle);
+                DefDescriptor<? extends Definition> bundle = new DefDescriptorImpl<>(
+                        DefDescriptor.MARKUP_PREFIX, ns, name, ei.bundleDefType.getPrimaryInterface());
+                return new DefDescriptorImpl<>(ei.prefix, ns, ext.get(0), ei.defType.getPrimaryInterface(), bundle);
             }
         }
 

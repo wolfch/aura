@@ -17,10 +17,11 @@
  */
 package org.auraframework.impl.java.provider;
 
+import org.auraframework.Aura;
+import org.auraframework.annotations.Annotations.ServiceComponentProvider;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.ComponentDescriptorProvider;
 import org.auraframework.def.DefDescriptor;
-import org.auraframework.impl.system.DefDescriptorImpl;
 import org.auraframework.system.Annotations.Provider;
 
 /**
@@ -29,10 +30,11 @@ import org.auraframework.system.Annotations.Provider;
  * 
  * @since 138
  */
+@ServiceComponentProvider
 @Provider
 public class TestProviderAbstractBasic implements ComponentDescriptorProvider {
     @Override
     public DefDescriptor<ComponentDef> provide() {
-        return DefDescriptorImpl.getInstance("test:test_Provider_AbstractBasicExtends", ComponentDef.class);
+        return Aura.getDefinitionService().getDefDescriptor("test:test_Provider_AbstractBasicExtends", ComponentDef.class);
     }
 }

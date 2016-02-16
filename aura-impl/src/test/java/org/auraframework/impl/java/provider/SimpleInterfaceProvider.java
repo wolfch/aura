@@ -16,13 +16,14 @@
 package org.auraframework.impl.java.provider;
 
 import org.auraframework.Aura;
+import org.auraframework.annotations.Annotations.ServiceComponentProvider;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.ComponentDescriptorProvider;
 import org.auraframework.def.DefDescriptor;
-import org.auraframework.impl.system.DefDescriptorImpl;
 import org.auraframework.instance.BaseComponent;
 import org.auraframework.system.Annotations.Provider;
 
+@ServiceComponentProvider
 @Provider
 public class SimpleInterfaceProvider implements ComponentDescriptorProvider {
 
@@ -30,7 +31,7 @@ public class SimpleInterfaceProvider implements ComponentDescriptorProvider {
     public DefDescriptor<ComponentDef> provide() {
         BaseComponent<?, ?> component = Aura.getContextService().getCurrentContext().getCurrentComponent();
         Integer num = (Integer) component.getAttributes().getExpression("integerAttribute");
-        return DefDescriptorImpl.getInstance("loadLevelTest:simpleImplementation" + num, ComponentDef.class);
+        return Aura.getDefinitionService().getDefDescriptor("loadLevelTest:simpleImplementation" + num, ComponentDef.class);
     }
 
 }

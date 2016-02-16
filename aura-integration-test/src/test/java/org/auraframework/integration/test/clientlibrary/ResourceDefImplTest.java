@@ -15,56 +15,61 @@
  */
 package org.auraframework.integration.test.clientlibrary;
 
-import java.io.ByteArrayOutputStream;
-import java.util.Set;
-
-import org.auraframework.Aura;
+import com.google.common.base.Charsets;
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.ResourceDef;
 import org.auraframework.impl.AuraImplTestCase;
 import org.auraframework.impl.clientlibrary.ResourceDefImpl;
+import org.auraframework.service.DefinitionService;
 import org.auraframework.util.json.JsonEncoder;
+import org.junit.Test;
 
-import com.google.common.base.Charsets;
+import javax.inject.Inject;
+import java.io.ByteArrayOutputStream;
+import java.util.Set;
 
 public class ResourceDefImplTest extends AuraImplTestCase {
-    public ResourceDefImplTest(String name){
-        super(name);
-    }
-    
+
+    @Inject
+    DefinitionService definitionService;
+
+    @Test
     public void testGetResourceDefWithDefaultPrefix(){
-        DefDescriptor<ResourceDef> resourceDef = Aura.getDefinitionService().getDefDescriptor("clientLibraryTest.clientLibraryTest", ResourceDef.class);
+        DefDescriptor<ResourceDef> resourceDef = definitionService.getDefDescriptor("clientLibraryTest.clientLibraryTest", ResourceDef.class);
         assertEquals(DefDescriptor.JAVASCRIPT_PREFIX,resourceDef.getPrefix());
     }
-    
+
+    @Test
     public void testGetComponentJSResourceDef()throws Exception{
-        DefDescriptor<ResourceDef> jsResourceDef = Aura.getDefinitionService().getDefDescriptor("js://clientLibraryTest.clientLibraryTest", ResourceDef.class);
+        DefDescriptor<ResourceDef> jsResourceDef = definitionService.getDefDescriptor("js://clientLibraryTest.clientLibraryTest", ResourceDef.class);
         assertNotNull(jsResourceDef);
-        ResourceDef def = jsResourceDef.getDef();
+        ResourceDef def = definitionService.getDefinition(jsResourceDef);
         assertNotNull("Unable to locate Javascript resource def", def);
         assertTrue("Component resources should be combinable.", ((ResourceDefImpl)def).canCombine());
     }
-    
+
+    @Test
     public void testGetComponentCSSResourceDef()throws Exception{
-        DefDescriptor<ResourceDef> cssResourceDef = Aura.getDefinitionService().getDefDescriptor("css://clientLibraryTest.clientLibraryTest", ResourceDef.class);
+        DefDescriptor<ResourceDef> cssResourceDef = definitionService.getDefDescriptor("css://clientLibraryTest.clientLibraryTest", ResourceDef.class);
         assertNotNull(cssResourceDef);
-        ResourceDef def = cssResourceDef.getDef();
+        ResourceDef def = definitionService.getDefinition(cssResourceDef);
         assertNotNull("Unable to locate css resource def", def);
         assertTrue("Component resources should be combinable.", ((ResourceDefImpl)def).canCombine());
         assertTrue("Failed to load style resource", ((ResourceDefImpl)def).getContents().contains(".clientLibraryTestStyle"));
     }
 
+    @Test
     public void testResourceDefAsPartOfComponentDef()throws Exception{
-        DefDescriptor<ApplicationDef> cmpDesc = Aura.getDefinitionService().getDefDescriptor("clientLibraryTest:clientLibraryTest", ApplicationDef.class);
-        ApplicationDef def = cmpDesc.getDef();
+        DefDescriptor<ApplicationDef> cmpDesc = definitionService.getDefDescriptor("clientLibraryTest:clientLibraryTest", ApplicationDef.class);
+        ApplicationDef def = definitionService.getDefinition(cmpDesc);
 
         Set<ResourceDef> resourceDefs = def.getResourceDefs();
 
-        DefDescriptor<ResourceDef> jsResourceDefDesc = Aura.getDefinitionService().getDefDescriptor("js://clientLibraryTest.clientLibraryTest", ResourceDef.class);
-        ResourceDef jsResourceDef = jsResourceDefDesc.getDef();
-        DefDescriptor<ResourceDef> cssResourceDefDesc = Aura.getDefinitionService().getDefDescriptor("css://clientLibraryTest.clientLibraryTest", ResourceDef.class);
-        ResourceDef cssResourceDef = cssResourceDefDesc.getDef();
+        DefDescriptor<ResourceDef> jsResourceDefDesc = definitionService.getDefDescriptor("js://clientLibraryTest.clientLibraryTest", ResourceDef.class);
+        ResourceDef jsResourceDef = definitionService.getDefinition(jsResourceDefDesc);
+        DefDescriptor<ResourceDef> cssResourceDefDesc = definitionService.getDefDescriptor("css://clientLibraryTest.clientLibraryTest", ResourceDef.class);
+        ResourceDef cssResourceDef = definitionService.getDefinition(cssResourceDefDesc);
 
         assertTrue("JS resource should be in component", resourceDefs.contains(jsResourceDef));
         assertTrue("CSS resource should be in component", resourceDefs.contains(cssResourceDef));

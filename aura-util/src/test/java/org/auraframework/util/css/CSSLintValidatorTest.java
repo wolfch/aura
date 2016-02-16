@@ -15,18 +15,19 @@
  */
 package org.auraframework.util.css;
 
-import java.io.File;
-import java.util.List;
-
+import com.google.common.base.Charsets;
+import com.google.common.io.Files;
 import org.auraframework.util.javascript.JavascriptProcessingError.Level;
 import org.auraframework.util.test.util.UnitTestCase;
 import org.auraframework.util.validation.ValidationError;
+import org.junit.Test;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.Files;
+import java.io.File;
+import java.util.List;
 
 public final class CSSLintValidatorTest extends UnitTestCase {
 
+    @Test
     public void testValidate() throws Exception {
         if (System.getProperty("java.version").startsWith("1.6")) {
             return; // csslint doesn't work with 1.6
@@ -53,6 +54,7 @@ public final class CSSLintValidatorTest extends UnitTestCase {
         assertEquals("input2.css", errors.get(0).getFilename());
     }
 
+    @Test
     public void testDoesntReportBogusErrorsForAuraCSS() throws Exception {
         if (System.getProperty("java.version").startsWith("1.6")) {
             return; // csslint doesn't work with 1.6

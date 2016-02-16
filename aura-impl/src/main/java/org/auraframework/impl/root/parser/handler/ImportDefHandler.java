@@ -15,23 +15,23 @@
  */
 package org.auraframework.impl.root.parser.handler;
 
-import java.util.Set;
-
-import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
+import com.google.common.collect.ImmutableSet;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.LibraryDef;
 import org.auraframework.def.RootDefinition;
+import org.auraframework.impl.DefinitionAccessImpl;
 import org.auraframework.impl.root.library.ImportDefImpl;
-import org.auraframework.impl.system.DefDescriptorImpl;
+import org.auraframework.service.DefinitionService;
+import org.auraframework.system.AuraContext;
 import org.auraframework.system.Source;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.AuraTextUtil;
 
-import com.google.common.collect.ImmutableSet;
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.util.Set;
 
 public class ImportDefHandler extends XMLHandler<ImportDefImpl> {
 
@@ -51,8 +51,8 @@ public class ImportDefHandler extends XMLHandler<ImportDefImpl> {
     }
 
     public ImportDefHandler(RootTagHandler<? extends RootDefinition> parentHandler, XMLStreamReader xmlReader,
-            Source<?> source) {
-        super(xmlReader, source);
+                            Source<?> source, DefinitionService definitionService) {
+        super(xmlReader, source, definitionService);
         this.parentHandler = parentHandler;
     }
 
@@ -68,7 +68,7 @@ public class ImportDefHandler extends XMLHandler<ImportDefImpl> {
         if (AuraTextUtil.isNullEmptyOrWhitespace(library)) {
             throw new InvalidDefinitionException(String.format("%s missing library attribute", TAG), getLocation());
         }
-        DefDescriptor<LibraryDef> descriptor = DefDescriptorImpl.getInstance(library.trim(), LibraryDef.class);
+        DefDescriptor<LibraryDef> descriptor = definitionService.getDefDescriptor(library.trim(), LibraryDef.class);
         builder.setDescriptor(descriptor);
 
         String property = getAttributeValue(ATTRIBUTE_PROPERTY);
@@ -85,6 +85,7 @@ public class ImportDefHandler extends XMLHandler<ImportDefImpl> {
         }
 
         builder.setOwnHash(source.getHash());
+        builder.setAccess(new DefinitionAccessImpl(AuraContext.Access.PRIVATE));
 
         return builder.build();
     }

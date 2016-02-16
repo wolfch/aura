@@ -15,22 +15,27 @@
  */
 package org.auraframework.controller.java;
 
-import java.util.Map;
-
-import org.auraframework.Aura;
+import com.google.common.collect.ImmutableMap;
+import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.def.ComponentDef;
+import org.auraframework.ds.servicecomponent.Controller;
 import org.auraframework.instance.Component;
+import org.auraframework.service.InstanceService;
 import org.auraframework.system.Annotations.AuraEnabled;
-import org.auraframework.system.Annotations.Controller;
 import org.auraframework.system.Annotations.Key;
 
-import com.google.common.collect.ImmutableMap;
+import javax.inject.Inject;
+import java.util.Map;
 
-@Controller
-public class DelayedController {
+@ServiceComponent
+public class DelayedController implements Controller {
+
+    @Inject
+    private InstanceService instanceService;
+
     @AuraEnabled
-    public static Object getComponents(@Key("token") String token) throws Exception {
-        Component cmp = Aura.getInstanceService().getInstance("auratest:text", ComponentDef.class);
+    public Object getComponents(@Key("token") String token) throws Exception {
+        Component cmp = instanceService.getInstance("auratest:text", ComponentDef.class);
         Object val = token;
         Map<String, Object> atts = ImmutableMap.of("value", val);
         cmp.getAttributes().set(atts);

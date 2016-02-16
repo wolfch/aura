@@ -15,10 +15,6 @@
  */
 package org.auraframework.components.ui;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.auraframework.Aura;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.EventType;
 import org.auraframework.def.RegisterEventDef;
@@ -26,6 +22,10 @@ import org.auraframework.system.AuraContext.Authentication;
 import org.auraframework.system.AuraContext.Format;
 import org.auraframework.system.AuraContext.Mode;
 import org.auraframework.test.util.AuraTestCase;
+import org.junit.Test;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Automation for ui:input component.
@@ -39,14 +39,10 @@ import org.auraframework.test.util.AuraTestCase;
  * @since 0.0.99
  */
 public class InputComponentsTest extends AuraTestCase {
-    public InputComponentsTest(String name) {
-        super(name);
-    }
-
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        Aura.getContextService().startContext(Mode.UTEST, Format.JSON, Authentication.AUTHENTICATED);
+        contextService.startContext(Mode.UTEST, Format.JSON, Authentication.AUTHENTICATED);
     }
 
     /**
@@ -56,6 +52,7 @@ public class InputComponentsTest extends AuraTestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testDomEventsAreComponentEvents() throws Exception {
         HashMap<String, String> events = new HashMap<>();
         events.put("blur", "markup://ui:blur");
@@ -73,7 +70,7 @@ public class InputComponentsTest extends AuraTestCase {
         events.put("keyup", "markup://ui:keyup");
         events.put("select", "markup://ui:select");
 
-        ComponentDef def = Aura.getDefinitionService().getDefinition("ui:input", ComponentDef.class);
+        ComponentDef def = definitionService.getDefinition("ui:input", ComponentDef.class);
         assertNotNull("Failed to retrieve definition of ui:input", def);
         Map<String, RegisterEventDef> registeredEvents = def.getRegisterEventDefs();
         RegisterEventDef registeredEvent;

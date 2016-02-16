@@ -15,10 +15,8 @@
  */
 package org.auraframework.impl.css.style;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
+import com.google.common.collect.ImmutableList;
+import com.salesforce.omakase.plugin.Plugin;
 import org.auraframework.Aura;
 import org.auraframework.adapter.ExpressionAdapter;
 import org.auraframework.adapter.StyleAdapter;
@@ -30,16 +28,19 @@ import org.auraframework.def.TokenDef;
 import org.auraframework.expression.Expression;
 import org.auraframework.expression.PropertyReference;
 import org.auraframework.impl.AuraImpl;
+import org.auraframework.impl.DefinitionAccessImpl;
 import org.auraframework.impl.css.parser.CssPreprocessor;
 import org.auraframework.impl.system.DefinitionImpl;
 import org.auraframework.impl.util.AuraUtil;
+import org.auraframework.system.AuraContext;
 import org.auraframework.system.MasterDefRegistry;
 import org.auraframework.throwable.AuraRuntimeException;
 import org.auraframework.throwable.quickfix.AuraValidationException;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
-import com.google.common.collect.ImmutableList;
-import com.salesforce.omakase.plugin.Plugin;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Base class for concrete {@link BaseStyleDef} implementations.
@@ -138,6 +139,7 @@ public abstract class AbstractStyleDef<D extends BaseStyleDef> extends Definitio
 
         public Builder(Class<D> defClass) {
             super(defClass);
+            setAccess(new DefinitionAccessImpl(AuraContext.Access.PUBLIC));
         }
 
         @Override

@@ -15,8 +15,10 @@
  */
 package org.auraframework.integration.test.root.application;
 
-import org.auraframework.Aura;
-import org.auraframework.def.*;
+import org.auraframework.def.ApplicationDef;
+import org.auraframework.def.DefDescriptor;
+import org.auraframework.def.DefinitionAccess;
+import org.auraframework.def.EventDef;
 import org.auraframework.impl.root.application.ApplicationDefImpl;
 import org.auraframework.impl.root.application.ApplicationDefImpl.Builder;
 import org.auraframework.impl.root.component.BaseComponentDefImplUnitTest;
@@ -33,8 +35,8 @@ public class ApplicationDefImplUnitTest extends
     String additionalAppCacheURLs;
     Boolean isOnePageApp;
 
-    public ApplicationDefImplUnitTest(String name) {
-        super(name);
+    public ApplicationDefImplUnitTest() {
+        super();
         qualifiedDescriptorName = "test:application";
     }
 
@@ -56,7 +58,7 @@ public class ApplicationDefImplUnitTest extends
     @Override
     protected void setupValidateReferences() throws Exception {
         super.setupValidateReferences();
-        DefDescriptor<EventDef> superDesc = Aura.getDefinitionService().getDefDescriptor("aura:locationChange",
+        DefDescriptor<EventDef> superDesc = definitionService.getDefDescriptor("aura:locationChange",
                 EventDef.class);
         EventDef locationChangeEventDef = Mockito.mock(EventDef.class);
         Mockito.doReturn(true).when(locationChangeEventDef).isInstanceOf(superDesc);

@@ -18,6 +18,7 @@ package org.auraframework.integration.test;
 import org.auraframework.system.AuraContext.Mode;
 import org.auraframework.test.util.WebDriverTestCase;
 import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * Tests to verify case sensitivity
@@ -26,14 +27,11 @@ import org.junit.Assert;
  */
 public class ExpressionServiceCaseSensitivityUITest extends WebDriverTestCase {
 
-    public ExpressionServiceCaseSensitivityUITest(String name) {
-        super(name);
-    }
-
     /**
      * Verify Aura error pops up suggesting the proper case when trying to get a nested map attribute with the wrong
      * case.
      */
+    @Test
     public void testGetNestedAttribute() throws Exception {
         open("/attributesTest/caseSensitivity.app", Mode.DEV);
         String expected = "Possible Case Sensitivity Issue: Expression 'map.Fruit' on segment 'Fruit'. Possible you meant 'fruit'";
@@ -45,6 +43,7 @@ public class ExpressionServiceCaseSensitivityUITest extends WebDriverTestCase {
      * Verify Aura error pops up suggesting the proper case when trying to get a nested map attribute with the wrong
      * case.
      */
+    @Test
     public void testGetNonExistentNestedAttribute() throws Exception {
         open("/attributesTest/caseSensitivity.app", Mode.DEV);
         String expected = "Possible Case Sensitivity Issue: Expression 'map.Fruit.blah' on segment 'Fruit'. Possible you meant 'fruit'";
@@ -56,6 +55,7 @@ public class ExpressionServiceCaseSensitivityUITest extends WebDriverTestCase {
      * Verify Aura error pops up suggesting the proper case when trying to set a nested map attribute with the wrong
      * case.
      */
+    @Test
     public void testSetNestedAttribute() throws Exception {
         open("/attributesTest/caseSensitivity.app", Mode.DEV);
         String expected = "Possible Case Sensitivity Issue: Expression 'map.Fruit' on segment 'Fruit'. Possible you meant 'fruit'";
@@ -67,6 +67,7 @@ public class ExpressionServiceCaseSensitivityUITest extends WebDriverTestCase {
      * Verify Aura error pops up suggesting the proper case when trying to set a nested map attribute with the wrong
      * case.
      */
+    @Test
     public void testSetNewNestedAttribute() throws Exception {
         open("/attributesTest/caseSensitivity.app", Mode.DEV);
         String expected = "Possible Case Sensitivity Issue: Expression 'map.Fruit.blah' on segment 'Fruit'. Possible you meant 'fruit'";
@@ -77,6 +78,7 @@ public class ExpressionServiceCaseSensitivityUITest extends WebDriverTestCase {
     /**
      * Verify we do not display the case sensitivity error message in Prod mode.
      */
+    @Test
     public void testGetNoErrorMessageInProdMode() throws Exception {
         open("/attributesTest/caseSensitivity.app", Mode.PROD);
         auraUITestingUtil.getEval("$A.getRoot().get('v.map.Fruit');");
@@ -86,6 +88,7 @@ public class ExpressionServiceCaseSensitivityUITest extends WebDriverTestCase {
     /**
      * Verify we do not display the case sensitivity error message in Prod mode.
      */
+    @Test
     public void testSetNoErrorMessageInProdMode() throws Exception {
         open("/attributesTest/caseSensitivity.app", Mode.PROD);
         auraUITestingUtil.getEval("$A.getRoot().set('v.map.Fruit', 'orange');");

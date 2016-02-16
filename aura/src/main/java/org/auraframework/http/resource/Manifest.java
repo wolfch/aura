@@ -16,15 +16,10 @@
 
 package org.auraframework.http.resource;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.auraframework.Aura;
+import com.google.common.collect.Maps;
 import org.auraframework.adapter.ConfigAdapter;
+import org.auraframework.adapter.ExceptionAdapter;
+import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.BaseComponentDef;
 import org.auraframework.def.ComponentDef;
@@ -32,28 +27,46 @@ import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.DefDescriptor.DefType;
 import org.auraframework.http.ManifestUtil;
 import org.auraframework.instance.Component;
+import org.auraframework.service.ContextService;
+import org.auraframework.service.DefinitionService;
 import org.auraframework.service.InstanceService;
+import org.auraframework.service.LoggingService;
 import org.auraframework.service.RenderingService;
 import org.auraframework.system.AuraContext;
 import org.auraframework.system.AuraContext.Format;
 import org.auraframework.throwable.ClientOutOfSyncException;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
-import com.google.common.collect.Maps;
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.Map;
 
+@ServiceComponent
 public class Manifest extends AuraResourceImpl {
     private static final String LAST_MOD = "lastMod";
     private static final String UID = "uid";
     private static final String RESOURCE_URLS = "resourceURLs";
 
-    private ConfigAdapter configAdapter = Aura.getConfigAdapter();
-    private InstanceService instanceService = Aura.getInstanceService();
-    // FIXME: this is horrendous we actually render the manifest as a component.
-    private RenderingService renderingService = Aura.getRenderingService();
-    private ManifestUtil manifestUtil = new ManifestUtil();
+    private ConfigAdapter configAdapter;
+    private InstanceService instanceService;
+    private RenderingService renderingService;
+    private DefinitionService definitionService;
+    private ManifestUtil manifestUtil;
+    private LoggingService loggingService;
+    private ExceptionAdapter exceptionAdapter;
+    private ContextService contextService;
 
     public Manifest() {
         super("app.manifest", Format.MANIFEST, false);
+    }
+
+    @PostConstruct
+    public void createManifestUtil() {
+        this.manifestUtil = new ManifestUtil(contextService, configAdapter);
     }
 
     /**
@@ -100,16 +113,16 @@ public class Manifest extends AuraResourceImpl {
                     definitionService.updateLoaded(descr);
                     appOk = true;
                 }
-            } catch (QuickFixException qfe) {
-                //
+            } catch (QuickFixException | ClientOutOfSyncException ex) {
+                // QuickFixException
                 // ignore qfe, since we really don't care... the manifest will be 404ed.
                 // This will eventually cause the browser to give up. Note that this case
                 // should almost never occur, as it requires the qfe to be introduced between
                 // the initial request (which will not set a manifest if it gets a qfe) and
                 // the manifest request.
                 //
-            } catch (ClientOutOfSyncException coose) {
-                //
+
+                // ClientOutOfSyncException
                 // In this case, we want to force a reload... A 404 on the manifest is
                 // supposed to handle this. we hope that the client will do the right
                 // thing, and reload everything. Note that this case really should only
@@ -161,7 +174,7 @@ public class Manifest extends AuraResourceImpl {
             // Add in any application specific resources
             if (descr != null && descr.getDefType().equals(DefType.APPLICATION)) {
                 ApplicationDef def = (ApplicationDef) descr.getDef();
-                for (String s : def.getAdditionalAppCacheURLs()) {
+                for (String s : def.getAdditionalAppCacheURLs(loggingService, exceptionAdapter)) {
                     if (s != null) {
                         sw.write(s);
                         sw.write('\n');
@@ -176,7 +189,7 @@ public class Manifest extends AuraResourceImpl {
             Component tmpl = instanceService.getInstance(tmplDesc, attribs);
             renderingService.render(tmpl, response.getWriter());
         } catch (Exception e) {
-            Aura.getExceptionAdapter().handleException(e);
+            exceptionAdapter.handleException(e);
             // Can't throw exception here: to set manifest OBSOLETE
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
@@ -201,31 +214,47 @@ public class Manifest extends AuraResourceImpl {
         return null;
     }
 
-    /**
-     * @param configAdapter the configAdapter to set
-     */
+    @Inject
     public void setConfigAdapter(ConfigAdapter configAdapter) {
         this.configAdapter = configAdapter;
     }
 
-    /**
-     * @param instanceService the instanceService to set
-     */
+    @Inject
     public void setInstanceService(InstanceService instanceService) {
         this.instanceService = instanceService;
     }
 
-    /**
-     * @param renderingService the renderingService to set
-     */
+    @Inject
     public void setRenderingService(RenderingService renderingService) {
         this.renderingService = renderingService;
     }
 
-    /**
-     * @param manifestUtil the manifestUtil to set
-     */
     public void setManifestUtil(ManifestUtil manifestUtil) {
         this.manifestUtil = manifestUtil;
+    }
+
+    @Inject
+    public void setDefinitionService(DefinitionService definitionService) {
+        this.definitionService = definitionService;
+    }
+
+    @Inject
+    public void setLoggingService(LoggingService loggingService) {
+        this.loggingService = loggingService;
+    }
+
+    @Inject
+    public void setExceptionAdapter(ExceptionAdapter exceptionAdapter) {
+        this.exceptionAdapter = exceptionAdapter;
+    }
+
+    @Inject
+    public void setContextService(ContextService contextService) {
+        this.contextService = contextService;
+    }
+
+    /* Avoiding Unused Variable */
+    public LoggingService getLoggingService() {
+        return this.loggingService;
     }
 }

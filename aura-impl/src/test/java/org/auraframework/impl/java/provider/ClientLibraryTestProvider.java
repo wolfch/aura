@@ -16,14 +16,15 @@
 package org.auraframework.impl.java.provider;
 
 import org.auraframework.Aura;
+import org.auraframework.annotations.Annotations.ServiceComponentProvider;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.ComponentDescriptorProvider;
 import org.auraframework.def.DefDescriptor;
-import org.auraframework.impl.system.DefDescriptorImpl;
 import org.auraframework.instance.BaseComponent;
 import org.auraframework.system.Annotations.Provider;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
+@ServiceComponentProvider
 @Provider
 public class ClientLibraryTestProvider implements ComponentDescriptorProvider {
 
@@ -31,6 +32,7 @@ public class ClientLibraryTestProvider implements ComponentDescriptorProvider {
     public DefDescriptor<ComponentDef> provide() throws QuickFixException {
         BaseComponent<?, ?> component = Aura.getContextService().getCurrentContext().getCurrentComponent();
         String num = (String) component.getAttributes().getExpression("implNumber");
-        return DefDescriptorImpl.getInstance("clientLibraryTest:testInterfaceImpl" + num, ComponentDef.class);    }
+        return Aura.getDefinitionService().getDefDescriptor("clientLibraryTest:testInterfaceImpl" + num, ComponentDef.class);
+    }
 
 }

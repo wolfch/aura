@@ -19,6 +19,7 @@ import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.impl.AuraImplTestCase;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
+import org.junit.Test;
 
 /**
  * This test has automation to verify implementation of ui:ouputText component.
@@ -28,15 +29,12 @@ import org.auraframework.throwable.quickfix.InvalidDefinitionException;
  * @priority medium
  */
 public class OutputTextTest extends AuraImplTestCase {
-    public OutputTextTest(String name) {
-        super(name);
-    }
-
     /**
      * Verify injecting javascript using 'value' attribute.
      * 
      * @throws Exception
      */
+    @Test
     public void testInjectingScriptTagIntoValue() throws Exception {
         String scriptTags = "<script>alert(\'blah\')</script>";
         String cmpMarkup = String.format(baseComponentTag, "", "<ui:outputText value='" + scriptTags + "'/>");

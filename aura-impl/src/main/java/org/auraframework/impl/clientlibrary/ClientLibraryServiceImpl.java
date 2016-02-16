@@ -15,23 +15,32 @@
  */
 package org.auraframework.impl.clientlibrary;
 
-import java.io.IOException;
-import java.util.*;
-
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.apache.commons.lang3.StringUtils;
-import org.auraframework.Aura;
 import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.cache.Cache;
-import org.auraframework.clientlibrary.*;
-import org.auraframework.def.*;
-import org.auraframework.impl.system.DefDescriptorImpl;
+import org.auraframework.clientlibrary.ClientLibraryResolver;
+import org.auraframework.clientlibrary.ClientLibraryResolverRegistry;
+import org.auraframework.clientlibrary.ClientLibraryService;
+import org.auraframework.clientlibrary.Combinable;
+import org.auraframework.def.ClientLibraryDef;
+import org.auraframework.def.DefDescriptor;
+import org.auraframework.def.ResourceDef;
+import org.auraframework.service.CachingService;
+import org.auraframework.service.DefinitionService;
+import org.auraframework.service.SerializationService;
 import org.auraframework.system.AuraContext;
 import org.auraframework.throwable.AuraRuntimeException;
 import org.auraframework.throwable.NoContextException;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Service for including external client libraries (CSS or JS)
@@ -39,12 +48,15 @@ import com.google.common.collect.Sets;
 @ServiceComponent
 public class ClientLibraryServiceImpl implements ClientLibraryService {
 
+    private CachingService cachingService;
+    private DefinitionService definitionService;
+    private SerializationService serializationService;
 
-    private final Cache<String, String>  outputCache;
+    private Cache<String, String> outputCache;
 
-
-    public ClientLibraryServiceImpl() {
-        outputCache = Aura.getCachingService().getClientLibraryOutputCache();
+    @PostConstruct
+    public void init() {
+        outputCache = cachingService.getClientLibraryOutputCache();
     }
 
     /**
@@ -213,7 +225,7 @@ public class ClientLibraryServiceImpl implements ClientLibraryService {
 
             if (!combinables.isEmpty()) {
                 // ClientLibraryCSSFormatAdapter or ClientLibraryJSFormatAdapter
-                Aura.getSerializationService().writeCollection(combinables, Combinable.class, sb, type.toString());
+                serializationService.writeCollection(combinables, Combinable.class, sb, type.toString());
             }
 
             code = sb.toString();
@@ -316,7 +328,7 @@ public class ClientLibraryServiceImpl implements ClientLibraryService {
         } else if (StringUtils.startsWithIgnoreCase(url, DefDescriptor.CSS_PREFIX + "://") ||
                 StringUtils.startsWithIgnoreCase(url, DefDescriptor.JAVASCRIPT_PREFIX + "://")) {
             // if url is qualified name of DefDescriptor<ResourceDef>
-            DefDescriptor<ResourceDef> descriptor = DefDescriptorImpl.getInstance(url, ResourceDef.class);
+            DefDescriptor<ResourceDef> descriptor = definitionService.getDefDescriptor(url, ResourceDef.class);
             if (descriptor.exists()) {
                 ResourceDef def = descriptor.getDef();
                 if (def != null) {
@@ -325,5 +337,20 @@ public class ClientLibraryServiceImpl implements ClientLibraryService {
             }
         }
         return combinable;
+    }
+
+    @Inject
+    void setDefinitionService(DefinitionService definitionService) {
+        this.definitionService = definitionService;
+    }
+
+    @Inject
+    void setCachingService(CachingService cachingService) {
+        this.cachingService = cachingService;
+    }
+
+    @Inject
+    void setSerializationService(SerializationService serializationService) {
+        this.serializationService = serializationService;
     }
 }

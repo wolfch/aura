@@ -15,11 +15,13 @@
  */
 package org.auraframework.impl.renderer.sampleJavaRenderers;
 
-import java.io.IOException;
-
+import org.auraframework.annotations.Annotations.ServiceComponentRenderer;
 import org.auraframework.def.Renderer;
 import org.auraframework.instance.BaseComponent;
 
+import java.io.IOException;
+
+@ServiceComponentRenderer
 public class TestOverridingRenderer implements Renderer {
     public static String htmlOutput = "<div class=\"javaRenderer\">This text will override the javascript renderer <a href=\"http://www.salesforce.com\" target=\"_blank\">Home</a></div>";
 

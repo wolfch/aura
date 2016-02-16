@@ -15,31 +15,9 @@
  */
 package org.auraframework.test.util;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.PrintWriter;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.Set;
-import java.util.concurrent.Semaphore;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import junit.framework.AssertionFailedError;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpGet;
@@ -93,10 +71,30 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.uiautomation.ios.client.uiamodels.impl.RemoteIOSDriver;
 import org.uiautomation.ios.client.uiamodels.impl.augmenter.IOSDriverAugmenter;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-
-import junit.framework.AssertionFailedError;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.Set;
+import java.util.concurrent.Semaphore;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Base class for Aura WebDriver tests.
@@ -147,10 +145,6 @@ public abstract class WebDriverTestCase extends IntegrationTestCase {
     @Target({ ElementType.TYPE, ElementType.METHOD })
     @Inherited
     public @interface Flapper {
-    }
-
-    public WebDriverTestCase(String name) {
-        super(name);
     }
 
     /**
@@ -889,7 +883,7 @@ public abstract class WebDriverTestCase extends IntegrationTestCase {
     }
 
     protected URI getAbsoluteURI(String url) throws MalformedURLException, URISyntaxException {
-        return getTestServletConfig().getBaseUrl().toURI().resolve(url);
+        return testServletConfig.getBaseUrl().toURI().resolve(url);
     }
 
     /**

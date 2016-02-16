@@ -22,6 +22,7 @@ import org.auraframework.util.test.annotation.UnAdaptableTest;
 import org.auraframework.util.test.perf.metrics.PerfMetrics;
 import org.auraframework.util.test.perf.metrics.PerfMetricsComparator;
 import org.junit.Ignore;
+import org.junit.Test;
 import org.openqa.selenium.By;
 
 /**
@@ -33,10 +34,6 @@ import org.openqa.selenium.By;
 @UnAdaptableTest
 @Ignore("W-2565715")
 public final class MeasuringPerfMetricsTest extends AbstractPerfTestCase {
-
-    public MeasuringPerfMetricsTest(String name) {
-        super(name);
-    }
 
     private static final String LABEL_MOCK = "Mock value for 'label' attribute";
 
@@ -67,6 +64,7 @@ public final class MeasuringPerfMetricsTest extends AbstractPerfTestCase {
     /**
      * Test loading component using /perfTest/perf.app
      */
+    @Test
     public void testButton() throws Exception {
         runWithPerfApp(getDefDescriptor("ui:button"));
     }
@@ -92,6 +90,7 @@ public final class MeasuringPerfMetricsTest extends AbstractPerfTestCase {
 
     // ui:label: perf.app was not showing the label in the page
 
+    @Test
     public void testLabel() throws Exception {
         runWithPerfApp(getDefDescriptor("ui:label"));
     }
@@ -110,6 +109,7 @@ public final class MeasuringPerfMetricsTest extends AbstractPerfTestCase {
 
     // perfTest:dummyPerf
 
+    @Test
     public void testDummyPerf() throws Exception {
         runWithPerfApp(getDefDescriptor("perfTest:dummyPerf"));
     }

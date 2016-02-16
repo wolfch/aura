@@ -15,30 +15,24 @@
  */
 package org.auraframework.impl.source.file;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FilenameFilter;
-import java.io.IOException;
-
-import java.util.HashSet;
-import java.util.Set;
-
-import org.auraframework.Aura;
-
 import org.auraframework.def.DefDescriptor;
-
 import org.auraframework.def.DefDescriptor.DefType;
-
 import org.auraframework.def.Definition;
 import org.auraframework.def.DescriptorFilter;
 import org.auraframework.impl.source.BaseSourceLoader;
 import org.auraframework.system.PrivilegedNamespaceSourceLoader;
 import org.auraframework.system.SourceListener;
 import org.auraframework.throwable.AuraRuntimeException;
+import org.auraframework.util.FileMonitor;
 import org.auraframework.util.IOUtil;
 
-/**
- */
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
+
 public class FileSourceLoader extends BaseSourceLoader implements PrivilegedNamespaceSourceLoader, SourceListener {
 
     protected final File base;
@@ -52,7 +46,7 @@ public class FileSourceLoader extends BaseSourceLoader implements PrivilegedName
         }
     };
 
-    public FileSourceLoader(File base) {
+    public FileSourceLoader(File base, FileMonitor fileMonitor) {
         super();
         if (base == null || !base.exists() || !base.isDirectory()) {
             throw new AuraRuntimeException(String.format("Base directory %s does not exist", base == null ? "null"
@@ -67,8 +61,10 @@ public class FileSourceLoader extends BaseSourceLoader implements PrivilegedName
         this.baseLen = base.getPath().length();
 
         // add the namespace root to the file monitor
-        Aura.getDefinitionService().subscribeToChangeNotification(this);
-        AuraFileMonitor.addDirectory(base.getPath());
+        if (fileMonitor != null) {
+            fileMonitor.subscribeToChangeNotification(this);
+            fileMonitor.addDirectory(base.getPath());
+        }
     }
 
     private boolean isFilePresent(File file) {

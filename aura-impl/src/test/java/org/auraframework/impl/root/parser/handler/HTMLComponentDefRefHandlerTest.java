@@ -15,12 +15,7 @@
  */
 package org.auraframework.impl.root.parser.handler;
 
-import java.util.ArrayList;
-import java.util.Map;
-
-import javax.xml.stream.XMLStreamReader;
-
-import org.auraframework.Aura;
+import org.auraframework.adapter.DefinitionParserAdapter;
 import org.auraframework.def.AttributeDef;
 import org.auraframework.def.AttributeDefRef;
 import org.auraframework.def.ComponentDef;
@@ -29,34 +24,43 @@ import org.auraframework.def.DefDescriptor;
 import org.auraframework.impl.AuraImplTestCase;
 import org.auraframework.impl.root.component.ComponentDefRefImpl;
 import org.auraframework.impl.root.parser.XMLParser;
-import org.auraframework.impl.system.DefDescriptorImpl;
 import org.auraframework.system.Parser.Format;
 import org.auraframework.test.source.StringSource;
+import org.auraframework.util.FileMonitor;
+import org.junit.Test;
+
+import javax.inject.Inject;
+import javax.xml.stream.XMLStreamReader;
+import java.util.ArrayList;
+import java.util.Map;
 
 public class HTMLComponentDefRefHandlerTest extends AuraImplTestCase {
+    @Inject
+    private FileMonitor fileMonitor;
 
+    @Inject
+    private DefinitionParserAdapter definitionParserAdapter;
+    
     private XMLStreamReader xmlReader;
     private HTMLComponentDefRefHandler<?> htmlHandler;
-
-    public HTMLComponentDefRefHandlerTest(String name) {
-        super(name);
-    }
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        DefDescriptor<ComponentDef> desc = Aura.getDefinitionService().getDefDescriptor("fake:component",
+        DefDescriptor<ComponentDef> desc = definitionService.getDefDescriptor("fake:component",
                 ComponentDef.class);
-        StringSource<ComponentDef> source = new StringSource<>(desc,
-                "<div class='MyClass'>Child Text<br/></div>", "myID", Format.XML);
+        StringSource<ComponentDef> source = new StringSource<>(fileMonitor,
+                desc, "<div class='MyClass'>Child Text<br/></div>", "myID", Format.XML);
         xmlReader = XMLParser.createXMLStreamReader(source.getHashingReader());
         xmlReader.next();
-        ComponentDefHandler cdh = new ComponentDefHandler(null, source, xmlReader);
-        htmlHandler = new HTMLComponentDefRefHandler<>(cdh, "div", xmlReader, source);
+        ComponentDefHandler cdh = new ComponentDefHandler(null, source, xmlReader, true, definitionService, contextService,
+                configAdapter, definitionParserAdapter);
+        htmlHandler = new HTMLComponentDefRefHandler<>(cdh, "div", xmlReader, source, true, definitionService, configAdapter, definitionParserAdapter);
         htmlHandler.readAttributes();
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testHandleChildText() throws Exception {
         xmlReader.next();
         htmlHandler.handleChildText();
@@ -67,6 +71,7 @@ public class HTMLComponentDefRefHandlerTest extends AuraImplTestCase {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testHandleChildTag() throws Exception {
         xmlReader.next();
         xmlReader.next();
@@ -77,43 +82,50 @@ public class HTMLComponentDefRefHandlerTest extends AuraImplTestCase {
         assertEquals("br", cd.get(0).getAttributeDefRef("tag").getValue());
     }
 
+    @Test
     public void testHandleChildSetTag() throws Exception {
-        DefDescriptor<ComponentDef> desc = Aura.getDefinitionService().getDefDescriptor("fake:component",
+        DefDescriptor<ComponentDef> desc = definitionService.getDefDescriptor("fake:component",
                 ComponentDef.class);
-        StringSource<ComponentDef> source = new StringSource<>(desc,
-                "<div><aura:set attribute='header' value='false'/></div>", "myID", Format.XML);
+        StringSource<ComponentDef> source = new StringSource<>(fileMonitor,
+                desc, "<div><aura:set attribute='header' value='false'/></div>", "myID", Format.XML);
         xmlReader = XMLParser.createXMLStreamReader(source.getHashingReader());
         xmlReader.next();
-        ComponentDefHandler cdh = new ComponentDefHandler(null, source, xmlReader);
-        htmlHandler = new HTMLComponentDefRefHandler<>(cdh, "div", xmlReader, source);
+        ComponentDefHandler cdh = new ComponentDefHandler(null, source, xmlReader, true, definitionService, contextService,
+                configAdapter, definitionParserAdapter);
+        htmlHandler = new HTMLComponentDefRefHandler<>(cdh, "div", xmlReader, source, true, definitionService, configAdapter,
+                definitionParserAdapter);
         htmlHandler.readAttributes();
         xmlReader.next();
         htmlHandler.handleChildTag();
         @SuppressWarnings("unchecked")
         String value = (String) ((Map<String, Object>) htmlHandler.createDefinition()
-                .getAttributeDefRef("HTMLAttributes").getValue()).get(Aura.getDefinitionService().getDefDescriptor(
+                .getAttributeDefRef("HTMLAttributes").getValue()).get(definitionService.getDefDescriptor(
                 "header", AttributeDef.class));
         assertEquals("false", value);
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testReadAttributes() throws Exception {
         htmlHandler.readAttributes();
         ComponentDefRef cd = htmlHandler.createDefinition();
         Map<DefDescriptor<AttributeDef>, AttributeDefRef> attributes = (Map<DefDescriptor<AttributeDef>, AttributeDefRef>) cd
                 .getAttributeDefRef("HTMLAttributes").getValue();
-        assertEquals("MyClass", attributes.get(DefDescriptorImpl.getInstance("class", AttributeDef.class)));
+        assertEquals("MyClass", attributes.get(definitionService.getDefDescriptor("class", AttributeDef.class)));
     }
 
+    @Test
     public void testGetHandledTag() {
         assertEquals("HTML Component Reference", htmlHandler.getHandledTag());
     }
 
+    @Test
     public void testHandlesTag() {
         assertTrue("HTMLComponentDefRefHandler should handle the div tag", htmlHandler.handlesTag("div"));
         assertFalse("HTMLComponentDefRefHandler should not handle a fakeHTMLTag", htmlHandler.handlesTag("fakeHTMLTag"));
     }
 
+    @Test
     public void testCreateDefinition() throws Exception {
         ComponentDefRef cd = htmlHandler.createDefinition();
         assertEquals("html", cd.getDescriptor().getName());
@@ -121,13 +133,16 @@ public class HTMLComponentDefRefHandlerTest extends AuraImplTestCase {
         assertEquals("div", cd.getAttributeDefRef("tag").getValue());
     }
 
+    @Test
     public void testReadFlavorable() throws Exception {
-        DefDescriptor<ComponentDef> desc = Aura.getDefinitionService().getDefDescriptor("fake:component", ComponentDef.class);
-        StringSource<ComponentDef> source = new StringSource<>(desc,"<div aura:flavorable='true'></div>", "myID", Format.XML);
+        DefDescriptor<ComponentDef> desc = definitionService.getDefDescriptor("fake:component", ComponentDef.class);
+        StringSource<ComponentDef> source = new StringSource<>(fileMonitor, desc, "<div aura:flavorable='true'></div>", "myID", Format.XML);
         xmlReader = XMLParser.createXMLStreamReader(source.getHashingReader());
         xmlReader.next();
-        ComponentDefHandler cdh = new ComponentDefHandler(null, source, xmlReader);
-        HTMLComponentDefRefHandler<?> h = new HTMLComponentDefRefHandler<>(cdh, "div", xmlReader, source);
+        ComponentDefHandler cdh = new ComponentDefHandler(null, source, xmlReader, true, definitionService, contextService,
+                configAdapter, definitionParserAdapter);
+        HTMLComponentDefRefHandler<?> h = new HTMLComponentDefRefHandler<>(cdh, "div", xmlReader, source, true,
+                definitionService, configAdapter, definitionParserAdapter);
         h.readAttributes();
         h.readSystemAttributes();
         ComponentDefRef cd = h.createDefinition();

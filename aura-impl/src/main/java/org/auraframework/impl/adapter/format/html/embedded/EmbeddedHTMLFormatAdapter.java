@@ -17,8 +17,6 @@ package org.auraframework.impl.adapter.format.html.embedded;
 
 import org.auraframework.impl.adapter.format.html.HTMLFormatAdapter;
 
-/**
- */
 public abstract class EmbeddedHTMLFormatAdapter<T> extends HTMLFormatAdapter<T> {
 
     private static final String name = "EMBEDDED_HTML";

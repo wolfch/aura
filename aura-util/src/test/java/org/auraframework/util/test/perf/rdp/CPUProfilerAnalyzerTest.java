@@ -15,25 +15,26 @@
  */
 package org.auraframework.util.test.perf.rdp;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.io.CharStreams;
+import org.auraframework.util.test.perf.rdp.CPUProfilerAnalyzer.MaxDepthCollector;
+import org.auraframework.util.test.util.UnitTestCase;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.junit.Test;
+
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.auraframework.util.test.perf.rdp.CPUProfilerAnalyzer.MaxDepthCollector;
-import org.auraframework.util.test.util.UnitTestCase;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.io.CharStreams;
-
 public final class CPUProfilerAnalyzerTest extends UnitTestCase {
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testAnalyze() throws Exception {
         InputStream input = CPUProfilerAnalyzerTest.class
                 .getResourceAsStream("/testdata/perf/JSON_stringify.cpuprofile");
@@ -52,6 +53,7 @@ public final class CPUProfilerAnalyzerTest extends UnitTestCase {
         assertEquals(1, metrics.getLong("maxDepth"));
     }
 
+    @Test
     public void testMaxDepthCollector() {
         // 1 6 2 5 3 4 ==> 5
         MaxDepthCollector collector = new MaxDepthCollector(3);

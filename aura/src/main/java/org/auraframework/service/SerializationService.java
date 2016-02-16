@@ -15,16 +15,17 @@
  */
 package org.auraframework.service;
 
+import org.auraframework.Aura;
+import org.auraframework.adapter.FormatAdapter;
+import org.auraframework.def.DefDescriptor.DefType;
+import org.auraframework.system.AuraContext;
+import org.auraframework.throwable.quickfix.QuickFixException;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.util.Collection;
 import java.util.Map;
-
-import org.auraframework.Aura;
-import org.auraframework.def.DefDescriptor.DefType;
-import org.auraframework.system.AuraContext;
-import org.auraframework.throwable.quickfix.QuickFixException;
 
 /**
  * <p>
@@ -154,4 +155,6 @@ public interface SerializationService extends AuraService {
      */
     <T> void writeCollection(Collection<? extends T> values, Class<T> type, Appendable out, String format)
             throws IOException, QuickFixException;
+
+    <T> FormatAdapter<T> getFormatAdapter(String format, Class<T> type) throws QuickFixException;
 }

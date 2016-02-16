@@ -15,19 +15,19 @@
  */
 package org.auraframework.integration.test.validation;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URL;
-import java.util.List;
-
+import com.google.common.collect.Lists;
 import org.auraframework.test.util.AuraHttpTestCase;
 import org.auraframework.util.AuraFiles;
 import org.auraframework.util.test.annotation.UnAdaptableTest;
 import org.auraframework.util.validation.ValidationClient;
 import org.auraframework.util.validation.ValidationTestUtil;
+import org.junit.Test;
 
-import com.google.common.collect.Lists;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URL;
+import java.util.List;
 
 /**
  * Testing validation tool functionality. UnAdaptableTest because requires source to check present in file system.
@@ -35,15 +35,12 @@ import com.google.common.collect.Lists;
 @UnAdaptableTest
 public final class ValidationClientHttpTest extends AuraHttpTestCase {
 
-    public ValidationClientHttpTest(String name) {
-        super(name);
-    }
-
     /**
      * Checks that the ValidationClient can run with just the aura-util.jar in the classpath
      */
+    @Test
     public void testCanRunStandalone() throws Exception {
-        URL url = getTestServletConfig().getBaseUrl();
+        URL url = testServletConfig.getBaseUrl();
         String path = AuraFiles.Core.getPath() + "/aura-components/src/test/components/validationTest/basic";
         List<String> command = Lists.newArrayList();
         command.add("java");
@@ -84,8 +81,9 @@ public final class ValidationClientHttpTest extends AuraHttpTestCase {
         }
     }
 
+    @Test
     public void testValidate() throws Exception {
-        getTestServletConfig().getBaseUrl(); // make sure the jetty server is started
+        testServletConfig.getBaseUrl(); // make sure the jetty server is started
         String path = AuraFiles.Core.getPath() + "/aura-components/src/test/components/validationTest/basic";
         List<String> errors = ValidationClient.validate(path);
         ValidationTestUtil.verifyValidationTestBasicErrors(errors);

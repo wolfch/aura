@@ -15,21 +15,18 @@
  */
 package org.auraframework.test.def;
 
-import java.io.IOException;
-
 import org.auraframework.def.DefDescriptor;
+import org.auraframework.def.DefDescriptor.DefType;
 import org.auraframework.def.Definition;
 import org.auraframework.def.DescriptorFilter;
-import org.auraframework.def.DefDescriptor.DefType;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.json.Json;
 import org.auraframework.util.test.util.UnitTestCase;
+import org.junit.Test;
+
+import java.io.IOException;
 
 public class DescriptorFilterTest extends UnitTestCase {
-    public DescriptorFilterTest(String name) {
-        super(name);
-    }
-
     private String getLabel(DescriptorFilter dm, boolean expected, String what, String value) {
         String match;
 
@@ -57,6 +54,7 @@ public class DescriptorFilterTest extends UnitTestCase {
         assertEquals(getLabel(dm, value, "type", type.toString()), value, dm.matchType(type));
     }
 
+    @Test
     public void testInvalid() throws Exception {
         try {
             new DescriptorFilter("bah.humbug://a:b");
@@ -83,6 +81,7 @@ public class DescriptorFilterTest extends UnitTestCase {
         }
     }
 
+    @Test
     public void testPrefixOnly() throws Exception {
         DescriptorFilter dm;
 
@@ -98,6 +97,7 @@ public class DescriptorFilterTest extends UnitTestCase {
         }
     }
 
+    @Test
     public void testPrefixPlusNamespace() throws Exception {
         DescriptorFilter dm;
 
@@ -113,6 +113,7 @@ public class DescriptorFilterTest extends UnitTestCase {
         }
     }
 
+    @Test
     public void testNamespaceOnly() throws Exception {
         DescriptorFilter dm;
 
@@ -128,6 +129,7 @@ public class DescriptorFilterTest extends UnitTestCase {
         }
     }
 
+    @Test
     public void testNamespaceAndName() throws Exception {
         DescriptorFilter dm;
 
@@ -144,6 +146,7 @@ public class DescriptorFilterTest extends UnitTestCase {
         }
     }
 
+    @Test
     public void testFullWildcardMatcher() throws Exception {
         DescriptorFilter dm;
 
@@ -159,6 +162,7 @@ public class DescriptorFilterTest extends UnitTestCase {
         }
     }
 
+    @Test
     public void testNoprefixWildcardMatcher() throws Exception {
         DescriptorFilter dm;
 
@@ -174,6 +178,7 @@ public class DescriptorFilterTest extends UnitTestCase {
         }
     }
 
+    @Test
     public void testNonamespaceWildcardMatcher() throws Exception {
         DescriptorFilter dm;
 
@@ -189,6 +194,7 @@ public class DescriptorFilterTest extends UnitTestCase {
         }
     }
 
+    @Test
     public void testNonameWildcardMatcher() throws Exception {
         DescriptorFilter dm;
 
@@ -204,6 +210,7 @@ public class DescriptorFilterTest extends UnitTestCase {
         }
     }
 
+    @Test
     public void testExactMatcher() throws Exception {
         DescriptorFilter dm;
 
@@ -231,6 +238,7 @@ public class DescriptorFilterTest extends UnitTestCase {
         }
     }
 
+    @Test
     public void testAlmostMatcher() throws Exception {
         DescriptorFilter dm;
 
@@ -258,6 +266,7 @@ public class DescriptorFilterTest extends UnitTestCase {
         }
     }
 
+    @Test
     public void testTypeMatcher() throws Exception {
         for (DefType type : DefType.values()) {
             DescriptorFilter dm = new DescriptorFilter("exactprefix://exactnamespace:exactname", type.toString());
@@ -358,6 +367,7 @@ public class DescriptorFilterTest extends UnitTestCase {
         }
     }
 
+    @Test
     public void testDescriptor() {
         DescriptorFilter dm;
         FakeDefDescriptor dd;

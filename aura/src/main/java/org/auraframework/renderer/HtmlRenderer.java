@@ -15,23 +15,29 @@
  */
 package org.auraframework.renderer;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
 import org.auraframework.Aura;
+import org.auraframework.annotations.Annotations.ServiceComponentRenderer;
 import org.auraframework.def.AttributeDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.Renderer;
 import org.auraframework.expression.Expression;
 import org.auraframework.instance.BaseComponent;
 import org.auraframework.instance.Component;
+import org.auraframework.service.RenderingService;
 import org.auraframework.throwable.quickfix.QuickFixException;
+
+import javax.inject.Inject;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 /**
  */
+@ServiceComponentRenderer
 public class HtmlRenderer implements Renderer {
-    private static final ComponentRenderer componentRenderer = new ComponentRenderer();
+
+    @Inject
+    RenderingService renderingService;
 
     @SuppressWarnings("unchecked")
     @Override
@@ -88,7 +94,9 @@ public class HtmlRenderer implements Renderer {
         List<Component> body = (List<Component>) component.getAttributes().getValue("body");
         if (body != null && body.size() > 0) {
             out.append('>');
-            componentRenderer.render(component, out);
+            for (BaseComponent<?, ?> c : body) {
+                renderingService.render(c, out);
+            }
             out.append("</");
             out.append(tag);
             out.append('>');

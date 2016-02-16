@@ -15,6 +15,7 @@
  */
 package org.auraframework.impl.css.parser;
 
+import com.google.common.collect.Lists;
 import org.auraframework.adapter.StyleAdapter;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.StyleDef;
@@ -23,16 +24,11 @@ import org.auraframework.impl.adapter.format.css.StyleDefCSSFormatAdapter;
 import org.auraframework.impl.css.StyleTestCase;
 import org.auraframework.impl.css.parser.plugin.DuplicateFontFacePlugin;
 import org.auraframework.throwable.AuraRuntimeException;
-
-import com.google.common.collect.Lists;
+import org.junit.Test;
 
 public class TestDuplicateFontFacePlugin extends StyleTestCase {
     private DuplicateFontFacePlugin fontFamilyPlugin;
     private StringBuilder out;
-
-    public TestDuplicateFontFacePlugin(String name) {
-        super(name);
-    }
 
     @Override
     public void setUp() throws Exception {
@@ -47,6 +43,7 @@ public class TestDuplicateFontFacePlugin extends StyleTestCase {
         return adapter;
     }
 
+    @Test
     public void testNoErrorOnDifferentFonts() throws Exception {
         StyleAdapter adapter = prepare(new DuplicateFontFacePlugin());
         DefDescriptor<StyleDef> desc1 = addStyleDef("@font-face {font-family: Custom1; src: url(Custom1.woff)}");
@@ -58,6 +55,7 @@ public class TestDuplicateFontFacePlugin extends StyleTestCase {
         // no error
     }
 
+    @Test
     public void testErrorsOnDupeFontsSameFile() throws Exception {
         StyleAdapter adapter = prepare(new DuplicateFontFacePlugin());
         String s = "@font-face {font-family: Custom1; src: url(Custom1.woff)}";
@@ -73,6 +71,7 @@ public class TestDuplicateFontFacePlugin extends StyleTestCase {
         }
     }
 
+    @Test
     public void testErrorsOnDupeFontsDifferentFiles() throws Exception {
         StyleAdapter adapter = prepare(new DuplicateFontFacePlugin());
         DefDescriptor<StyleDef> desc1 = addStyleDef("@font-face {font-family: Custom1; src: url(Custom1.woff)}");
@@ -89,6 +88,7 @@ public class TestDuplicateFontFacePlugin extends StyleTestCase {
         }
     }
 
+    @Test
     public void testErrorsOnDupeQuotedAndUnquoted() throws Exception {
         StyleAdapter adapter = prepare(new DuplicateFontFacePlugin());
         DefDescriptor<StyleDef> desc1 = addStyleDef("@font-face {font-family: Custom1; src: url(Custom1.woff)}");
@@ -104,6 +104,7 @@ public class TestDuplicateFontFacePlugin extends StyleTestCase {
         }
     }
 
+    @Test
     public void testErrorsOnDupeDifferentQuotes() throws Exception {
         StyleAdapter adapter = prepare(new DuplicateFontFacePlugin());
         DefDescriptor<StyleDef> desc1 = addStyleDef("@font-face {font-family: 'Custom1'; src: url(Custom1.woff)}");
@@ -119,6 +120,7 @@ public class TestDuplicateFontFacePlugin extends StyleTestCase {
         }
     }
 
+    @Test
     public void testSamePropsCheckAllOn() throws Exception {
         StyleAdapter adapter = prepare(new DuplicateFontFacePlugin(false, true));
         DefDescriptor<StyleDef> desc1 = addStyleDef("@font-face {font-family: Custom1; font-weight:bold; src: url(Custom1.woff)}");
@@ -134,6 +136,7 @@ public class TestDuplicateFontFacePlugin extends StyleTestCase {
         }
     }
 
+    @Test
     public void testSamePropsCheckAllOff() throws Exception {
         StyleAdapter adapter = prepare(new DuplicateFontFacePlugin(false, false));
         DefDescriptor<StyleDef> desc1 = addStyleDef("@font-face {font-family: Custom1; font-weight:bold; src: url(Custom1.woff)}");
@@ -149,6 +152,7 @@ public class TestDuplicateFontFacePlugin extends StyleTestCase {
         }
     }
 
+    @Test
     public void testDifferentPropsCheckAllOn() throws Exception {
         StyleAdapter adapter = prepare(new DuplicateFontFacePlugin(false, true));
         DefDescriptor<StyleDef> desc1 = addStyleDef("@font-face {font-family: Custom1; font-weight:bold; src: url(Custom1.woff)}");
@@ -160,6 +164,7 @@ public class TestDuplicateFontFacePlugin extends StyleTestCase {
         // no error
     }
 
+    @Test
     public void testDifferentPropsCheckAllOff() throws Exception {
         StyleAdapter adapter = prepare(new DuplicateFontFacePlugin(false, false));
         DefDescriptor<StyleDef> desc1 = addStyleDef("@font-face {font-family: Custom1; font-weight:bold; src: url(Custom1.woff)}");
@@ -175,6 +180,7 @@ public class TestDuplicateFontFacePlugin extends StyleTestCase {
         }
     }
 
+    @Test
     public void testSamePropsBothHaveAnnotation() throws Exception {
         StyleAdapter adapter = prepare(new DuplicateFontFacePlugin(true, false));
         DefDescriptor<StyleDef> desc1 = addStyleDef("@font-face {/* @allowDuplicate */ font-family: Custom1; font-weight:bold; src: url(Custom1.woff)}");
@@ -186,6 +192,7 @@ public class TestDuplicateFontFacePlugin extends StyleTestCase {
         // no error
     }
 
+    @Test
     public void testSamePropsOnlyFirstHasAnnotation() throws Exception {
         StyleAdapter adapter = prepare(new DuplicateFontFacePlugin(true, false));
         DefDescriptor<StyleDef> desc1 = addStyleDef("@font-face {/* @allowDuplicate */ font-family: Custom1; font-weight:bold; src: url(Custom1.woff)}");
@@ -201,6 +208,7 @@ public class TestDuplicateFontFacePlugin extends StyleTestCase {
         }
     }
 
+    @Test
     public void testSamePropsOnlySecondHasAnnotation() throws Exception {
         StyleAdapter adapter = prepare(new DuplicateFontFacePlugin(true, false));
         DefDescriptor<StyleDef> desc1 = addStyleDef("@font-face {font-family: Custom1; font-weight:bold; src: url(Custom1.woff)}");
@@ -216,6 +224,7 @@ public class TestDuplicateFontFacePlugin extends StyleTestCase {
         }
     }
 
+    @Test
     public void testSamePropsBothHaveAnnotationButNotAllowed() throws Exception {
         StyleAdapter adapter = prepare(new DuplicateFontFacePlugin(false, false));
         DefDescriptor<StyleDef> desc1 = addStyleDef("@font-face {/* @allowDuplicate */ font-family: Custom1; font-weight:bold; src: url(Custom1.woff)}");

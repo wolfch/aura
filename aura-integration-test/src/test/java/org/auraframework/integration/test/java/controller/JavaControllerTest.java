@@ -15,15 +15,11 @@
  */
 package org.auraframework.integration.test.java.controller;
 
-import java.io.StringWriter;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.auraframework.Aura;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import org.auraframework.adapter.ExceptionAdapter;
 import org.auraframework.cache.Cache;
-import org.auraframework.components.test.java.controller.JavaTestController;
+import org.auraframework.components.test.java.controller.CustomParamType;
 import org.auraframework.def.ActionDef;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.ControllerDef;
@@ -35,14 +31,18 @@ import org.auraframework.impl.AuraImplTestCase;
 import org.auraframework.impl.java.controller.JavaAction;
 import org.auraframework.impl.java.controller.JavaActionDef;
 import org.auraframework.impl.java.model.JavaValueDef;
-import org.auraframework.impl.system.DefDescriptorImpl;
 import org.auraframework.instance.Action;
 import org.auraframework.instance.Action.State;
+import org.auraframework.service.CachingService;
+import org.auraframework.service.InstanceService;
+import org.auraframework.service.LoggingService;
+import org.auraframework.service.ServerService;
 import org.auraframework.system.Location;
 import org.auraframework.system.LoggingContext.KeyValueLogger;
 import org.auraframework.system.Message;
 import org.auraframework.test.controller.TestLoggingAdapterController;
 import org.auraframework.test.source.StringSourceLoader;
+import org.auraframework.throwable.AuraExecutionException;
 import org.auraframework.throwable.AuraUnhandledException;
 import org.auraframework.throwable.NoAccessException;
 import org.auraframework.throwable.quickfix.DefinitionNotFoundException;
@@ -50,26 +50,46 @@ import org.auraframework.throwable.quickfix.InvalidDefinitionException;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.test.annotation.ThreadHostileTest;
 import org.auraframework.util.test.annotation.UnAdaptableTest;
+import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import javax.inject.Inject;
+import java.io.StringWriter;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Automation for java Controllers.
  */
 public class JavaControllerTest extends AuraImplTestCase {
-    public JavaControllerTest(String name) {
-        super(name);
-    }
 
+    @Inject
+    private LoggingService loggingService;
+
+    @Inject
+    private ExceptionAdapter exceptionAdapter;
+
+    @Inject
+    private CachingService cachingService;
+
+    @Inject
+    private InstanceService instanceService;
+
+    @Inject
+    private ServerService serverService;
+
+    @Inject
+    private TestLoggingAdapterController testLoggingAdapterController;
+    
     private ControllerDef getJavaController(String name) throws Exception {
-        DefDescriptor<ControllerDef> javaCntrlrDefDesc = DefDescriptorImpl.getInstance(name, ControllerDef.class);
+        DefDescriptor<ControllerDef> javaCntrlrDefDesc = definitionService.getDefDescriptor(name, ControllerDef.class);
         return javaCntrlrDefDesc.getDef();
     }
 
     private void assertControllerThrows(String name, Class<? extends Exception> clazz, String start, String loc) {
-        DefDescriptor<ControllerDef> javaCntrlrDefDesc = DefDescriptorImpl.getInstance(name, ControllerDef.class);
+        DefDescriptor<ControllerDef> javaCntrlrDefDesc = definitionService.getDefDescriptor(name, ControllerDef.class);
 
         try {
             javaCntrlrDefDesc.getDef();
@@ -82,7 +102,7 @@ public class JavaControllerTest extends AuraImplTestCase {
     private void checkPassAction(ControllerDef controller, String name, Map<String, Object> args, State expState,
             Object returnValue) throws DefinitionNotFoundException {
         Action action = controller.createAction(name, args);
-        action.run();
+        action.run(loggingService, exceptionAdapter);
         assertEquals(name + " State", expState, action.getState());
         assertEquals(name + " expected no errors", 0, action.getErrors().size());
         assertEquals(name + " return", returnValue, action.getReturnValue());
@@ -91,7 +111,7 @@ public class JavaControllerTest extends AuraImplTestCase {
     private void checkFailAction(ControllerDef controller, String name, Map<String, Object> args, State expState,
             Class<? extends Exception> error, String errorMessage) throws DefinitionNotFoundException {
         Action action = controller.createAction(name, args);
-        action.run();
+        action.run(loggingService, exceptionAdapter);
         assertEquals(name + " State", expState, action.getState());
         assertEquals(name + " expected an error", 1, action.getErrors().size());
         checkExceptionContains((Exception) action.getErrors().get(0), error, errorMessage);
@@ -99,17 +119,22 @@ public class JavaControllerTest extends AuraImplTestCase {
     }
 
     /**
-     * Verify that class level annotation is required for a java Controller.
+     * Verify that controller implements {@link org.auraframework.ds.servicecomponent.Controller}.
      */
-    public void testClassLevelAnnotationForJavaController() throws Exception {
-        assertControllerThrows("java://org.auraframework.impl.java.controller.TestControllerWithoutAnnotation",
-                InvalidDefinitionException.class, "@Controller annotation is required on all Controllers.",
-                "org.auraframework.impl.java.controller.TestControllerWithoutAnnotation");
+    @Test
+    public void testControllerImplements() throws Exception {
+        assertControllerThrows(
+                "java://org.auraframework.impl.java.controller.TestControllerWithoutImplements",
+                InvalidDefinitionException.class,
+                "class org.auraframework.impl.java.controller.TestControllerWithoutImplements must implement org.auraframework.ds.servicecomponent.Controller",
+                "org.auraframework.impl.java.controller.TestControllerWithoutImplements"
+        );
     }
 
     /**
      * Ensure that a key is required for every parameter.
      */
+    @Test
     public void testMissingKeyAnnotation() throws Exception {
         assertControllerThrows("java://org.auraframework.impl.java.controller.TestControllerMissingKey",
                 InvalidDefinitionException.class, "@Key annotation is required on all action parameters",
@@ -121,6 +146,7 @@ public class JavaControllerTest extends AuraImplTestCase {
      * limitation in the way java returns methods. If we do want to do this, we'd have to process all methods in a
      * rather complex way (walking up the class hierarchy).
      */
+    @Test
     public void testProtectedAction() throws Exception {
         ControllerDef cont = getJavaController("java://org.auraframework.impl.java.controller.TestControllerWithProtectedAction");
 
@@ -131,6 +157,7 @@ public class JavaControllerTest extends AuraImplTestCase {
         assertNotNull("should have doNothing", cont.getActionDefs().get("doNothing"));
     }
 
+    @Test
     public void testActionNoParameters() throws Exception {
         ControllerDef controller = getJavaController("java://org.auraframework.components.test.java.controller.TestController");
         Map<String, Object> empty = new HashMap<>();
@@ -141,15 +168,14 @@ public class JavaControllerTest extends AuraImplTestCase {
         checkPassAction(controller, "doSomething", empty, State.SUCCESS, null);
         checkPassAction(controller, "doSomething", hasOne, State.SUCCESS, null);
         checkPassAction(controller, "getString", empty, State.SUCCESS, "TestController");
-        checkFailAction(controller, "throwException", empty, State.ERROR, AuraUnhandledException.class,
-                "org.auraframework.throwable.AuraExecutionException: " +
-                        "java://org.auraframework.components.test.java.controller.TestController: " +
-                "java.lang.RuntimeException: intentionally generated");
+        checkFailAction(controller, "throwException", empty, State.ERROR, AuraExecutionException.class,
+                "java://org.auraframework.components.test.java.controller.TestController: java.lang.RuntimeException: intentionally generated");
     }
 
     /**
      * Verify correct errors are thrown when invalid parameters are passed to the controller.
      */
+    @Test
     public void testActionWithParametersError() throws Exception {
         ControllerDef controller = getJavaController("java://org.auraframework.impl.java.controller.TestControllerWithParameters");
         Map<String, Object> args = new HashMap<>();
@@ -161,10 +187,8 @@ public class JavaControllerTest extends AuraImplTestCase {
 
         // No parameters to a controller method that requires params
         args.clear();
-        checkFailAction(controller, "sumValues", args, State.ERROR, AuraUnhandledException.class,
-                "org.auraframework.throwable.AuraExecutionException: " +
-                        "java://org.auraframework.impl.java.controller.TestControllerWithParameters: " +
-                "java.lang.NullPointerException");
+        checkFailAction(controller, "sumValues", args, State.ERROR, AuraExecutionException.class,
+                "java://org.auraframework.impl.java.controller.TestControllerWithParameters: java.lang.NullPointerException");
 
         // Passing the wrong type (Strings instead of Integers)
         args.put("a", "x");
@@ -176,6 +200,7 @@ public class JavaControllerTest extends AuraImplTestCase {
     /**
      * Test to ensure that parameters get passed correctly.
      */
+    @Test
     public void testActionWithParameters() throws Exception {
         ControllerDef controller = getJavaController("java://org.auraframework.impl.java.controller.TestControllerWithParameters");
         Map<String, Object> args = new HashMap<>();
@@ -202,10 +227,11 @@ public class JavaControllerTest extends AuraImplTestCase {
      * This is testing JavaAction with parameter that throws QFE when accessing. verify AuraUnhandledException is added
      * when this happen in JavaAction
      */
+    @Test
     public void testActionWithBadParameterThrowsQFE() throws Exception {
         // create DefDescriptor for JavaValueDefExt, type doesn't matter as we plan to spy on it.
         String instanceName = "java://java.lang.String";
-        DefDescriptor<TypeDef> JavaValueDefDesc = DefDescriptorImpl.getInstance(instanceName, TypeDef.class);
+        DefDescriptor<TypeDef> JavaValueDefDesc = definitionService.getDefDescriptor(instanceName, TypeDef.class);
         // spy on DefDescriptor, ask it to throw QFE when calling getDef()
         DefDescriptor<TypeDef> JavaValueDefDescMocked = Mockito.spy(JavaValueDefDesc);
         Mockito.when(JavaValueDefDescMocked.getDef()).thenThrow(new TestQuickFixException("new quick fix exception"));
@@ -214,7 +240,7 @@ public class JavaControllerTest extends AuraImplTestCase {
         Class<TypeDef> defClass = TypeDef.class;
         DescriptorKey dk = new DescriptorKey(name, defClass);
         Cache<DescriptorKey, DefDescriptor<? extends Definition>> cache =
-                Aura.getCachingService().getDefDescriptorByNameCache();
+                cachingService.getDefDescriptorByNameCache();
         cache.put(dk, JavaValueDefDescMocked);
 
         // jvd doesn't matter that much for triggering QFE, as we only used it as the Object param
@@ -224,7 +250,7 @@ public class JavaControllerTest extends AuraImplTestCase {
         ControllerDef controller = getJavaController("java://org.auraframework.integration.test.java.controller.TestControllerOnlyForJavaControllerTest");
 
         // we actually catch the QFE in JavaAction.getArgs(), then wrap it up with AuraUnhandledException
-        String errorMsg = "org.auraframework.integration.test.java.controller.JavaControllerTest$TestQuickFixException: new quick fix exception";
+        String errorMsg = "Invalid parameter keya: java://java.lang.String";
         checkFailAction(controller, "customErrorParam", args, State.ERROR, AuraUnhandledException.class,
                 errorMsg);
 
@@ -249,11 +275,12 @@ public class JavaControllerTest extends AuraImplTestCase {
     /**
      * Verify that nice exception is thrown if controller def doesn't exist
      */
+    @Test
     public void testControllerNotFound() throws Exception {
         DefDescriptor<ComponentDef> dd = addSourceAutoCleanup(ComponentDef.class,
                 "<aura:component controller='java://goats'/>");
         try {
-            Aura.getInstanceService().getInstance(dd);
+            instanceService.getInstance(dd);
             fail("Expected DefinitionNotFoundException");
         } catch (DefinitionNotFoundException e) {
             assertTrue("Missing error message in "+e.getMessage(),
@@ -274,6 +301,7 @@ public class JavaControllerTest extends AuraImplTestCase {
     /**
      * Verify controller can be accessed in system namespace
      */
+    @Test
     public void testControllerInSystemNamespace() throws Exception {
         String resourceSource = "<aura:component controller='java://org.auraframework.components.test.java.controller.TestController'>Hello World!</aura:component>";
 
@@ -282,7 +310,7 @@ public class JavaControllerTest extends AuraImplTestCase {
                 StringSourceLoader.DEFAULT_NAMESPACE + ":testComponent", true);
 
         try {
-            Aura.getInstanceService().getInstance(dd);
+            instanceService.getInstance(dd);
         } catch (NoAccessException e) {
             fail("Not Expected NoAccessException");
         }
@@ -291,6 +319,7 @@ public class JavaControllerTest extends AuraImplTestCase {
     /**
      * Verify controller can not be accessed in custom namespace
      */
+    @Test
     @UnAdaptableTest("namespace start with c means something special in core")
     public void testControllerInCustomNamespace() throws Exception {
         String resourceSource = "<aura:component controller='java://org.auraframework.components.test.java.controller.TestController'>Hello World!</aura:component>";
@@ -300,7 +329,7 @@ public class JavaControllerTest extends AuraImplTestCase {
                 StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testComponent", false);
 
         try {
-            Aura.getInstanceService().getInstance(dd);
+            instanceService.getInstance(dd);
             fail("Expected NoAccessException");
         } catch (NoAccessException e) {
             String errorMessage = "Access to controller 'org.auraframework.components.test.java.controller:TestController' from namespace '"
@@ -312,12 +341,14 @@ public class JavaControllerTest extends AuraImplTestCase {
         }
     }
 
+    @Test
     public void testDuplicateAction() throws Exception {
         assertControllerThrows("java://org.auraframework.impl.java.controller.TestControllerWithDuplicateAction",
                 InvalidDefinitionException.class, "Duplicate action appendStrings",
                 "org.auraframework.impl.java.controller.TestControllerWithDuplicateAction");
     }
 
+    @Test
     public void testGetSubDefinition() throws Exception {
         ControllerDef controller = getJavaController("java://org.auraframework.components.test.java.controller.TestController");
         ActionDef subDef = controller.getSubDefinition("getString");
@@ -326,6 +357,7 @@ public class JavaControllerTest extends AuraImplTestCase {
                 .getDescriptor().getQualifiedName());
     }
 
+    @Test
     public void testGetNullSubDefinition() throws Exception {
         ControllerDef controller = getJavaController("java://org.auraframework.components.test.java.controller.TestController");
         ActionDef subDefNonExistent = controller.getSubDefinition("iDontExist");
@@ -335,6 +367,7 @@ public class JavaControllerTest extends AuraImplTestCase {
     /**
      * Tests to verify the APIs on Action to mark actions as storable.
      */
+    @Test
     public void testStorable() throws Exception {
         ControllerDef controller = getJavaController("java://org.auraframework.components.test.java.controller.TestController");
         Action freshAction = controller.createAction("getString", null);
@@ -342,20 +375,21 @@ public class JavaControllerTest extends AuraImplTestCase {
         assertTrue("Expected an instance of JavaAction", freshAction instanceof JavaAction);
         JavaAction action = (JavaAction) freshAction;
         assertFalse("Actions should not be storable by default.", action.isStorable());
-        action.run();
+        action.run(loggingService, exceptionAdapter);
         assertFalse("isStorabel should not change values after action execution.", action.isStorable());
 
         Action storableAction = controller.createAction("getString", null);
         action = (JavaAction) storableAction;
         action.setStorable();
         assertTrue("Failed to mark a action as storable.", action.isStorable());
-        action.run();
+        action.run(loggingService, exceptionAdapter);
         assertTrue("Storable action was unmarked during execution", action.isStorable());
     }
 
     /**
      * Action without annotation is not backgroundable
      */
+    @Test
     public void testJavaActionDefIsBackgroundWithoutAnnotation() throws Exception {
         ControllerDef controller = getJavaController("java://org.auraframework.impl.java.controller.ParallelActionTestController");
         ActionDef actionDef = controller.getActionDefs().get("executeInForeground");
@@ -366,6 +400,7 @@ public class JavaControllerTest extends AuraImplTestCase {
     /**
      * Action without annotation is not backgroundable
      */
+    @Test
     public void testJavaActionDefIsBackgroundWithAnnotation() throws Exception {
         ControllerDef controller = getJavaController("java://org.auraframework.impl.java.controller.ParallelActionTestController");
         ActionDef actionDef = controller.getActionDefs().get("executeInBackground");
@@ -373,6 +408,7 @@ public class JavaControllerTest extends AuraImplTestCase {
                 ((JavaActionDef) actionDef).isBackground());
     }
 
+    @Test
     public void testSerialize() throws Exception {
         ControllerDef controller = getJavaController("java://org.auraframework.impl.java.controller.ParallelActionTestController");
         serializeAndGoldFile(controller);
@@ -381,6 +417,7 @@ public class JavaControllerTest extends AuraImplTestCase {
     /**
      * Tests to verify the logging of params
      */
+    @Test
     public void testParamLogging() throws Exception {
         ControllerDef controller = getJavaController("java://org.auraframework.components.test.java.controller.JavaTestController");
         JavaAction nonLoggableStringAction = (JavaAction) controller.createAction("getString", null);
@@ -415,6 +452,7 @@ public class JavaControllerTest extends AuraImplTestCase {
     }
 
     @ThreadHostileTest("TestLoggingAdapter not thread-safe")
+    @Test
     @UnAdaptableTest("W-2928878, we don't have test logging adapter in core")
     public void testParamLogging_NoParams() throws Exception {
         ControllerDef controller = getJavaController("java://org.auraframework.components.test.java.controller.TestController");
@@ -430,6 +468,7 @@ public class JavaControllerTest extends AuraImplTestCase {
     }
 
     @ThreadHostileTest("TestLoggingAdapter not thread-safe")
+    @Test
     @UnAdaptableTest("W-2928878, we don't have test logging adapter in core")
     public void testParamLogging_SelectParameters() throws Exception {
         ControllerDef controller = getJavaController("java://org.auraframework.components.test.java.controller.JavaTestController");
@@ -447,6 +486,7 @@ public class JavaControllerTest extends AuraImplTestCase {
     }
 
     @ThreadHostileTest("TestLoggingAdapter not thread-safe")
+    @Test
     @UnAdaptableTest("W-2928878, we don't have test logging adapter in core")
     public void testParamLogging_MultipleIdenticalActions() throws Exception {
         ControllerDef controller = getJavaController("java://org.auraframework.components.test.java.controller.JavaTestController");
@@ -475,6 +515,7 @@ public class JavaControllerTest extends AuraImplTestCase {
     }
 
     @ThreadHostileTest("TestLoggingAdapter not thread-safe")
+    @Test
     @UnAdaptableTest("W-2928878, we don't have test logging adapter in core")
     public void testParamLogging_MultipleParameters() throws Exception {
         ControllerDef controller = getJavaController("java://org.auraframework.components.test.java.controller.JavaTestController");
@@ -492,6 +533,7 @@ public class JavaControllerTest extends AuraImplTestCase {
     }
 
     @ThreadHostileTest("TestLoggingAdapter not thread-safe")
+    @Test
     @UnAdaptableTest("W-2928878, we don't have test logging adapter in core")
     public void testParamLogging_NullValuesForParameters() throws Exception {
         ControllerDef controller = getJavaController("java://org.auraframework.components.test.java.controller.JavaTestController");
@@ -507,11 +549,12 @@ public class JavaControllerTest extends AuraImplTestCase {
     }
 
     @ThreadHostileTest("TestLoggingAdapter not thread-safe")
+    @Test
     @UnAdaptableTest("W-2928878, we don't have test logging adapter in core")
     public void testParamLogging_ParametersOfCustomDataType() throws Exception {
         ControllerDef controller = getJavaController("java://org.auraframework.components.test.java.controller.JavaTestController");
         Map<String, Object> params = Maps.newHashMap();
-        params.put("param", new JavaTestController.CustomParamType());
+        params.put("param", new CustomParamType());
         Action selectParamLoggingAction = controller.createAction("getCustomParamLogging", params);
         List<Map<String, Object>> logs = runActionsAndReturnLogs(Lists.newArrayList(selectParamLoggingAction));
         assertEquals(1, logs.size());
@@ -523,6 +566,7 @@ public class JavaControllerTest extends AuraImplTestCase {
     }
 
     @ThreadHostileTest("TestLoggingAdapter not thread-safe")
+    @Test
     @UnAdaptableTest("W-2928878, we don't have test logging adapter in core")
     public void testParamLogging_ChainingActions() throws Exception {
         ControllerDef controller = getJavaController("java://org.auraframework.impl.java.controller.ActionChainingController");
@@ -546,6 +590,7 @@ public class JavaControllerTest extends AuraImplTestCase {
     }
 
     @ThreadHostileTest("TestLoggingAdapter not thread-safe")
+    @Test
     @UnAdaptableTest("W-2928878, we don't have test logging adapter in core")
     public void testParamLogging_ChainingIdenticalActions() throws Exception {
         ControllerDef controller = getJavaController("java://org.auraframework.impl.java.controller.ActionChainingController");
@@ -586,12 +631,12 @@ public class JavaControllerTest extends AuraImplTestCase {
     private List<Map<String, Object>> runActionsAndReturnLogs(List<Action> actions) throws Exception {
         List<Map<String, Object>> logs;
         StringWriter sw = new StringWriter();
-        TestLoggingAdapterController.beginCapture();
+        testLoggingAdapterController.beginCapture();
         try {
-            Aura.getServerService().run(new Message(actions), Aura.getContextService().getCurrentContext(), sw, null);
+            serverService.run(new Message(actions), contextService.getCurrentContext(), sw, null);
         } finally {
-            Aura.getLoggingService().flush();
-            logs = TestLoggingAdapterController.endCapture();
+            loggingService.flush();
+            logs = testLoggingAdapterController.endCapture();
             assertNotNull(logs);
         }
         return logs;

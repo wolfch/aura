@@ -29,10 +29,6 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 @UnAdaptableTest("Docs will mostly be accessed via external website, just verify it runs in standalone")
 public class AuradocsExampleUITest extends WebDriverTestCase {
 
-    public AuradocsExampleUITest(String name) {
-        super(name);
-    }
-
     @Override
     public void perBrowserSetUp() {
         super.perBrowserSetUp();

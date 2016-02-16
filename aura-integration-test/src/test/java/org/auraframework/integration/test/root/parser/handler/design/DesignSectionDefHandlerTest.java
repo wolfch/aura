@@ -15,13 +15,13 @@
  */
 package org.auraframework.integration.test.root.parser.handler.design;
 
-import org.auraframework.Aura;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.design.DesignDef;
 import org.auraframework.def.design.DesignSectionDef;
 import org.auraframework.impl.AuraImplTestCase;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
+import org.junit.Test;
 
 import java.util.Iterator;
 import java.util.Set;
@@ -30,20 +30,19 @@ public class DesignSectionDefHandlerTest extends AuraImplTestCase {
     private static final String SECTION = "<design:section/>";
     private static final String SECTION_NAME = "<design:section name=\"%s\"/>";
 
-    public DesignSectionDefHandlerTest(String name) {
-        super(name);
-    }
-
+    @Test
     public void testNoSection() throws Exception {
         Set<DesignSectionDef> layout = setupDesignSectionDef("");
         assertTrue("Layout did not contain no sections", layout.size() == 0);
     }
 
+    @Test
     public void testSection() throws Exception {
         Set<DesignSectionDef> sections = setupDesignSectionDef(SECTION);
         assertTrue("Layouts did not contain one section", sections.size() == 1);
     }
 
+    @Test
     public void testMultipleSectionOrder() throws Exception {
         StringBuilder sectionsStr = new StringBuilder();
         sectionsStr.append(String.format(SECTION_NAME, "5"));
@@ -59,6 +58,7 @@ public class DesignSectionDefHandlerTest extends AuraImplTestCase {
         assertEquals("Section name was incorrect, order may not be maintained", "someName", sections.next().getName());
     }
 
+    @Test
     public void testMultipleSectionSameName() throws Exception {
         //Both name="" and not specifying a name should result in the same name
         String sections = String.format(SECTION_NAME, "") + SECTION;
@@ -75,7 +75,7 @@ public class DesignSectionDefHandlerTest extends AuraImplTestCase {
                 ComponentDef.class, null);
         addSourceAutoCleanup(cmpDesc, String.format(baseComponentTag, "", ""));
 
-        DefDescriptor<DesignDef> designDesc = Aura.getDefinitionService().getDefDescriptor(cmpDesc.getQualifiedName(),
+        DefDescriptor<DesignDef> designDesc = definitionService.getDefDescriptor(cmpDesc.getQualifiedName(),
                 DesignDef.class);
         addSourceAutoCleanup(designDesc, String.format("<design:component><design:layout>%s</design:layout></design:component>", markup));
 

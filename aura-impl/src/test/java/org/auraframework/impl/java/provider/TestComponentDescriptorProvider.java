@@ -16,10 +16,10 @@
 package org.auraframework.impl.java.provider;
 
 import org.auraframework.Aura;
+import org.auraframework.annotations.Annotations.ServiceComponentProvider;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.ComponentDescriptorProvider;
 import org.auraframework.def.DefDescriptor;
-import org.auraframework.impl.system.DefDescriptorImpl;
 import org.auraframework.instance.BaseComponent;
 import org.auraframework.system.Annotations.Provider;
 
@@ -29,12 +29,13 @@ import org.auraframework.system.Annotations.Provider;
  * 
  * @since 0.0.196
  */
+@ServiceComponentProvider
 @Provider
 public class TestComponentDescriptorProvider implements ComponentDescriptorProvider {
     @Override
     public DefDescriptor<ComponentDef> provide() {
         BaseComponent<?, ?> component = Aura.getContextService().getCurrentContext().getCurrentComponent();
         String num = (String) component.getAttributes().getExpression("implNumber");
-        return DefDescriptorImpl.getInstance("test:test_Provider_providerImpl" + num, ComponentDef.class);
+        return Aura.getDefinitionService().getDefDescriptor("test:test_Provider_providerImpl" + num, ComponentDef.class);
     }
 }

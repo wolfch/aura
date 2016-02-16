@@ -15,14 +15,9 @@
  */
 package org.auraframework.impl.design;
 
-import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.xml.stream.XMLStreamException;
-
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import org.auraframework.Aura;
 import org.auraframework.builder.design.DesignDefBuilder;
 import org.auraframework.def.AttributeDef;
@@ -50,9 +45,12 @@ import org.auraframework.throwable.quickfix.InvalidDefinitionException;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.json.Json;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
+import javax.xml.stream.XMLStreamException;
+import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class DesignDefImpl extends RootDefinitionImpl<DesignDef> implements DesignDef {
     private static final long serialVersionUID = -8621907027705407577L;
@@ -147,7 +145,7 @@ public class DesignDefImpl extends RootDefinitionImpl<DesignDef> implements Desi
     @Override
     public void appendDependencies(Set<DefDescriptor<?>> dependencies) {
         super.appendDependencies(dependencies);
-        DefDescriptor<ComponentDef> cmpDesc = DefDescriptorImpl.getInstance(this.descriptor.getQualifiedName(),
+        DefDescriptor<ComponentDef> cmpDesc = Aura.getDefinitionService().getDefDescriptor(this.descriptor.getQualifiedName(),
                 ComponentDef.class);
         dependencies.add(cmpDesc);
 
@@ -181,7 +179,7 @@ public class DesignDefImpl extends RootDefinitionImpl<DesignDef> implements Desi
 
     @Override
     public DesignAttributeDef getAttributeDesignDef(String name) {
-        return getAttributeDesignDefs().get(DefDescriptorImpl.getInstance(name, DesignAttributeDef.class));
+        return getAttributeDesignDefs().get(Aura.getDefinitionService().getDefDescriptor(name, DesignAttributeDef.class));
     }
 
     @Override

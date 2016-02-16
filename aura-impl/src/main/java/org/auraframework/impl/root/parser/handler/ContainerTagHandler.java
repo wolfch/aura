@@ -15,13 +15,8 @@
  */
 package org.auraframework.impl.root.parser.handler;
 
-import java.util.Set;
-
-import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
-import org.auraframework.Aura;
+import org.auraframework.adapter.ConfigAdapter;
+import org.auraframework.adapter.DefinitionParserAdapter;
 import org.auraframework.def.BaseComponentDef;
 import org.auraframework.def.BaseComponentDef.WhitespaceBehavior;
 import org.auraframework.def.ComponentDefRef;
@@ -32,12 +27,20 @@ import org.auraframework.def.DefinitionAccess;
 import org.auraframework.def.HtmlTag;
 import org.auraframework.def.RootDefinition;
 import org.auraframework.expression.PropertyReference;
+import org.auraframework.impl.DefinitionAccessImpl;
+import org.auraframework.service.DefinitionService;
+import org.auraframework.system.AuraContext;
 import org.auraframework.system.Location;
 import org.auraframework.system.Source;
 import org.auraframework.throwable.AuraRuntimeException;
 import org.auraframework.throwable.quickfix.DefinitionNotFoundException;
 import org.auraframework.throwable.quickfix.InvalidAccessValueException;
 import org.auraframework.throwable.quickfix.QuickFixException;
+
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.util.Set;
 
 
 /**
@@ -52,20 +55,31 @@ implements ExpressionContainerHandler {
     public static final String SCRIPT_TAG = "script";
     public static final String ATTRIBUTE_ACCESS = "access";
 
+    protected final ConfigAdapter configAdapter;
+    protected final DefinitionParserAdapter definitionParserAdapter;
+
     public ContainerTagHandler() {
         super();
         this.defDescriptor = null;
         this.isInPrivilegedNamespace = true;
+        this.configAdapter = null;
+        this.definitionParserAdapter = null;
     }
 
-    public ContainerTagHandler(XMLStreamReader xmlReader, Source<?> source) {
-        this(null, xmlReader, source);
+    public ContainerTagHandler(XMLStreamReader xmlReader, Source<?> source, boolean isInPrivilegedNamespace,
+                               DefinitionService definitionService, ConfigAdapter configAdapter,
+                               DefinitionParserAdapter definitionParserAdapter) {
+        this(null, xmlReader, source, isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter);
     }
 
-    public ContainerTagHandler(DefDescriptor<T> defDescriptor, XMLStreamReader xmlReader, Source<?> source) {
-        super(xmlReader, source);
+    public ContainerTagHandler(DefDescriptor<T> defDescriptor, XMLStreamReader xmlReader, Source<?> source,
+                               boolean isInPrivilegedNamespace, DefinitionService definitionService,
+                               ConfigAdapter configAdapter, DefinitionParserAdapter definitionParserAdapter) {
+        super(xmlReader, source, definitionService);
         this.defDescriptor = defDescriptor;
-        this.isInPrivilegedNamespace = defDescriptor != null ? Aura.getConfigAdapter().isPrivilegedNamespace(defDescriptor.getNamespace()) : true;
+        this.isInPrivilegedNamespace = isInPrivilegedNamespace;
+        this.configAdapter = configAdapter;
+        this.definitionParserAdapter = definitionParserAdapter;
     }
 
     public boolean isInPrivilegedNamespace() {
@@ -170,21 +184,22 @@ implements ExpressionContainerHandler {
 
     protected DefinitionAccess readAccessAttribute() throws InvalidAccessValueException {
         String access = getAttributeValue(ATTRIBUTE_ACCESS);
+        DefinitionAccess defaultAccess;
         if (access != null) {
-            DefinitionAccess a;
             try {
                 String namespace = source.getDescriptor().getNamespace();
-                a = Aura.getDefinitionParserAdapter().parseAccess(namespace, access);
-                a.validate(namespace, allowAuthenticationAttribute(), allowPrivateAttribute());
+                defaultAccess = definitionParserAdapter.parseAccess(namespace, access);
+                defaultAccess.validate(namespace, allowAuthenticationAttribute(), allowPrivateAttribute(), configAdapter);
             } catch (InvalidAccessValueException e) {
                 // re-throw with location
                 throw new InvalidAccessValueException(e.getMessage(), getLocation());
             }
-            return a;
         }
         else {
-            return null;
+            defaultAccess = new DefinitionAccessImpl(this.isInPrivilegedNamespace ? AuraContext.Access.INTERNAL : AuraContext.Access.PUBLIC);
         }
+
+        return defaultAccess;
     }
 
     protected  boolean allowAuthenticationAttribute() {
@@ -225,7 +240,7 @@ implements ExpressionContainerHandler {
             if (!parentHandler.getAllowsScript() && SCRIPT_TAG.equals(tag.toLowerCase())) {
                 throw new AuraRuntimeException("script tags only allowed in templates", getLocation());
             }
-            return new HTMLComponentDefRefHandler<>(parentHandler, tag, xmlReader, source);
+            return new HTMLComponentDefRefHandler<>(parentHandler, tag, xmlReader, source, isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter);
         } else {
             String loadString = getSystemAttributeValue("load");
             if (loadString != null) {
@@ -237,11 +252,11 @@ implements ExpressionContainerHandler {
                             "Invalid value '%s' specified for 'aura:load' attribute", loadString), getLocation());
                 }
                 if (load == Load.LAZY || load == Load.EXCLUSIVE) {
-                    return new LazyComponentDefRefHandler<>(parentHandler, tag, xmlReader, source);
+                    return new LazyComponentDefRefHandler<>(parentHandler, tag, xmlReader, source, isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter);
                 }
             }
 
-            return new ComponentDefRefHandler<>(parentHandler, xmlReader, source);
+            return new ComponentDefRefHandler<>(parentHandler, xmlReader, source, isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter);
         }
     }
 
@@ -265,5 +280,15 @@ implements ExpressionContainerHandler {
         }
 
         return tagName;
+    }
+
+    /**
+     * Returns DefinitionAccess based on privileged namespace
+     *
+     * @param isInPrivilegedNamespace privileged namespace
+     * @return INTERNAL access for privileged namespace or PUBLIC for any other
+     */
+    protected DefinitionAccess getAccess(boolean isInPrivilegedNamespace) {
+        return new DefinitionAccessImpl(isInPrivilegedNamespace ? AuraContext.Access.INTERNAL : AuraContext.Access.PUBLIC);
     }
 }

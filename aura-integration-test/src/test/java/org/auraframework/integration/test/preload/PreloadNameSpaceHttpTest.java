@@ -15,10 +15,7 @@
  */
 package org.auraframework.integration.test.preload;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
+import com.google.common.collect.Maps;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpPost;
@@ -28,17 +25,16 @@ import org.auraframework.test.util.AuraHttpTestCase;
 import org.auraframework.util.json.Json;
 import org.auraframework.util.json.JsonReader;
 import org.auraframework.util.test.annotation.AuraTestLabels;
+import org.junit.Test;
 
-import com.google.common.collect.Maps;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Basic HTTP retrieve test for checking preloaded namespaces and componentDefs.
  */
 public class PreloadNameSpaceHttpTest extends AuraHttpTestCase {
-    public PreloadNameSpaceHttpTest(String name) {
-        super(name);
-    }
-
     /**
      * Verify that when a component is serialized down to the client, the component Def only has the descriptor and
      * nothing else.
@@ -49,6 +45,7 @@ public class PreloadNameSpaceHttpTest extends AuraHttpTestCase {
      */
     @SuppressWarnings("unchecked")
     @AuraTestLabels("auraSanity")
+    @Test
     public void testComponentDef() throws Exception {
         String response = obtainResponseCheckStatus();
 
@@ -75,6 +72,7 @@ public class PreloadNameSpaceHttpTest extends AuraHttpTestCase {
      * Test there are no more preloaded namespaces.
      */
     @SuppressWarnings("unchecked")
+    @Test
     public void testNoPreloadsOnContext() throws Exception {
         String response = obtainResponseCheckStatus();
 
@@ -133,6 +131,7 @@ public class PreloadNameSpaceHttpTest extends AuraHttpTestCase {
     }
     
     @SuppressWarnings("unchecked")
+    @Test
     public void testDynamicNamespace() throws Exception {
     	String response = obtainResponseCheckStatusDN();
     	String componentInJson = response.substring(AuraBaseServlet.CSRF_PROTECT.length());

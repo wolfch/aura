@@ -15,45 +15,48 @@
  */
 package org.auraframework.integration.test.def;
 
+import com.google.common.base.Charsets;
+import com.google.common.base.Function;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
+import org.apache.commons.lang3.StringUtils;
+import org.auraframework.def.DefDescriptor;
+import org.auraframework.def.IncludeDef;
+import org.auraframework.def.IncludeDefRef;
+import org.auraframework.def.LibraryDef;
+import org.auraframework.impl.DefinitionAccessImpl;
+import org.auraframework.impl.def.DefinitionTest;
+import org.auraframework.impl.root.library.LibraryDefImpl;
+import org.auraframework.impl.root.library.LibraryDefImpl.Builder;
+import org.auraframework.service.ServerService;
+import org.auraframework.system.AuraContext.Access;
+import org.auraframework.system.AuraContext.Authentication;
+import org.auraframework.system.AuraContext.Format;
+import org.auraframework.system.AuraContext.Mode;
+import org.auraframework.throwable.quickfix.InvalidDefinitionException;
+import org.auraframework.util.json.JsonEncoder;
+import org.junit.Test;
+import org.mockito.Mockito;
+
+import javax.inject.Inject;
 import java.io.ByteArrayOutputStream;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
-import org.auraframework.Aura;
-import org.auraframework.def.DefDescriptor;
-import org.auraframework.def.IncludeDef;
-import org.auraframework.def.IncludeDefRef;
-import org.auraframework.def.LibraryDef;
-import org.auraframework.impl.def.DefinitionTest;
-import org.auraframework.impl.root.library.LibraryDefImpl;
-import org.auraframework.impl.root.library.LibraryDefImpl.Builder;
-import org.auraframework.system.AuraContext.Authentication;
-import org.auraframework.system.AuraContext.Format;
-import org.auraframework.system.AuraContext.Mode;
-import org.auraframework.throwable.quickfix.InvalidDefinitionException;
-import org.auraframework.util.json.JsonEncoder;
-import org.mockito.Mockito;
-
-import com.google.common.base.Charsets;
-import com.google.common.base.Function;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-
 public class LibraryDefTest extends DefinitionTest<LibraryDef> {
 
-    public LibraryDefTest(String name) {
-        super(name);
-    }
+    @Inject
+    private ServerService serverService;
 
     /**
      * Verify the loading of libraryDefs.
      */
+    @Test
     public void testGetLibraryInstance() throws Exception {
-        LibraryDef libDef = Aura.getDefinitionService().getDefinition("test:test_Library", LibraryDef.class);
+        LibraryDef libDef = definitionService.getDefinition("test:test_Library", LibraryDef.class);
         assertNotNull(libDef);
 
         List<IncludeDefRef> includes = libDef.getIncludes();
@@ -91,8 +94,9 @@ public class LibraryDefTest extends DefinitionTest<LibraryDef> {
     /**
      * Tests the ordering logic of the {@link LibraryDef} to ensure that imports will be serialized in order.
      */
+    @Test
     public void testIncludeOrdering() throws Exception {
-        LibraryDef libDef = Aura.getDefinitionService().getDefinition("test:test_LibraryOrdering", LibraryDef.class);
+        LibraryDef libDef = definitionService.getDefinition("test:test_LibraryOrdering", LibraryDef.class);
         assertNotNull(libDef);
 
         List<IncludeDefRef> includes = libDef.getIncludes();
@@ -107,9 +111,10 @@ public class LibraryDefTest extends DefinitionTest<LibraryDef> {
     /**
      * Tests the exception thrown when a cycle exists in the lib's dependency tree.
      */
+    @Test
     public void testIncludeNotOrderable() throws Exception {
         try {
-            Aura.getDefinitionService().getDefinition("test:test_LibraryNotOrderable", LibraryDef.class);
+            definitionService.getDefinition("test:test_LibraryNotOrderable", LibraryDef.class);
             fail("Getting library should fail because it is malformed.");
         } catch (Throwable t) {
             assertExceptionMessageEndsWith(t, InvalidDefinitionException.class,
@@ -120,8 +125,9 @@ public class LibraryDefTest extends DefinitionTest<LibraryDef> {
     /**
      * Tests the ordering logic of the {@link LibraryDef} to ensure that imports will be serialized in order.
      */
+    @Test
     public void testIncludeOrderingOneDependsOnRest() throws Exception {
-        LibraryDef libDef = Aura.getDefinitionService().getDefinition(
+        LibraryDef libDef = definitionService.getDefinition(
                 "test:test_LibraryIncludeOrderingOneDependsOnRest", LibraryDef.class);
         assertNotNull(libDef);
 
@@ -148,8 +154,9 @@ public class LibraryDefTest extends DefinitionTest<LibraryDef> {
     /**
      * Tests the ordering logic of the {@link LibraryDef} to ensure a mix of external and internal dependencies work.
      */
+    @Test
     public void testLibraryOrderingInternalExternalMix() throws Exception {
-        LibraryDef libDef = Aura.getDefinitionService().getDefinition("test:test_LibraryOrderingInternalExternalMix",
+        LibraryDef libDef = definitionService.getDefinition("test:test_LibraryOrderingInternalExternalMix",
                 LibraryDef.class);
         assertNotNull(libDef);
 
@@ -164,8 +171,9 @@ public class LibraryDefTest extends DefinitionTest<LibraryDef> {
     /**
      * Tests the {@link LibraryDef} (and {@link IncludeDefRef}) serialization.
      */
+    @Test
     public void testSerialization() throws Exception {
-        LibraryDef libDef = Aura.getDefinitionService().getDefinition("test:test_Library", LibraryDef.class);
+        LibraryDef libDef = definitionService.getDefinition("test:test_Library", LibraryDef.class);
         assertNotNull(libDef);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream(512);
@@ -177,11 +185,13 @@ public class LibraryDefTest extends DefinitionTest<LibraryDef> {
         goldFileJson(actual);
     }
 
+    @Test
     public void testValidateDefinitionWithoutIncludes() throws Exception {
         DefDescriptor<LibraryDef> libDesc = getAuraTestingUtil().createStringSourceDescriptor(null, LibraryDef.class,
                 null);
         Builder builder = new LibraryDefImpl.Builder();
         builder.setDescriptor(libDesc);
+        builder.setAccess(new DefinitionAccessImpl(Access.INTERNAL));
 
         LibraryDefImpl libraryDef = builder.build();
 
@@ -194,6 +204,7 @@ public class LibraryDefTest extends DefinitionTest<LibraryDef> {
         }
     }
 
+    @Test
     public void testValidateDefinitionWithDuplicateIncludes() throws Exception {
         DefDescriptor<LibraryDef> libDesc = getAuraTestingUtil().createStringSourceDescriptor(null, LibraryDef.class,
                 null);
@@ -208,6 +219,7 @@ public class LibraryDefTest extends DefinitionTest<LibraryDef> {
 
         List<IncludeDefRef> includes = ImmutableList.of(include, includeDupe);
         builder.setIncludes(includes);
+        builder.setAccess(new DefinitionAccessImpl(Access.INTERNAL));
 
         LibraryDefImpl libraryDef = builder.build();
 
@@ -220,6 +232,7 @@ public class LibraryDefTest extends DefinitionTest<LibraryDef> {
         }
     }
 
+    @Test
     public void testSerializationWithAuraProdCompression() throws Exception {
         DefDescriptor<LibraryDef> libDesc = getAuraTestingUtil().createStringSourceDescriptor(null, LibraryDef.class,
                 null);
@@ -231,12 +244,12 @@ public class LibraryDefTest extends DefinitionTest<LibraryDef> {
                 includeDesc,
                 "function(){\n\tvar renamed = 'truth';\n\tif(window.blah)\n\t\t{renamed+=' hurts'}\n\treturn renamed}");
 
-        Aura.getContextService().endContext();
-        Aura.getContextService().startContext(Mode.PROD, Format.JSON, Authentication.AUTHENTICATED);
+        contextService.endContext();
+        contextService.startContext(Mode.PROD, Format.JSON, Authentication.AUTHENTICATED);
 
         Set<DefDescriptor<?>> descs = ImmutableSet.<DefDescriptor<?>> of(libDesc);
         Writer writer = new StringWriter();
-        Aura.getServerService().writeDefinitions(descs, writer);
+        serverService.writeDefinitions(descs, writer);
         String actual = writer.toString();
         String expected = "function(){var a=\"truth\";window.blah&&(a+=\" hurts\");return a}";
         if (!actual.contains(expected)) {

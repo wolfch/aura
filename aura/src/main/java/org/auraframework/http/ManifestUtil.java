@@ -15,24 +15,23 @@
  */
 package org.auraframework.http;
 
-import java.util.List;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.auraframework.Aura;
+import com.google.common.net.HttpHeaders;
+import org.auraframework.adapter.ConfigAdapter;
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.BaseComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.DefDescriptor.DefType;
 import org.auraframework.http.RequestParam.StringParam;
+import org.auraframework.service.ContextService;
 import org.auraframework.system.AuraContext;
 import org.auraframework.system.AuraContext.Mode;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.AuraTextUtil;
 
-import com.google.common.net.HttpHeaders;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * A set of manifest utilities.
@@ -72,7 +71,13 @@ public class ManifestUtil {
      */
     public static final long LONG_EXPIRE = 45 * SHORT_EXPIRE;
 
-    public ManifestUtil() { }
+    private final ContextService contextService;
+    private final ConfigAdapter configAdapter;
+
+    public ManifestUtil(ContextService contextService, ConfigAdapter configAdapter) {
+        this.contextService = contextService;
+        this.configAdapter = configAdapter;
+    }
 
     /**
      * Check to see if we allow appcache on the current request.
@@ -90,11 +95,11 @@ public class ManifestUtil {
      * Is AppCache allowed by the current configuration?
      */
     public boolean isManifestEnabled() {
-        if (!Aura.getConfigAdapter().isClientAppcacheEnabled()) {
+        if (!configAdapter.isClientAppcacheEnabled()) {
             return false;
         }
 
-        AuraContext context = Aura.getContextService().getCurrentContext();
+        AuraContext context = contextService.getCurrentContext();
         DefDescriptor<? extends BaseComponentDef> desc = context.getApplicationDescriptor();
 
         if (desc != null && desc.getDefType().equals(DefType.APPLICATION)) {
@@ -173,7 +178,7 @@ public class ManifestUtil {
      * @return the name (null if none)
      */
     private String getManifestCookieName() {
-        AuraContext context = Aura.getContextService().getCurrentContext();
+        AuraContext context = contextService.getCurrentContext();
         if (context.getApplicationDescriptor() != null) {
             StringBuilder sb = new StringBuilder();
             if (context.getMode() != Mode.PROD) {
@@ -282,7 +287,7 @@ public class ManifestUtil {
      * @return a string for the manifest URL.
      */
     public String getManifestUrl() throws QuickFixException {
-        AuraContext context = Aura.getContextService().getCurrentContext();
+        AuraContext context = contextService.getCurrentContext();
         String contextPath = context.getContextPath();
         String ret = "";
 

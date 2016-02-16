@@ -15,13 +15,13 @@
  */
 package org.auraframework.integration.test.root.parser.handler.design;
 
-import org.auraframework.Aura;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.design.DesignDef;
 import org.auraframework.def.design.DesignLayoutItemDef;
 import org.auraframework.impl.AuraImplTestCase;
 import org.auraframework.throwable.quickfix.DefinitionNotFoundException;
+import org.junit.Test;
 
 import java.util.Iterator;
 import java.util.Set;
@@ -31,17 +31,15 @@ public class DesignLayoutAttributeDefHandlerTest extends AuraImplTestCase {
     private final static String VALID_ATTRIBUTE = "test";
     private final static String VALID_ATTRIBUTE_2 = "something";
     private final static String VALID_ATTRIBUTE_3 = "else";
-    public DesignLayoutAttributeDefHandlerTest(String name) {
-        super(name);
-    }
 
+    @Test
     public void testLayoutAttributeWithInvalidAttribute() throws Exception {
         final String invalidAttr = "NotAAttribute";
         DefDescriptor<ComponentDef> cmpDesc = getAuraTestingUtil().createStringSourceDescriptor(null,
                 ComponentDef.class, null);
         addSourceAutoCleanup(cmpDesc, String.format(baseComponentTag, "", ""));
 
-        DefDescriptor<DesignDef> designDesc = Aura.getDefinitionService().getDefDescriptor(cmpDesc.getQualifiedName(),
+        DefDescriptor<DesignDef> designDesc = definitionService.getDefDescriptor(cmpDesc.getQualifiedName(),
                 DesignDef.class);
         addSourceAutoCleanup(designDesc, String.format("<design:component><design:layout>" +
                 "<design:section><design:layoutItems>%s</design:layoutItems></design:section>" +
@@ -54,6 +52,7 @@ public class DesignLayoutAttributeDefHandlerTest extends AuraImplTestCase {
         }
     }
 
+    @Test
     public void testLayoutAttribute() throws Exception {
         Set<DesignLayoutItemDef> items = setupDesignLayoutAttributeDef(String.format(ATTRIBUTE, VALID_ATTRIBUTE),
                 VALID_ATTRIBUTE);
@@ -64,6 +63,7 @@ public class DesignLayoutAttributeDefHandlerTest extends AuraImplTestCase {
 
     }
 
+    @Test
     public void testLayoutAttributeOrder() throws Exception {
         StringBuilder items = new StringBuilder();
         items.append(String.format(ATTRIBUTE, VALID_ATTRIBUTE));
@@ -96,7 +96,7 @@ public class DesignLayoutAttributeDefHandlerTest extends AuraImplTestCase {
         }
         addSourceAutoCleanup(cmpDesc, String.format(baseComponentTag, "", builder.toString()));
 
-        DefDescriptor<DesignDef> designDesc = Aura.getDefinitionService().getDefDescriptor(cmpDesc.getQualifiedName(),
+        DefDescriptor<DesignDef> designDesc = definitionService.getDefDescriptor(cmpDesc.getQualifiedName(),
                 DesignDef.class);
         builder = new StringBuilder();
         for (String attr : attrs) {

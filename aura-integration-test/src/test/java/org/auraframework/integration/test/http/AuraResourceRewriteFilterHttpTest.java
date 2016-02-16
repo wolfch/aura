@@ -18,6 +18,7 @@ package org.auraframework.integration.test.http;
 import org.apache.http.HttpStatus;
 import org.auraframework.test.util.AuraHttpTestCase;
 import org.auraframework.util.test.annotation.AuraTestLabels;
+import org.junit.Test;
 
 /**
  * Tests for ResourceRewriteFilter handling. The tests don't validate the
@@ -28,10 +29,6 @@ import org.auraframework.util.test.annotation.AuraTestLabels;
  * @since 0.0.92
  */
 public class AuraResourceRewriteFilterHttpTest extends AuraHttpTestCase {
-    public AuraResourceRewriteFilterHttpTest(String name) {
-        super(name);
-    }
-
     /**
      * URLs should be forwarded to AuraResourceServlet only if they appear to
      * have the required format. We expect 404 for all other URLs, as they
@@ -39,6 +36,7 @@ public class AuraResourceRewriteFilterHttpTest extends AuraHttpTestCase {
      */
     // TODO: W-1069590 https://gus.soma.salesforce.com/a07B0000000G71N
     @AuraTestLabels("auraSanity")
+    @Test
     public void testDoFilterWithMissingParams() throws Exception {
         assertUrlResponse("Shouldn't forward url with only context", "/l/{'mode':'DEV'}", HttpStatus.SC_NOT_FOUND);
         assertUrlResponse("Shouldn't forward url without context", "/l/app.js", HttpStatus.SC_NOT_FOUND);

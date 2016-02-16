@@ -15,13 +15,6 @@
  */
 package org.auraframework.impl;
 
-import java.io.StringWriter;
-import java.io.Writer;
-
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamWriter;
-
-import org.auraframework.Aura;
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.ModelDef;
@@ -29,52 +22,65 @@ import org.auraframework.impl.java.model.JavaModelDefImpl;
 import org.auraframework.impl.test.util.AuraImplUnitTestingUtil;
 import org.auraframework.instance.BaseComponent;
 import org.auraframework.instance.Model;
-import org.auraframework.service.DefinitionService;
+import org.auraframework.service.InstanceService;
+import org.auraframework.service.RenderingService;
 import org.auraframework.system.AuraContext.Authentication;
 import org.auraframework.system.AuraContext.Format;
 import org.auraframework.system.AuraContext.Mode;
 import org.auraframework.test.util.AuraTestCase;
 import org.auraframework.util.json.JsonSerializationContext;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.StringWriter;
+import java.io.Writer;
+
 /**
  * Base class for Aura unit tests that establishes a AuraTestContext that looks up components in the
  * aura-test/components/ directory.
  */
-
 public abstract class AuraImplTestCase extends AuraTestCase {
     private final XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newInstance();
 
-    protected final AuraImplUnitTestingUtil vendor = new AuraImplUnitTestingUtil();
-    protected final DefinitionService definitionService = Aura.getDefinitionService();
+    @Inject
+    RenderingService renderingService;
+
+    @Inject
+    protected InstanceService instanceService;
+
+    protected AuraImplUnitTestingUtil vendor;
+
     private boolean shouldSetupContext = true;
 
-    protected final DefDescriptor<ApplicationDef> laxSecurityApp = definitionService.getDefDescriptor(
-            "test:laxSecurity", ApplicationDef.class);
+    protected DefDescriptor<ApplicationDef> laxSecurityApp;
 
-    public AuraImplTestCase(String name) {
-        this(name, true);
+    protected void setShouldSetupContext(boolean setupContext) {
+        this.shouldSetupContext = setupContext;
     }
-
-    public AuraImplTestCase(String name, boolean setupContext) {
-        super(name);
-        shouldSetupContext = setupContext;
-    }
-
+    
     @Override
     public void setUp() throws Exception {
         super.setUp();
         if (shouldSetupContext) {
-            if (Aura.getContextService().isEstablished()) {
-                Aura.getContextService().endContext();
+            if (contextService.isEstablished()) {
+                contextService.endContext();
             }
-            Aura.getContextService().startContext(Mode.UTEST, Format.JSON, Authentication.AUTHENTICATED);
+            contextService.startContext(Mode.UTEST, Format.JSON, Authentication.AUTHENTICATED);
         }
+        laxSecurityApp = definitionService.getDefDescriptor("test:laxSecurity", ApplicationDef.class);
+    }
+
+    @PostConstruct
+    public void initVendor() {
+        this.vendor = new AuraImplUnitTestingUtil(definitionService, instanceService);
     }
 
     @Override
     public void tearDown() throws Exception {
-        if (Aura.getContextService().isEstablished()) {
-            Aura.getContextService().endContext();
+        if (contextService.isEstablished()) {
+            contextService.endContext();
         }
         super.tearDown();
     }
@@ -89,7 +95,7 @@ public abstract class AuraImplTestCase extends AuraTestCase {
 
     @Override
     protected JsonSerializationContext getJsonSerializationContext() {
-        return Aura.getContextService().getCurrentContext().getJsonSerializationContext();
+        return contextService.getCurrentContext().getJsonSerializationContext();
     }
 
     /**
@@ -110,7 +116,7 @@ public abstract class AuraImplTestCase extends AuraTestCase {
 
     protected String getRenderedBaseComponent(BaseComponent<?, ?> cmp) throws Exception {
         StringWriter out = new StringWriter();
-        Aura.getRenderingService().render(cmp, out);
+        renderingService.render(cmp, out);
         return out.toString();
     }
 }

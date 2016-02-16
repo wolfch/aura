@@ -15,15 +15,12 @@
  */
 package org.auraframework.impl.adapter.format.html;
 
+import org.auraframework.impl.adapter.format.BaseFormatAdapter;
+
+import javax.annotation.concurrent.ThreadSafe;
 import java.io.IOException;
 import java.util.List;
 
-import javax.annotation.concurrent.ThreadSafe;
-
-import org.auraframework.impl.adapter.format.BaseFormatAdapter;
-
-/**
- */
 @ThreadSafe
 public abstract class HTMLFormatAdapter<T> extends BaseFormatAdapter<T> {
 

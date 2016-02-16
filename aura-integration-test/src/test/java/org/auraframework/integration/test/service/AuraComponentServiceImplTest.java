@@ -15,30 +15,26 @@
  */
 package org.auraframework.integration.test.service;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.auraframework.Aura;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.impl.AuraImplTestCase;
 import org.auraframework.impl.DefinitionServiceImpl;
-import org.auraframework.service.DefinitionService;
+import org.junit.Test;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class AuraComponentServiceImplTest extends AuraImplTestCase {
 
-    public AuraComponentServiceImplTest(String name) {
-        super(name);
-    }
-
+    @Test
     public void testAuraComponentService() {
-        DefinitionService ds = Aura.getDefinitionService();
-        assertTrue(ds instanceof DefinitionServiceImpl);
+        assertTrue(definitionService instanceof DefinitionServiceImpl);
     }
 
+    @Test
     public void testGetComponent() throws Exception {
         Map<String, Object> attributes = new HashMap<>();
         attributes.put("attr", "yo");
-        assertNotNull(Aura.getInstanceService().getInstance("test:child1", ComponentDef.class, attributes));
+        assertNotNull(instanceService.getInstance("test:child1", ComponentDef.class, attributes));
     }
 
 }

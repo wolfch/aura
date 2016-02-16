@@ -15,7 +15,6 @@
  */
 package org.auraframework.integration.test.def;
 
-import org.auraframework.Aura;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.LibraryDef;
@@ -23,21 +22,18 @@ import org.auraframework.impl.AuraImplTestCase;
 import org.auraframework.impl.root.parser.handler.ImportDefHandler;
 import org.auraframework.throwable.quickfix.DefinitionNotFoundException;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
+import org.junit.Test;
 
 public class ImportDefTest extends AuraImplTestCase {
-
-    public ImportDefTest(String name) {
-        super(name);
-    }
-
     /**
      * Test to ensure that the property attribute must be specified.
      */
+    @Test
     public void testNoProperty() throws Exception {
         DefDescriptor<ComponentDef> cmpDesc = addSourceAutoCleanup(ComponentDef.class,
                 String.format(baseComponentTag, "", "<aura:import library='dummy'/>"));
         try {
-            Aura.getDefinitionService().getDefinition(cmpDesc);
+            definitionService.getDefinition(cmpDesc);
             fail("QuickFixException expected. property attribute is missing.");
         } catch (InvalidDefinitionException t) {
             assertExceptionMessage(t, InvalidDefinitionException.class,
@@ -48,12 +44,13 @@ public class ImportDefTest extends AuraImplTestCase {
     /**
      * Test to ensure that the property must be a valid javascript identifier name.
      */
+    @Test
     public void testInvalidProperty() throws Exception {
         DefDescriptor<ComponentDef> cmpDesc = addSourceAutoCleanup(ComponentDef.class,
                 String.format(baseComponentTag, "",
                         "<aura:import library='dummy' property='not just anything you want'/>"));
         try {
-            Aura.getDefinitionService().getDefinition(cmpDesc);
+            definitionService.getDefinition(cmpDesc);
             fail("QuickFixException expected. property attribute is invalid.");
         } catch (InvalidDefinitionException t) {
             assertExceptionMessage(t, InvalidDefinitionException.class,
@@ -64,11 +61,12 @@ public class ImportDefTest extends AuraImplTestCase {
     /**
      * Test that referenced library is validated to exist.
      */
+    @Test
     public void testLibraryReferenceInvalid() throws Exception {
         DefDescriptor<ComponentDef> cmpDesc = addSourceAutoCleanup(ComponentDef.class,
                 String.format(baseComponentTag, "", "<aura:import library='not:here' property='p'/>"));
         try {
-            Aura.getDefinitionService().getDefinition(cmpDesc);
+            definitionService.getDefinition(cmpDesc);
             fail("QuickFixException expected. property attribute is missing.");
         } catch (DefinitionNotFoundException t) {
             assertExceptionMessage(t, DefinitionNotFoundException.class,
@@ -79,6 +77,7 @@ public class ImportDefTest extends AuraImplTestCase {
     /**
      * Test that referenced library is validated.
      */
+    @Test
     public void testLibraryIsInvalid() throws Exception {
         DefDescriptor<LibraryDef> libraryDesc = addSourceAutoCleanup(LibraryDef.class, "<aura:library/>");
         DefDescriptor<ComponentDef> cmpDesc = addSourceAutoCleanup(
@@ -86,7 +85,7 @@ public class ImportDefTest extends AuraImplTestCase {
                 String.format(baseComponentTag, "",
                         String.format("<aura:import library='%s' property='p'/>", libraryDesc.getDescriptorName())));
         try {
-            Aura.getDefinitionService().getDefinition(cmpDesc);
+            definitionService.getDefinition(cmpDesc);
             fail("QuickFixException expected. property attribute is missing.");
         } catch (InvalidDefinitionException t) {
             assertExceptionMessage(t, InvalidDefinitionException.class,

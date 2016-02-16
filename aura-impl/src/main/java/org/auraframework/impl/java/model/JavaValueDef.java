@@ -15,10 +15,6 @@
  */
 package org.auraframework.impl.java.model;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
 import org.auraframework.Aura;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.TypeDef;
@@ -30,6 +26,10 @@ import org.auraframework.throwable.AuraExecutionException;
 import org.auraframework.throwable.AuraRuntimeException;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.json.Json;
+
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 public class JavaValueDef extends DefinitionImpl<ValueDef> implements ValueDef {
 
@@ -43,14 +43,14 @@ public class JavaValueDef extends DefinitionImpl<ValueDef> implements ValueDef {
     private final Method getter;
 
     public JavaValueDef(String name, DefDescriptor<TypeDef> typeDescriptor, Location location) {
-        super(null, location);
+        super(null, location, null);
         this.name = name;
         this.typeDescriptor = typeDescriptor;
         this.getter = null;
     }
 
     public JavaValueDef(String name, Method getter, DefDescriptor<TypeDef> typeDescriptor, Location location) {
-        super(null, location);
+        super(null, location, null);
         this.name = name;
         this.getter = getter;
         this.typeDescriptor = typeDescriptor;

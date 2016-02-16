@@ -27,11 +27,6 @@ import org.openqa.selenium.WebElement;
  */
 public class InputCutCopyPasteUITest extends WebDriverTestCase {
 
-    public InputCutCopyPasteUITest(String name) {
-        super(name);
-
-    }
-
     @ExcludeBrowsers({ BrowserType.ANDROID_PHONE, BrowserType.ANDROID_TABLET, BrowserType.IPAD, BrowserType.IPHONE,
             BrowserType.SAFARI })
     public void testCutCopyPasteEvents() throws Exception {

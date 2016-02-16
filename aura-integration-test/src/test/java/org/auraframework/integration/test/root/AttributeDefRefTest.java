@@ -15,31 +15,25 @@
  */
 package org.auraframework.integration.test.root;
 
-import java.util.Set;
-
-import org.auraframework.Aura;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Sets;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.Definition;
 import org.auraframework.def.TypeDef;
 import org.auraframework.expression.Expression;
 import org.auraframework.impl.AuraImplTestCase;
 import org.auraframework.impl.root.AttributeDefRefImpl;
-import org.auraframework.impl.system.DefDescriptorImpl;
 import org.auraframework.system.AuraContext;
 import org.auraframework.throwable.quickfix.InvalidExpressionException;
-import org.auraframework.util.type.TypeUtil.ConversionException;
+import org.auraframework.util.type.ConversionException;
+import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Sets;
+import java.util.Set;
 
 public class AttributeDefRefTest extends AuraImplTestCase {
 
     private static final String testAttributeDescriptorName = "testAttribute";
-
-    public AttributeDefRefTest(String name) {
-        super(name);
-    }
 
     private AttributeDefRefImpl assertParsedValue(Object original, String typeDefDesc, Object expected)
             throws Exception {
@@ -49,7 +43,7 @@ public class AttributeDefRefTest extends AuraImplTestCase {
         Object value = adr.getValue();
         assertEquals("unparsed value", original, value);
 
-        adr.parseValue(Aura.getDefinitionService().getDefinition(typeDefDesc, TypeDef.class));
+        adr.parseValue(definitionService.getDefinition(typeDefDesc, TypeDef.class));
         value = adr.getValue();
         assertEquals("parsed value", expected, value);
 
@@ -71,10 +65,11 @@ public class AttributeDefRefTest extends AuraImplTestCase {
     /**
      * Non-expressions are parsed by the TypeDef.
      */
+    @Test
     public void testParseValueSimple() throws Exception {
-        AuraContext context = Aura.getContextService().getCurrentContext();
+        AuraContext context = contextService.getCurrentContext();
         String typeName = getAuraTestingUtil().getNonce("customType");
-        DefDescriptor<TypeDef> typeDesc = DefDescriptorImpl.getInstance(typeName, TypeDef.class);
+        DefDescriptor<TypeDef> typeDesc = definitionService.getDefDescriptor(typeName, TypeDef.class);
         TypeDef mockType = Mockito.mock(TypeDef.class);
         Mockito.doReturn(typeDesc).when(mockType).getDescriptor();
         Mockito.doReturn("fabulous").when(mockType).valueOf("parseable");
@@ -86,6 +81,7 @@ public class AttributeDefRefTest extends AuraImplTestCase {
     /**
      * Expressions are not parsed in parseValue.
      */
+    @Test
     public void testParseValueExpression() throws Exception {
         Expression expr = Mockito.mock(Expression.class);
         assertParsedValue(expr, "long", expr);
@@ -95,6 +91,7 @@ public class AttributeDefRefTest extends AuraImplTestCase {
     /**
      * Primitives converted to respective types.
      */
+    @Test
     public void testParseValuePrimitives() throws Exception {
         // current types with default converters
         assertParsedValue("1", "int", 1);
@@ -108,6 +105,7 @@ public class AttributeDefRefTest extends AuraImplTestCase {
     /**
      * Parse errors wrapped in InvalidExpressionException.
      */
+    @Test
     public void testParseValueWithConversionException() throws Exception {
         // values without a converter from String
         assertParseException("1", "byte", ConversionException.class, "No Converter or MultiConverter found for ");
@@ -122,6 +120,7 @@ public class AttributeDefRefTest extends AuraImplTestCase {
         // assertParseException("987654321987654321987654321", "int", ParseException.class, "Unparseable number: ");
     }
 
+    @Test
     public void testValidateReferencesChainsToValue() throws Exception {
         Definition value = Mockito.mock(Definition.class);
         AttributeDefRefImpl adr = vendor.makeAttributeDefRef(testAttributeDescriptorName, value, null);
@@ -130,6 +129,7 @@ public class AttributeDefRefTest extends AuraImplTestCase {
         Mockito.verify(value, Mockito.times(1)).validateReferences();
     }
 
+    @Test
     public void testValidateReferencesChainsThroughCollection() throws Exception {
         Definition value = Mockito.mock(Definition.class);
         AttributeDefRefImpl adr = vendor
@@ -139,6 +139,7 @@ public class AttributeDefRefTest extends AuraImplTestCase {
         Mockito.verify(value, Mockito.times(1)).validateReferences();
     }
 
+    @Test
     public void testAppendDependenciesChainsToValue() throws Exception {
         Definition value = Mockito.mock(Definition.class);
         AttributeDefRefImpl adr = vendor.makeAttributeDefRef(testAttributeDescriptorName, value, null);
@@ -148,6 +149,7 @@ public class AttributeDefRefTest extends AuraImplTestCase {
         Mockito.verify(value, Mockito.times(1)).appendDependencies(Mockito.<Set<DefDescriptor<?>>> any());
     }
 
+    @Test
     public void testAppendDependenciesChainsThroughCollection() throws Exception {
         Definition value = Mockito.mock(Definition.class);
         AttributeDefRefImpl adr = vendor.makeAttributeDefRef(testAttributeDescriptorName, Sets.newHashSet(value), null);
@@ -160,15 +162,16 @@ public class AttributeDefRefTest extends AuraImplTestCase {
     /**
      * Equality is based on unparsed values.
      */
+    @Test
     public void testEquals() throws Exception {
         AttributeDefRefImpl adr1 = vendor.makeAttributeDefRef(testAttributeDescriptorName, "1", null);
         AttributeDefRefImpl adr2 = vendor.makeAttributeDefRef(testAttributeDescriptorName, "1", null);
         assertEquals("unparsed def refs should be equal", adr1, adr2);
 
-        adr1.parseValue(Aura.getDefinitionService().getDefinition("string", TypeDef.class));
+        adr1.parseValue(definitionService.getDefinition("string", TypeDef.class));
         assertEquals("parsed def ref and unparsed def ref should still be equal", adr1, adr2);
 
-        adr2.parseValue(Aura.getDefinitionService().getDefinition("long", TypeDef.class));
+        adr2.parseValue(definitionService.getDefinition("long", TypeDef.class));
         assertEquals("differently parsed def refs should still be equal", adr1, adr2);
     }
 }

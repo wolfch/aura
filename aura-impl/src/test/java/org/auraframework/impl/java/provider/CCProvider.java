@@ -15,9 +15,8 @@
  */
 package org.auraframework.impl.java.provider;
 
-import java.util.Map;
-
 import org.auraframework.Aura;
+import org.auraframework.annotations.Annotations.ServiceComponentProvider;
 import org.auraframework.def.ComponentConfigProvider;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.instance.AttributeSet;
@@ -26,6 +25,9 @@ import org.auraframework.instance.ComponentConfig;
 import org.auraframework.system.Annotations.Provider;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
+import java.util.Map;
+
+@ServiceComponentProvider
 @Provider
 public class CCProvider implements ComponentConfigProvider {
 

@@ -15,9 +15,6 @@
  */
 package org.auraframework.integration.test.root.component.attributes;
 
-import java.util.List;
-
-import org.auraframework.Aura;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.ComponentDefRef;
 import org.auraframework.def.DefDescriptor;
@@ -27,6 +24,9 @@ import org.auraframework.impl.type.ComponentDefRefArrayTypeDef;
 import org.auraframework.instance.Component;
 import org.auraframework.throwable.quickfix.DefinitionNotFoundException;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
+import org.junit.Test;
+
+import java.util.List;
 
 /**
  * Unit tests for attributes of type Aura.Component, Aura.Component[] and
@@ -37,20 +37,18 @@ import org.auraframework.throwable.quickfix.InvalidDefinitionException;
  * @userStory a07B0000000MniV
  */
 public class AuraComponentAttributeTypeTest extends AuraImplTestCase {
-    public AuraComponentAttributeTypeTest(String name) {
-        super(name);
-    }
 
     /**
      * Postive test case.
      *
      * @throws Exception
      */
+    @Test
     public void testUsageOfComponentDefRefArray() throws Exception {
         DefDescriptor<ComponentDef> desc = addSourceAutoCleanup(ComponentDef.class, String.format(baseComponentTag, "",
                 "<aura:attribute type='Aura.ComponentDefRef[]' name='attr'>" + "<test:text/>"
                         + "<aura:text value='aura'/>" + "</aura:attribute>"));
-        Component cmp = (Component) Aura.getInstanceService().getInstance(desc);
+        Component cmp = (Component) instanceService.getInstance(desc);
         assertNotNull("Failed to create component with Aura.ComponentDefRef[] type attribute.", cmp);
         Object value = cmp.getAttributes().getValue("attr");
         assertNotNull(value);
@@ -65,7 +63,7 @@ public class AuraComponentAttributeTypeTest extends AuraImplTestCase {
         assertEquals("markup://aura:text", cmpDefRefs.get(1).getDescriptor().getQualifiedName());
         ComponentDefRef ref = cmpDefRefs.get(1);
         // Verify that the inner component def ref has the right value
-        assertEquals("ComponentDefRef does not have the expected attribute value", "aura", ref.newInstance(cmp)
+        assertEquals("ComponentDefRef does not have the expected attribute value", "aura", ((Component) instanceService.getInstance(ref, cmp))
                 .getAttributes().getValue("value"));
     }
 
@@ -75,11 +73,12 @@ public class AuraComponentAttributeTypeTest extends AuraImplTestCase {
      *
      * @throws Exception
      */
+    @Test
     public void testEmptyBodyForComponentDefRefArray() throws Exception {
         DefDescriptor<ComponentDef> desc = addSourceAutoCleanup(ComponentDef.class, String.format(baseComponentTag, "",
                 "<aura:attribute type='Aura.ComponentDefRef[]' name='attr'>" + "</aura:attribute>"));
         // Verify that it works fine
-        Component cmp = (Component) Aura.getInstanceService().getInstance(desc);
+        Component cmp = (Component) instanceService.getInstance(desc);
         assertNotNull("Was not able to use an attribute of Aura.ComponentDefRef[] with an empty body.", cmp);
         Object value = cmp.getAttributes().getValue("attr");
         assertNull("ComponentDefRef array attribute should have had no value.", value);
@@ -90,23 +89,25 @@ public class AuraComponentAttributeTypeTest extends AuraImplTestCase {
      *
      * @throws Exception
      */
+    @Test
     public void testComponentDefRefIsNotValidType() throws Exception {
         DefDescriptor<ComponentDef> desc = addSourceAutoCleanup(ComponentDef.class, String.format(baseComponentTag, "",
                 "<aura:attribute type='Aura.ComponentDefRef' name='attr' default=''/>"));
         try {
-            Aura.getInstanceService().getInstance(desc);
+            instanceService.getInstance(desc);
             fail("Aura.ComponentDefRef is not a valid attribute type.");
         } catch (DefinitionNotFoundException e) { /* expected */
         }
     }
 
+    @Test
     public void testAttributesInComponentDefRefArray() throws Exception {
         // 1. Expression using outer attributes
         DefDescriptor<ComponentDef> desc = addSourceAutoCleanup(ComponentDef.class, String.format(baseComponentTag, "",
                 "<aura:attribute type='String' name='outerAttr' default='emulp'/>"
                         + "<aura:attribute type='Aura.ComponentDefRef[]' name='attr'>"
                         + "<aura:text value=\"{!'aura'+ v.outerAttr}\"/>" + "</aura:attribute>"));
-        Component cmp = (Component) Aura.getInstanceService().getInstance(desc);
+        Component cmp = (Component) instanceService.getInstance(desc);
         assertNotNull(cmp);
         Object value = cmp.getAttributes().getValue("attr");
         assertNotNull(value);
@@ -115,7 +116,7 @@ public class AuraComponentAttributeTypeTest extends AuraImplTestCase {
         List<ComponentDefRef> cmpDefRefs = cdra.getList();
         ComponentDefRef ref = cmpDefRefs.get(0);
         assertEquals("Failed to use attribute value of outer component in ComponentDefRef array items.", "auraemulp",
-                ref.newInstance(cmp).getAttributes().getValue("value"));
+                ((Component) instanceService.getInstance(ref, cmp)).getAttributes().getValue("value"));
     }
 
     /**
@@ -124,6 +125,7 @@ public class AuraComponentAttributeTypeTest extends AuraImplTestCase {
      *
      * @throws Exception
      */
+    @Test
     public void testMarkupValidationInComponentDefRefArray() throws Exception {
         // Incomplete formula
         DefDescriptor<ComponentDef> desc = addSourceAutoCleanup(ComponentDef.class, String.format(baseComponentTag, "",
@@ -131,7 +133,7 @@ public class AuraComponentAttributeTypeTest extends AuraImplTestCase {
                         // Unclosed formula field
                         "<aura:text value='{!aura/>" + "</aura:attribute>"));
         try {
-            Aura.getInstanceService().getInstance(desc);
+            instanceService.getInstance(desc);
             fail("Should have failed creation because of incomplete formula.");
         } catch (Exception e) {
             // Verifying common bits of parser (sjsxp vs woodstox) error
@@ -144,7 +146,7 @@ public class AuraComponentAttributeTypeTest extends AuraImplTestCase {
                 "</aura:attribute>") );
 
         try{
-            Aura.getDefinitionService().getDefinition(desc);
+            definitionService.getDefinition(desc);
             fail("Should have failed creation because of non existing component.");
         }catch(Exception e){
             checkExceptionStart(e,DefinitionNotFoundException.class,
@@ -157,7 +159,7 @@ public class AuraComponentAttributeTypeTest extends AuraImplTestCase {
          "<loadLevelTest:serverComponentWReqAttr/>"+
          "</aura:attribute>"));
          try{
-        	 Aura.getInstanceService().getInstance(desc);
+        	 instanceService.getInstance(desc);
         	 fail("Should have failed creation because of lack of value for required attribute.");
          }catch(Exception e){
         	 checkExceptionStart(e,InvalidDefinitionException.class,"The value of attribute \"value\" associated with"

@@ -15,9 +15,7 @@
  */
 package org.auraframework.impl.root.parser.handler;
 
-import javax.xml.stream.XMLStreamReader;
-
-import org.auraframework.Aura;
+import org.auraframework.adapter.DefinitionParserAdapter;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.ComponentDefRef;
 import org.auraframework.def.DefDescriptor;
@@ -26,18 +24,26 @@ import org.auraframework.impl.root.parser.XMLParser;
 import org.auraframework.system.Parser.Format;
 import org.auraframework.test.source.StringSource;
 import org.auraframework.throwable.AuraRuntimeException;
+import org.auraframework.util.FileMonitor;
+import org.junit.Test;
+
+import javax.inject.Inject;
+import javax.xml.stream.XMLStreamReader;
 
 /**
  * Test for {@link ContainerTagHandler}.
  */
 public class ContainerTagHandlerTest extends AuraImplTestCase {
+    @Inject
+    private FileMonitor fileMonitor;
+    
     XMLStreamReader xmlReader;
     ComponentDefRefHandler<?> cdrHandler;
 
-    public ContainerTagHandlerTest(String name) {
-        super(name);
-    }
+    @Inject
+    private DefinitionParserAdapter definitionParserAdapter;
 
+    @Test
     public void testGetDefRefHandler() throws Exception {
         // 1. Verify that specifying invalid load level in a component def ref,
         // throws Exception.
@@ -54,14 +60,15 @@ public class ContainerTagHandlerTest extends AuraImplTestCase {
      * Utility method to create a DefRefHandler for a given markup.
      */
     private ParentedTagHandler<? extends ComponentDefRef, ?> createDefRefHandler(String markup) throws Exception {
-        DefDescriptor<ComponentDef> desc = Aura.getDefinitionService().getDefDescriptor("fake:component",
+        DefDescriptor<ComponentDef> desc = definitionService.getDefDescriptor("fake:component",
                 ComponentDef.class);
-        StringSource<ComponentDef> source = new StringSource<>(desc, markup, "myID", Format.XML);
+        StringSource<ComponentDef> source = new StringSource<>(fileMonitor, desc, markup, "myID", Format.XML);
         xmlReader = XMLParser.createXMLStreamReader(source.getHashingReader());
         xmlReader.next();
         // Assume we found the markup in a component, create a
         // ComponentDefHandler to represent that
-        ComponentDefHandler cdh = new ComponentDefHandler(null, source, xmlReader);
+        ComponentDefHandler cdh = new ComponentDefHandler(null, source, xmlReader, true, definitionService,
+                contextService, configAdapter, definitionParserAdapter);
         // Try to create a DefRefHandler which will inturn call
         // ContainerTagHandler.getDefRefHandler()
         return cdh.getDefRefHandler(cdh);

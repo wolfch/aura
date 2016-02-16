@@ -17,9 +17,8 @@ package org.auraframework.impl.root.parser.handler;
 
 public class InterfaceAccessAttributeTest extends BaseAccessAttributeTest {
 
-	public InterfaceAccessAttributeTest(String name) {
-		super(name);
+	public InterfaceAccessAttributeTest() {
+		super();
 		testResource = TestResource.Interface;
 	}
-
 }

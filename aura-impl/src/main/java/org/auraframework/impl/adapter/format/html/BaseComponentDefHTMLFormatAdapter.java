@@ -15,12 +15,10 @@
  */
 package org.auraframework.impl.adapter.format.html;
 
-import java.io.IOException;
-import java.util.Map;
-
-import javax.annotation.concurrent.ThreadSafe;
-
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.auraframework.Aura;
+import org.auraframework.adapter.ConfigAdapter;
 import org.auraframework.def.BaseComponentDef;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
@@ -28,6 +26,7 @@ import org.auraframework.def.StyleDef;
 import org.auraframework.http.ManifestUtil;
 import org.auraframework.instance.BaseComponent;
 import org.auraframework.instance.Component;
+import org.auraframework.service.ContextService;
 import org.auraframework.service.InstanceService;
 import org.auraframework.service.RenderingService;
 import org.auraframework.system.AuraContext;
@@ -37,29 +36,44 @@ import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.javascript.Literal;
 import org.auraframework.util.json.JsonEncoder;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import javax.annotation.PostConstruct;
+import javax.annotation.concurrent.ThreadSafe;
+import javax.inject.Inject;
+import java.io.IOException;
+import java.util.Map;
 
-/**
- */
 @ThreadSafe
 public abstract class BaseComponentDefHTMLFormatAdapter<T extends BaseComponentDef> extends HTMLFormatAdapter<T> {
-    private ManifestUtil manifestUtil = new ManifestUtil();
+    @Inject
+    ConfigAdapter configAdapter;
+
+    @Inject
+    ContextService contextService;
+
+    @Inject
+    InstanceService instanceService;
+
+    @Inject
+    RenderingService renderingService;
+
+    private ManifestUtil manifestUtil;
+
+    @PostConstruct
+    public void createManifestUtil() {
+        manifestUtil = new ManifestUtil(contextService, configAdapter);
+    }
 
     @Override
     public void write(T value, Map<String, Object> componentAttributes, Appendable out) throws IOException {
         try {
-            InstanceService instanceService = Aura.getInstanceService();
-            RenderingService renderingService = Aura.getRenderingService();
-
             ComponentDef templateDef = value.getTemplateDef();
             Map<String, Object> attributes = Maps.newHashMap();
 
             StringBuilder sb = new StringBuilder();
-            writeHtmlStyle(Aura.getConfigAdapter().getResetCssURL(), sb);
+            writeHtmlStyle(configAdapter.getResetCssURL(), sb);
             attributes.put("auraResetTags", sb.toString());
 
-            AuraContext context = Aura.getContextService().getCurrentContext();
+            AuraContext context = contextService.getCurrentContext();
 
             sb.setLength(0);
             writeHtmlStyles(Aura.getServletUtilAdapter().getStyles(context), sb);
@@ -96,7 +110,7 @@ public abstract class BaseComponentDefHTMLFormatAdapter<T extends BaseComponentD
                 attributes.put("auraNamespacesScriptTags", sb.toString());
 
                 if(mode != Mode.PROD && mode != Mode.PRODDEBUG &&
-                        Aura.getContextService().getCurrentContext().getIsDebugToolEnabled()) {
+                        contextService.getCurrentContext().getIsDebugToolEnabled()) {
                     attributes.put("auraInitBlock", "<script>var debugWindow=window.open('/aura/debug.cmp','Aura Debug Tool','width=900,height=305,scrollbars=0,location=0,toolbar=0,menubar=0');$A.util.setDebugToolWindow(debugWindow);</script>");
                 }
 
@@ -126,5 +140,4 @@ public abstract class BaseComponentDefHTMLFormatAdapter<T extends BaseComponentD
     public void setManifestUtil(ManifestUtil manifestUtil) {
         this.manifestUtil = manifestUtil;
     }
-
 }

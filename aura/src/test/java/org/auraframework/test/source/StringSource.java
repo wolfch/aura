@@ -15,31 +15,30 @@
  */
 package org.auraframework.test.source;
 
+import org.auraframework.def.DefDescriptor;
+import org.auraframework.def.Definition;
+import org.auraframework.system.Parser.Format;
+import org.auraframework.system.Source;
+import org.auraframework.system.SourceListener;
+import org.auraframework.system.SourceListener.SourceMonitorEvent;
+import org.auraframework.throwable.AuraRuntimeException;
+import org.auraframework.util.IOUtil;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 
-import org.auraframework.Aura;
-
-import org.auraframework.def.DefDescriptor;
-import org.auraframework.def.Definition;
-import org.auraframework.system.Parser.Format;
-import org.auraframework.system.Source;
-import org.auraframework.system.SourceListener.SourceMonitorEvent;
-
-import org.auraframework.throwable.AuraRuntimeException;
-
-import org.auraframework.util.IOUtil;
-
 public class StringSource<D extends Definition> extends Source<D> {
-
     private static final long serialVersionUID = 8822758262106180101L;
+
+    private final SourceListener sourceListener;
     private final transient StringData data;
 
-    public StringSource(DefDescriptor<D> descriptor, String contents, String id, Format format) {
+    public StringSource(SourceListener sourceListener, DefDescriptor<D> descriptor, String contents, String id, Format format) {
         super(descriptor, id, format);
+        this.sourceListener = sourceListener;
         data = new StringData();
         if (contents != null) {
             data.write(contents);
@@ -48,11 +47,12 @@ public class StringSource<D extends Definition> extends Source<D> {
 
     /**
      * Copy an existing StringSource with shared backing data.
-     * 
+     * @param SourceListener TODO
      * @param original
      */
-    public StringSource(StringSource<D> original) {
+    public StringSource(SourceListener sourceListener, StringSource<D> original) {
         super(original.getDescriptor(), original.getSystemId(), original.getFormat());
+        this.sourceListener = sourceListener;
         data = original.data;
     }
 
@@ -104,7 +104,9 @@ public class StringSource<D extends Definition> extends Source<D> {
         if (newContents != null) {
             data.getBuffer().setLength(0);
             data.write(newContents.toString());
-            Aura.getDefinitionService().onSourceChanged(getDescriptor(), SourceMonitorEvent.CHANGED, null);
+            if (sourceListener != null) {
+                sourceListener.onSourceChanged(getDescriptor(), SourceMonitorEvent.CHANGED, null);
+            }
         }
         return true;
     }
@@ -113,7 +115,9 @@ public class StringSource<D extends Definition> extends Source<D> {
     public void clearContents() {
         data.getBuffer().setLength(0);
         data.touch();
-        Aura.getDefinitionService().onSourceChanged(getDescriptor(), SourceMonitorEvent.CHANGED, null);
+        if (sourceListener != null) {
+            sourceListener.onSourceChanged(getDescriptor(), SourceMonitorEvent.CHANGED, null);
+        }
     }
 
     public long setLastModified(long lastModified) {

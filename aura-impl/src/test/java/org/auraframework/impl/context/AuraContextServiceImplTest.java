@@ -15,42 +15,43 @@
  */
 package org.auraframework.impl.context;
 
-import java.util.Map;
-
-import org.auraframework.Aura;
 import org.auraframework.adapter.ContextAdapter;
-import org.auraframework.impl.AuraImpl;
 import org.auraframework.impl.AuraImplTestCase;
-import org.auraframework.service.ContextService;
 import org.auraframework.system.AuraContext.Authentication;
 import org.auraframework.system.AuraContext.Format;
 import org.auraframework.system.AuraContext.GlobalValue;
 import org.auraframework.system.AuraContext.Mode;
 import org.auraframework.throwable.AuraRuntimeException;
 import org.auraframework.util.test.util.AuraPrivateAccessor;
+import org.junit.Test;
+
+import javax.inject.Inject;
+import java.util.Map;
 
 public class AuraContextServiceImplTest extends AuraImplTestCase {
+    @Inject
+    private ContextAdapter contextAdapter;
 
-    public AuraContextServiceImplTest(String name) {
-        super(name, false);
+    public AuraContextServiceImplTest() {
+        super();
+        setShouldSetupContext(false);
     }
 
+    @Test
     public void testAuraContextServiceImpl() {
-        ContextService contextService = Aura.getContextService();
         assertTrue(contextService instanceof AuraContextServiceImpl);
     }
 
+    @Test
     public void testTestContext() {
         // can only test the test context
-        ContextService contextService = Aura.getContextService();
-        ContextAdapter p = AuraImpl.getContextAdapter();
-        assertFalse(p.isEstablished());
+        assertFalse(contextAdapter.isEstablished());
         contextService.startContext(Mode.DEV, Format.JSON, Authentication.AUTHENTICATED);
-        assertTrue(p.isEstablished());
-        assertNotNull(p.getCurrentContext());
+        assertTrue(contextAdapter.isEstablished());
+        assertNotNull(contextAdapter.getCurrentContext());
 
         contextService.endContext();
-        assertFalse(p.isEstablished());
+        assertFalse(contextAdapter.isEstablished());
     }
 
     private void unregisterGlobal(String name) {
@@ -62,10 +63,10 @@ public class AuraContextServiceImplTest extends AuraImplTestCase {
         }
     }
 
+    @Test
     public void testGetAllowedGlobals() {
         final String name = getName();
         final String defaultValue = "some default value";
-        ContextService contextService = Aura.getContextService();
         assertEquals("unregistered value should not be allowed", false,
                 contextService.getAllowedGlobals().containsKey(name));
 
@@ -82,9 +83,10 @@ public class AuraContextServiceImplTest extends AuraImplTestCase {
         assertEquals(defaultValue, value.getValue());
     }
 
+    @Test
     public void testRegisterGlobalWithInvalidName() {
         try {
-            Aura.getContextService().registerGlobal("this wouldn't serialize properly", true, true);
+            contextService.registerGlobal("this wouldn't serialize properly", true, true);
             fail("shouldn't be able to register with an invalid name");
         } catch (Throwable t) {
             assertExceptionMessageStartsWith(t, AuraRuntimeException.class,
@@ -92,21 +94,22 @@ public class AuraContextServiceImplTest extends AuraImplTestCase {
         }
     }
 
+    @Test
     public void testRegisterGlobalWithNullName() {
         try {
-            Aura.getContextService().registerGlobal(null, true, true);
+            contextService.registerGlobal(null, true, true);
             fail("shouldn't be able to register with an invalid name");
         } catch (Throwable t) {
             assertExceptionMessageStartsWith(t, AuraRuntimeException.class,
                     "Invalid name for $Global value: 'null");
         }
     }
-    
+
+    @Test
     public void testRegisterGlobalDuplicate() {
         final String name = getName();
         final String initialDefaultValue = "initial";
         final String defaultValue = "override";
-        ContextService contextService = Aura.getContextService();
 
         addTearDownStep(new Runnable() {
             @Override

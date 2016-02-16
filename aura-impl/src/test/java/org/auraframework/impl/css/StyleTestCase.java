@@ -15,12 +15,8 @@
  */
 package org.auraframework.impl.css;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
-import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
-
-import org.auraframework.Aura;
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.BaseStyleDef;
 import org.auraframework.def.ComponentDef;
@@ -32,14 +28,18 @@ import org.auraframework.def.TokensDef;
 import org.auraframework.impl.AuraImplTestCase;
 import org.auraframework.impl.css.util.Flavors;
 import org.auraframework.service.ContextService;
+import org.auraframework.service.DefinitionService;
 import org.auraframework.system.AuraContext;
 import org.auraframework.system.AuraContext.Authentication;
 import org.auraframework.system.AuraContext.Format;
 import org.auraframework.system.AuraContext.Mode;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
-import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
+import javax.inject.Inject;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * for testing stuff that needs StyleDef, TokenDef sources.
@@ -49,9 +49,11 @@ public abstract class StyleTestCase extends AuraImplTestCase {
     private String ns1;
     private String ns2;
 
-    public StyleTestCase(String name) {
-        super(name);
-    }
+    @Inject
+    protected DefinitionService definitionService;
+
+    @Inject
+    protected ContextService contextService;
 
     @Override
     public void setUp() throws Exception {
@@ -62,14 +64,13 @@ public abstract class StyleTestCase extends AuraImplTestCase {
 
         // make sure the registry is aware of the new namespaces
         String desc = ns1 + ":dummy";
-        DefDescriptor<ComponentDef> dummy = Aura.getDefinitionService().getDefDescriptor(desc, ComponentDef.class);
+        DefDescriptor<ComponentDef> dummy = definitionService.getDefDescriptor(desc, ComponentDef.class);
         addSourceAutoCleanup(dummy, "<aura:component></aura:component>");
 
         desc = ns2 + ":dummy";
-        dummy = Aura.getDefinitionService().getDefDescriptor(desc, ComponentDef.class);
+        dummy = definitionService.getDefDescriptor(desc, ComponentDef.class);
         addSourceAutoCleanup(dummy, "<aura:component></aura:component>");
 
-        ContextService contextService = Aura.getContextService();
         if (contextService.isEstablished()) {
             contextService.endContext();
         }
@@ -118,20 +119,20 @@ public abstract class StyleTestCase extends AuraImplTestCase {
 
     /** gets the parsed output of the given style */
     public String getParsedCss(DefDescriptor<? extends BaseStyleDef> styleDesc) throws QuickFixException {
-        return styleDesc.getDef().getCode();
+        return definitionService.getDefinition(styleDesc).getCode();
     }
 
     /** gets the parsed output of the given style. This ensures the application explicit tokens are registered */
     public String getParsedCssUseAppTokens(DefDescriptor<? extends BaseStyleDef> styleDesc) throws QuickFixException {
         // ensures app's tokens are added to the context
         // create style context?
-        return styleDesc.getDef().getCode();
+        return definitionService.getDefinition(styleDesc).getCode();
     }
 
     /** adds the namespace-default {@link TokensDef} to the namespace with the given source */
     public DefDescriptor<TokensDef> addNsTokens(CharSequence src) {
         String fmt = String.format("%s:%sNamespace", ns1, ns1);
-        DefDescriptor<TokensDef> desc = Aura.getDefinitionService().getDefDescriptor(fmt, TokensDef.class);
+        DefDescriptor<TokensDef> desc = definitionService.getDefDescriptor(fmt, TokensDef.class);
         addSourceAutoCleanup(desc, src.toString());
         return desc;
     }
@@ -139,7 +140,7 @@ public abstract class StyleTestCase extends AuraImplTestCase {
     /** adds the namespace-default {@link TokensDef} to the "other" namespace with the given source */
     public DefDescriptor<TokensDef> addNsTokensOtherNamespace(CharSequence src) {
         String fmt = String.format("%s:%sNamespace", ns2, ns2);
-        DefDescriptor<TokensDef> desc = Aura.getDefinitionService().getDefDescriptor(fmt, TokensDef.class);
+        DefDescriptor<TokensDef> desc = definitionService.getDefDescriptor(fmt, TokensDef.class);
         addSourceAutoCleanup(desc, src.toString());
         return desc;
     }
@@ -147,7 +148,7 @@ public abstract class StyleTestCase extends AuraImplTestCase {
     /** adds an extra {@link TokensDef} to the namespace */
     public DefDescriptor<TokensDef> addSeparateTokens(CharSequence src) {
         String fmt = String.format("%s:%s", ns1, getAuraTestingUtil().getNonce("testTokens"));
-        DefDescriptor<TokensDef> desc = Aura.getDefinitionService().getDefDescriptor(fmt, TokensDef.class);
+        DefDescriptor<TokensDef> desc = definitionService.getDefDescriptor(fmt, TokensDef.class);
         addSourceAutoCleanup(desc, src.toString());
         return desc;
     }
@@ -155,7 +156,7 @@ public abstract class StyleTestCase extends AuraImplTestCase {
     /** adds an extra {@link TokensDef} to the "other" namespace */
     public DefDescriptor<TokensDef> addSeparateTokensOtherNamespace(CharSequence src) {
         String fmt = String.format("%s:%s", ns2, getAuraTestingUtil().getNonce("testTokens"));
-        DefDescriptor<TokensDef> desc = Aura.getDefinitionService().getDefDescriptor(fmt, TokensDef.class);
+        DefDescriptor<TokensDef> desc = definitionService.getDefDescriptor(fmt, TokensDef.class);
         addSourceAutoCleanup(desc, src.toString());
         return desc;
     }
@@ -166,24 +167,23 @@ public abstract class StyleTestCase extends AuraImplTestCase {
      */
     public DefDescriptor<ApplicationDef> addContextApp(CharSequence src) throws QuickFixException {
         String fmt = String.format("%s:%s", ns1, "testApp");
-        DefDescriptor<ApplicationDef> appDesc = Aura.getDefinitionService().getDefDescriptor(fmt, ApplicationDef.class);
+        DefDescriptor<ApplicationDef> appDesc = definitionService.getDefDescriptor(fmt, ApplicationDef.class);
         addSourceAutoCleanup(appDesc, src.toString());
 
         // restart the context with the new app
-        ContextService contextService = Aura.getContextService();
         if (contextService.isEstablished()) {
             contextService.endContext();
         }
         AuraContext ctx = contextService.startContext(Mode.UTEST, Format.JSON, Authentication.AUTHENTICATED, appDesc);
         ctx.setApplicationDescriptor(appDesc);
-        Aura.getDefinitionService().updateLoaded(appDesc);
+        definitionService.updateLoaded(appDesc);
         return appDesc;
     }
 
     /** adds a style with the given source to the same bundle as the context app */
     public DefDescriptor<StyleDef> addContextAppBundleStyle(CharSequence src) {
         String fmt = String.format("%s.%s", ns1, "testApp");
-        DefDescriptor<StyleDef> styleDesc = Aura.getDefinitionService().getDefDescriptor(fmt, StyleDef.class);
+        DefDescriptor<StyleDef> styleDesc = definitionService.getDefDescriptor(fmt, StyleDef.class);
         return addSourceAutoCleanup(styleDesc, src.toString());
     }
 
@@ -221,7 +221,7 @@ public abstract class StyleTestCase extends AuraImplTestCase {
     /** adds a flavor assortment with the given source to the same bundle as the context app */
     public DefDescriptor<FlavorsDef> addContextAppFlavorAssortment(CharSequence src) {
         String fmt = String.format("%s:%s", ns1, "testApp");
-        DefDescriptor<FlavorsDef> faDesc = Aura.getDefinitionService().getDefDescriptor(fmt, FlavorsDef.class);
+        DefDescriptor<FlavorsDef> faDesc = definitionService.getDefDescriptor(fmt, FlavorsDef.class);
         return addSourceAutoCleanup(faDesc, src.toString());
     }
 

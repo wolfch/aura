@@ -15,9 +15,8 @@
  */
 package org.auraframework.http;
 
-import java.io.IOException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import org.auraframework.def.DefDescriptor.DefType;
+import org.auraframework.system.AuraContext.Authentication;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -28,12 +27,10 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import org.auraframework.def.DefDescriptor.DefType;
-import org.auraframework.system.AuraContext.Authentication;
-
-/**
- */
 public class AuraRewriteFilter implements Filter {
 
     public static final Pattern DESCRIPTOR_PATTERN = Pattern.compile("^/([^/]*)/([^/]*).(app|cmp)");
@@ -95,5 +92,4 @@ public class AuraRewriteFilter implements Filter {
     public void init(FilterConfig config) throws ServletException {
         servletContext = config.getServletContext();
     }
-
 }

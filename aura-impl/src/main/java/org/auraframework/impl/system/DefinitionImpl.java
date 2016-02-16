@@ -15,20 +15,32 @@
  */
 package org.auraframework.impl.system;
 
-import static org.auraframework.instance.AuraValueProviderType.LABEL;
-
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
-
+import com.google.common.collect.Maps;
 import org.auraframework.Aura;
 import org.auraframework.builder.DefBuilder;
+import org.auraframework.def.ActionDef;
+import org.auraframework.def.AttributeDefRef;
+import org.auraframework.def.ComponentDefRef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.Definition;
 import org.auraframework.def.DefinitionAccess;
+import org.auraframework.def.DependencyDef;
+import org.auraframework.def.DescriptionDef;
+import org.auraframework.def.EventHandlerDef;
+import org.auraframework.def.ExampleDef;
+import org.auraframework.def.IncludeDefRef;
+import org.auraframework.def.ResourceDef;
+import org.auraframework.def.TokensImportDef;
+import org.auraframework.def.design.DesignDef;
+import org.auraframework.def.design.DesignItemsDef;
+import org.auraframework.def.design.DesignOptionDef;
 import org.auraframework.expression.PropertyReference;
-import org.auraframework.impl.DefinitionAccessImpl;
+import org.auraframework.impl.css.flavor.FlavorDefaultDefImpl;
+import org.auraframework.impl.css.flavor.FlavorIncludeDefImpl;
+import org.auraframework.impl.css.flavor.FlavorsDefImpl;
+import org.auraframework.impl.java.model.JavaValueDef;
+import org.auraframework.impl.javascript.model.JavascriptValueDef;
+import org.auraframework.impl.root.library.ImportDefImpl;
 import org.auraframework.instance.GlobalValueProvider;
 import org.auraframework.system.Location;
 import org.auraframework.system.SubDefDescriptor;
@@ -40,7 +52,12 @@ import org.auraframework.util.json.Serialization.ReferenceScope;
 import org.auraframework.util.json.Serialization.ReferenceType;
 import org.auraframework.util.text.Hash;
 
-import com.google.common.collect.Maps;
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+
+import static org.auraframework.instance.AuraValueProviderType.LABEL;
 
 /**
  * The implementation for a definition.
@@ -62,8 +79,8 @@ public abstract class DefinitionImpl<T extends Definition> implements Definition
     private final DefinitionAccess access;
     private boolean valid;
 
-    protected DefinitionImpl(DefDescriptor<T> descriptor, Location location) {
-        this(descriptor, location, null, null, null, null, null, null);
+    protected DefinitionImpl(DefDescriptor<T> descriptor, Location location, DefinitionAccess access) {
+        this(descriptor, location, null, null, null, access, null, null);
     }
 
     protected DefinitionImpl(RefBuilderImpl<T, ?> builder) {
@@ -81,7 +98,35 @@ public abstract class DefinitionImpl<T extends Definition> implements Definition
         this.description = description;
         this.ownHash = ownHash;
         this.parseError = parseError;
-        this.access = access == null ? DefinitionAccessImpl.defaultAccess(descriptor != null ? descriptor.getNamespace() : null) : access;
+        this.access = access;
+        //
+        // BLECH!!! remove!!!!
+        // Temporary workaround for verifying that a class has specified its default access
+        // The following list below are things that we decided should not be specifying their access (doesn't make sense to have it)
+        // This is essentially our list of things we don't yet know the best default access for.
+        if (EventHandlerDef.class.isAssignableFrom(this.getClass())
+                || ComponentDefRef.class.isAssignableFrom(this.getClass())
+                || JavaValueDef.class.isAssignableFrom(this.getClass())
+                || ActionDef.class.isAssignableFrom(this.getClass())
+                || IncludeDefRef.class.isAssignableFrom(this.getClass())
+                || DescriptionDef.class.isAssignableFrom(this.getClass())
+                || ExampleDef.class.isAssignableFrom(this.getClass())
+                || JavascriptValueDef.class.isAssignableFrom(this.getClass())
+                || DependencyDef.class.isAssignableFrom(this.getClass())
+                || FlavorIncludeDefImpl.class.isAssignableFrom(this.getClass())
+                || FlavorDefaultDefImpl.class.isAssignableFrom(this.getClass())
+                || FlavorsDefImpl.class.isAssignableFrom(this.getClass())
+                || ResourceDef.class.isAssignableFrom(this.getClass())
+                || TokensImportDef.class.isAssignableFrom(this.getClass())
+                || DesignItemsDef.class.isAssignableFrom(this.getClass())
+                || DesignDef.class.isAssignableFrom(this.getClass())
+                || DesignOptionDef.class.isAssignableFrom(this.getClass())
+                || AttributeDefRef.class.isAssignableFrom(this.getClass())) {
+        } else {
+            if (access == null && parseError == null) {
+                throw new RuntimeException("Invalid Access value of null for " + descriptor + " for class " + getClass() + " - (" + getClass().getSimpleName() + ")");
+            }
+        }
     }
 
     /**
@@ -146,6 +191,32 @@ public abstract class DefinitionImpl<T extends Definition> implements Definition
         if (descriptor == null) {
             throw new InvalidDefinitionException("No descriptor", location);
         }
+        //
+        // BLECH!!! remove!!!!
+        if (EventHandlerDef.class.isAssignableFrom(this.getClass())
+                || ComponentDefRef.class.isAssignableFrom(this.getClass())
+                || TokensImportDef.class.isAssignableFrom(this.getClass())
+                || DesignOptionDef.class.isAssignableFrom(this.getClass())
+                || DesignDef.class.isAssignableFrom(this.getClass())
+                || JavaValueDef.class.isAssignableFrom(this.getClass())
+                || ActionDef.class.isAssignableFrom(this.getClass())
+                || IncludeDefRef.class.isAssignableFrom(this.getClass())
+                || DescriptionDef.class.isAssignableFrom(this.getClass())
+                || DependencyDef.class.isAssignableFrom(this.getClass())
+                || ExampleDef.class.isAssignableFrom(this.getClass())
+                || FlavorIncludeDefImpl.class.isAssignableFrom(this.getClass())
+                || FlavorDefaultDefImpl.class.isAssignableFrom(this.getClass())
+                || FlavorsDefImpl.class.isAssignableFrom(this.getClass())
+                || ResourceDef.class.isAssignableFrom(this.getClass())
+                || JavascriptValueDef.class.isAssignableFrom(this.getClass())
+                || ImportDefImpl.class.isAssignableFrom(this.getClass())
+                || DesignItemsDef.class.isAssignableFrom(this.getClass())
+                || AttributeDefRef.class.isAssignableFrom(this.getClass())) {
+        } else {
+            if (access == null) {
+                throw new InvalidDefinitionException("Invalid Access value of null for " + descriptor, location);
+            }
+        }
     }
 
     @Override
@@ -191,7 +262,7 @@ public abstract class DefinitionImpl<T extends Definition> implements Definition
         protected BuilderImpl(Class<T> defClass) {
             super(defClass);
         }
-    };
+    }
 
     public abstract static class RefBuilderImpl<T extends Definition, A extends Definition> implements DefBuilder<T, A> {
         private boolean descriptorLocked;
@@ -211,11 +282,13 @@ public abstract class DefinitionImpl<T extends Definition> implements Definition
             //this.ownHash = String.valueOf(System.currentTimeMillis());
         }
 
+        @Override
         public RefBuilderImpl<T, A> setAccess(DefinitionAccess access) {
             this.access = access;
             return this;
         }
 
+        @Override
         public DefinitionAccess getAccess() {
             return access;
         }
@@ -259,7 +332,7 @@ public abstract class DefinitionImpl<T extends Definition> implements Definition
         @Override
         public RefBuilderImpl<T, A> setDescriptor(String qualifiedName) {
             try {
-                return this.setDescriptor(DefDescriptorImpl.getInstance(qualifiedName, defClass));
+                return this.setDescriptor(Aura.getDefinitionService().getDefDescriptor(qualifiedName, defClass));
             } catch (Exception e) {
                 setParseError(e);
                 return this;

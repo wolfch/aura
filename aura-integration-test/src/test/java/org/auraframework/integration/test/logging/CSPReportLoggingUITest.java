@@ -15,16 +15,9 @@
  */
 package org.auraframework.integration.test.logging;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.assertThat;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
-import org.auraframework.Aura;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.ControllerDef;
 import org.auraframework.def.DefDescriptor;
@@ -36,17 +29,20 @@ import org.auraframework.test.util.WebDriverTestCase.TargetBrowsers;
 import org.auraframework.test.util.WebDriverUtil.BrowserType;
 import org.auraframework.util.test.annotation.ThreadHostileTest;
 import org.auraframework.util.test.annotation.UnAdaptableTest;
+import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.assertThat;
+
 @TargetBrowsers(BrowserType.GOOGLECHROME)
 @ThreadHostileTest
 public class CSPReportLoggingUITest extends WebDriverTestCase {
-
-    public CSPReportLoggingUITest(String name) {
-        super(name);
-    }
 
     private Logger logger;
     private LoggingTestAppender appender;
@@ -74,6 +70,7 @@ public class CSPReportLoggingUITest extends WebDriverTestCase {
         super.tearDown();
     }
 
+    @Test
     // TODO(W-2903378): re-enable when we are able to inject TestLoggingAdapter.
     @UnAdaptableTest
     public void testReportCSPViolationForClientRenderedCSS() throws Exception {
@@ -96,6 +93,7 @@ public class CSPReportLoggingUITest extends WebDriverTestCase {
         assertThat("Could not find expected violated directive", cspReport, containsString(exptectedViolatedDirective));
     }
 
+    @Test
     // TODO(W-2903378): re-enable when we are able to inject TestLoggingAdapter.
     @UnAdaptableTest
     public void testReportCSPViolationForServerRenderedCSS() throws Exception {
@@ -118,6 +116,7 @@ public class CSPReportLoggingUITest extends WebDriverTestCase {
     }
 
     @UnAdaptableTest("The CSP filter on SFDC handles iframes differently than standalone Aura")
+    @Test
     public void testReportCSPViolationForClientRenderedIframe() throws Exception {
         DefDescriptor<ComponentDef> cmpDesc = addSourceAutoCleanup(
                 ComponentDef.class,
@@ -139,6 +138,7 @@ public class CSPReportLoggingUITest extends WebDriverTestCase {
     }
 
     @UnAdaptableTest("The CSP filter on SFDC handles iframes differently than standalone Aura")
+    @Test
     public void testReportServerRenderedIframe() throws Exception {
         DefDescriptor<ComponentDef> cmpDesc = addSourceAutoCleanup(
                 ComponentDef.class,
@@ -164,11 +164,12 @@ public class CSPReportLoggingUITest extends WebDriverTestCase {
      * have been received before it.
      */
     @UnAdaptableTest("The font policy on Aura OSS is different with on SFDC")
+    @Test
     public void testAllowFontSrc() throws Exception {
         DefDescriptor<ComponentDef> cmpDesc = addSourceAutoCleanup(ComponentDef.class,
                 String.format(baseComponentTag, "", ""));
         addSourceAutoCleanup(
-                Aura.getDefinitionService().getDefDescriptor(cmpDesc, DefDescriptor.CSS_PREFIX,
+                definitionService.getDefDescriptor(cmpDesc, DefDescriptor.CSS_PREFIX,
                         StyleDef.class),
                 "@font-face {font-family: Gentium;src: url(http://example.com/fonts/Gentium.ttf);}");
         String uri = String.format("/%s/%s.cmp", cmpDesc.getNamespace(), cmpDesc.getName());
@@ -191,6 +192,7 @@ public class CSPReportLoggingUITest extends WebDriverTestCase {
         assertThat("Could not find expected violated directive, perhaps fonts wasn't allowed", cspReport, containsString(exptectedViolatedDirective));
     }
 
+    @Test
     // TODO(W-2903378): re-enable when we are able to inject TestLoggingAdapter.
     @UnAdaptableTest
     public void testReportJavaScript() throws Exception {
@@ -229,12 +231,13 @@ public class CSPReportLoggingUITest extends WebDriverTestCase {
      */
     // TODO(W-2903378): re-enable when we are able to inject TestLoggingAdapter.
     @UnAdaptableTest
+    @Test
     public void testReportXHRConnect() throws Exception {
         String externalUri = "http://www.example.com";
         String externalUriString = String.format("'%s'",externalUri);
         DefDescriptor<ComponentDef> cmpDesc = addSourceAutoCleanup(ComponentDef.class,
                 String.format(baseComponentTag, "","<ui:button press='{!c.post}' label='Send XHR' class='button'/>"));
-        DefDescriptor<HelperDef> helperDesc = Aura.getDefinitionService().getDefDescriptor(
+        DefDescriptor<HelperDef> helperDesc = definitionService.getDefDescriptor(
                 cmpDesc, DefDescriptor.JAVASCRIPT_PREFIX, HelperDef.class);
         addSourceAutoCleanup(helperDesc,
                 "({\n" +
@@ -250,7 +253,7 @@ public class CSPReportLoggingUITest extends WebDriverTestCase {
                 "    }\n" +
                 "})");
 
-        DefDescriptor<?> controllerDesc = Aura.getDefinitionService().getDefDescriptor(
+        DefDescriptor<?> controllerDesc = definitionService.getDefDescriptor(
                 cmpDesc, DefDescriptor.JAVASCRIPT_PREFIX, ControllerDef.class);
         addSourceAutoCleanup(controllerDesc,"{post:function(c,e,h){h.request("+externalUriString+");}}");
         String uri = getUrl(cmpDesc);

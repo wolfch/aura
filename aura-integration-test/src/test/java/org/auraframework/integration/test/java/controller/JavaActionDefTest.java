@@ -16,50 +16,54 @@
 package org.auraframework.integration.test.java.controller;
 
 import org.auraframework.def.ActionDef;
+import org.auraframework.def.ActionDef.ActionType;
 import org.auraframework.def.ControllerDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.TypeDef;
-import org.auraframework.def.ActionDef.ActionType;
 import org.auraframework.impl.AuraImplTestCase;
 import org.auraframework.impl.java.controller.JavaActionDef;
-import org.auraframework.impl.system.DefDescriptorImpl;
 import org.auraframework.impl.system.SubDefDescriptorImpl;
+import org.auraframework.service.DefinitionService;
 import org.auraframework.throwable.quickfix.QuickFixException;
+import org.junit.Test;
+
+import javax.inject.Inject;
 
 public class JavaActionDefTest extends AuraImplTestCase {
-    public JavaActionDefTest(String name){
-        super(name);
-    }
-    
-    public void testCreatingJavaActionDef(){
-        DefDescriptor<ControllerDef> controllerDesc = DefDescriptorImpl.getInstance("java://org.auraframework.components.test.java.controller.TestController", ControllerDef.class);
+    @Inject
+    DefinitionService definitionService;
+
+    @Test
+    public void testCreatingJavaActionDef() throws Exception {
+        DefDescriptor<ControllerDef> controllerDesc = definitionService.getDefDescriptor("java://org.auraframework.components.test.java.controller.TestController", ControllerDef.class);
         DefDescriptor<ActionDef> actionDefDesc = SubDefDescriptorImpl.getInstance("getString", controllerDesc, ActionDef.class);
         try{
-            ActionDef actionDef = actionDefDesc.getDef();
+            ActionDef actionDef = definitionService.getDefinition(actionDefDesc);
             assertNotNull(actionDef);
             assertTrue(actionDef instanceof JavaActionDef);
             assertTrue(actionDef.getParameters().isEmpty());
-            assertEquals(DefDescriptorImpl.getInstance("java://java.lang.String", TypeDef.class), actionDef.getReturnType());
+            assertEquals(definitionService.getDefDescriptor("java://java.lang.String", TypeDef.class), actionDef.getReturnType());
             assertEquals(ActionType.SERVER,actionDef.getActionType());
         }catch(Exception e){
             fail("Failed to create a valid java actiondef without parameters");
         }
-        controllerDesc = DefDescriptorImpl.getInstance("java://org.auraframework.impl.java.controller.TestControllerWithParameters", ControllerDef.class);
+        controllerDesc = definitionService.getDefDescriptor("java://org.auraframework.impl.java.controller.TestControllerWithParameters", ControllerDef.class);
         actionDefDesc = SubDefDescriptorImpl.getInstance("sumValues", controllerDesc, ActionDef.class);
         try{
-            ActionDef actionDef = actionDefDesc.getDef();
+            ActionDef actionDef = definitionService.getDefinition(actionDefDesc);
             assertNotNull(actionDef);
             assertEquals(2, actionDef.getParameters().size());
             assertEquals("a", actionDef.getParameters().get(0).getName());
             assertEquals("java://java.lang.Integer", actionDef.getParameters().get(0).getType().toString());
             assertEquals("b", actionDef.getParameters().get(1).getName());
             assertEquals("java://java.lang.Integer", actionDef.getParameters().get(0).getType().toString());
-            assertEquals(DefDescriptorImpl.getInstance("java://java.lang.Integer", TypeDef.class), actionDef.getReturnType());
+            assertEquals(definitionService.getDefDescriptor("java://java.lang.Integer", TypeDef.class), actionDef.getReturnType());
         }catch(Exception e){
             fail("Failed to create a valid java actiondef with parameters");
         }
     }
-    
+
+    @Test
     public void testGetLoggableParams()throws Exception{
         //No annotation specified for logging
         JavaActionDef actionDef = getJavaActionDef("java://org.auraframework.components.test.java.controller.TestController", "getString");
@@ -84,10 +88,10 @@ public class JavaActionDefTest extends AuraImplTestCase {
     }
     
     private JavaActionDef getJavaActionDef(String controller, String actionName) throws QuickFixException {
-        DefDescriptor<ControllerDef> controllerDesc = DefDescriptorImpl.getInstance(controller, 
+        DefDescriptor<ControllerDef> controllerDesc = definitionService.getDefDescriptor(controller, 
                 ControllerDef.class);
         DefDescriptor<ActionDef> actionDefDesc = SubDefDescriptorImpl.getInstance(actionName, controllerDesc, ActionDef.class);
-        ActionDef actionDef = actionDefDesc.getDef();
+        ActionDef actionDef = definitionService.getDefinition(actionDefDesc);
         assertTrue(actionDef instanceof JavaActionDef);
         return (JavaActionDef)actionDef;
     }

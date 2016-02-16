@@ -15,9 +15,7 @@
  */
 package org.auraframework.util.javascript.directive.impl;
 
-import java.io.File;
-import java.util.EnumSet;
-
+import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang3.StringUtils;
 import org.auraframework.util.javascript.directive.Directive;
 import org.auraframework.util.javascript.directive.DirectiveBasedJavascriptGroup;
@@ -26,8 +24,10 @@ import org.auraframework.util.javascript.directive.DirectiveType;
 import org.auraframework.util.javascript.directive.DirectiveTypes;
 import org.auraframework.util.javascript.directive.JavascriptGeneratorMode;
 import org.auraframework.util.test.util.UnitTestCase;
+import org.junit.Test;
 
-import com.google.common.collect.ImmutableList;
+import java.io.File;
+import java.util.EnumSet;
 
 /**
  * Tests to verify functions of Include Directive {@link IncludeDirective}.
@@ -36,6 +36,7 @@ public class IncludeDirectiveTest extends UnitTestCase {
     /**
      * Test basic initialization.
      */
+    @Test
     public void testIncludeDirectiveBasicInitialization() throws Exception {
         IncludeDirectiveType directiveTypeObj = new IncludeDirectiveType();
         assertTrue("Include Directive type should be labled as 'include'", directiveTypeObj.getLabel()
@@ -47,6 +48,7 @@ public class IncludeDirectiveTest extends UnitTestCase {
     /**
      * Test config parameters passed for Include directive
      */
+    @Test
     public void testIncludeConfig() throws Exception {
         String[] config = { "{\"modes\": [\"TESTING\"]}", "reallyconkyinclude" };
         IncludeDirective id = null;
@@ -83,6 +85,7 @@ public class IncludeDirectiveTest extends UnitTestCase {
      * DirectivebasedJavascriptGroup. But having this test here only doubles the
      * number of checks.
      */
+    @Test
     public void testIncludeNonExistingFile() throws Exception {
         File file = getResourceFile("/testdata/javascript/includeDirective/testIncludeNonExistingFile.js");
         DirectiveBasedJavascriptGroup jg = new DirectiveBasedJavascriptGroup("testDummy", file.getParentFile(),
@@ -105,6 +108,7 @@ public class IncludeDirectiveTest extends UnitTestCase {
     /**
      * Positive test case for INCLUDE directive
      */
+    @Test
     public void testIncludeDirective() throws Exception {
         File file = getResourceFile("/testdata/javascript/includeDirective/testIncludeDirective.js");
         getResourceFile("/testdata/javascript/includeDirective/testIncludeDirective1.js");

@@ -15,26 +15,29 @@
  */
 package org.auraframework.impl.css.parser;
 
-import java.util.Set;
-
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
 import org.auraframework.Aura;
+import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.def.DefDescriptor;
+import org.auraframework.def.DefDescriptor.DefType;
 import org.auraframework.def.StyleDef;
+import org.auraframework.impl.DefinitionAccessImpl;
 import org.auraframework.impl.css.parser.CssPreprocessor.ParserResult;
 import org.auraframework.impl.css.style.StyleDefImpl;
 import org.auraframework.impl.css.util.Styles;
+import org.auraframework.system.AuraContext;
 import org.auraframework.system.Client;
 import org.auraframework.system.Parser;
 import org.auraframework.system.Source;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
+import java.util.Set;
 
 /**
  * Basic CSS style parser.
  */
-public final class StyleParser implements Parser<StyleDef> {
+public abstract class StyleParser implements Parser<StyleDef> {
     public static final Set<String> ALLOWED_CONDITIONS;
 
     private final boolean validate;
@@ -50,6 +53,38 @@ public final class StyleParser implements Parser<StyleDef> {
 
     public StyleParser(boolean validate) {
         this.validate = validate;
+    }
+
+    @ServiceComponent
+    public static final class WithValidation extends StyleParser {
+        public WithValidation() {
+            super(true);
+        }
+
+        @Override
+        public Format getFormat() {
+            return Format.CSS;
+        }
+    }
+
+    @ServiceComponent
+    public static final class WithoutValidation extends StyleParser {
+        public WithoutValidation() {
+            super(false);
+        }
+
+        @Override
+        public Format getFormat() {
+            return Format.TEMPLATE_CSS;
+        }
+    }
+
+    @Override
+    abstract public Format getFormat();
+
+    @Override
+    public DefType getDefType() {
+        return DefType.STYLE;
     }
 
     @Override
@@ -76,6 +111,7 @@ public final class StyleParser implements Parser<StyleDef> {
         builder.setOwnHash(source.getHash());
         builder.setContent(result.content());
         builder.setTokenExpressions(result.expressions());
+        builder.setAccess(new DefinitionAccessImpl(AuraContext.Access.PUBLIC));
 
         return builder.build();
     }

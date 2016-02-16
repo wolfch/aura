@@ -16,22 +16,23 @@
 package org.auraframework.impl.root.parser.handler.design;
 
 
-import java.util.Set;
-
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
+import com.google.common.collect.ImmutableSet;
+import org.auraframework.adapter.ConfigAdapter;
+import org.auraframework.adapter.DefinitionParserAdapter;
 import org.auraframework.def.design.DesignDef;
 import org.auraframework.def.design.DesignLayoutAttributeDef;
 import org.auraframework.impl.design.DesignLayoutAttributeDefImpl;
 import org.auraframework.impl.root.parser.handler.ContainerTagHandler;
 import org.auraframework.impl.root.parser.handler.ParentedTagHandler;
 import org.auraframework.impl.system.DefDescriptorImpl;
+import org.auraframework.service.DefinitionService;
 import org.auraframework.system.Source;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.AuraTextUtil;
 
-import com.google.common.collect.ImmutableSet;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.util.Set;
 
 public class DesignLayoutAttributeDefHandler extends ParentedTagHandler<DesignLayoutAttributeDef, DesignDef>{
     public final static String TAG = "design:layoutattribute";
@@ -45,10 +46,13 @@ public class DesignLayoutAttributeDefHandler extends ParentedTagHandler<DesignLa
         super();
     }
 
-    public DesignLayoutAttributeDefHandler(ContainerTagHandler<DesignDef> parentHandler, XMLStreamReader xmlReader, Source<?> source) {
-        super(parentHandler, xmlReader, source);
+    public DesignLayoutAttributeDefHandler(ContainerTagHandler<DesignDef> parentHandler, XMLStreamReader xmlReader, Source<?> source,
+                                           boolean isInPrivilegedNamespace, DefinitionService definitionService,
+                                           ConfigAdapter configAdapter, DefinitionParserAdapter definitionParserAdapter) {
+        super(parentHandler, xmlReader, source, isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter);
         builder.setDescriptor(DefDescriptorImpl.getAssociateDescriptor(getParentDefDescriptor(), DesignLayoutAttributeDef.class,
                 TAG));
+        builder.setAccess(getAccess(isInPrivilegedNamespace));
     }
 
     @Override

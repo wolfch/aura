@@ -15,12 +15,7 @@
  */
 package org.auraframework.integration.test.serialization;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-
-import org.auraframework.Aura;
+import com.google.common.collect.ImmutableMap;
 import org.auraframework.def.ControllerDef;
 import org.auraframework.def.DefDescriptor.DefType;
 import org.auraframework.def.Definition;
@@ -30,17 +25,17 @@ import org.auraframework.def.TestSuiteDef;
 import org.auraframework.impl.AuraImplTestCase;
 import org.auraframework.impl.expression.PropertyReferenceImpl;
 import org.auraframework.impl.javascript.testsuite.JavascriptTestCaseDef;
+import org.junit.Test;
 
-import com.google.common.collect.ImmutableMap;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 public class ObjectSerializationTest extends AuraImplTestCase {
-
-    public ObjectSerializationTest(String name) {
-        super(name);
-    }
-
+    @Test
     public void testSerializeTestCaseDef() throws Exception {
-        TestSuiteDef suite = Aura.getDefinitionService().getDefinition("js://auratest.jsmock", TestSuiteDef.class);
+        TestSuiteDef suite = definitionService.getDefinition("js://auratest.jsmock", TestSuiteDef.class);
         TestCaseDef test = null;
         for (TestCaseDef caseDef : suite.getTestCaseDefs()) {
             if ("testActionString".equals(caseDef.getName())) {

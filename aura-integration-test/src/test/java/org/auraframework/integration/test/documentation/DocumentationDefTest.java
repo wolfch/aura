@@ -16,7 +16,6 @@
 
 package org.auraframework.integration.test.documentation;
 
-import org.auraframework.Aura;
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
@@ -30,36 +29,39 @@ import org.auraframework.impl.AuraImplTestCase;
 import org.auraframework.throwable.quickfix.DefinitionNotFoundException;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.junit.Ignore;
+import org.junit.Test;
 
 public class DocumentationDefTest extends AuraImplTestCase {
 
-	public DocumentationDefTest(String name) {
-		super(name);
-	}
-
+	@Test
 	public void testGetDocumentationDefViaComponentDef() throws Exception{
 		testLoadDocumentationDefViaRootDef("test:fakeComponent", ComponentDef.class, 2);
 	}
 
+	@Test
 	public void testGetDocumentationDefViaApplicationDef() throws Exception{
 		testLoadDocumentationDefViaRootDef("test:fakeApplication", ApplicationDef.class, 2);
 	}
 
 	@Ignore("W-2085286")
-	public void _testGetDocumentationDefViaInterFaceDef() throws Exception{
+	@Test
+	public void testGetDocumentationDefViaInterFaceDef() throws Exception {
 		testLoadDocumentationDefViaRootDef("test:fakeInterface", InterfaceDef.class, 2);
 	}
 
 	@Ignore("W-2085286")
-	public void _testGetDocumentationDefViaEventDef() throws Exception{
+	@Test
+	public void testGetDocumentationDefViaEventDef() throws Exception {
 		testLoadDocumentationDefViaRootDef("test:anevent", EventDef.class, 2);
 	}
 
 	@Ignore("W-2085286")
-	public void _testGetDocumentationDefViaTokensFaceDef() throws Exception{
+	@Test
+	public void testGetDocumentationDefViaTokensFaceDef() throws Exception {
 		testLoadDocumentationDefViaRootDef("test:fakeTokens", TokensDef.class, 2);
 	}
 
+	@Test
 	public void testValidComponentRefForExample() throws Exception{
 		String exampleCmp = "test:fakeComponent";
 		String docDefSource = "<aura:documentation>" +
@@ -68,7 +70,7 @@ public class DocumentationDefTest extends AuraImplTestCase {
 				"</aura:documentation>";
 
 		DefDescriptor<DocumentationDef> dd= addSourceAutoCleanup(DocumentationDef.class, docDefSource);
-		ComponentDef cd = Aura.getDefinitionService().getDefinition(Aura.getDefinitionService().getDefinition(dd).getExampleDefs().get(0).getRef());
+		ComponentDef cd = definitionService.getDefinition(definitionService.getDefinition(dd).getExampleDefs().get(0).getRef());
 		assertEquals("Unable to get to the ComponentDef referenced in example!", exampleCmp, cd.getDescriptor().getNamespace()+":"+cd.getName());
 	}
 
@@ -76,6 +78,7 @@ public class DocumentationDefTest extends AuraImplTestCase {
 	 * when following the ref to load the definition.
 	 * @throws Exception
 	 */
+	@Test
 	public void testInvalidComponentRefForExample() throws Exception{
 		String docDefSource = "<aura:documentation>" +
 				"<aura:description>random description</aura:description>" +
@@ -95,7 +98,7 @@ public class DocumentationDefTest extends AuraImplTestCase {
 
 	private <T extends Definition> void testLoadDocumentationDefViaRootDef(String qualifiedName, Class<T> defType, int noOfDescs)
 			throws DefinitionNotFoundException, QuickFixException {
-		RootDefinition c = (RootDefinition) Aura.getDefinitionService().getDefinition(qualifiedName, defType);
+		RootDefinition c = (RootDefinition) definitionService.getDefinition(qualifiedName, defType);
 		DocumentationDef docDef = c.getDocumentationDef();
 		assertNotNull("DocumentationDef not found!", docDef);
 		assertEquals("Number DescriptionDefs don't match the expected value!", noOfDescs, docDef.getDescriptionDefs().size());

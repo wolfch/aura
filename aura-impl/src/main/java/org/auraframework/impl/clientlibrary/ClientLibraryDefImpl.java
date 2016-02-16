@@ -15,21 +15,22 @@
  */
 package org.auraframework.impl.clientlibrary;
 
-import java.io.IOException;
-import java.util.Set;
-
 import org.apache.commons.lang3.StringUtils;
+import org.auraframework.Aura;
 import org.auraframework.builder.ClientLibraryDefBuilder;
 import org.auraframework.def.ClientLibraryDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.ResourceDef;
 import org.auraframework.def.RootDefinition;
-import org.auraframework.impl.system.DefDescriptorImpl;
+import org.auraframework.impl.DefinitionAccessImpl;
 import org.auraframework.impl.system.DefinitionImpl;
 import org.auraframework.system.AuraContext;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.json.Json;
+
+import java.io.IOException;
+import java.util.Set;
 
 /**
  * Client Library Definition: Specifies name, url, type, and modes of client library
@@ -100,7 +101,7 @@ public final class ClientLibraryDefImpl extends DefinitionImpl<ClientLibraryDef>
                     throw new InvalidDefinitionException("ResourceDef type must match library type", getLocation());
                 }
 
-                DefDescriptor<ResourceDef> resourceDesc = DefDescriptorImpl.getInstance(this.url, ResourceDef.class);
+                DefDescriptor<ResourceDef> resourceDesc = Aura.getDefinitionService().getDefDescriptor(this.url, ResourceDef.class);
                 if (!resourceDesc.exists()) {
                     throw new InvalidDefinitionException("No resource named " + this.url + " found", getLocation());
                 }
@@ -222,6 +223,7 @@ public final class ClientLibraryDefImpl extends DefinitionImpl<ClientLibraryDef>
 
         public Builder() {
             super(ClientLibraryDef.class);
+            setAccess(new DefinitionAccessImpl(AuraContext.Access.PUBLIC));
         }
 
         @Override

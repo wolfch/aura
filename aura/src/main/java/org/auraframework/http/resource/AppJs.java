@@ -16,20 +16,22 @@
 
 package org.auraframework.http.resource;
 
-import java.io.IOException;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.auraframework.Aura;
+import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.service.ServerService;
 import org.auraframework.system.AuraContext;
 import org.auraframework.system.AuraContext.Format;
 
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Set;
+
+@ServiceComponent
 public class AppJs extends AuraResourceImpl {
-    private ServerService serverService = Aura.getServerService();
+
+    private ServerService serverService;
 
     public AppJs() {
         super("app.js", Format.JS, false);
@@ -49,12 +51,9 @@ public class AppJs extends AuraResourceImpl {
         }
     }
 
-    /**
-     * @param serverService the serverService to set
-     */
+    @Inject
     public void setServerService(ServerService serverService) {
         this.serverService = serverService;
     }
-
 }
 

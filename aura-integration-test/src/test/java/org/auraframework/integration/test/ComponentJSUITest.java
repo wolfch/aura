@@ -15,10 +15,23 @@
  */
 package org.auraframework.integration.test;
 
+import junit.framework.TestSuite;
+import org.auraframework.AuraConfiguration;
 import org.auraframework.test.ComponentJSTestSuite;
-import org.auraframework.util.test.annotation.UnAdaptableTest;
+import org.junit.runner.RunWith;
+import org.junit.runners.AllTests;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
-@UnAdaptableTest
+/**
+ * Run this here so we can query all namespaces and have all services available for injection.
+ */
+@RunWith(AllTests.class)
+@ContextConfiguration(classes = {AuraConfiguration.class})
+@TestExecutionListeners(listeners = {DependencyInjectionTestExecutionListener.class})
 public class ComponentJSUITest extends ComponentJSTestSuite {
-
+    public static TestSuite suite() throws Exception {
+        return ComponentJSTestSuite.suite();
+    }
 }

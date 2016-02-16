@@ -15,20 +15,22 @@
  */
 package org.auraframework.integration.test.http;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.auraframework.Aura;
+import org.auraframework.adapter.ConfigAdapter;
 import org.auraframework.http.AuraBaseServlet;
 import org.auraframework.system.AuraContext.Format;
 import org.auraframework.test.util.AuraHttpTestCase;
 import org.auraframework.util.AuraTextUtil;
 import org.auraframework.util.json.JsonEncoder;
+import org.junit.Test;
+
+import javax.inject.Inject;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Test class to perform sanity tests on AuraServlet with all possible modes.
@@ -36,10 +38,11 @@ import org.auraframework.util.json.JsonEncoder;
  * This should be killed.
  * 
  * @hierarchy Aura.Configuration
- * @priority high
- * @userStory a07B0000000Dtmj
  */
 public class AuraFormatsHttpTest extends AuraHttpTestCase {
+    @Inject
+    ConfigAdapter configAdapter;
+
     private final String componentTag = "&aura.tag=auratest:test_TokenValidation";
     private final String quickFixComponentTag = "&aura.tag=foo:bar";
     private static Map<Format, String> FORMAT_CONTENTTYPE = new HashMap<>();
@@ -51,10 +54,6 @@ public class AuraFormatsHttpTest extends AuraHttpTestCase {
         FORMAT_CONTENTTYPE.put(Format.MANIFEST, "text/cache-manifest;charset=" + AuraBaseServlet.UTF_ENCODING);
         FORMAT_CONTENTTYPE.put(Format.SVG, "image/svg+xml;charset=" + AuraBaseServlet.UTF_ENCODING);
         FORMAT_CONTENTTYPE.put(Format.ENCRYPTIONKEY, "text/plain;charset=" + AuraBaseServlet.UTF_ENCODING);
-    }
-
-    public AuraFormatsHttpTest(String name) {
-        super(name);
     }
 
     private void requestAndAssertContentType(HttpRequestBase method, String url, Format format, boolean expectHeaders)
@@ -90,7 +89,7 @@ public class AuraFormatsHttpTest extends AuraHttpTestCase {
             params.put("aura.token", getCsrfToken());
         }
         params.put("aura.context", String.format("{\"mode\":\"FTEST\",\"fwuid\":\"%s\"}",
-                Aura.getConfigAdapter().getAuraFrameworkNonce()));
+                configAdapter.getAuraFrameworkNonce()));
         params.put("aura.format", "JSON");
         HttpPost post = obtainPostMethod("/aura", params);
         requestAndAssertContentType(post,
@@ -103,6 +102,7 @@ public class AuraFormatsHttpTest extends AuraHttpTestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testResponseHeadersFromAuraServlet() throws Exception {
         for (Format format : Format.values()) {
             switch (format) {
@@ -132,5 +132,4 @@ public class AuraFormatsHttpTest extends AuraHttpTestCase {
             }
         }
     }
-
 }

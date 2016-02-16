@@ -15,12 +15,9 @@
  */
 package org.auraframework.impl.root.parser.handler.design;
 
-import java.util.Set;
-
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
-import org.auraframework.Aura;
+import com.google.common.collect.ImmutableSet;
+import org.auraframework.adapter.ConfigAdapter;
+import org.auraframework.adapter.DefinitionParserAdapter;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.design.DesignDef;
@@ -29,12 +26,15 @@ import org.auraframework.impl.design.DesignLayoutComponentDefImpl;
 import org.auraframework.impl.root.parser.handler.ContainerTagHandler;
 import org.auraframework.impl.root.parser.handler.ParentedTagHandler;
 import org.auraframework.impl.system.DefDescriptorImpl;
+import org.auraframework.service.DefinitionService;
 import org.auraframework.system.Source;
 import org.auraframework.throwable.quickfix.DefinitionNotFoundException;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.AuraTextUtil;
 
-import com.google.common.collect.ImmutableSet;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.util.Set;
 
 public class DesignLayoutComponentDefHandler extends ParentedTagHandler<DesignLayoutComponentDef, DesignDef> {
     public static final String TAG = "design:layoutcomponent";
@@ -48,10 +48,13 @@ public class DesignLayoutComponentDefHandler extends ParentedTagHandler<DesignLa
         super();
     }
 
-    public DesignLayoutComponentDefHandler(ContainerTagHandler<DesignDef> parentHandler, XMLStreamReader xmlReader, Source<?> source) {
-        super(parentHandler, xmlReader, source);
+    public DesignLayoutComponentDefHandler(ContainerTagHandler<DesignDef> parentHandler, XMLStreamReader xmlReader, Source<?> source,
+                                           boolean isInPrivilegedNamespace, DefinitionService definitionService,
+                                           ConfigAdapter configAdapter, DefinitionParserAdapter definitionParserAdapter) {
+        super(parentHandler, xmlReader, source, isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter);
         builder.setDescriptor(DefDescriptorImpl.getAssociateDescriptor(getParentDefDescriptor(), DesignLayoutComponentDef.class,
                 TAG));
+        builder.setAccess(getAccess(isInPrivilegedNamespace));
     }
 
     @Override
@@ -60,7 +63,7 @@ public class DesignLayoutComponentDefHandler extends ParentedTagHandler<DesignLa
         if (name == null) {
             error("Attribute '%s' is required on <%s>", ATTRIBUTE_NAME, TAG);
         }
-        DefDescriptor<ComponentDef> cmp = Aura.getDefinitionService().getDefDescriptor(name, ComponentDef.class);
+        DefDescriptor<ComponentDef> cmp = definitionService.getDefDescriptor(name, ComponentDef.class);
         if (!cmp.exists()) {
             throw new DefinitionNotFoundException(cmp, getLocation());
         }

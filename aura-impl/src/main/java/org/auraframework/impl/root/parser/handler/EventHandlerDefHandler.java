@@ -15,12 +15,7 @@
  */
 package org.auraframework.impl.root.parser.handler;
 
-import java.util.Set;
-
-import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
+import com.google.common.collect.ImmutableSet;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.EventDef;
 import org.auraframework.def.RootDefinition;
@@ -29,11 +24,15 @@ import org.auraframework.expression.PropertyReference;
 import org.auraframework.impl.AuraImpl;
 import org.auraframework.impl.root.event.EventHandlerDefImpl;
 import org.auraframework.impl.util.TextTokenizer;
+import org.auraframework.service.DefinitionService;
 import org.auraframework.system.Source;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.AuraTextUtil;
 
-import com.google.common.collect.ImmutableSet;
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.util.Set;
 
 public class EventHandlerDefHandler extends XMLHandler<EventHandlerDefImpl> {
 
@@ -55,8 +54,8 @@ public class EventHandlerDefHandler extends XMLHandler<EventHandlerDefImpl> {
     }
 
     public EventHandlerDefHandler(RootTagHandler<? extends RootDefinition> parentHandler, XMLStreamReader xmlReader,
-            Source<?> source) {
-        super(xmlReader, source);
+                                  Source<?> source, DefinitionService definitionService) {
+        super(xmlReader, source, definitionService);
         this.parentHandler = parentHandler;
     }
 

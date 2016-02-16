@@ -15,15 +15,8 @@
  */
 package org.auraframework.integration.test.adapter;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-
-import org.auraframework.Aura;
+import org.auraframework.adapter.ConfigAdapter;
+import org.auraframework.adapter.LocalizationAdapter;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.expression.PropertyReference;
@@ -34,13 +27,19 @@ import org.auraframework.impl.expression.PropertyReferenceImpl;
 import org.auraframework.system.AuraContext;
 import org.auraframework.throwable.quickfix.InvalidExpressionException;
 import org.auraframework.util.test.annotation.UnAdaptableTest;
+import org.junit.Before;
+import org.junit.Test;
+
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 @UnAdaptableTest
 public class LocaleValueProviderTest extends AuraImplTestCase {
-
-    public LocaleValueProviderTest(String name) {
-        super(name);
-    }
-
     private enum LocaleProperty {
         language(LocaleValueProvider.LANGUAGE),
         country(LocaleValueProvider.COUNTRY),
@@ -71,8 +70,20 @@ public class LocaleValueProviderTest extends AuraImplTestCase {
         }
     }
 
+    @Inject
+    private LocalizationAdapter localizationAdapter;
+
+    private ConfigAdapter configAdapter;
+
+    @Before
+    public void setUp() throws Exception {
+        super.setUp();
+        configAdapter = getMockConfigAdapter();
+    }
+
+    @Test
     public void testValidateLocaleProperty() throws Exception {
-        LocaleValueProvider lvp = new LocaleValueProvider();
+        LocaleValueProvider lvp = new LocaleValueProvider(configAdapter, localizationAdapter);
         for (LocaleProperty lp : LocaleProperty.values()) {
             lvp.validate(lp.getRef());
         }
@@ -95,13 +106,14 @@ public class LocaleValueProviderTest extends AuraImplTestCase {
     
     // semi-integration test checks that value provider is created and validated
     // on component
+    @Test
     public void testInvalidLocalePropertyInMarkup() throws Exception {
         try {
             DefDescriptor<ComponentDef> desc = addSourceAutoCleanup(
                     ComponentDef.class,
                     "<aura:component>{!$Locale.badProperty}</aura:component>");
 
-            Aura.getInstanceService().getInstance(desc, null);
+            instanceService.getInstance(desc, null);
             fail("Expected an InvalidExpressionException");
         } catch (InvalidExpressionException e) {
             assertEquals("No property on $Locale for key: badProperty",
@@ -110,6 +122,7 @@ public class LocaleValueProviderTest extends AuraImplTestCase {
     }
     
     // Setting some locales for testing
+    @Test
     public void testCurrency() throws Exception {
     	HashMap<String, Object> defaultLocaleProperties = new HashMap<>();
     	defaultLocaleProperties.put(LocaleValueProvider.LANGUAGE, "en");
@@ -139,6 +152,7 @@ public class LocaleValueProviderTest extends AuraImplTestCase {
     /**
      * this test when we pass more than one locals to current context, we only honor the FIRST one.
      */
+    @Test
     public void testMultiLocale() {
     	HashMap<String, Object> localeProperties = new HashMap<>();
         createLocaleProperties_ENZA(localeProperties);
@@ -149,6 +163,7 @@ public class LocaleValueProviderTest extends AuraImplTestCase {
      * tests for number and percent formats for US, South Africa(ZA) and France
      * http://en.wikipedia.org/wiki/ISO_3166-2
      */
+    @Test
     public void testNumberAndPercentFormats() {
     	HashMap<String, Object> localeProperties = new HashMap<>();
         createLocaleProperties_ENUS(localeProperties);
@@ -165,9 +180,9 @@ public class LocaleValueProviderTest extends AuraImplTestCase {
     
     private void assertLocaleProperties(List<Locale> localeList,
             HashMap<String, Object> localeProperties) {
-        AuraContext context = Aura.getContextService().getCurrentContext();
+        AuraContext context = contextService.getCurrentContext();
         context.setRequestedLocales(localeList == null ? null : localeList);
-        LocaleValueProvider lvp = new LocaleValueProvider();
+        LocaleValueProvider lvp = new LocaleValueProvider(configAdapter, localizationAdapter);
         String countryName = localeList == null ? "" : localeList.get(0).getCountry();
         for (Map.Entry<String, Object> entry : localeProperties.entrySet()) {
             assertLocaleProperty(lvp, entry.getKey(), entry.getValue(), countryName);
@@ -233,10 +248,10 @@ public class LocaleValueProviderTest extends AuraImplTestCase {
      * @throws Exception
      */
 	public void testGetValueUndefinedProperty() throws Exception {
-		AuraContext context = Aura.getContextService().getCurrentContext();
+        AuraContext context = contextService.getCurrentContext();
         context.setRequestedLocales(Arrays.asList(Locale.UK));
-    	LocaleValueProvider lvp = new LocaleValueProvider();
-    	assertEquals(null,
+        LocaleValueProvider lvp = new LocaleValueProvider(configAdapter, localizationAdapter);
+        assertEquals(null,
                 lvp.getValue(new PropertyReferenceImpl("ISO3Language", null))); // undefined
                                                                                 // property
     }
@@ -244,6 +259,7 @@ public class LocaleValueProviderTest extends AuraImplTestCase {
 	/**
      * Test name of months is returned correctly
      */
+    @Test
     public void testNameOfMonths() throws Exception {
     HashMap<String, String> expectedMonthNames = new HashMap<>();
         expectedMonthNames.put("Jan", "January");
@@ -279,6 +295,7 @@ public class LocaleValueProviderTest extends AuraImplTestCase {
     /**
      * Test name of day is returned correctly
      */
+    @Test
     public void testNameOfWeekdays() throws Exception {
         HashMap<String, String> expectedDayNames = new HashMap<>();
         expectedDayNames.put("MON", "Monday");
@@ -304,6 +321,7 @@ public class LocaleValueProviderTest extends AuraImplTestCase {
     /**
      * Test Today label is returned correctly
      */
+    @Test
     public void testToday() throws Exception {
         assertTodayLocaleProperty(null, "Today");  // enUS
         assertTodayLocaleProperty(Locale.JAPANESE, "今日");
@@ -312,9 +330,9 @@ public class LocaleValueProviderTest extends AuraImplTestCase {
     @SuppressWarnings("unchecked")
     private void assertDateLocaleProperties(Locale locale, String dateName,
             HashMap<String, String> expectedData) {
-        AuraContext context = Aura.getContextService().getCurrentContext();
+        AuraContext context = contextService.getCurrentContext();
         context.setRequestedLocales(locale == null ? null : Arrays.asList(locale));
-        LocaleValueProvider lvp = new LocaleValueProvider();
+        LocaleValueProvider lvp = new LocaleValueProvider(configAdapter, localizationAdapter);
         
         ArrayList<LocalizedLabel> values = (ArrayList<LocalizedLabel>) lvp.getData().get(dateName);
         Set<String> expectedShortNames = expectedData.keySet();
@@ -331,9 +349,9 @@ public class LocaleValueProviderTest extends AuraImplTestCase {
     }   
         
     private void assertTodayLocaleProperty(Locale locale, String expectedLabel) {
-        AuraContext context = Aura.getContextService().getCurrentContext();
+        AuraContext context = contextService.getCurrentContext();
         context.setRequestedLocales(locale == null ? null : Arrays.asList(locale));
-        LocaleValueProvider lvp = new LocaleValueProvider();
+        LocaleValueProvider lvp = new LocaleValueProvider(configAdapter, localizationAdapter);
         String actualLabel = (String) lvp.getData().get(LocaleValueProvider.TODAY_LABEL);
         assertEquals("Today label for locale " + locale + " is incorrect", expectedLabel, actualLabel);
     }

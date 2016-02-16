@@ -15,52 +15,52 @@
  */
 package org.auraframework.integration.test.error;
 
-import org.auraframework.Aura;
-import org.auraframework.controller.java.ServletConfigController;
+import com.google.common.base.Function;
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.system.AuraContext.Authentication;
 import org.auraframework.system.AuraContext.Format;
 import org.auraframework.system.AuraContext.Mode;
+import org.auraframework.test.adapter.MockConfigAdapter;
 import org.auraframework.test.util.WebDriverTestCase;
 import org.auraframework.util.test.annotation.ThreadHostileTest;
 import org.auraframework.util.test.annotation.UnAdaptableTest;
+import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import com.google.common.base.Function;
+import javax.inject.Inject;
 
 /**
  * What should you see when something goes wrong. {@link ThreadHostile} due to setProdConfig and friends.
  */
 @UnAdaptableTest
 public class ExceptionHandlingUITest extends WebDriverTestCase {
-    public ExceptionHandlingUITest(String name) {
-        super(name);
-    }
-
     private static final String baseAppTag = "<aura:application access='GLOBAL' %s>%s</aura:application>";
 
     private static final String errorBoxPath = "//div[@class='auraMsgMask auraForcedErrorBox']//div[@id='auraErrorMessage']";
 
+    @Inject
+    MockConfigAdapter mockConfigAdapter;
+
     private void setProdConfig() throws Exception {
-        ServletConfigController.setProductionConfig(true);
-        Aura.getContextService().endContext();
-        Aura.getContextService().startContext(Mode.DEV, Format.HTML, Authentication.AUTHENTICATED);
+        mockConfigAdapter.setIsProduction(true);
+        contextService.endContext();
+        contextService.startContext(Mode.DEV, Format.HTML, Authentication.AUTHENTICATED);
     }
 
     private void setProdContextWithoutConfig() throws Exception {
-        Aura.getContextService().endContext();
-        Aura.getContextService().startContext(Mode.PROD, Format.HTML, Authentication.AUTHENTICATED);
+        contextService.endContext();
+        contextService.startContext(Mode.PROD, Format.HTML, Authentication.AUTHENTICATED);
     }
 
     private void setDevContextWithoutConfig() throws Exception {
-        Aura.getContextService().endContext();
-        Aura.getContextService().startContext(Mode.DEV, Format.HTML, Authentication.AUTHENTICATED);
+        contextService.endContext();
+        contextService.startContext(Mode.DEV, Format.HTML, Authentication.AUTHENTICATED);
     }
 
     private String getAppUrl(String attributeMarkup, String bodyMarkup) throws Exception {
@@ -121,6 +121,7 @@ public class ExceptionHandlingUITest extends WebDriverTestCase {
      * Generic error message displayed in PRODUCTION if component provider instantiation throws.
      */
     @ThreadHostileTest("PRODUCTION")
+    @Test
     public void testProdCmpProviderThrowsDuringInstantiation() throws Exception {
         setProdConfig();
         DefDescriptor<?> cdd = addSourceAutoCleanup(
@@ -133,6 +134,7 @@ public class ExceptionHandlingUITest extends WebDriverTestCase {
     /**
      * Error displayed if provider throws during instantiation.
      */
+    @Test
     public void testCmpProviderThrowsDuringInstantiation() throws Exception {
         setDevContextWithoutConfig();
         DefDescriptor<?> cdd = addSourceAutoCleanup(
@@ -148,6 +150,7 @@ public class ExceptionHandlingUITest extends WebDriverTestCase {
      * Generic error message displayed in PRODUCTION if component provider instantiation throws.
      */
     @ThreadHostileTest("PRODUCTION")
+    @Test
     public void testProdCmpProviderThrowsDuringProvide() throws Exception {
         setProdConfig();
         DefDescriptor<?> cdd = addSourceAutoCleanup(
@@ -160,6 +163,7 @@ public class ExceptionHandlingUITest extends WebDriverTestCase {
     /**
      * Stacktrace displayed in non-PRODUCTION if component provider instantiation throws.
      */
+    @Test
     public void testCmpProviderThrowsDuringProvide() throws Exception {
         setDevContextWithoutConfig();
         DefDescriptor<?> cdd = addSourceAutoCleanup(
@@ -173,6 +177,7 @@ public class ExceptionHandlingUITest extends WebDriverTestCase {
      * Generic error message displayed in PRODUCTION if component model instantiation throws.
      */
     @ThreadHostileTest("PRODUCTION")
+    @Test
     public void testProdCmpModelThrowsDuringInstantiation() throws Exception {
         setProdConfig();
         DefDescriptor<?> cdd = addSourceAutoCleanup(ComponentDef.class,
@@ -184,6 +189,7 @@ public class ExceptionHandlingUITest extends WebDriverTestCase {
     /**
      * Stacktrace displayed in non-PRODUCTION if component model instantiation throws.
      */
+    @Test
     public void testCmpModelThrowsDuringInstantiation() throws Exception {
         setDevContextWithoutConfig();
         DefDescriptor<?> cdd = addSourceAutoCleanup(ComponentDef.class,
@@ -198,6 +204,7 @@ public class ExceptionHandlingUITest extends WebDriverTestCase {
      * Generic error message displayed in PRODUCTION if component renderer instantiation throws.
      */
     @ThreadHostileTest("PRODUCTION")
+    @Test
     public void testProdCmpRendererThrowsDuringInstantiation() throws Exception {
         setProdConfig();
         DefDescriptor<?> cdd = addSourceAutoCleanup(
@@ -210,6 +217,7 @@ public class ExceptionHandlingUITest extends WebDriverTestCase {
     /**
      * Stacktrace displayed in non-PRODUCTION if component renderer instantiation throws.
      */
+    @Test
     public void testCmpRendererThrowsDuringInstantiation() throws Exception {
         setDevContextWithoutConfig();
         DefDescriptor<?> cdd = addSourceAutoCleanup(
@@ -225,6 +233,7 @@ public class ExceptionHandlingUITest extends WebDriverTestCase {
      * Generic error message displayed in PRODUCTION if component renderer throws.
      */
     @ThreadHostileTest("PRODUCTION")
+    @Test
     public void testProdCmpRendererThrowsDuringRender() throws Exception {
         setProdConfig();
         DefDescriptor<?> cdd = addSourceAutoCleanup(
@@ -237,6 +246,7 @@ public class ExceptionHandlingUITest extends WebDriverTestCase {
     /**
      * Stacktrace displayed in non-PRODUCTION if component renderer throws.
      */
+    @Test
     public void testCmpRendererThrowsDuringRender() throws Exception {
         setProdContextWithoutConfig();
         DefDescriptor<?> cdd = addSourceAutoCleanup(
@@ -255,6 +265,7 @@ public class ExceptionHandlingUITest extends WebDriverTestCase {
     /**
      * Parse error stack trace for application includes filename along with row,col
      */
+    @Test
     public void testAppThrowsWithFileName() throws Exception {
         setProdContextWithoutConfig();
         // load the definition in the loader
@@ -271,6 +282,7 @@ public class ExceptionHandlingUITest extends WebDriverTestCase {
     /**
      * Parse error stack trace for controller includes filename
      */
+    @Test
     public void testControllerThrowsWithFileName() throws Exception {
         String fileName = "auratest/parseError";
         openRaw(fileName + ".cmp");
@@ -281,6 +293,7 @@ public class ExceptionHandlingUITest extends WebDriverTestCase {
     /**
      * Default handler for ClientOutOfSync will reload the page.
      */
+    @Test
     public void testClientOutOfSyncDefaultHandler() throws Exception {
         open("/updateTest/updateWithoutHandling.cmp?text=initial");
 
@@ -310,6 +323,7 @@ public class ExceptionHandlingUITest extends WebDriverTestCase {
     /**
      * Test XSS handling
      */
+    @Test
     public void testXssScenarioOne() throws Exception {
         DefDescriptor<?> cdd = addSourceAutoCleanup(ComponentDef.class,
                 "<aura:component>{!'&lt;'}script{!'&gt;'}alert('foo');{!'&lt;'}/script{!'&gt;'}</aura:component>");
@@ -324,6 +338,7 @@ public class ExceptionHandlingUITest extends WebDriverTestCase {
         assertEquals("", auraUITestingUtil.getAuraErrorMessage());
     }
 
+    @Test
     public void testXssScenarioTwo() throws Exception {
         DefDescriptor<?>  cdd = addSourceAutoCleanup(ComponentDef.class,
                 "<aura:component>{!'&lt;script&gt;'}alert({!'\"foo\");&lt;/script&gt;'}</aura:component>");

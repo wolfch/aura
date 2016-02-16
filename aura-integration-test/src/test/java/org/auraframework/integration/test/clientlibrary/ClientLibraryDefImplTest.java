@@ -15,21 +15,14 @@
  */
 package org.auraframework.integration.test.clientlibrary;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
-import org.auraframework.Aura;
+import org.auraframework.adapter.DefinitionParserAdapter;
 import org.auraframework.clientlibrary.ClientLibraryService;
 import org.auraframework.def.ClientLibraryDef;
 import org.auraframework.def.ClientLibraryDef.Type;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.impl.AuraImplTestCase;
+import org.auraframework.impl.clientlibrary.ClientLibraryDefImpl;
 import org.auraframework.impl.clientlibrary.ClientLibraryServiceImpl;
 import org.auraframework.impl.root.parser.XMLParser;
 import org.auraframework.impl.root.parser.handler.ClientLibraryDefHandler;
@@ -39,23 +32,33 @@ import org.auraframework.system.AuraContext.Mode;
 import org.auraframework.system.Parser.Format;
 import org.auraframework.test.source.StringSource;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
+import org.auraframework.util.FileMonitor;
+import org.junit.Test;
+
+import javax.inject.Inject;
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Unit tests for {@link ClientLibraryDefImpl}
  */
 public class ClientLibraryDefImplTest extends AuraImplTestCase {
-    ClientLibraryService service;
+    @Inject
+    private FileMonitor fileMonitor;
 
-    public ClientLibraryDefImplTest(String name) {
-        super(name);
-    }
-
+    @Inject
+    private DefinitionParserAdapter definitionParserAdapter;
+    
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        service = Aura.getClientLibraryService();
     }
 
+    @Test
     public void testValidation() throws Exception {
 
         ClientLibraryDef def;
@@ -113,11 +116,12 @@ public class ClientLibraryDefImplTest extends AuraImplTestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testTagsWithSameNameAttributeButDifferentTypes() throws Exception {
         String markup = "<aura:clientLibrary name='HTML5Shiv' type='JS'/> <aura:clientLibrary name='HTML5Shiv' type='CSS'/>";
         DefDescriptor<ComponentDef> cmp = addSourceAutoCleanup(ComponentDef.class,
                 String.format(baseComponentTag, "", markup));
-        List<ClientLibraryDef> clientLibraries = Aura.getDefinitionService().getDefinition(cmp).getClientLibraries();
+        List<ClientLibraryDef> clientLibraries = definitionService.getDefinition(cmp).getClientLibraries();
         assertNotNull(clientLibraries);
         assertEquals("Expected to see two client libraries", 2, clientLibraries.size());
         assertEquals("Didn't find the JS library(or the order is wrong)", Type.JS, clientLibraries.get(0).getType());
@@ -132,6 +136,7 @@ public class ClientLibraryDefImplTest extends AuraImplTestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testCommaSeparatedStringInNameWillNotResolve() throws Exception {
         ClientLibraryService service = new ClientLibraryServiceImpl();
         ClientLibraryDef clientLibrary = vendor.makeClientLibraryDef("MyLib, MyLib2", null, ClientLibraryDef.Type.JS,
@@ -143,6 +148,7 @@ public class ClientLibraryDefImplTest extends AuraImplTestCase {
     /**
      * Verify which modes are accepted when no mode is specified in aura:clientLibrary tag.
      */
+    @Test
     public void testDefaultModeIfNoneSpecified() {
         Set<Mode> modes = Collections.emptySet();
         ClientLibraryDef clientLibrary = vendor.makeClientLibraryDef("MyLib", null, ClientLibraryDef.Type.JS,
@@ -160,12 +166,13 @@ public class ClientLibraryDefImplTest extends AuraImplTestCase {
      * Verify that definition validation catches when an aura:clientLibrary tag specified a CSS resource as url and JS
      * as type.
      */
+    @Test
     public void testMismatchedComponentResourceAndTypeSpecification() throws Exception {
         String markup = "<aura:clientLibrary name='urlAndTypeMismatch' url='js://clientLibraryTest.clientLibraryTest' type='CSS'/>";
         DefDescriptor<ComponentDef> cmp = addSourceAutoCleanup(ComponentDef.class,
                 String.format(baseComponentTag, "", markup));
         try {
-            ComponentDef def = Aura.getDefinitionService().getDefinition(cmp);
+            ComponentDef def = definitionService.getDefinition(cmp);
             def.validateDefinition();
             fail("Should flag an error when resource type and specified type attribute do not match.");
         } catch (InvalidDefinitionException e) {
@@ -173,6 +180,7 @@ public class ClientLibraryDefImplTest extends AuraImplTestCase {
         }
     }
 
+    @Test
     public void testComparingLibraryDefs() throws Exception{
         ClientLibraryDef cdf1 = getElement("<aura:clientLibrary name='HTML5Shiv' type='JS'/>");
         assertFalse(cdf1.equals(null));
@@ -227,15 +235,16 @@ public class ClientLibraryDefImplTest extends AuraImplTestCase {
     }
 
     private ClientLibraryDefHandler<ComponentDef> getHandler(String clMarkup) throws Exception {
-        StringSource<ClientLibraryDef> componentSource = new StringSource<>(null, "<aura:component/>", "myID", Format.XML);
+        StringSource<ClientLibraryDef> componentSource = new StringSource<>(fileMonitor, null, "<aura:component/>", "myID", Format.XML);
         XMLStreamReader componentXmlReader = getXmlReader(componentSource);
-        ComponentDefHandler cdh = new ComponentDefHandler(null, componentSource, componentXmlReader);
-        
-        StringSource<ClientLibraryDef> clientLibrarySource = new StringSource<>(null, clMarkup, "myID",
-                Format.XML);
+        ComponentDefHandler cdh = new ComponentDefHandler(null, componentSource, componentXmlReader, true,
+                definitionService, contextService, configAdapter, definitionParserAdapter);
+
+        StringSource<ClientLibraryDef> clientLibrarySource = new StringSource<>(fileMonitor, null, clMarkup,
+                "myID", Format.XML);
         XMLStreamReader xmlReader = getXmlReader(clientLibrarySource);
         return new ClientLibraryDefHandler<>(cdh, xmlReader,
-                clientLibrarySource);
+                clientLibrarySource, false, definitionService, configAdapter, definitionParserAdapter);
     }
 
     private XMLStreamReader getXmlReader(StringSource<ClientLibraryDef> clSource) throws FactoryConfigurationError,

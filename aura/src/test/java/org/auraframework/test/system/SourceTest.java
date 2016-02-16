@@ -15,22 +15,19 @@
  */
 package org.auraframework.test.system;
 
+import org.auraframework.system.Source;
+import org.auraframework.test.source.StringSource;
+import org.auraframework.util.test.util.UnitTestCase;
+import org.auraframework.util.text.Hash;
+import org.junit.Test;
+
 import java.io.Reader;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
-import org.auraframework.system.Source;
-import org.auraframework.test.source.StringSource;
-import org.auraframework.util.test.util.UnitTestCase;
-import org.auraframework.util.text.Hash;
-
 public class SourceTest extends UnitTestCase {
     private final static int DEFAULT_HASHCODE = 3;
-
-    public SourceTest(String name) throws NoSuchAlgorithmException {
-        super(name);
-    }
 
     private int getHashCode(String string) throws NoSuchAlgorithmException {
         return Arrays.hashCode(MessageDigest.getInstance("MD5").digest(string.getBytes()));
@@ -44,10 +41,11 @@ public class SourceTest extends UnitTestCase {
     /**
      * HashingReader does not set hashCode until end of stream.
      */
+    @Test
     public void testHashingReaderProgress() throws Exception {
         int expectedHashCode = getHashCode("hi");
 
-        Source<?> src = new StringSource<>(null, "hi", null, null);
+        Source<?> src = new StringSource<>(null, null, "hi", null, null);
         Hash hash = src.getHash();
 
         // hash not set initially
@@ -77,10 +75,11 @@ public class SourceTest extends UnitTestCase {
     /**
      * Hash computed based on bytes read rather than full buffer contents.
      */
+    @Test
     public void testHashingReaderLargerBuffer() throws Exception {
         int expectedHashCode = getHashCode("hi");
 
-        Source<?> src = new StringSource<>(null, "hi", null, null);
+        Source<?> src = new StringSource<>(null, null, "hi", null, null);
         Hash hash = src.getHash();
         Reader reader = src.getHashingReader();
         char[] buffer = new char[50];
@@ -95,10 +94,11 @@ public class SourceTest extends UnitTestCase {
     /**
      * Hashing reader doesn't choke on null source content.
      */
+    @Test
     public void testHashingReaderNull() throws Exception {
         int expectedHashCode = getHashCode("");
 
-        Source<?> src = new StringSource<>(null, null, null, null);
+        Source<?> src = new StringSource<>(null, null, null, null, null);
         Hash hash = src.getHash();
         Reader reader = src.getHashingReader();
         char[] buffer = new char[50];
@@ -112,10 +112,11 @@ public class SourceTest extends UnitTestCase {
     /**
      * Hashing reader doesn't choke on empty source content.
      */
+    @Test
     public void testHashingReaderEmpty() throws Exception {
         int expectedHashCode = getHashCode("");
 
-        Source<?> src = new StringSource<>(null, "", null, null);
+        Source<?> src = new StringSource<>(null, null, "", null, null);
         Hash hash = src.getHash();
         Reader reader = src.getHashingReader();
         char[] buffer = new char[50];

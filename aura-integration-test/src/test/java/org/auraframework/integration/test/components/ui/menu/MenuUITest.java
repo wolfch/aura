@@ -42,10 +42,6 @@ public class MenuUITest extends WebDriverTestCase {
     public static final String MENUTEST_METADATA_APP = "/uitest/menu_MetadataTest.app";
     public static final String MENUTEST_EVENTBUBBLING_APP = "/uitest/menu_EventBubbling.app";
 
-    public MenuUITest(String name) {
-        super(name);
-    }
-
     /**
      * Test that verify's interaction with Action Menu.
      */

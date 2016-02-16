@@ -16,20 +16,22 @@
 
 package org.auraframework.http.resource;
 
-import java.io.IOException;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.auraframework.Aura;
+import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.clientlibrary.ClientLibraryService;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.system.AuraContext;
 import org.auraframework.system.AuraContext.Format;
 
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Set;
+
+@ServiceComponent
 public class ClientLibraryJs extends AuraResourceImpl {
-    private ClientLibraryService clientLibraryService = Aura.getClientLibraryService();
+
+    private ClientLibraryService clientLibraryService;
 
     public ClientLibraryJs() {
         super("resources.js", Format.JS, false);
@@ -49,11 +51,10 @@ public class ClientLibraryJs extends AuraResourceImpl {
         }
     }
 
-    /**
-     * @param clientLibraryService the clientLibraryService to set
-     */
+    @Inject
     public void setClientLibraryService(ClientLibraryService clientLibraryService) {
         this.clientLibraryService = clientLibraryService;
     }
+
 }
 

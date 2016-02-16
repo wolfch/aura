@@ -17,6 +17,7 @@ package org.auraframework.builder;
 
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.Definition;
+import org.auraframework.def.DefinitionAccess;
 import org.auraframework.system.Location;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.text.Hash;
@@ -84,4 +85,14 @@ public interface DefBuilder<PrimaryIntf extends Definition, DefOrRefType extends
      * Get any error that occurred during the build process.
      */
     QuickFixException getParseError();
+
+    /**
+     * Set the access for the definition.
+     */
+    DefBuilder<PrimaryIntf, DefOrRefType> setAccess(DefinitionAccess access);
+
+    /**
+     * Get the current access.
+     */
+    public DefinitionAccess getAccess();
 }

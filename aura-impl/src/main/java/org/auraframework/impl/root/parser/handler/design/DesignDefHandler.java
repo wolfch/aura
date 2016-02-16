@@ -16,6 +16,8 @@
 package org.auraframework.impl.root.parser.handler.design;
 
 import com.google.common.collect.ImmutableSet;
+import org.auraframework.adapter.ConfigAdapter;
+import org.auraframework.adapter.DefinitionParserAdapter;
 import org.auraframework.builder.RootDefinitionBuilder;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.design.DesignAttributeDef;
@@ -25,7 +27,7 @@ import org.auraframework.def.design.DesignOptionDef;
 import org.auraframework.def.design.DesignTemplateDef;
 import org.auraframework.impl.design.DesignDefImpl;
 import org.auraframework.impl.root.parser.handler.RootTagHandler;
-import org.auraframework.impl.system.DefDescriptorImpl;
+import org.auraframework.service.DefinitionService;
 import org.auraframework.system.Source;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.AuraTextUtil;
@@ -50,11 +52,14 @@ public class DesignDefHandler extends RootTagHandler<DesignDef> {
         builder = new DesignDefImpl.Builder();
     }
 
-    public DesignDefHandler(DefDescriptor<DesignDef> defDescriptor, Source<DesignDef> source, XMLStreamReader xmlReader) {
-        super(defDescriptor, source, xmlReader);
+    public DesignDefHandler(DefDescriptor<DesignDef> defDescriptor, Source<DesignDef> source, XMLStreamReader xmlReader,
+                            boolean isInPrivilegedNamespace, DefinitionService definitionService,
+                            ConfigAdapter configAdapter, DefinitionParserAdapter definitionParserAdapter) {
+        super(defDescriptor, source, xmlReader, isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter);
         builder = new DesignDefImpl.Builder();
         builder.setDescriptor(getDefDescriptor());
         builder.setLocation(getLocation());
+        builder.setAccess(getAccess(isInPrivilegedNamespace));
         if (source != null) {
             builder.setOwnHash(source.getHash());
         }
@@ -87,21 +92,25 @@ public class DesignDefHandler extends RootTagHandler<DesignDef> {
     protected void handleChildTag() throws XMLStreamException, QuickFixException {
         String tag = getTagName();
         if (DesignAttributeDefHandler.TAG.equalsIgnoreCase(tag)) {
-            DesignAttributeDef attributeDesign = new DesignAttributeDefHandler(this, xmlReader, source).getElement();
+            DesignAttributeDef attributeDesign = new DesignAttributeDefHandler(this, xmlReader, source,
+                    isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter).getElement();
             builder.addAttributeDesign(
-                    DefDescriptorImpl.getInstance(attributeDesign.getName(), DesignAttributeDef.class), attributeDesign);
+                    definitionService.getDefDescriptor(attributeDesign.getName(), DesignAttributeDef.class), attributeDesign);
         } else if (DesignTemplateDefHandler.TAG.equalsIgnoreCase(tag)) {
             if (builder.getDesignTemplateDef() != null) {
                 throw new XMLStreamException(String.format("<%s> may only contain one %s definition", getHandledTag(),
                         tag));
             }
-            DesignTemplateDef template = new DesignTemplateDefHandler(this, xmlReader, source).getElement();
+            DesignTemplateDef template = new DesignTemplateDefHandler(this, xmlReader, source, isInPrivilegedNamespace,
+                    definitionService, configAdapter, definitionParserAdapter).getElement();
             builder.setDesignTemplateDef(template);
         } else if (isInPrivilegedNamespace() && DesignLayoutDefHandler.TAG.equalsIgnoreCase(tag)) {
-            DesignLayoutDef layoutDesign = new DesignLayoutDefHandler(this, xmlReader, source).getElement();
+            DesignLayoutDef layoutDesign = new DesignLayoutDefHandler(this, xmlReader, source, isInPrivilegedNamespace,
+                    definitionService, configAdapter, definitionParserAdapter).getElement();
             builder.addLayoutDesign(layoutDesign.getName(), layoutDesign);
         } else if (isInPrivilegedNamespace() && DesignOptionDefHandler.TAG.equalsIgnoreCase(tag)) {
-            DesignOptionDef option = new DesignOptionDefHandler(this, xmlReader, source).getElement();
+            DesignOptionDef option = new DesignOptionDefHandler(this, xmlReader, source, isInPrivilegedNamespace,
+                    definitionService, configAdapter, definitionParserAdapter).getElement();
             builder.addOption(option);
         } else {
             throw new XMLStreamException(String.format("<%s> can not contain tag %s", getHandledTag(), tag));

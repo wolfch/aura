@@ -15,29 +15,27 @@
  */
 package org.auraframework.impl.root;
 
-import java.lang.reflect.Method;
-import java.util.Map;
-
 import org.auraframework.def.AttributeDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.RegisterEventDef;
 import org.auraframework.def.RootDefinition;
 import org.auraframework.def.RootDefinition.SupportLevel;
 import org.auraframework.impl.def.DefinitionTest;
-import org.auraframework.impl.root.AttributeDefImpl;
 import org.auraframework.throwable.AuraRuntimeException;
 import org.auraframework.throwable.quickfix.DefinitionNotFoundException;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.AuraTextUtil;
+import org.junit.Test;
+
+import java.lang.reflect.Method;
+import java.util.Map;
 
 public abstract class RootDefinitionTest<T extends RootDefinition> extends DefinitionTest<T> {
-
     private final Class<T> defClass;
     protected final String baseTag;
 
-    public RootDefinitionTest(String name, Class<T> defClass, String tag) {
-        super(name);
+    public RootDefinitionTest(Class<T> defClass, String tag) {
         this.defClass = defClass;
         this.baseTag = "<" + tag + " %s>%s</" + tag + ">";
     }
@@ -122,6 +120,7 @@ public abstract class RootDefinitionTest<T extends RootDefinition> extends Defin
     /**
      * Verify Aura attributes are mapped to the correct corresponding Aura or Java type.
      */
+    @Test
     public void testAttributeDefTypes() throws Exception {
         verifyAttributeDefType("String", "aura://String");
         verifyAttributeDefType("Boolean", "aura://Boolean");
@@ -143,6 +142,7 @@ public abstract class RootDefinitionTest<T extends RootDefinition> extends Defin
     }
 
     // TODO(W-2458027): Inconsistencies in attribute type case sensitivity
+    @Test
     public void testAttributeDefTypesCaseInsensitive() throws Exception {
         verifyAttributeDefType("string", "aura://String");
         verifyAttributeDefType("strIng", "aura://String");
@@ -153,6 +153,7 @@ public abstract class RootDefinitionTest<T extends RootDefinition> extends Defin
         verifyAttributeDefType("aura.component", "aura://Aura.Component");
     }
 
+    @Test
     public void testAttributeDefInvalidTypes() throws Exception {
         verifyInvalidAttributeDefType("blah", "No TYPE named java://blah found");
         verifyInvalidAttributeDefType("aura://blah", "No TYPE named aura://blah found");
@@ -165,6 +166,7 @@ public abstract class RootDefinitionTest<T extends RootDefinition> extends Defin
     /**
      * Test method for {@link RootDefinition#getDeclaredAttributeDefs()}.
      */
+    @Test
     public void testGetDeclaredAttributeDefs() throws Exception {
         String att1 = "<aura:attribute name=\"att1\" type=\"String\"/>";
         String att2 = "<aura:attribute name=\"att2\" type=\"String\"/>";
@@ -182,6 +184,7 @@ public abstract class RootDefinitionTest<T extends RootDefinition> extends Defin
     /**
      * Test method for {@link RootDefinition#getAttributeDefs()}.
      */
+    @Test
     public void testGetAttributeDefs() throws Exception {
         String att1 = "<aura:attribute name=\"att1\" type=\"String\"/>";
         String att2 = "<aura:attribute name=\"att2\" type=\"String\"/>";
@@ -195,6 +198,7 @@ public abstract class RootDefinitionTest<T extends RootDefinition> extends Defin
     /**
      * Test method for {@link RootDefinition#getAttributeDef(java.lang.String)}.
      */
+    @Test
     public void testGetAttributeDef() throws Exception {
         String att1 = "<aura:attribute name=\"att1\" type=\"String\"/>";
         String att2 = "<aura:attribute name=\"att2\" type=\"String\"/>";
@@ -207,6 +211,7 @@ public abstract class RootDefinitionTest<T extends RootDefinition> extends Defin
     /**
      * Test method for {@link RootDefinition#getRegisterEventDefs()}.
      */
+    @Test
     public void testGetRegisterEventDefs() throws Exception {
         String event1 = "<aura:registerEvent name=\"copy\" type=\"ui:copy\"/>";
         String event2 = "<aura:registerEvent name=\"cut\" type=\"ui:cut\"/>";
@@ -219,6 +224,7 @@ public abstract class RootDefinitionTest<T extends RootDefinition> extends Defin
                 .getQualifiedName());
     }
 
+    @Test
     public void testGetSupport() throws Exception {
         // Specify GA support level
         T def = define(String.format(baseTag, "support='GA'", ""));
@@ -245,6 +251,7 @@ public abstract class RootDefinitionTest<T extends RootDefinition> extends Defin
         }
     }
 
+    @Test
     public void testGetDescription() throws Exception {
         String description = "Description of the component";
         T def = define(String.format(baseTag, "description='" + description + "'", ""));

@@ -15,22 +15,19 @@
  */
 package org.auraframework.integration.test.components.docs;
 
-import java.util.List;
-
 import org.auraframework.components.ui.TreeNode;
 import org.auraframework.docs.ApiContentsModel;
 import org.auraframework.test.util.IntegrationTestCase;
+import org.junit.Test;
+
+import java.util.List;
 
 public class ApiContentsModelTest extends IntegrationTestCase {
-
-    public ApiContentsModelTest(String name) {
-        super(name);
-    }
-
     /**
      * Verifies generated jsdoc JSON file is loaded and contains list of jsdoc
      * items.
      */
+    @Test
     public void testLoadJavaScriptApi() {
         List<TreeNode> jsDocTreeNodes = new ApiContentsModel().getNodes();
         assertTrue("No jsdoc nodes loaded from generated JSON file.", jsDocTreeNodes.size() > 0);

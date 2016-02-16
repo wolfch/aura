@@ -16,10 +16,8 @@
 package org.auraframework.impl.root.parser.handler;
 
 public class ComponentAccessAttributeTest extends BaseAccessAttributeTest {
-
-	public ComponentAccessAttributeTest(String name) {
-		super(name);
+	public ComponentAccessAttributeTest() {
+		super();
 		testResource = TestResource.Component;
 	}
-
 }

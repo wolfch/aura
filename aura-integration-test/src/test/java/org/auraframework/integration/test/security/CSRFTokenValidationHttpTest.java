@@ -15,14 +15,11 @@
  */
 package org.auraframework.integration.test.security;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.util.EntityUtils;
-import org.auraframework.Aura;
+import org.auraframework.adapter.ConfigAdapter;
 import org.auraframework.http.AuraBaseServlet;
 import org.auraframework.test.util.AuraHttpTestCase;
 import org.auraframework.util.json.JsFunction;
@@ -30,6 +27,12 @@ import org.auraframework.util.json.Json;
 import org.auraframework.util.json.JsonEncoder;
 import org.auraframework.util.json.JsonReader;
 import org.auraframework.util.test.annotation.AuraTestLabels;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import javax.inject.Inject;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This test verifies that the aura servlet checks for CSRF token before
@@ -39,13 +42,10 @@ import org.auraframework.util.test.annotation.AuraTestLabels;
  * CSRF token embedded as a request parameter.
  * 
  * @hierarchy Aura.Security
- * @priority high
- * @userStory a07B0000000DV9S
  */
 public class CSRFTokenValidationHttpTest extends AuraHttpTestCase {
-    public CSRFTokenValidationHttpTest(String name) {
-        super(name);
-    }
+    @Inject
+    ConfigAdapter configAdapter;
 
     private Map<String, String> makeBasePostParams() {
         Map<String, Object> message = new HashMap<>();
@@ -71,10 +71,11 @@ public class CSRFTokenValidationHttpTest extends AuraHttpTestCase {
      */
     @SuppressWarnings("unchecked")
     @AuraTestLabels("auraSanity")
+    @Test
     public void testVerifyPostWithoutToken() throws Exception {
         Map<String, String> params = makeBasePostParams();
         params.put("aura.context", String.format("{\"mode\":\"FTEST\",\"fwuid\":\"%s\"}",
-                Aura.getConfigAdapter().getAuraFrameworkNonce()));
+                configAdapter.getAuraFrameworkNonce()));
         HttpPost post = obtainPostMethod("/aura", params);
         HttpResponse httpResponse = perform(post);
         int statusCode = getStatusCode(httpResponse);
@@ -105,7 +106,8 @@ public class CSRFTokenValidationHttpTest extends AuraHttpTestCase {
      * does not have a valid CSRF token, hence the request should fail to fetch
      * the def.
      */
-    // W-1064983 - NO CSRF validation currently
+    @Ignore("W-1064983 - NO CSRF validation currently")
+    @Test
     public void _testVerifyPostWithInvalidToken() throws Exception {
         Map<String, String> params = makeBasePostParams();
         // Invalid token
@@ -126,12 +128,13 @@ public class CSRFTokenValidationHttpTest extends AuraHttpTestCase {
      * tries to request an action defined on a controller.
      */
     @AuraTestLabels("auraSanity")
+    @Test
     public void testVerifyPostWithValidToken() throws Exception {
         Map<String, String> params = makeBasePostParams();
         // Valid token
         params.put("aura.token", getCsrfToken());
         params.put("aura.context", String.format("{\"mode\":\"FTEST\",\"fwuid\":\"%s\"}",
-                Aura.getConfigAdapter().getAuraFrameworkNonce()));
+                configAdapter.getAuraFrameworkNonce()));
         HttpPost post = obtainPostMethod("/aura", params);
         HttpResponse httpResponse = perform(post);
         int statusCode = getStatusCode(httpResponse);

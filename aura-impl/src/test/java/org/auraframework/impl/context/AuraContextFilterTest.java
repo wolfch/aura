@@ -15,24 +15,36 @@
  */
 package org.auraframework.impl.context;
 
-import java.util.Locale;
-import java.util.Vector;
-
-import javax.servlet.http.HttpServletRequest;
-
+import com.google.common.collect.ImmutableList;
+import org.auraframework.adapter.ConfigAdapter;
 import org.auraframework.http.AuraContextFilter;
+import org.auraframework.service.ContextService;
+import org.auraframework.service.DefinitionService;
+import org.auraframework.service.LoggingService;
 import org.auraframework.system.AuraContext;
 import org.auraframework.test.util.AuraTestCase;
 import org.auraframework.util.test.util.AuraPrivateAccessor;
+import org.junit.Test;
 import org.mockito.Mockito;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import com.google.common.collect.ImmutableList;
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+import java.util.Locale;
+import java.util.Vector;
 
 public class AuraContextFilterTest extends AuraTestCase {
+    @Inject
+    private ContextService contextService;
 
-    public AuraContextFilterTest(String name) {
-        super(name);
-    }
+    @Inject
+    private LoggingService loggingService;
+
+    @Inject
+    private DefinitionService definitionService;
+
+    @Inject
+    private ConfigAdapter configAdapter;
 
     private void assertContextPath(AuraContextFilter filter, HttpServletRequest mock, String input, String expected)
             throws Exception {
@@ -42,8 +54,14 @@ public class AuraContextFilterTest extends AuraTestCase {
         AuraPrivateAccessor.invoke(filter, "endContext");
     }
 
+    @Test
     public void testStartContextContextPath() throws Exception {
         AuraContextFilter filter = new AuraContextFilter();
+        filter.setContextService(contextService);
+        filter.setLoggingService(loggingService);
+        filter.setDefinitionService(definitionService);
+        filter.setConfigAdapter(configAdapter);
+        SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(filter);
         HttpServletRequest mock = Mockito.mock(HttpServletRequest.class);
         Mockito.when(mock.getLocales()).thenReturn(new Vector<>(ImmutableList.of(Locale.ENGLISH)).elements());
 

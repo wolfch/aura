@@ -15,21 +15,20 @@
  */
 package org.auraframework.def;
 
-import org.auraframework.builder.ComponentDefRefBuilder;
-import org.auraframework.instance.ComponentConfig;
-import org.auraframework.throwable.quickfix.QuickFixException;
 
 /**
  */
 public interface ProviderDef extends Definition {
     @Override
     DefDescriptor<? extends ProviderDef> getDescriptor();
-
-    ComponentConfig provide(DefDescriptor<? extends RootDefinition> intfDescriptor) throws QuickFixException;
-
-    ComponentConfig provide(ComponentDefRefBuilder ref) throws QuickFixException;
+//
+//    ComponentConfig provide(DefDescriptor<? extends RootDefinition> intfDescriptor) throws QuickFixException;
+//
+//    ComponentConfig provide(ComponentDefRefBuilder ref) throws QuickFixException;
 
     boolean isLocal();
 
     boolean supportsRefProvide();
+
+    Class<?> getJavaType();
 }

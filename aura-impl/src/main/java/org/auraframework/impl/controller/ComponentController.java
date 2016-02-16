@@ -15,11 +15,9 @@
  */
 package org.auraframework.impl.controller;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import org.auraframework.Aura;
+import com.google.common.collect.Lists;
+import org.auraframework.adapter.ExceptionAdapter;
+import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.def.ActionDef;
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.BaseComponentDef;
@@ -28,23 +26,33 @@ import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.Definition;
 import org.auraframework.def.EventDef;
 import org.auraframework.def.RootDefinition;
+import org.auraframework.ds.servicecomponent.Controller;
 import org.auraframework.impl.java.controller.JavaAction;
 import org.auraframework.impl.javascript.controller.JavascriptPseudoAction;
 import org.auraframework.instance.Action;
 import org.auraframework.instance.Application;
 import org.auraframework.instance.BaseComponent;
 import org.auraframework.instance.Component;
+import org.auraframework.service.ContextService;
 import org.auraframework.service.DefinitionService;
+import org.auraframework.service.InstanceService;
 import org.auraframework.system.Annotations.AuraEnabled;
-import org.auraframework.system.Annotations.Controller;
 import org.auraframework.system.Annotations.Key;
 import org.auraframework.system.AuraContext;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
-import com.google.common.collect.Lists;
+import javax.inject.Inject;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
-@Controller
-public class ComponentController {
+@ServiceComponent
+public class ComponentController implements Controller {
+
+    private InstanceService instanceService;
+    private ExceptionAdapter exceptionAdapter;
+    private DefinitionService definitionService;
+    private ContextService contextService;
 
     /**
      * A Java exception representing a <em>Javascript</em> error condition, as
@@ -58,12 +66,13 @@ public class ComponentController {
         private final Action action;
         private final String jsStack;
 
-        public AuraClientException(String desc, String id, String message, String jsStack) {
+        public AuraClientException(String desc, String id, String message, String jsStack,
+                                   InstanceService instanceService, ExceptionAdapter exceptionAdapter) {
             super(message);
             Action action = null;
             if (desc != null && id != null) {
                 try {
-                    action = Aura.getInstanceService().getInstance(desc, ActionDef.class);
+                    action = instanceService.getInstance(desc, ActionDef.class);
                 } catch (QuickFixException e) {
                     // Uh... okay, we fell over running an action we now can't even define.
                 }
@@ -74,7 +83,7 @@ public class ComponentController {
                 } else if (action instanceof JavaAction) {
                     JavaAction ja = (JavaAction)action;
                     ja.setId(id);
-                    ja.addException(this, Action.State.ERROR, false, false);
+                    ja.addException(this, Action.State.ERROR, false, false, exceptionAdapter);
                 }
             }
 
@@ -93,8 +102,8 @@ public class ComponentController {
     }
 
     @AuraEnabled
-    public static Boolean loadLabels() throws QuickFixException {
-        AuraContext ctx = Aura.getContextService().getCurrentContext();
+    public Boolean loadLabels() throws QuickFixException {
+        AuraContext ctx = contextService.getCurrentContext();
         Map<DefDescriptor<? extends Definition>, Definition> defMap;
 
         ctx.getDefRegistry().getDef(ctx.getApplicationDescriptor());
@@ -108,36 +117,35 @@ public class ComponentController {
         return Boolean.TRUE;
     }
 
-    private static <D extends BaseComponentDef, T extends BaseComponent<D, T>>
+    private <D extends BaseComponentDef, T extends BaseComponent<D, T>>
         T getBaseComponent(Class<T> type, Class<D> defType, String name,
                 Map<String, Object> attributes, Boolean loadLabels) throws QuickFixException {
 
-        DefinitionService definitionService = Aura.getDefinitionService();
         DefDescriptor<D> desc = definitionService.getDefDescriptor(name, defType);
         definitionService.updateLoaded(desc);
-        T component =  Aura.getInstanceService().getInstance(desc, attributes);
+        T component = instanceService.getInstance(desc, attributes);
         if (Boolean.TRUE.equals(loadLabels)) {
-            ComponentController.loadLabels();
+            this.loadLabels();
         }
         return component;
     }
 
     // Not aura enabled, but called from code. This is probably bad practice.
-    public static Component getComponent(String name, Map<String, Object> attributes) throws QuickFixException {
+    public Component getComponent(String name, Map<String, Object> attributes) throws QuickFixException {
         return  getBaseComponent(Component.class, ComponentDef.class, name, attributes, false);
     }
 
     @AuraEnabled
-    public static Component getComponent(@Key(value = "name", loggable = true) String name,
-            @Key("attributes") Map<String, Object> attributes,
-            @Key(value = "chainLoadLabels", loggable = true) Boolean loadLabels) throws QuickFixException {
+    public Component getComponent(@Key(value = "name", loggable = true) String name,
+                                  @Key("attributes") Map<String, Object> attributes,
+                                  @Key(value = "chainLoadLabels", loggable = true) Boolean loadLabels) throws QuickFixException {
         return  getBaseComponent(Component.class, ComponentDef.class, name, attributes, loadLabels);
     }
 
     @AuraEnabled
-    public static Application getApplication(@Key(value = "name", loggable = true) String name,
-            @Key("attributes") Map<String, Object> attributes,
-            @Key(value = "chainLoadLabels", loggable = true) Boolean loadLabels) throws QuickFixException {
+    public Application getApplication(@Key(value = "name", loggable = true) String name,
+                                      @Key("attributes") Map<String, Object> attributes,
+                                      @Key(value = "chainLoadLabels", loggable = true) Boolean loadLabels) throws QuickFixException {
         return getBaseComponent(Application.class, ApplicationDef.class, name, attributes, loadLabels);
     }
 
@@ -153,25 +161,25 @@ public class ComponentController {
      *      anonymous, omitted after inlining, etc., but it may help diagnosis.
      */
     @AuraEnabled
-    public static void reportFailedAction(@Key(value = "failedAction") String desc, @Key("failedId") String id,
-            @Key("clientError") String error, @Key("clientStack") String stack) {
+    public void reportFailedAction(@Key(value = "failedAction") String desc, @Key("failedId") String id,
+                                   @Key("clientError") String error, @Key("clientStack") String stack) {
         // Error reporting (of errors in prior client-side actions) are handled specially
-        AuraClientException ace = new AuraClientException(desc, id, error, stack);
-        Aura.getExceptionAdapter().handleException(ace, ace.getOriginalAction());
+        AuraClientException ace = new AuraClientException(desc, id, error, stack, instanceService, exceptionAdapter);
+        exceptionAdapter.handleException(ace, ace.getOriginalAction());
     }
 
     @AuraEnabled
-    public static ComponentDef getComponentDef(@Key(value = "name", loggable = true) String name) throws QuickFixException {
-        DefDescriptor<ComponentDef> desc = Aura.getDefinitionService().getDefDescriptor(name, ComponentDef.class);
-        return Aura.getDefinitionService().getDefinition(desc);
+    public ComponentDef getComponentDef(@Key(value = "name", loggable = true) String name) throws QuickFixException {
+        DefDescriptor<ComponentDef> desc = definitionService.getDefDescriptor(name, ComponentDef.class);
+        return definitionService.getDefinition(desc);
     }
 
     @AuraEnabled
-    public static List<RootDefinition> getDefinitions(@Key(value = "names", loggable = true) List<String> names) throws QuickFixException {
-    	if(names == null) {
-    		return Collections.emptyList();
-    	}
-    	List<RootDefinition> returnDefs = Lists.newArrayListWithCapacity(names.size());
+    public List<RootDefinition> getDefinitions(@Key(value = "names", loggable = true) List<String> names) throws QuickFixException {
+        if (names == null) {
+            return Collections.emptyList();
+        }
+        List<RootDefinition> returnDefs = Lists.newArrayListWithCapacity(names.size());
         for(String name : names) {
         	if(name.contains("e.")) {
         		returnDefs.add(getEventDef(name));
@@ -183,20 +191,20 @@ public class ComponentController {
     }
 
     @AuraEnabled
-    public static EventDef getEventDef(@Key(value = "name", loggable = true) String name) throws QuickFixException {
-    	final String descriptorName = name.replace("e.", "");
-        DefDescriptor<EventDef> desc = Aura.getDefinitionService().getDefDescriptor(descriptorName, EventDef.class);
-        return Aura.getDefinitionService().getDefinition(desc);
+    public EventDef getEventDef(@Key(value = "name", loggable = true) String name) throws QuickFixException {
+        final String descriptorName = name.replace("e.", "");
+        DefDescriptor<EventDef> desc = definitionService.getDefDescriptor(descriptorName, EventDef.class);
+        return definitionService.getDefinition(desc);
     }
 
     @AuraEnabled
-    public static ApplicationDef getApplicationDef(@Key(value = "name", loggable = true) String name) throws QuickFixException {
-        DefDescriptor<ApplicationDef> desc = Aura.getDefinitionService().getDefDescriptor(name, ApplicationDef.class);
-        return Aura.getDefinitionService().getDefinition(desc);
+    public ApplicationDef getApplicationDef(@Key(value = "name", loggable = true) String name) throws QuickFixException {
+        DefDescriptor<ApplicationDef> desc = definitionService.getDefDescriptor(name, ApplicationDef.class);
+        return definitionService.getDefinition(desc);
     }
 
     @AuraEnabled
-    public static List<Component> getComponents(@Key("components") List<Map<String, Object>> components)
+    public List<Component> getComponents(@Key("components") List<Map<String, Object>> components)
             throws QuickFixException {
         List<Component> ret = Lists.newArrayList();
         for (int i = 0; i < components.size(); i++) {
@@ -207,5 +215,25 @@ public class ComponentController {
             ret.add(getBaseComponent(Component.class, ComponentDef.class, descriptor, attributes, Boolean.FALSE));
         }
         return ret;
+    }
+
+    @Inject
+    public void setInstanceService(InstanceService instanceService) {
+        this.instanceService = instanceService;
+    }
+
+    @Inject
+    public void setExceptionAdapter(ExceptionAdapter exceptionAdapter) {
+        this.exceptionAdapter = exceptionAdapter;
+    }
+
+    @Inject
+    public void setDefinitionService(DefinitionService definitionService) {
+        this.definitionService = definitionService;
+    }
+
+    @Inject
+    public void setContextService(ContextService contextService) {
+        this.contextService = contextService;
     }
 }

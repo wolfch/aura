@@ -16,18 +16,8 @@
 package org.auraframework.impl.svg.parser;
 
 
-import java.io.StringReader;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.regex.Pattern;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.DefDescriptor.DefType;
 import org.auraframework.def.SVGDef;
@@ -39,8 +29,18 @@ import org.auraframework.throwable.quickfix.InvalidDefinitionException;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.throwable.quickfix.SVGParserException;
 
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.io.StringReader;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.regex.Pattern;
+
+@ServiceComponent
 public class SVGParser implements Parser<SVGDef> {
-    private static final SVGParser instance = new SVGParser();
     private static final XMLInputFactory xmlInputFactory;
     private static final Pattern DISSALOWED_LIST = Pattern.compile(".*(&|/|<|>).*", Pattern.DOTALL | Pattern.MULTILINE);
 
@@ -93,10 +93,16 @@ public class SVGParser implements Parser<SVGDef> {
         }
     }
 
-    public static SVGParser getInstance() {
-        return instance;
+    @Override
+    public Format getFormat() {
+        return Format.SVG;
     }
 
+    @Override
+    public DefType getDefType() {
+        return DefType.SVG;
+    }
+    
     @Override
     public SVGDef parse(DefDescriptor<SVGDef> descriptor, Source<SVGDef> source) throws SVGParserException,
     QuickFixException {

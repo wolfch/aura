@@ -17,8 +17,8 @@ package org.auraframework.impl.root.parser.handler;
 
 public class EventAccessAttributeTest extends BaseAccessAttributeTest {
 
-	public EventAccessAttributeTest(String name) {
-		super(name);
+	public EventAccessAttributeTest() {
+		super();
 		testResource = TestResource.Event;
 	}
 }

@@ -15,14 +15,14 @@
  */
 package org.auraframework.integration.test.components.ui.inputMultiSelect;
 
-import java.util.List;
-
 import org.auraframework.test.util.WebDriverTestCase;
 import org.auraframework.test.util.WebDriverUtil.BrowserType;
 import org.auraframework.util.test.annotation.PerfTest;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
+
+import java.util.List;
 
 public class InputMultiSelectUITest extends WebDriverTestCase {
     private final String[] URL = new String[] { "/uitest/inputMultiSelect_Test.cmp",
@@ -31,10 +31,6 @@ public class InputMultiSelectUITest extends WebDriverTestCase {
     private final By selectLocator = By.xpath("//select[1]");
     private final By submitLocator = By.xpath("//button");
     private final String optionLocatorString = "//select[1]/option[text()='%s']";
-
-    public InputMultiSelectUITest(String name) {
-        super(name);
-    }
 
     private void openTestPage(int i) throws Exception {
         open(URL[i]);

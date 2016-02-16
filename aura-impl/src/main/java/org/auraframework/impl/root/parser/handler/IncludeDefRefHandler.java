@@ -15,14 +15,8 @@
  */
 package org.auraframework.impl.root.parser.handler;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-
-import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.DefDescriptor.DefType;
 import org.auraframework.def.IncludeDef;
@@ -30,15 +24,19 @@ import org.auraframework.def.IncludeDefRef;
 import org.auraframework.def.LibraryDef;
 import org.auraframework.def.RootDefinition;
 import org.auraframework.impl.root.library.IncludeDefRefImpl;
-import org.auraframework.impl.system.DefDescriptorImpl;
 import org.auraframework.impl.system.SubDefDescriptorImpl;
+import org.auraframework.service.DefinitionService;
 import org.auraframework.system.Source;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.AuraTextUtil;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 
 public class IncludeDefRefHandler extends XMLHandler<IncludeDefRefImpl> {
 
@@ -59,8 +57,8 @@ public class IncludeDefRefHandler extends XMLHandler<IncludeDefRefImpl> {
     }
 
     public IncludeDefRefHandler(RootTagHandler<? extends RootDefinition> parentHandler, XMLStreamReader xmlReader,
-            Source<?> source) {
-        super(xmlReader, source);
+                                Source<?> source, DefinitionService definitionService) {
+        super(xmlReader, source, definitionService);
         this.parentHandler = parentHandler;
     }
 
@@ -81,7 +79,7 @@ public class IncludeDefRefHandler extends XMLHandler<IncludeDefRefImpl> {
             throw new InvalidDefinitionException(("aura:include must specify a valid library name."), getLocation());
         }
         builder.setDescriptor(SubDefDescriptorImpl.getInstance(name, parentDescriptor, IncludeDefRef.class));
-        builder.setIncludeDescriptor(DefDescriptorImpl.getInstance(
+        builder.setIncludeDescriptor(definitionService.getDefDescriptor(
                 String.format("%s.%s", parentDescriptor.getNamespace(), name), IncludeDef.class, parentDescriptor));
 
         String importNames = getAttributeValue(ATTRIBUTE_IMPORTS);
@@ -90,13 +88,13 @@ public class IncludeDefRefHandler extends XMLHandler<IncludeDefRefImpl> {
             for (String importName : Arrays.asList(importNames.trim().split("\\s*\\,\\s*"))) {
                 String[] parts = importName.split(":");
                 if (parts.length == 1) { // local import
-                    imports.add(DefDescriptorImpl.getInstance(
+                    imports.add(definitionService.getDefDescriptor(
                             String.format("%s.%s", parentDescriptor.getNamespace(), importName), IncludeDef.class,
                             parentDescriptor));
                 } else if (parts.length == 3) { // external import
-                    DefDescriptor<LibraryDef> externalLibrary = DefDescriptorImpl.getInstance(
+                    DefDescriptor<LibraryDef> externalLibrary = definitionService.getDefDescriptor(
                             String.format("%s:%s", parts[0], parts[1]), LibraryDef.class);
-                    imports.add(DefDescriptorImpl.getInstance(String.format("%s.%s", parts[0], parts[2]),
+                    imports.add(definitionService.getDefDescriptor(String.format("%s.%s", parts[0], parts[2]),
                             IncludeDef.class, externalLibrary));
                 } else { // invalid import name
                     throw new InvalidDefinitionException(String.format(

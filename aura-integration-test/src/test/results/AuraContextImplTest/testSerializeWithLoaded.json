@@ -4,6 +4,5 @@
   "loaded":{
     "EVENT@markup://auratest:iwasadded":"somegenerateduid"
   },
-  "test":"org.auraframework.integration.test.context.AuraContextImplTest.testSerializeWithLoaded",
   "fwuid":"#FAKEUID#"
 }

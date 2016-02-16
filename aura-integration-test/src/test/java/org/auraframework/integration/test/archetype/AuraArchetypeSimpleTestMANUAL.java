@@ -16,13 +16,13 @@
 package org.auraframework.integration.test.archetype;
 
 import com.google.common.collect.ImmutableList;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpGet;
 import org.auraframework.test.util.AuraHttpTestCase;
 import org.auraframework.util.IOUtil;
 import org.auraframework.util.test.annotation.UnAdaptableTest;
+import org.junit.Test;
 
 import java.io.File;
 import java.io.FileReader;
@@ -73,12 +73,14 @@ public class AuraArchetypeSimpleTestMANUAL extends AuraHttpTestCase {
 
     private AuraArchetypeSimpleTestMANUAL(String name, String testMethod, MavenArtifact archetype,
             MavenArtifact project, String projectPackage) {
-        super(testMethod);
+        super();
+        setName(testMethod);
         this.archetype = archetype;
         this.project = project;
         this.projectPackage = projectPackage;
     }
 
+    @Test
     public void testProjectCreation() throws Throwable {
         Process jettyProcess = null;
         workspace = new File(IOUtil.newTempDir("archetype"));

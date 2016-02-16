@@ -15,24 +15,20 @@
  */
 package org.auraframework.integration.test.page;
 
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.auraframework.test.util.AuraUITestingUtil;
 import org.auraframework.test.util.AuraUITestingUtil.ActionDuringTransit;
 import org.auraframework.test.util.AuraUITestingUtil.ActionTiming;
 import org.auraframework.test.util.AuraUITestingUtil.StressAction;
+
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
 /**
  * this is an example for testing UI with PageObject pattern.
  * for more info about the PageObject 'idea': https://code.google.com/p/selenium/wiki/PageObjects
  */
 public class SamplePageObjectUITest extends PageObjectTestCase<SampleAuraPageObject> {
-
-    public SamplePageObjectUITest(String name) throws MalformedURLException, URISyntaxException {
-        super(name);
-    }
 
     public void testButtonUi() throws Exception {
         //create the PageObject
@@ -61,5 +57,4 @@ public class SamplePageObjectUITest extends PageObjectTestCase<SampleAuraPageObj
     	apoi.open();
     	apoi.clickOnButton();
     }
-
 }

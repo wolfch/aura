@@ -20,11 +20,10 @@ import org.auraframework.impl.root.component.BaseComponentDefImplUnitTest;
 import org.auraframework.impl.root.component.ComponentDefImpl;
 import org.auraframework.impl.root.component.ComponentDefImpl.Builder;
 
-public class ComponentDefImplUnitTest extends
-        BaseComponentDefImplUnitTest<ComponentDefImpl, ComponentDef, Builder> {
+public class ComponentDefImplUnitTest extends BaseComponentDefImplUnitTest<ComponentDefImpl, ComponentDef, Builder> {
 
-    public ComponentDefImplUnitTest(String name) {
-        super(name);
+    public ComponentDefImplUnitTest() {
+        super();
         qualifiedDescriptorName = "test:component";
     }
 

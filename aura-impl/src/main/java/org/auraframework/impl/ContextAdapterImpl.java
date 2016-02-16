@@ -15,17 +15,20 @@
  */
 package org.auraframework.impl;
 
-import java.util.Map;
-
 import org.antlr.misc.MutableInteger;
+import org.auraframework.adapter.ConfigAdapter;
 import org.auraframework.adapter.ContextAdapter;
+import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.def.BaseComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.DefDescriptor.DefType;
-import org.auraframework.ds.serviceloader.AuraServiceProvider;
 import org.auraframework.impl.context.AuraContextImpl;
 import org.auraframework.impl.system.MasterDefRegistryImpl;
 import org.auraframework.instance.GlobalValueProvider;
+import org.auraframework.org.auraframework.di.ImplementationProvider;
+import org.auraframework.service.CachingService;
+import org.auraframework.service.DefinitionService;
+import org.auraframework.service.LoggingService;
 import org.auraframework.system.AuraContext;
 import org.auraframework.system.AuraContext.Authentication;
 import org.auraframework.system.AuraContext.Format;
@@ -34,12 +37,27 @@ import org.auraframework.system.MasterDefRegistry;
 import org.auraframework.throwable.AuraRuntimeException;
 import org.auraframework.util.json.JsonSerializationContext;
 
-import aQute.bnd.annotation.component.Component;
+import javax.inject.Inject;
+import java.util.Map;
 
 /**
  */
-@Component (provide=AuraServiceProvider.class)
+@ServiceComponent
 public class ContextAdapterImpl implements ContextAdapter {
+    @Inject
+    private ConfigAdapter configAdapter;
+
+    @Inject
+    private CachingService cachingService;
+
+    @Inject
+    private DefinitionService definitionService;
+
+    @Inject
+    private LoggingService loggingService;
+
+    @Inject
+    private ImplementationProvider implementationProvider;
 
     private static ThreadLocal<AuraContext> currentContext = new ThreadLocal<>();
     
@@ -58,25 +76,26 @@ public class ContextAdapterImpl implements ContextAdapter {
 
     @Override
     public AuraContext establish(Mode mode, MasterDefRegistry masterRegistry,
-			Map<DefType, String> defaultPrefixes, Format format, Authentication access,
-			JsonSerializationContext jsonContext,
-			Map<String, GlobalValueProvider> globalProviders,
-			DefDescriptor<? extends BaseComponentDef> appDesc,
-			boolean isDebugToolEnabled) {
-    	AuraContext context = new AuraContextImpl(mode, masterRegistry, defaultPrefixes, format, access, jsonContext,
+                                 Map<DefType, String> defaultPrefixes, Format format, Authentication access,
+                                 JsonSerializationContext jsonContext,
+                                 Map<String, GlobalValueProvider> globalProviders,
+                                 DefDescriptor<? extends BaseComponentDef> appDesc,
+                                 boolean isDebugToolEnabled) {
+        AuraContext context = new AuraContextImpl(mode, masterRegistry, defaultPrefixes, format, access, jsonContext,
                 globalProviders, isDebugToolEnabled);
         currentContext.set(context);
-        
-    	context.setApplicationDescriptor(appDesc);
+        context.setApplicationDescriptor(appDesc);
         
         return context;
     }
 
     protected AuraContext buildSystemContext(AuraContext original) {
-        return new AuraContextImpl(original.getMode(),
-                new MasterDefRegistryImpl((MasterDefRegistryImpl)original.getDefRegistry()),
-                original.getDefaultPrefixes(), original.getFormat(), original.getAccess(),
+        MasterDefRegistryImpl mdr = new MasterDefRegistryImpl(configAdapter, definitionService, loggingService,
+                cachingService, implementationProvider, (MasterDefRegistryImpl) original.getDefRegistry());
+        AuraContext context = new AuraContextImpl(original.getMode(), mdr, original.getDefaultPrefixes(), original.getFormat(), original.getAccess(),
                 original.getJsonSerializationContext(), original.getGlobalProviders(), false);
+        mdr.setContext(context);
+        return context;
     }
     
     @Override
@@ -132,5 +151,4 @@ public class ContextAdapterImpl implements ContextAdapter {
             throw new AuraRuntimeException("unmatched push");
         }
     }
-
 }

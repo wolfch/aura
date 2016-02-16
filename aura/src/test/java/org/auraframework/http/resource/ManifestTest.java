@@ -16,17 +16,17 @@
 
 package org.auraframework.http.resource;
 
-import org.auraframework.test.util.DummyHttpServletResponse;
-import org.auraframework.util.test.util.UnitTestCase;
-import org.mockito.Mockito;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.auraframework.adapter.ServletUtilAdapter;
 import org.auraframework.http.ManifestUtil;
 import org.auraframework.system.AuraContext;
 import org.auraframework.system.AuraContext.Format;
+import org.auraframework.test.util.DummyHttpServletResponse;
+import org.auraframework.util.test.util.UnitTestCase;
+import org.junit.Test;
+import org.mockito.Mockito;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Simple (non-integration) test case for {@link Manifest}, most useful for exercising hard-to-reach error
@@ -35,14 +35,10 @@ import org.auraframework.system.AuraContext.Format;
  * for now.
  */
 public class ManifestTest extends UnitTestCase {
-
-    public ManifestTest(String name) {
-        super(name);
-    }
-
     /**
      * Name is API!.
      */
+    @Test
     public void testName() {
         assertEquals("app.manifest", new Manifest().getName());
     }
@@ -50,6 +46,7 @@ public class ManifestTest extends UnitTestCase {
     /**
      * Format is API!.
      */
+    @Test
     public void testFormat() {
         assertEquals(Format.MANIFEST, new Manifest().getFormat());
     }
@@ -57,6 +54,7 @@ public class ManifestTest extends UnitTestCase {
     /**
      * Test for manifest disabled.
      */
+    @Test
     public void testManifestDisallowed() throws Exception {
         ManifestUtil manifestUtil = Mockito.mock(ManifestUtil.class);
         ServletUtilAdapter servletUtilAdapter = Mockito.mock(ServletUtilAdapter.class);
@@ -90,6 +88,7 @@ public class ManifestTest extends UnitTestCase {
     /**
      * Test for manifest enabled, but failing cookie check.
      */
+    @Test
     public void testManifestCookieCheck() throws Exception {
         ManifestUtil manifestUtil = Mockito.mock(ManifestUtil.class);
         ServletUtilAdapter servletUtilAdapter = Mockito.mock(ServletUtilAdapter.class);
@@ -123,6 +122,7 @@ public class ManifestTest extends UnitTestCase {
     /**
      * Test for manifest enabled, but failing cookie check.
      */
+    @Test
     public void testNoDescriptor() throws Exception {
         ManifestUtil manifestUtil = Mockito.mock(ManifestUtil.class);
         ServletUtilAdapter servletUtilAdapter = Mockito.mock(ServletUtilAdapter.class);
@@ -158,13 +158,14 @@ public class ManifestTest extends UnitTestCase {
     /**
      * Verify that we set the correct contentType to response
      */
+    @Test
     public void testSetContentType() {
-    	Manifest manifest = new Manifest();
-    	ServletUtilAdapter servletUtilAdapter = Mockito.mock(ServletUtilAdapter.class);
-    	manifest.setServletUtilAdapter(servletUtilAdapter);
-    	Mockito.when(servletUtilAdapter.getContentType(AuraContext.Format.MANIFEST))
-        .thenReturn("text/cache-manifest");
-    	DummyHttpServletResponse response = new DummyHttpServletResponse() {
+        Manifest manifest = new Manifest();
+        ServletUtilAdapter servletUtilAdapter = Mockito.mock(ServletUtilAdapter.class);
+        manifest.setServletUtilAdapter(servletUtilAdapter);
+        Mockito.when(servletUtilAdapter.getContentType(AuraContext.Format.MANIFEST))
+                .thenReturn("text/cache-manifest");
+        DummyHttpServletResponse response = new DummyHttpServletResponse() {
             String contentType = "defaultType";
 
             @Override
@@ -177,9 +178,9 @@ public class ManifestTest extends UnitTestCase {
                 this.contentType = contentType;
             }
         };
-    	
-    	manifest.setContentType(response);
-    	
-    	assertEquals("text/cache-manifest", response.getContentType());
+
+        manifest.setContentType(response);
+
+        assertEquals("text/cache-manifest", response.getContentType());
     }
 }

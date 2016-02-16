@@ -15,17 +15,20 @@
  */
 package org.auraframework.http;
 
-import java.io.IOException;
-import java.util.Set;
-
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.google.common.collect.ImmutableSet;
 import org.auraframework.http.CSP.PolicyBuilder;
 import org.auraframework.util.javascript.directive.JavascriptGeneratorMode;
 
-import com.google.common.collect.ImmutableSet;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Set;
 
 /**
  * Servlet filter for adding Content Security Policy headers,
@@ -63,7 +66,8 @@ public class AuraCSPFilter implements Filter {
     }
 
     @Override
-    public void init(FilterConfig config) throws ServletException {}
+    public void init(FilterConfig config) throws ServletException {
+    }
     
     @Override
     public void destroy() {}

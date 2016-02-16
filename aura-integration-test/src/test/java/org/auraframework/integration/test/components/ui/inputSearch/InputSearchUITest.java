@@ -26,11 +26,6 @@ import org.openqa.selenium.WebElement;
  */
 public class InputSearchUITest extends WebDriverTestCase {
 
-    public InputSearchUITest(String name) {
-        super(name);
-
-    }
-
     // W-1551076: Webdriver not firing search event in Safari, IPAD and IPHONE
     @ExcludeBrowsers({ BrowserType.ANDROID_PHONE, BrowserType.ANDROID_TABLET, BrowserType.IPAD, BrowserType.IPHONE,
             BrowserType.SAFARI })

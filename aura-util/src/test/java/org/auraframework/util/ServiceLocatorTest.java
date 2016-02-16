@@ -15,9 +15,6 @@
  */
 package org.auraframework.util;
 
-import java.util.Iterator;
-import java.util.Set;
-
 import org.auraframework.ds.serviceloader.AuraServiceProvider;
 import org.auraframework.util.ServiceLocator.ServiceLocatorException;
 import org.auraframework.util.sampleServices.AbstractService;
@@ -50,6 +47,11 @@ import org.auraframework.util.sampleServices.SingleImplServiceImplementation;
 import org.auraframework.util.sampleServices.UnimplementedService;
 import org.auraframework.util.test.annotation.UnAdaptableTest;
 import org.auraframework.util.test.util.UnitTestCase;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Unit tests for {@link ServiceLocator}.
@@ -62,6 +64,7 @@ public class ServiceLocatorTest extends UnitTestCase {
     /**
      * Verify that service instances are cached.
      */
+    @Test
     public void testServicesAreCached() {
         SingleImplService serviceImpl1 = s.get(SingleImplService.class);
         SingleImplService serviceImpl2 = s.get(SingleImplService.class);
@@ -74,6 +77,7 @@ public class ServiceLocatorTest extends UnitTestCase {
      * marked with @PrimaryImpl is used. If there are multiple implementations
      * but none marked as @PrimaryImpl, this would cause an exception.
      */
+    @Test
     public void testGet() {
         // 1 An Interface with single implementation
         verifyServiceLocated(SingleImplService.class, SingleImplServiceImplementation.class);
@@ -146,11 +150,12 @@ public class ServiceLocatorTest extends UnitTestCase {
         } catch (RuntimeException expected) {
             assertNotNull(expected);
         }
-        
     }
-    
-    public void _testCyclicService() {
-    	try {
+
+    @Ignore
+    @Test
+    public void testGetCyclicReference() {
+        try {
             s.get(CyclicServicePartA.class);
             fail("Cyclic service reference wasn't handled.");
         } catch (RuntimeException expected) {
@@ -162,6 +167,7 @@ public class ServiceLocatorTest extends UnitTestCase {
      * Test that ServiceLocator can provide all implementations of Specified
      * Interface.
      */
+    @Test
     public void testGetAll() {
 
         // 1 An Interface with single implementation
@@ -230,6 +236,7 @@ public class ServiceLocatorTest extends UnitTestCase {
      * Test that ServiceLocator can provide all implementations of Specified
      * Interface and name.
      */
+    @Test
     public void testGetWithName() {
         // 1. A service interface having 2 implementation and one of them
         // registered with a name, while the other has no name but marked as

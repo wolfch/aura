@@ -15,19 +15,20 @@
  */
 package org.auraframework.test;
 
-import java.util.concurrent.TimeUnit;
-
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import org.auraframework.annotations.Annotations.ServiceComponent;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * Keep track of the current test.
  */
+@ServiceComponent
 public class TestContextAdapterImpl implements TestContextAdapter {
 
-    Cache<String, TestContext> allContexts =
-            CacheBuilder.newBuilder().concurrencyLevel(8).expireAfterAccess(30, TimeUnit.MINUTES).maximumSize(100)
-                    .build();
+    Cache<String, TestContext> allContexts = CacheBuilder.newBuilder().concurrencyLevel(8)
+            .expireAfterAccess(30, TimeUnit.MINUTES).maximumSize(100).build();
 
     private final ThreadLocal<TestContext> testContext = new ThreadLocal<>();
 
@@ -61,5 +62,4 @@ public class TestContextAdapterImpl implements TestContextAdapter {
         }
         clear();
     }
-
 }

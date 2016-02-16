@@ -15,59 +15,65 @@
  */
 package org.auraframework.integration.test.mock;
 
-import java.util.Map;
-
-import org.auraframework.Aura;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.ControllerDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.ModelDef;
 import org.auraframework.def.ProviderDef;
+import org.auraframework.impl.parser.ParserFactory;
 import org.auraframework.impl.test.mock.MockingUtil;
 import org.auraframework.instance.ComponentConfig;
 import org.auraframework.system.Annotations.AuraEnabled;
-import org.auraframework.system.Annotations.Controller;
 import org.auraframework.system.AuraContext.Authentication;
 import org.auraframework.system.AuraContext.Format;
 import org.auraframework.system.AuraContext.Mode;
+import org.auraframework.test.TestContextAdapter;
 import org.auraframework.test.mock.MockModel;
 import org.auraframework.test.util.WebDriverTestCase;
 import org.auraframework.throwable.AuraRuntimeException;
+import org.auraframework.util.FileMonitor;
 import org.auraframework.util.test.annotation.UnAdaptableTest;
+import org.junit.Test;
 import org.mockito.Mockito;
 import org.openqa.selenium.By;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
+import javax.inject.Inject;
+import java.util.Map;
 
 @UnAdaptableTest("W-2329849: Failing on SFDC but passing on standalone ios-driver builds. Needs investigation")
-@Controller
 public class MockingUtilUITest extends WebDriverTestCase {
+    @Inject
+    private TestContextAdapter testContextAdapter;
+
+    @Inject
+    private FileMonitor fileMonitor;
+
+    @Inject
+    private ParserFactory parserFactory;
 
     private MockingUtil mockingUtil;
-
-    public MockingUtilUITest(String name) {
-        super(name);
-    }
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        mockingUtil = new MockingUtil();
+        mockingUtil = new MockingUtil(testContextAdapter, definitionService, fileMonitor, parserFactory);
     }
 
     @Override
     public void tearDown() throws Exception {
-        Aura.getContextService().endContext();
+        contextService.endContext();
         super.tearDown();
     }
 
+    @Test
     public void testMockModelSanity() throws Exception {
-        if (!Aura.getContextService().isEstablished()) {
-            Aura.getContextService().startContext(Mode.SELENIUM, Format.HTML, Authentication.AUTHENTICATED);
+        if (!contextService.isEstablished()) {
+            contextService.startContext(Mode.SELENIUM, Format.HTML, Authentication.AUTHENTICATED);
         }
-        DefDescriptor<ModelDef> modelDefDescriptor = Aura.getDefinitionService()
+        DefDescriptor<ModelDef> modelDefDescriptor = definitionService
                 .getDefDescriptor("java://org.auraframework.components.test.java.model.TestJavaModel", ModelDef.class);
         DefDescriptor<ApplicationDef> appDescriptor = addSourceAutoCleanup(ApplicationDef.class,
                 String.format(baseApplicationTag, String.format("model='%s'", modelDefDescriptor.getQualifiedName()),
@@ -77,11 +83,12 @@ public class MockingUtilUITest extends WebDriverTestCase {
         assertEquals("Modelonetwothree", getText(By.cssSelector("body")));
     }
 
+    @Test
     public void testMockModelString() throws Exception {
-        if (!Aura.getContextService().isEstablished()) {
-            Aura.getContextService().startContext(Mode.SELENIUM, Format.HTML, Authentication.AUTHENTICATED);
+        if (!contextService.isEstablished()) {
+            contextService.startContext(Mode.SELENIUM, Format.HTML, Authentication.AUTHENTICATED);
         }
-        DefDescriptor<ModelDef> modelDefDescriptor = Aura.getDefinitionService().getDefDescriptor(
+        DefDescriptor<ModelDef> modelDefDescriptor = definitionService.getDefDescriptor(
                 "java://org.auraframework.components.test.java.model.TestJavaModel", ModelDef.class);
         DefDescriptor<ApplicationDef> appDescriptor = addSourceAutoCleanup(
                 ApplicationDef.class,
@@ -93,11 +100,12 @@ public class MockingUtilUITest extends WebDriverTestCase {
         assertEquals("not a list", getText(By.cssSelector("body")));
     }
 
+    @Test
     public void testMockModelList() throws Exception {
-        if (!Aura.getContextService().isEstablished()) {
-            Aura.getContextService().startContext(Mode.SELENIUM, Format.HTML, Authentication.AUTHENTICATED);
+        if (!contextService.isEstablished()) {
+            contextService.startContext(Mode.SELENIUM, Format.HTML, Authentication.AUTHENTICATED);
         }
-        DefDescriptor<ModelDef> modelDefDescriptor = Aura.getDefinitionService().getDefDescriptor(
+        DefDescriptor<ModelDef> modelDefDescriptor = definitionService.getDefDescriptor(
                 "java://org.auraframework.components.test.java.model.TestJavaModel", ModelDef.class);
         DefDescriptor<ApplicationDef> appDescriptor = addSourceAutoCleanup(
                 ApplicationDef.class,
@@ -112,11 +120,12 @@ public class MockingUtilUITest extends WebDriverTestCase {
         assertEquals("overrideXYZ", getText(By.cssSelector("body")));
     }
 
+    @Test
     public void testMockModelChain() throws Exception {
-        if (!Aura.getContextService().isEstablished()) {
-            Aura.getContextService().startContext(Mode.SELENIUM, Format.HTML, Authentication.AUTHENTICATED);
+        if (!contextService.isEstablished()) {
+            contextService.startContext(Mode.SELENIUM, Format.HTML, Authentication.AUTHENTICATED);
         }
-        DefDescriptor<ModelDef> modelDefDescriptor = Aura.getDefinitionService().getDefDescriptor(
+        DefDescriptor<ModelDef> modelDefDescriptor = definitionService.getDefDescriptor(
                 "java://org.auraframework.components.test.java.model.TestJavaModel", ModelDef.class);
         DefDescriptor<ApplicationDef> appDescriptor = addSourceAutoCleanup(
                 ApplicationDef.class,
@@ -126,7 +135,7 @@ public class MockingUtilUITest extends WebDriverTestCase {
         // If we want to "chain" mocks (where it may be instantiated multiple times in a single request), Mockito
         // let us do it, but we don't have a convenience function for that because it shouldn't be a common case (in
         // tests)
-        ModelDef modelDef = Mockito.spy(Aura.getDefinitionService().getDefinition(modelDefDescriptor));
+        ModelDef modelDef = Mockito.spy(definitionService.getDefinition(modelDefDescriptor));
         mockingUtil.mockDef(modelDef);
 
         // chain 2 different string values followed by an exception
@@ -151,8 +160,9 @@ public class MockingUtilUITest extends WebDriverTestCase {
     }
 
     // Start with a broken component and mock to provide a "working" one.
+    @Test
     public void testMockServerProvider() throws Exception {
-        DefDescriptor<ProviderDef> providerDefDescriptor = Aura.getDefinitionService().getDefDescriptor(
+        DefDescriptor<ProviderDef> providerDefDescriptor = definitionService.getDefDescriptor(
                 "java://org.auraframework.impl.java.provider.TestComponentConfigProvider", ProviderDef.class);
         DefDescriptor<ComponentDef> cmpDefDescriptor = addSourceAutoCleanup(ComponentDef.class, String
                 .format(baseComponentTag, String.format("provider='%s'", providerDefDescriptor.getQualifiedName()),
@@ -180,18 +190,19 @@ public class MockingUtilUITest extends WebDriverTestCase {
         return "not so interesting";
     }
 
+    @Test
     public void testMockServerActionSanity() throws Exception {
-        if (!Aura.getContextService().isEstablished()) {
-            Aura.getContextService().startContext(Mode.SELENIUM, Format.HTML, Authentication.AUTHENTICATED);
+        if (!contextService.isEstablished()) {
+            contextService.startContext(Mode.SELENIUM, Format.HTML, Authentication.AUTHENTICATED);
         }
-        DefDescriptor<ControllerDef> controllerDefDescriptor = Aura.getDefinitionService().getDefDescriptor(
+        DefDescriptor<ControllerDef> controllerDefDescriptor = definitionService.getDefDescriptor(
                 String.format("java://%s", this.getClass().getCanonicalName()), ControllerDef.class);
         DefDescriptor<ComponentDef> cmpDefDescriptor = addSourceAutoCleanup(
                 ComponentDef.class,
                 String.format(baseComponentTag,
                         String.format("controller='%s'", controllerDefDescriptor.getQualifiedName()),
                         "<ui:button press='{!c.clicked}' label='act'/><div class='result' aura:id='result'></div>"));
-        DefDescriptor<ControllerDef> clientControllerDefDescriptor = Aura.getDefinitionService().getDefDescriptor(
+        DefDescriptor<ControllerDef> clientControllerDefDescriptor = definitionService.getDefDescriptor(
                 String.format("js://%s.%s", cmpDefDescriptor.getNamespace(), cmpDefDescriptor.getName()),
                 ControllerDef.class);
         addSourceAutoCleanup(clientControllerDefDescriptor, "{clicked:function(component){"
@@ -205,16 +216,17 @@ public class MockingUtilUITest extends WebDriverTestCase {
         waitForElementTextPresent(findDomElement(By.cssSelector("div.result")), "not so interesting");
     }
 
+    @Test
     public void testMockServerAction() throws Exception {
-        if (!Aura.getContextService().isEstablished()) {
-            Aura.getContextService().startContext(Mode.SELENIUM, Format.HTML, Authentication.AUTHENTICATED);
+        if (!contextService.isEstablished()) {
+            contextService.startContext(Mode.SELENIUM, Format.HTML, Authentication.AUTHENTICATED);
         }
-        DefDescriptor<ControllerDef> controllerDefDescriptor = Aura.getDefinitionService().getDefDescriptor(
+        DefDescriptor<ControllerDef> controllerDefDescriptor = definitionService.getDefDescriptor(
                 String.format("java://%s", this.getClass().getCanonicalName()), ControllerDef.class);
         DefDescriptor<ComponentDef> cmpDefDescriptor = addSourceAutoCleanup(ComponentDef.class, String
                 .format(baseComponentTag, String.format("controller='%s'", controllerDefDescriptor.getQualifiedName()),
                         "<ui:button press='{!c.clicked}' label='act'/><div class='result' aura:id='result'></div>"));
-        DefDescriptor<ControllerDef> clientControllerDefDescriptor = Aura.getDefinitionService().getDefDescriptor(
+        DefDescriptor<ControllerDef> clientControllerDefDescriptor = definitionService.getDefDescriptor(
                 String.format("js://%s.%s", cmpDefDescriptor.getNamespace(), cmpDefDescriptor.getName()),
                 ControllerDef.class);
         addSourceAutoCleanup(clientControllerDefDescriptor, "{clicked:function(component){"
@@ -229,5 +241,4 @@ public class MockingUtilUITest extends WebDriverTestCase {
         findDomElement(By.cssSelector("button")).click();
         waitForElementTextPresent(findDomElement(By.cssSelector("div.result")), "stimulating");
     }
-
 }

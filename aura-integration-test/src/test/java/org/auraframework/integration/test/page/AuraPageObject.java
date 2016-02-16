@@ -15,20 +15,16 @@
  */
 package org.auraframework.integration.test.page;
 
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-
 import org.auraframework.Aura;
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.BaseComponentDef;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
-import org.auraframework.util.test.configuration.TestServletConfig;
+
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 
 public abstract class AuraPageObject<T extends BaseComponentDef> implements AuraPageObjectInterface {
-    
-    //we need servletConfig to convert url to uri, TODO: maybe this should be a function from xxxUtil as well?
-    private TestServletConfig servletConfig;
     
     private final String name;
     
@@ -49,11 +45,6 @@ public abstract class AuraPageObject<T extends BaseComponentDef> implements Aura
             this.defDescriptor = (DefDescriptor<T>) Aura.getDefinitionService().getDefDescriptor(descriptorString, ComponentDef.class);
         } else {
             this.defDescriptor = (DefDescriptor<T>) Aura.getDefinitionService().getDefDescriptor(descriptorString, ApplicationDef.class);
-        }
-        
-        //init servletConfig
-        if(this.servletConfig == null) {
-            this.servletConfig = Aura.get(TestServletConfig.class);
         }
         
         this.pageObjectTestCase = potc;

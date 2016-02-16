@@ -15,31 +15,26 @@
  */
 package org.auraframework.impl;
 
-import java.util.Map;
-
-import org.auraframework.Aura;
+import com.google.common.collect.Maps;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.throwable.quickfix.AttributeNotFoundException;
 import org.junit.Ignore;
+import org.junit.Test;
 
-import com.google.common.collect.Maps;
+import java.util.Map;
 
 public class InstanceServiceImplTest extends AuraImplTestCase {
-
-    public InstanceServiceImplTest(String name) {
-        super(name);
-    }
-
     /**
      * Verify that calling InstanceService with an undefined attributes throws
      * an exception.
      */
     @Ignore("W-1483429")
+    @Test
     public void testInstanceCreationWithNonExistingArrtibutes() throws Exception {
         Map<String, Object> attrMap = Maps.newHashMap();
         attrMap.put("iDontExist", "bar");
         try {
-            Aura.getInstanceService().getInstance("ui:inputText", ComponentDef.class, attrMap);
+            instanceService.getInstance("ui:inputText", ComponentDef.class, attrMap);
             fail("Instantiating a component with undefined attributes should have thrown an exception");
         } catch (AttributeNotFoundException e) {
             // Expected

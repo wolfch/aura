@@ -15,12 +15,15 @@
  */
 package org.auraframework.components.aura;
 
-import java.io.IOException;
-import org.auraframework.Aura;
+import org.auraframework.annotations.Annotations.ServiceComponentRenderer;
 import org.auraframework.def.ComponentDefRefArray;
 import org.auraframework.def.Renderer;
 import org.auraframework.instance.BaseComponent;
+import org.auraframework.service.RenderingService;
 import org.auraframework.throwable.quickfix.QuickFixException;
+
+import javax.inject.Inject;
+import java.io.IOException;
 
 /**
  * server side renderer for components that have a templated body and provide
@@ -28,20 +31,24 @@ import org.auraframework.throwable.quickfix.QuickFixException;
  * 
  * @since 0.0.234
  */
+@ServiceComponentRenderer
 public class ProvidedBodyRenderer implements Renderer {
+    @Inject
+    private RenderingService renderingService;
+
     @Override
     public void render(BaseComponent<?, ?> component, Appendable out) throws IOException, QuickFixException {
-    	ComponentDefRefArray bodyAttribute = component.getAttributes().getValue("body", ComponentDefRefArray.class);
+        ComponentDefRefArray bodyAttribute = component.getAttributes().getValue("body", ComponentDefRefArray.class);
         if (bodyAttribute == null) {
-        	return;
+            return;
         }
-        
+
         // Loop over all the items in the body, which is a ComponentDefRefArray
         // If you find a ComponentInstance, render that instance
         for (Object bodyComponent : bodyAttribute.getList()) {
-        	if(bodyComponent instanceof BaseComponent) {
-        		Aura.getRenderingService().render((BaseComponent<?, ?>)bodyComponent, out);
-        	}
+            if (bodyComponent instanceof BaseComponent) {
+                this.renderingService.render((BaseComponent<?, ?>) bodyComponent, out);
+            }
         }
         return;
     }

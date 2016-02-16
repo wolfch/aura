@@ -15,20 +15,9 @@
  */
 package org.auraframework.test.testsetrunner;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
-
-import javax.annotation.concurrent.GuardedBy;
-import javax.annotation.concurrent.ThreadSafe;
-
+import com.google.common.collect.Maps;
 import junit.framework.Test;
 import junit.framework.TestSuite;
-
 import org.auraframework.system.AuraContext;
 import org.auraframework.test.ComponentJSTestSuite.ComponentTestCase;
 import org.auraframework.test.perf.util.PerfExecutorTest;
@@ -36,7 +25,15 @@ import org.auraframework.util.ServiceLocator;
 import org.auraframework.util.test.util.TestInventory;
 import org.auraframework.util.test.util.TestInventory.Type;
 
-import com.google.common.collect.Maps;
+import javax.annotation.concurrent.GuardedBy;
+import javax.annotation.concurrent.ThreadSafe;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
 
 /**
  * An encapsulation of all of the state held by the {@link TestSetRunnerModel}.
@@ -188,10 +185,10 @@ public class TestSetRunnerState {
                 }
 
                 if (t instanceof PerfExecutorTest) {
-                    //url = ((PerfExecutorTest) t).generateUrl();
-                	List<String> urls = ((PerfExecutorTest) t).generateUrl();
-                	if(urls.size()>1){
-                		for(String u: urls){
+                    //url = ((PerfExecutorUITestCase) t).generateUrl();
+                    List<String> urls = ((PerfExecutorTest) t).generateUrl();
+                    if (urls.size() > 1) {
+                        for(String u: urls){
                 			testWithProps.put("jsConsole", u);
                             testsWithPropsMap.put(t.toString(), testWithProps);       
                 		}

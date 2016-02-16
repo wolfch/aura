@@ -15,12 +15,9 @@
  */
 package org.auraframework.impl.java.controller;
 
-import java.io.File;
-import java.io.FileReader;
-import java.util.logging.Logger;
-
+import org.auraframework.annotations.Annotations.ServiceComponent;
+import org.auraframework.ds.servicecomponent.Controller;
 import org.auraframework.system.Annotations.AuraEnabled;
-import org.auraframework.system.Annotations.Controller;
 import org.auraframework.system.Annotations.Key;
 import org.auraframework.test.perf.PerfResultsUtil;
 import org.auraframework.test.testsetrunner.TestSetRunnerState;
@@ -28,8 +25,12 @@ import org.auraframework.throwable.AuraHandledException;
 import org.auraframework.util.json.JsonReader;
 import org.auraframework.util.test.util.UnitTestCase;
 
-@Controller
-public class PerfController {
+import java.io.File;
+import java.io.FileReader;
+import java.util.logging.Logger;
+
+@ServiceComponent
+public class PerfController implements Controller {
     private static final Logger logger = Logger.getLogger(PerfController.class.getName());
 
     /**
@@ -41,8 +42,8 @@ public class PerfController {
      * @throws Exception
      */
     @AuraEnabled
-    public static Object getPerformanceMetrics(@Key("metricsType") String metricsType,
-            @Key("testName") String testName) throws Exception {
+    public Object getPerformanceMetrics(@Key("metricsType") String metricsType,
+                                        @Key("testName") String testName) throws Exception {
 
         logger.info(String.format("Loading '%s' Performance metrics for test: %s", metricsType, testName));
 

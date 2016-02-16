@@ -15,11 +15,6 @@
  */
 package org.auraframework.integration.test.components.ui.inputDate;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-
 import org.auraframework.test.util.WebDriverTestCase;
 import org.auraframework.test.util.WebDriverUtil.BrowserType;
 import org.auraframework.util.test.annotation.UnAdaptableTest;
@@ -27,6 +22,11 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 public class InputDateWithLabelUITest extends WebDriverTestCase {
 
@@ -44,11 +44,6 @@ public class InputDateWithLabelUITest extends WebDriverTestCase {
     private final String DATEPICKER_SEL = "div.uiDatePicker.visible";
 
     private final String CLASSNAME = "return $A.test.getActiveElement().className";
-
-    public InputDateWithLabelUITest(String name) {
-        super(name);
-
-    }
 
     /**
      * Excluded Browser Reasons:

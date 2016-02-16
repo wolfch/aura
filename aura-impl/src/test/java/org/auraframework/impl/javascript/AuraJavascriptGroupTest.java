@@ -15,26 +15,27 @@
  */
 package org.auraframework.impl.javascript;
 
-import java.io.StringWriter;
-import java.util.List;
-import java.util.Set;
-
 import org.auraframework.impl.AuraImplTestCase;
-import org.auraframework.impl.javascript.AuraJavascriptGroup;
 import org.auraframework.impl.util.AuraImplFiles;
+import org.auraframework.util.FileMonitor;
 import org.auraframework.util.javascript.JavascriptProcessingError;
 import org.auraframework.util.javascript.JavascriptProcessingError.Level;
 import org.auraframework.util.javascript.directive.DirectiveParser;
 import org.auraframework.util.javascript.directive.JavascriptGeneratorMode;
+import org.junit.Test;
+
+import javax.inject.Inject;
+import java.io.StringWriter;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Automation for Aura JavascriptGroup.
  */
 public class AuraJavascriptGroupTest extends AuraImplTestCase {
-    public AuraJavascriptGroupTest(String name) {
-        super(name);
-    }
-
+    @Inject
+    private FileMonitor fileMonitor;
+    
     @Override
     public void runTest() throws Throwable {
         if (AuraImplFiles.AuraJavascriptSourceDirectory.asFile().exists()) {
@@ -49,8 +50,9 @@ public class AuraJavascriptGroupTest extends AuraImplTestCase {
      * @hierarchy Aura.Unit Tests.Javascript Library
      * @userStory a07B0000000FDWP
      */
+    @Test
     public void testJSLintValidationForAuraJavascriptGroup() throws Exception {
-        AuraJavascriptGroup js = new AuraJavascriptGroup();
+        AuraJavascriptGroup js = new AuraJavascriptGroup(fileMonitor);
         try {
             // Should be ideally in setup, but this step might have some errors,
             // so won't assume its reliable
@@ -68,8 +70,9 @@ public class AuraJavascriptGroupTest extends AuraImplTestCase {
      * @hierarchy Aura.Unit Tests.Javascript Library
      * @userStory a07B0000000FDWP
      */
+    @Test
     public void testCompressionOfAuraJavascriptGroup() throws Exception {
-        AuraJavascriptGroup js = new AuraJavascriptGroup();
+        AuraJavascriptGroup js = new AuraJavascriptGroup(fileMonitor);
         Set<JavascriptGeneratorMode> jsModes = js.getJavascriptGeneratorModes();
         DirectiveParser parser = new DirectiveParser(js, js.getStartFile());
         parser.parseFile();

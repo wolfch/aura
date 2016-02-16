@@ -15,9 +15,6 @@
  */
 package org.auraframework.integration.test.root.event;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.auraframework.Aura;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
@@ -25,14 +22,15 @@ import org.auraframework.impl.AuraImplTestCase;
 import org.auraframework.impl.FakeRegistry;
 import org.auraframework.impl.root.event.RegisterEventDefImpl;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
+import org.junit.Test;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
 */
 public class RegisterEventDefTest extends AuraImplTestCase {
-    public RegisterEventDefTest(String name) {
-        super(name);
-    }
-
+    @Test
     public void testGetEventDescriptor() {
         assertEquals(
                 vendor.makeEventDefDescriptor("aura:testevent"),
@@ -40,6 +38,7 @@ public class RegisterEventDefTest extends AuraImplTestCase {
                         vendor.makeLocation("filename1", 5, 5, 0)).getDescriptor());
     }
 
+    @Test
     public void testIsGlobal() {
         assertTrue(vendor.makeRegisterEventDef(vendor.makeEventDefDescriptor("aura:testevent"), true,
                 vendor.makeLocation("filename1", 5, 5, 0)).isGlobal());
@@ -47,6 +46,7 @@ public class RegisterEventDefTest extends AuraImplTestCase {
                 vendor.makeLocation("filename1", 5, 5, 0)).isGlobal());
     }
 
+    @Test
     public void testGetLocation() {
         assertEquals(
                 vendor.makeLocation("filename1", 5, 5, 0),
@@ -54,11 +54,13 @@ public class RegisterEventDefTest extends AuraImplTestCase {
                         vendor.makeLocation("filename1", 5, 5, 0)).getLocation());
     }
 
+    @Test
     public void testSerialize() throws Exception {
         serializeAndGoldFile(vendor.makeRegisterEventDef(vendor.makeEventDefDescriptor("auratest:testEvent"), true,
                 vendor.makeLocation("filename1", 5, 5, 0)));
     }
 
+    @Test
     public void testValidateDefinition() throws Exception {
         RegisterEventDefImpl def = vendor.makeRegisterEventDefWithNulls(null, true, null);
         try {
@@ -69,6 +71,7 @@ public class RegisterEventDefTest extends AuraImplTestCase {
         }
     }
 
+    @Test
     public void testValidateReferences() throws Exception {
         FakeRegistry fake = createFakeRegistry();
         fake.putDefinition(vendor.makeEventDef());
@@ -76,6 +79,7 @@ public class RegisterEventDefTest extends AuraImplTestCase {
         red.validateReferences();
     }
 
+    @Test
     public void testAppendDependencies() {
         Set<DefDescriptor<?>> descriptors = new HashSet<>();
         vendor.makeRegisterEventDef(vendor.makeEventDefDescriptor("aura:testevent"), true,
@@ -84,6 +88,7 @@ public class RegisterEventDefTest extends AuraImplTestCase {
                 true, vendor.makeLocation("filename1", 5, 5, 0)).getDescriptor()));
     }
 
+    @Test
     public void testGetName() {
         assertEquals(
                 "testevent",
@@ -91,11 +96,13 @@ public class RegisterEventDefTest extends AuraImplTestCase {
                         vendor.makeLocation("filename1", 5, 5, 0)).getName());
     }
 
+    @Test
     public void testEqualsWithDifferentObjects() {
         assertFalse("Equals should have been false due to different object types", vendor.makeRegisterEventDef()
                 .equals(vendor.makeEventDef()));
     }
 
+    @Test
     public void testGetDescription() throws Exception {
         String cmpMarkup = "<aura:component >%s</aura:component>";
         String markup = String.format(cmpMarkup,
@@ -105,6 +112,7 @@ public class RegisterEventDefTest extends AuraImplTestCase {
                 .getRegisterEventDefs().get("eventName").getDescription());
     }
 
+    @Test
     public void testValueEventException() throws Exception {
         String cmpMarkup = "<aura:component >%s</aura:component>";
         String markup = String.format(cmpMarkup,

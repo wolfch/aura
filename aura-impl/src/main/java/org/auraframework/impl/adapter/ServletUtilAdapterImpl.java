@@ -15,38 +15,49 @@
  */
 package org.auraframework.impl.adapter;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.*;
-
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import aQute.bnd.annotation.component.Component;
-
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
-import org.auraframework.Aura;
-import org.auraframework.adapter.*;
-import org.auraframework.def.*;
+import org.auraframework.adapter.ConfigAdapter;
+import org.auraframework.adapter.ContentSecurityPolicy;
+import org.auraframework.adapter.ExceptionAdapter;
+import org.auraframework.adapter.ServletUtilAdapter;
+import org.auraframework.annotations.Annotations.ServiceComponent;
+import org.auraframework.clientlibrary.ClientLibraryService;
+import org.auraframework.def.BaseComponentDef;
+import org.auraframework.def.ClientLibraryDef;
+import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.DefDescriptor.DefType;
-import org.auraframework.ds.serviceloader.AuraServiceProvider;
 import org.auraframework.http.CSP;
 import org.auraframework.instance.InstanceStack;
-import org.auraframework.service.*;
-import org.auraframework.system.*;
+import org.auraframework.service.ContextService;
+import org.auraframework.service.DefinitionService;
+import org.auraframework.service.SerializationService;
+import org.auraframework.system.AuraContext;
 import org.auraframework.system.AuraContext.Format;
 import org.auraframework.system.AuraContext.Mode;
-import org.auraframework.throwable.*;
+import org.auraframework.system.AuraResource;
+import org.auraframework.system.MasterDefRegistry;
+import org.auraframework.throwable.AuraUnhandledException;
+import org.auraframework.throwable.ClientOutOfSyncException;
+import org.auraframework.throwable.NoAccessException;
 import org.auraframework.throwable.quickfix.DefinitionNotFoundException;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.AuraTextUtil;
 import org.auraframework.util.json.JsonEncoder;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
+import javax.inject.Inject;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Work to make this class final.
@@ -54,13 +65,14 @@ import com.google.common.collect.Sets;
  * @author kgray
  * @since 202
  */
-@Component (provide=AuraServiceProvider.class)
+@ServiceComponent
 public class ServletUtilAdapterImpl implements ServletUtilAdapter {
-    private ContextService contextSerivce = Aura.getContextService();
-    private ConfigAdapter configAdapter = Aura.getConfigAdapter();
-    private ExceptionAdapter exceptionAdapter = Aura.getExceptionAdapter();
-    private SerializationService serializationService = Aura.getSerializationService();
-    protected DefinitionService definitionService = Aura.getDefinitionService();
+    private ContextService contextService;
+    private ConfigAdapter configAdapter;
+    private ExceptionAdapter exceptionAdapter;
+    private SerializationService serializationService;
+    private ClientLibraryService clientLibraryService;
+    protected DefinitionService definitionService;
 
     /**
      * "Short" pages (such as manifest cookies and AuraFrameworkServlet pages) expire in 1 day.
@@ -228,7 +240,7 @@ public class ServletUtilAdapterImpl implements ServletUtilAdapter {
                 //
                 // Clear the InstanceStack before trying to serialize the exception since the Throwable has likely
                 // rendered the stack inaccurate, and may falsely trigger NoAccessExceptions.
-                InstanceStack stack = this.contextSerivce.getCurrentContext().getInstanceStack();
+                InstanceStack stack = this.contextService.getCurrentContext().getInstanceStack();
                 List<String> list = stack.getStackInfo();
                 for (int count = list.size(); count > 0; count--) {
                     stack.popInstance(stack.peek());
@@ -262,7 +274,7 @@ public class ServletUtilAdapterImpl implements ServletUtilAdapter {
                 }
             }
         } finally {
-            this.contextSerivce.endContext();
+            this.contextService.endContext();
         }
     }
 
@@ -279,7 +291,7 @@ public class ServletUtilAdapterImpl implements ServletUtilAdapter {
                 + "<!--                                                   -->"
                 + "<!--                                                   -->"
                 + "<!--                                                   -->");
-        this.contextSerivce.endContext();
+        this.contextService.endContext();
     }
 
     @Override
@@ -318,7 +330,7 @@ public class ServletUtilAdapterImpl implements ServletUtilAdapter {
      */
     private Set<String> getClientLibraryUrls(AuraContext context, ClientLibraryDef.Type type)
             throws QuickFixException {
-        return Aura.getClientLibraryService().getUrls(context, type);
+        return clientLibraryService.getUrls(context, type);
     }
 
     /**
@@ -577,6 +589,7 @@ public class ServletUtilAdapterImpl implements ServletUtilAdapter {
     /**
      * @param definitionService the definitionService to set
      */
+    @Inject
     public void setDefinitionService(DefinitionService definitionService) {
         this.definitionService = definitionService;
     }
@@ -584,13 +597,15 @@ public class ServletUtilAdapterImpl implements ServletUtilAdapter {
     /**
      * Injection override.
      */
+    @Inject
     public void setContextService(ContextService contextService) {
-        this.contextSerivce = contextService;
+        this.contextService = contextService;
     }
 
     /**
      * Injection override.
      */
+    @Inject
     public void setConfigAdapter(ConfigAdapter configAdapter) {
         this.configAdapter = configAdapter;
     }
@@ -598,6 +613,7 @@ public class ServletUtilAdapterImpl implements ServletUtilAdapter {
     /**
      * Injection override.
      */
+    @Inject
     public void setExceptionAdapter(ExceptionAdapter exceptionAdapter) {
         this.exceptionAdapter = exceptionAdapter;
     }
@@ -605,7 +621,16 @@ public class ServletUtilAdapterImpl implements ServletUtilAdapter {
     /**
      * Injection override.
      */
+    @Inject
     public void setSerializationService(SerializationService serializationService) {
         this.serializationService = serializationService;
+    }
+
+    /**
+     * Injection override.
+     */
+    @Inject
+    public void setClientLibraryService(ClientLibraryService clientLibraryService) {
+        this.clientLibraryService = clientLibraryService;
     }
 }

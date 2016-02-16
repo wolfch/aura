@@ -15,21 +15,20 @@
  */
 package org.auraframework.http;
 
-import java.io.IOException;
-import java.net.URI;
-import java.util.Map;
-
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.auraframework.Aura;
+import com.google.common.collect.Maps;
+import org.auraframework.adapter.ConfigAdapter;
 import org.auraframework.adapter.ServletUtilAdapter;
-import org.auraframework.http.resource.*;
+import org.auraframework.service.ContextService;
 import org.auraframework.system.AuraContext;
 import org.auraframework.system.AuraResource;
 
-import com.google.common.collect.Maps;
+import javax.inject.Inject;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 /**
  * The aura resource servlet.
@@ -46,42 +45,69 @@ import com.google.common.collect.Maps;
 public class AuraResourceServlet extends AuraBaseServlet {
 
     private static final long serialVersionUID = -3642790050433142397L;
-    public static final String ORIG_REQUEST_URI = "aura.origRequestURI";
 
-    private static ServletContext servletContext;
-
+    public final static String ORIG_REQUEST_URI = "aura.origRequestURI";
+    private final static RequestParam.StringParam csrfToken = new RequestParam.StringParam(AuraBaseServlet.AURA_PREFIX + "token", 0, true);
     private final Map<String,AuraResource> nameToResource = Maps.newHashMap();
 
-    public AuraResourceServlet() {
-        addResource(new AppCss());
-        addResource(new AppJs());
-        addResource(new ClientLibraryJs());
-        addResource(new ClientLibraryCss());
-        addResource(new Manifest());
-        addResource(new ResourceSvg());
-        addResource(new EncryptionKey());
+    private ServletUtilAdapter servletUtilAdapter;
+    private ContextService contextService;
+    private ConfigAdapter configAdapter;
+    
+    /**
+     * Serves up CSS or JS resources for an app.
+     *
+     * @param request the HTTP Request.
+     * @param response the HTTP response.
+     */
+    @Override
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setCharacterEncoding(AuraBaseServlet.UTF_ENCODING);
+        AuraContext context = contextService.getCurrentContext();
+        AuraResource resource = findResource((String) request.getAttribute(ORIG_REQUEST_URI));
+        if (resource == null) {
+            servletUtilAdapter.send404(getServletContext(), request, response);
+            return;
+        }
+        if (servletUtilAdapter.resourceServletGetPre(request, response, resource)) {
+            return;
+        }
+        resource.setContentType(response);
+        servletUtilAdapter.setCSPHeaders(context.getApplicationDescriptor(), request, response);
+        if (resource.isCSRFProtect()) {
+            try {
+                configAdapter.validateCSRFToken(csrfToken.get(request));
+            } catch (Throwable t) {
+                servletUtilAdapter.handleServletException(t, true, context, request, response, false);
+                return;
+            }
+        }
+        resource.write(request, response, context);
     }
 
-    public void addResource(AuraResource resource) {
-        this.nameToResource.put(resource.getName(), resource);
+    private void addResource(AuraResource resource) {
+        String name = resource.getName();
+        if (name != null) {
+            this.nameToResource.put(name, resource);
+        }
     }
 
     /*
      * we pass in context, just in case someone overriding this function might want to use it.
      */
-    protected AuraResource findResource(String fullName, AuraContext context) {
+    private AuraResource findResource(String fullName) {
         if (fullName == null) {
             return null;
         }
-        int lindex = fullName.lastIndexOf("/");
+        int lIndex = fullName.lastIndexOf("/");
         String last = null;
-        int qindex;
+        int qIndex;
 
-        if (lindex < fullName.length()) {
-            last = fullName.substring(lindex+1);;
-            qindex = last.indexOf("?");
-            if (qindex > -1) {
-                last = last.substring(0, qindex);
+        if (lIndex < fullName.length()) {
+            last = fullName.substring(lIndex + 1);
+            qIndex = last.indexOf("?");
+            if (qIndex > -1) {
+                last = last.substring(0, qIndex);
             }
             AuraResource resource = nameToResource.get(last);
             if (resource != null) {
@@ -92,56 +118,23 @@ public class AuraResourceServlet extends AuraBaseServlet {
         return null;
     }
 
-    /**
-     * Serves up CSS or JS resources for an app.
-     *
-     * @param request the HTTP Request.
-     * @param response the HTTP response.
-     */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.setCharacterEncoding(AuraBaseServlet.UTF_ENCODING);
-        AuraContext context = Aura.getContextService().getCurrentContext();
-        AuraResource resource = findResource((String)request.getAttribute(ORIG_REQUEST_URI), context);
-        ServletUtilAdapter servletUtil = Aura.getServletUtilAdapter();
-        if (resource == null) {
-            servletUtil.send404(getServletConfig().getServletContext(), request, response);
-            return;
-        }
-        if (servletUtil.resourceServletGetPre(request, response, resource)) {
-            return;
-        }
-        resource.setContentType(response);
-        setBasicHeaders(context.getApplicationDescriptor(), request, response);
-        if (resource.isCSRFProtect()) {
-            try {
-                Aura.getConfigAdapter().validateCSRFToken(csrfToken.get(request));
-            } catch (Throwable t) {
-                servletUtil.handleServletException(t, true, context, request, response, false);
-                return;
-            }
-        }
-        resource.write(request, response, context);
+    @Inject
+    public void setServletUtilAdapter(ServletUtilAdapter servletUtilAdapter) {
+        this.servletUtilAdapter = servletUtilAdapter;
     }
 
-    public static boolean isResourceLocallyAvailable(String resourceURI) {
-        if (resourceURI != null && resourceURI.startsWith("/") && servletContext != null) {
-            try {
-                URI uri = URI.create(resourceURI);
-                if (uri != null) {
-                    ServletContext c = servletContext.getContext(uri.getPath());
-                    if (c != null && c.getResource(uri.getPath()) != null) {
-                        return true;
-                    }
-                }
-            } catch (Exception e) {
-            }
-        }
-        return false;
+    @Inject
+    public void setContextService(ContextService contextService) {
+        this.contextService = contextService;
     }
 
-    @Override
-    public void init(ServletConfig config) {
-        servletContext = config.getServletContext();
+    @Inject
+    public void setAuraResources(List<AuraResource> auraResources) {
+        auraResources.forEach(this::addResource);
+    }
+
+    @Inject
+    public void setConfigAdapter(ConfigAdapter configAdapter) {
+        this.configAdapter = configAdapter;
     }
 }

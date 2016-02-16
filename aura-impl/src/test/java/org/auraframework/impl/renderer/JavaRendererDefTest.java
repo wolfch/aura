@@ -15,20 +15,25 @@
  */
 package org.auraframework.impl.renderer;
 
-import java.io.IOException;
-import java.io.StringWriter;
-
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.RendererDef;
 import org.auraframework.impl.AuraImplTestCase;
+import org.auraframework.impl.DefinitionAccessImpl;
 import org.auraframework.impl.java.renderer.JavaRendererDef;
 import org.auraframework.impl.renderer.sampleJavaRenderers.TestSimpleRenderer;
-import org.auraframework.impl.system.DefDescriptorImpl;
 import org.auraframework.instance.Component;
+import org.auraframework.instance.RendererInstance;
+import org.auraframework.service.InstanceService;
+import org.auraframework.system.AuraContext;
 import org.auraframework.throwable.AuraError;
 import org.auraframework.throwable.AuraExecutionException;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
 import org.auraframework.util.json.JsonEncoder;
+import org.junit.Test;
+
+import javax.inject.Inject;
+import java.io.IOException;
+import java.io.StringWriter;
 
 /**
  * Test class to verify implementation of Java (server side) renderers for component.
@@ -38,12 +43,11 @@ import org.auraframework.util.json.JsonEncoder;
  * @userStory a07B0000000Doob
  */
 public class JavaRendererDefTest extends AuraImplTestCase {
+    @Inject
+    InstanceService instanceService;
+
     public Component dummyCmp = null;
     StringWriter sw = null;
-
-    public JavaRendererDefTest(String name) {
-        super(name);
-    }
 
     @Override
     public void setUp() throws Exception {
@@ -60,8 +64,10 @@ public class JavaRendererDefTest extends AuraImplTestCase {
     /**
      * Verify that server side renderers are defined as local.
      */
+    @Test
     public void testIsLocal() throws Exception {
         JavaRendererDef.Builder builder = new JavaRendererDef.Builder().setRendererClass(TestSimpleRenderer.class);
+        builder.setAccess(new DefinitionAccessImpl(AuraContext.Access.PUBLIC));
         JavaRendererDef def = builder.build();
         assertTrue("Server side renderers should be defined as Local", def.isLocal());
     }
@@ -69,9 +75,10 @@ public class JavaRendererDefTest extends AuraImplTestCase {
     /**
      * Verify that JavaRendererDef creates nothing when serialized.
      */
+    @Test
     public void testSerializedFormat() throws Exception {
-        JavaRendererDef def = createRenderer("java://org.auraframework.impl.renderer.sampleJavaRenderers.TestSimpleRenderer");
-        assertTrue(JsonEncoder.serialize(def, false, false).isEmpty());
+        RendererInstance renderer = createRenderer("java://org.auraframework.impl.renderer.sampleJavaRenderers.TestSimpleRenderer");
+        assertTrue(JsonEncoder.serialize(renderer, false, false).isEmpty());
     }
 
     /**
@@ -81,9 +88,10 @@ public class JavaRendererDefTest extends AuraImplTestCase {
      * @expectedResults JavaRendererDef.render() function accepts a character stream and returns the stream, populated
      *                  with markup.
      */
+    @Test
     public void testInvokeRender() throws Exception {
-        JavaRendererDef def = createRenderer("java://org.auraframework.impl.renderer.sampleJavaRenderers.TestSimpleRenderer");
-        def.render(dummyCmp, sw);
+        RendererInstance renderer = createRenderer("java://org.auraframework.impl.renderer.sampleJavaRenderers.TestSimpleRenderer");
+        renderer.render(dummyCmp, sw);
         this.goldFileText(sw.toString());
     }
 
@@ -143,37 +151,38 @@ public class JavaRendererDefTest extends AuraImplTestCase {
      * ComponentImpl just makes render() call on the RenderDef object. All exceptions should be wrapped in
      * AuraExecutionException, while errors and quickfix exceptions are passed through.
      */
+    @Test
     public void testExceptionThrownByComponentRendererHandled() throws Exception {
-        JavaRendererDef def = createRenderer("java://org.auraframework.impl.renderer.sampleJavaRenderers.TestSimpleRenderer");
+        RendererInstance renderer = createRenderer("java://org.auraframework.impl.renderer.sampleJavaRenderers.TestSimpleRenderer");
         IOException ioe = new IOException();
         AuraError err = new AuraError("expected");
         RuntimeException re = new RuntimeException("expected");
 
         try {
-            def.render(null, new AppendableThrower(ioe));
+            renderer.render(null, new AppendableThrower(ioe));
             fail("no exception on a throwing appendable");
         } catch (AuraExecutionException expected) {
             assertEquals("Did not throw wrapped IOException", ioe, expected.getCause());
         }
 
         try {
-            def.render(null, new AppendableThrower(err));
+            renderer.render(null, new AppendableThrower(err));
             fail("No exception on a throwing appendable.");
         } catch (AuraError expected) {
             assertEquals("Did not throw error", err, expected);
         }
 
         try {
-            def.render(null, new AppendableThrower(re));
+            renderer.render(null, new AppendableThrower(re));
             fail("no exception on a throwing appendable");
         } catch (AuraExecutionException expected) {
             assertEquals("Did not throw error", re, expected.getCause());
         }
 
         // Make sure ArithmeticExceptions are wrapped and sent up the chain
-        def = createRenderer("java://org.auraframework.impl.renderer.sampleJavaRenderers.TestRendererThrowingException");
+        renderer = createRenderer("java://org.auraframework.impl.renderer.sampleJavaRenderers.TestRendererThrowingException");
         try {
-            def.render(dummyCmp, sw);
+            renderer.render(dummyCmp, sw);
             fail("Should be able to catch exceptions during rendering.");
         } catch (AuraExecutionException e) {
             // The thrown Exception should be AuraExecutionException, but we should still have the ArithemeticException
@@ -182,9 +191,9 @@ public class JavaRendererDefTest extends AuraImplTestCase {
         }
 
         // Make sure QuickFixExceptions are not swallowed
-        def = createRenderer("java://org.auraframework.impl.renderer.sampleJavaRenderers.TestRendererThrowsQFEDuringRender");
+        renderer = createRenderer("java://org.auraframework.impl.renderer.sampleJavaRenderers.TestRendererThrowsQFEDuringRender");
         try {
-            def.render(dummyCmp, sw);
+            renderer.render(dummyCmp, sw);
             fail("Should be able to catch QuickFixExceptions during rendering.");
         } catch (Exception e) {
             checkExceptionFull(e, InvalidDefinitionException.class, "From TestRendererThrowsQFEDuringRender");
@@ -198,13 +207,16 @@ public class JavaRendererDefTest extends AuraImplTestCase {
      * @return the new RendererDef
      * @throws Exception
      */
-    private JavaRendererDef createRenderer(String qualifiedName) throws Exception {
+    private RendererInstance createRenderer(String qualifiedName) throws Exception {
         JavaRendererDef.Builder builder = new JavaRendererDef.Builder();
-        DefDescriptor<RendererDef> descriptor = DefDescriptorImpl.getInstance(qualifiedName, RendererDef.class);
+        DefDescriptor<RendererDef> descriptor = definitionService.getDefDescriptor(qualifiedName, RendererDef.class);
         Class<?> rendererClass = Class.forName(String.format("%s.%s", descriptor.getNamespace(), descriptor.getName()));
 
         builder.setLocation(rendererClass.getCanonicalName(), -1);
         builder.setRendererClass(rendererClass);
-        return builder.build();
+        builder.setAccess(new DefinitionAccessImpl(AuraContext.Access.PUBLIC));
+        RendererDef definition = builder.build();
+
+        return instanceService.getInstance(definition);
     }
 }

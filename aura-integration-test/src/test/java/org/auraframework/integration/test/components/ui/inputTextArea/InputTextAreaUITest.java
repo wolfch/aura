@@ -32,10 +32,6 @@ public class InputTextAreaUITest extends WebDriverTestCase {
     public static final String TEST_CMP = "/uitest/inputTextArea_UpdateOnTest.cmp";
     public static final String TEST_CMP2 = "/uitest/inputTextArea_UpdateOnValueChange.cmp";
 
-    public InputTextAreaUITest(String name) {
-        super(name);
-    }
-
     /**
      * Test Case for W-1731003 ui:inputTextArea throws error when value is changed
      */

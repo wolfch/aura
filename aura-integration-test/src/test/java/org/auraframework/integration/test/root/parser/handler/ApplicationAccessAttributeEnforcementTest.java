@@ -19,25 +19,29 @@ import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.Definition;
 import org.auraframework.impl.AuraImplTestCase;
+import org.auraframework.service.DefinitionService;
 import org.auraframework.test.source.StringSourceLoader;
 import org.auraframework.throwable.quickfix.QuickFixException;
-import org.auraframework.util.test.annotation.UnAdaptableTest;
 import org.junit.Test;
 
-@UnAdaptableTest("namespace start with c means something special in core")
+import javax.inject.Inject;
+
 public class ApplicationAccessAttributeEnforcementTest extends AuraImplTestCase {
 
-    public ApplicationAccessAttributeEnforcementTest(String name) throws Exception {
-        super(name);
+    @Inject
+    DefinitionService definitionService;
+
+    public ApplicationAccessAttributeEnforcementTest() throws Exception {
+        super();
     }
-    
+
     /**
      * Default Access Tests start
      */
     /**
      * Verify Default access enforcement
-     verifyAccess for Application,System,System
-     verifyAccess for Application,SystemOther,SystemOther
+     * verifyAccess for Application,System,System
+     * verifyAccess for Application,SystemOther,SystemOther
      */
     @Test
     public void testApplicationWithSystemNamespaceExtendsApplicationWithSameSystemNamespace() throws QuickFixException {
@@ -49,9 +53,9 @@ public class ApplicationAccessAttributeEnforcementTest extends AuraImplTestCase 
         String source = "<aura:application extends='" + appDescriptor.getNamespace() + ":" + appDescriptor.getName() + "' /> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class, source,
                 StringSourceLoader.DEFAULT_NAMESPACE + ":testapplicationChild", true);
-        descriptor.getDef();
+        definitionService.getDefinition(descriptor);
     }
-    
+
     /**
      * Verify Default access enforcement
      * verifyAccess for Application,System,SystemOther
@@ -67,9 +71,9 @@ public class ApplicationAccessAttributeEnforcementTest extends AuraImplTestCase 
         String source = "<aura:application extends='" + appDescriptor.getNamespace() + ":" + appDescriptor.getName() + "' /> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class, source,
                 StringSourceLoader.OTHER_NAMESPACE + ":testapplicationChild", true);
-        descriptor.getDef();
+        definitionService.getDefinition(descriptor);
     }
-    
+
     /**
      * Verify Default access enforcement
      * verifyAccess for Application,System,Custom
@@ -88,15 +92,15 @@ public class ApplicationAccessAttributeEnforcementTest extends AuraImplTestCase 
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class, source,
                 StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testapplicationChild", false);
         try {
-        	descriptor.getDef();
-        	fail("application of custom namespace shouldn't be able to extends application of system namespace");
-        } catch(Exception e) {
-        	//expect 
-    		//System.out.println(e.getMessage());
-    		//Access to application 'string:testapplication1' from namespace 'cstring' in 'markup://cstring:testapplicationChild2(APPLICATION)' disallowed by MasterDefRegistry.assertAccess()
+            definitionService.getDefinition(descriptor);
+            fail("application of custom namespace shouldn't be able to extends application of system namespace");
+        } catch (Exception e) {
+            //expect
+            //System.out.println(e.getMessage());
+            //Access to application 'string:testapplication1' from namespace 'cstring' in 'markup://cstring:testapplicationChild2(APPLICATION)' disallowed by MasterDefRegistry.assertAccess()
         }
     }
-    
+
     /**
      * Verify Default access enforcement
      * verifyAccess for Application,Custom,System
@@ -114,9 +118,9 @@ public class ApplicationAccessAttributeEnforcementTest extends AuraImplTestCase 
         String source = "<aura:application extends='" + appDescriptor.getNamespace() + ":" + appDescriptor.getName() + "' /> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class, source,
                 StringSourceLoader.DEFAULT_NAMESPACE + ":testapplicationChild", true);
-        descriptor.getDef();
+        definitionService.getDefinition(descriptor);
     }
-    
+
     /**
      * Verify Default access enforcement
      * verifyAccess for Application,Custom,Custom
@@ -132,9 +136,9 @@ public class ApplicationAccessAttributeEnforcementTest extends AuraImplTestCase 
         String source = "<aura:application extends='" + appDescriptor.getNamespace() + ":" + appDescriptor.getName() + "' /> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class, source,
                 StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testapplicationChild", false);
-        descriptor.getDef();
+        definitionService.getDefinition(descriptor);
     }
-    
+
     /**
      * Verify Default access enforcement
      * verifyAccess for Application,Custom,CustomOther
@@ -151,24 +155,24 @@ public class ApplicationAccessAttributeEnforcementTest extends AuraImplTestCase 
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class, source,
                 StringSourceLoader.OTHER_CUSTOM_NAMESPACE + ":testapplicationChild", false);
         try {
-        	descriptor.getDef();
-        	fail("application of custom namespace shouldn't be able to extends application of another custom namespace");
-        } catch(Exception e) {
-        	//expect 
-    		//System.out.println(e.getMessage());
-    		//Access to application 'string:testapplication1' from namespace 'cstring' in 'markup://cstring:testapplicationChild2(APPLICATION)' disallowed by MasterDefRegistry.assertAccess()
+            definitionService.getDefinition(descriptor);
+            fail("application of custom namespace shouldn't be able to extends application of another custom namespace");
+        } catch (Exception e) {
+            //expect
+            //System.out.println(e.getMessage());
+            //Access to application 'string:testapplication1' from namespace 'cstring' in 'markup://cstring:testapplicationChild2(APPLICATION)' disallowed by MasterDefRegistry.assertAccess()
         }
     }
-    
+
 
     /**
      * Public Access Tests start
      */
-   
+
     /**
      * Verify Public access enforcement
-     verifyAccess for Application,System,System
-     verifyAccess for Application,SystemOther,SystemOther
+     * verifyAccess for Application,System,System
+     * verifyAccess for Application,SystemOther,SystemOther
      */
     @Test
     public void testApplicationWithSystemNamespaceExtendsApplicationWithSameSystemNamespaceAccessPublic() throws QuickFixException {
@@ -180,9 +184,9 @@ public class ApplicationAccessAttributeEnforcementTest extends AuraImplTestCase 
         String source = "<aura:application extends='" + appDescriptor.getNamespace() + ":" + appDescriptor.getName() + "' /> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class, source,
                 StringSourceLoader.DEFAULT_NAMESPACE + ":testapplicationChild", true);
-        descriptor.getDef();
+        definitionService.getDefinition(descriptor);
     }
-    
+
     /**
      * Verify Public access enforcement
      * verifyAccess for Application,System,SystemOther
@@ -198,9 +202,9 @@ public class ApplicationAccessAttributeEnforcementTest extends AuraImplTestCase 
         String source = "<aura:application extends='" + appDescriptor.getNamespace() + ":" + appDescriptor.getName() + "' /> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class, source,
                 StringSourceLoader.OTHER_NAMESPACE + ":testapplicationChild", true);
-        descriptor.getDef();
+        definitionService.getDefinition(descriptor);
     }
-    
+
     /**
      * Verify Public access enforcement
      * verifyAccess for Application,System,Custom
@@ -219,15 +223,15 @@ public class ApplicationAccessAttributeEnforcementTest extends AuraImplTestCase 
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class, source,
                 StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testapplicationChild", false);
         try {
-        	descriptor.getDef();
-        	fail("application of custom namespace shouldn't be able to extends application of system namespace");
-        } catch(Exception e) {
-        	//expect 
-    		//System.out.println(e.getMessage());
-    		//Access to application 'string:testapplication1' from namespace 'cstring' in 'markup://cstring:testapplicationChild2(APPLICATION)' disallowed by MasterDefRegistry.assertAccess()
+            definitionService.getDefinition(descriptor);
+            fail("application of custom namespace shouldn't be able to extends application of system namespace");
+        } catch (Exception e) {
+            //expect
+            //System.out.println(e.getMessage());
+            //Access to application 'string:testapplication1' from namespace 'cstring' in 'markup://cstring:testapplicationChild2(APPLICATION)' disallowed by MasterDefRegistry.assertAccess()
         }
     }
-    
+
     /**
      * Verify Public access enforcement
      * verifyAccess for Application,Custom,System
@@ -245,9 +249,9 @@ public class ApplicationAccessAttributeEnforcementTest extends AuraImplTestCase 
         String source = "<aura:application extends='" + appDescriptor.getNamespace() + ":" + appDescriptor.getName() + "' /> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class, source,
                 StringSourceLoader.DEFAULT_NAMESPACE + ":testapplicationChild", true);
-        descriptor.getDef();
+        definitionService.getDefinition(descriptor);
     }
-    
+
     /**
      * Verify Public access enforcement
      * verifyAccess for Application,Custom,Custom
@@ -263,9 +267,9 @@ public class ApplicationAccessAttributeEnforcementTest extends AuraImplTestCase 
         String source = "<aura:application extends='" + appDescriptor.getNamespace() + ":" + appDescriptor.getName() + "' /> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class, source,
                 StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testapplicationChild", false);
-        descriptor.getDef();
+        definitionService.getDefinition(descriptor);
     }
-    
+
     /**
      * Verify Public access enforcement
      * verifyAccess for Application,Custom,CustomOther
@@ -282,24 +286,24 @@ public class ApplicationAccessAttributeEnforcementTest extends AuraImplTestCase 
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class, source,
                 StringSourceLoader.OTHER_CUSTOM_NAMESPACE + ":testapplicationChild", false);
         try {
-        	descriptor.getDef();
-        	fail("application of custom namespace shouldn't be able to extends application of another custom namespace");
-        } catch(Exception e) {
-        	//expect 
-    		//System.out.println(e.getMessage());
-    		//Access to application 'string:testapplication1' from namespace 'cstring' in 'markup://cstring:testapplicationChild2(APPLICATION)' disallowed by MasterDefRegistry.assertAccess()
+            definitionService.getDefinition(descriptor);
+            fail("application of custom namespace shouldn't be able to extends application of another custom namespace");
+        } catch (Exception e) {
+            //expect
+            //System.out.println(e.getMessage());
+            //Access to application 'string:testapplication1' from namespace 'cstring' in 'markup://cstring:testapplicationChild2(APPLICATION)' disallowed by MasterDefRegistry.assertAccess()
         }
     }
-    
-   
+
+
     /**
      * Global Access Tests start
      */
-    
+
     /**
      * Verify Global access enforcement
-     verifyAccess for Application,System,System
-     verifyAccess for Application,SystemOther,SystemOther
+     * verifyAccess for Application,System,System
+     * verifyAccess for Application,SystemOther,SystemOther
      */
     @Test
     public void testApplicationWithSystemNamespaceExtendsApplicationWithSameSystemNamespaceAccessGlobal() throws QuickFixException {
@@ -311,9 +315,9 @@ public class ApplicationAccessAttributeEnforcementTest extends AuraImplTestCase 
         String source = "<aura:application extends='" + appDescriptor.getNamespace() + ":" + appDescriptor.getName() + "' /> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class, source,
                 StringSourceLoader.DEFAULT_NAMESPACE + ":testapplicationChild", true);
-        descriptor.getDef();
+        definitionService.getDefinition(descriptor);
     }
-    
+
     /**
      * Verify Global access enforcement
      * verifyAccess for Application,System,SystemOther
@@ -329,9 +333,9 @@ public class ApplicationAccessAttributeEnforcementTest extends AuraImplTestCase 
         String source = "<aura:application extends='" + appDescriptor.getNamespace() + ":" + appDescriptor.getName() + "' /> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class, source,
                 StringSourceLoader.OTHER_NAMESPACE + ":testapplicationChild", true);
-        descriptor.getDef();
+        definitionService.getDefinition(descriptor);
     }
-    
+
     /**
      * Verify Global access enforcement
      * verifyAccess for Application,System,Custom
@@ -349,9 +353,9 @@ public class ApplicationAccessAttributeEnforcementTest extends AuraImplTestCase 
         String source = "<aura:application extends='" + appDescriptor.getNamespace() + ":" + appDescriptor.getName() + "' /> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class, source,
                 StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testapplicationChild", false);
-        descriptor.getDef();
+        definitionService.getDefinition(descriptor);
     }
-    
+
     /**
      * Verify Global access enforcement
      * verifyAccess for Application,Custom,System
@@ -369,9 +373,9 @@ public class ApplicationAccessAttributeEnforcementTest extends AuraImplTestCase 
         String source = "<aura:application extends='" + appDescriptor.getNamespace() + ":" + appDescriptor.getName() + "' /> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class, source,
                 StringSourceLoader.DEFAULT_NAMESPACE + ":testapplicationChild", true);
-        descriptor.getDef();
+        definitionService.getDefinition(descriptor);
     }
-    
+
     /**
      * Verify Global access enforcement
      * verifyAccess for Application,Custom,Custom
@@ -387,9 +391,10 @@ public class ApplicationAccessAttributeEnforcementTest extends AuraImplTestCase 
         String source = "<aura:application extends='" + appDescriptor.getNamespace() + ":" + appDescriptor.getName() + "' /> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class, source,
                 StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testapplicationChild", false);
+        definitionService.getDefinition(descriptor);
         descriptor.getDef();
     }
-    
+
     /**
      * Verify Global access enforcement
      * verifyAccess for Application,Custom,CustomOther
@@ -405,6 +410,6 @@ public class ApplicationAccessAttributeEnforcementTest extends AuraImplTestCase 
         String source = "<aura:application extends='" + appDescriptor.getNamespace() + ":" + appDescriptor.getName() + "' /> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class, source,
                 StringSourceLoader.OTHER_CUSTOM_NAMESPACE + ":testapplicationChild", false);
-        descriptor.getDef();
-    }
+        definitionService.getDefinition(descriptor);
+    }		
 }

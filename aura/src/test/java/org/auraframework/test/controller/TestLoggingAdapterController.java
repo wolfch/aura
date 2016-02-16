@@ -15,35 +15,36 @@
  */
 package org.auraframework.test.controller;
 
+import org.auraframework.annotations.Annotations.ServiceComponent;
+import org.auraframework.ds.servicecomponent.Controller;
+import org.auraframework.system.Annotations.AuraEnabled;
+import org.auraframework.test.adapter.TestLoggingAdapter;
+
+import javax.inject.Inject;
 import java.util.List;
 import java.util.Map;
 
-import org.auraframework.Aura;
-import org.auraframework.adapter.LoggingAdapter;
-import org.auraframework.system.Annotations.AuraEnabled;
-import org.auraframework.system.Annotations.Controller;
-import org.auraframework.test.adapter.TestLoggingAdapter;
+@ServiceComponent
+public class TestLoggingAdapterController implements Controller {
 
-@Controller
-public class TestLoggingAdapterController {
+    @Inject
+    private TestLoggingAdapter testloggingAdapter;
 
     @AuraEnabled
-    public static void beginCapture() {
-        LoggingAdapter adapter = Aura.get(LoggingAdapter.class);
-        if (!(adapter instanceof TestLoggingAdapter)) {
+    public void beginCapture() {
+        if (testloggingAdapter == null) {
             throw new Error("TestLoggingAdapter not configured!");
         }
-        ((TestLoggingAdapter) adapter).clear();
-        ((TestLoggingAdapter) adapter).beginCapture();
+        testloggingAdapter.clear();
+        testloggingAdapter.beginCapture();
     }
 
     @AuraEnabled
-    public static List<Map<String, Object>> endCapture() {
-        LoggingAdapter adapter = Aura.get(LoggingAdapter.class);
-        if (!(adapter instanceof TestLoggingAdapter)) {
+    public List<Map<String, Object>> endCapture() {
+        if (testloggingAdapter == null) {
             throw new Error("TestLoggingAdapter not configured!");
         }
-        ((TestLoggingAdapter) adapter).endCapture();
-        return ((TestLoggingAdapter) adapter).getLogs();
+        testloggingAdapter.endCapture();
+        return testloggingAdapter.getLogs();
     }
 }

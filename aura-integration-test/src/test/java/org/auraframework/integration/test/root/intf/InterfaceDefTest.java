@@ -15,11 +15,6 @@
  */
 package org.auraframework.integration.test.root.intf;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 import org.auraframework.def.AttributeDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.EventDef;
@@ -28,21 +23,22 @@ import org.auraframework.def.ProviderDef;
 import org.auraframework.def.RegisterEventDef;
 import org.auraframework.impl.AuraImplTestCase;
 import org.auraframework.impl.FakeRegistry;
-import org.auraframework.impl.root.AttributeDefImpl;
 import org.auraframework.impl.root.event.RegisterEventDefImpl;
 import org.auraframework.impl.root.intf.InterfaceDefImpl;
-import org.auraframework.impl.system.DefDescriptorImpl;
+import org.auraframework.system.AuraContext;
 import org.auraframework.system.Location;
 import org.auraframework.test.source.StringSource;
 import org.auraframework.throwable.quickfix.DefinitionNotFoundException;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
+import org.junit.Test;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class InterfaceDefTest extends AuraImplTestCase {
-
-    public InterfaceDefTest(String name) {
-        super(name);
-    }
-
+    @Test
     public void testHashCode() {
         InterfaceDefImpl intDef2 = vendor.makeInterfaceDefWithNulls(
                 vendor.makeInterfaceDefDescriptor("aura:testinterfacechild"), null, null,
@@ -53,18 +49,19 @@ public class InterfaceDefTest extends AuraImplTestCase {
                         null, vendor.makeLocation("filename1", 5, 5, 0), null, null).hashCode(), intDef2.hashCode());
     }
 
+    @Test
     public void testAppendDependencies() throws Exception {
         Set<DefDescriptor<InterfaceDef>> extensions = new HashSet<>();
         extensions.add(vendor.makeInterfaceDefDescriptor("aura:testinterfaceparent"));
         Map<String, RegisterEventDef> eventDefs = new HashMap<>();
-        DefDescriptor<EventDef> eventDescriptor = DefDescriptorImpl.getInstance("aura:testevent", EventDef.class);
+        DefDescriptor<EventDef> eventDescriptor = definitionService.getDefDescriptor("aura:testevent", EventDef.class);
         RegisterEventDef red = vendor.makeRegisterEventDefWithNulls(eventDescriptor, true, null);
         eventDefs.put("buckfutter", red);
         InterfaceDefImpl def = vendor.makeInterfaceDefWithNulls(
                 vendor.makeInterfaceDefDescriptor("aura:testinterfacechild"), null, eventDefs, null, extensions,
                 "java://org.auraframework.impl.java.provider.TestComponentDescriptorProvider");
         Set<DefDescriptor<?>> expected = new HashSet<>();
-        expected.add(DefDescriptorImpl.getInstance(
+        expected.add(definitionService.getDefDescriptor(
                 "java://org.auraframework.impl.java.provider.TestComponentDescriptorProvider", ProviderDef.class));
         expected.add(vendor.makeInterfaceDefDescriptor("aura:testinterfaceparent"));
         expected.add(eventDescriptor);
@@ -73,6 +70,7 @@ public class InterfaceDefTest extends AuraImplTestCase {
         assertEquals("dependencies are incorrect", expected, dependencies);
     }
 
+    @Test
     public void testValidateDefinitionNullDescriptor() throws Exception {
         InterfaceDefImpl def = vendor.makeInterfaceDefWithNulls(null, null, null, null, null, null);
         try {
@@ -82,6 +80,7 @@ public class InterfaceDefTest extends AuraImplTestCase {
         }
     }
 
+    @Test
     public void testValidateReferences() throws Exception {
         FakeRegistry fake = createFakeRegistry();
         InterfaceDef ed = vendor.makeInterfaceDef();
@@ -91,21 +90,21 @@ public class InterfaceDefTest extends AuraImplTestCase {
         ed.validateReferences();
     }
 
+    @Test
     public void testValidateValidDefinition() throws Exception {
-        DefDescriptor<EventDef> eventDescriptor = DefDescriptorImpl.getInstance("aura:testevent", EventDef.class);
+        DefDescriptor<EventDef> eventDescriptor = definitionService.getDefDescriptor("aura:testevent", EventDef.class);
         RegisterEventDefImpl red = vendor.makeRegisterEventDefWithNulls(eventDescriptor, true, null);
         Map<String, RegisterEventDef> eventDefs = new HashMap<>();
-        eventDefs.put("buckfutter", red);
-        AttributeDefImpl testAttributeDef = new AttributeDefImpl(DefDescriptorImpl.getInstance("testattribute",
-                AttributeDef.class), null, vendor.getTypeDef().getDescriptor(), null, false,
-                AttributeDef.SerializeToType.BOTH, null);
+        eventDefs.put("eventHandler", red);
         Map<DefDescriptor<AttributeDef>, AttributeDef> attDefs = new HashMap<>();
-        attDefs.put(DefDescriptorImpl.getInstance("nullAttribute", AttributeDef.class), testAttributeDef);
+        vendor.insertAttributeDef(attDefs, eventDescriptor, "testattribute", "String", false,
+                AttributeDef.SerializeToType.BOTH, null, AuraContext.Access.PRIVATE);
         InterfaceDefImpl def = vendor.makeInterfaceDefWithNulls(
                 vendor.makeInterfaceDefDescriptor("aura:testinterfacechild"), attDefs, eventDefs, null, null, null);
         def.validateDefinition();
     }
 
+    @Test
     public void testGetRegisterEventDefs() throws Exception {
         Set<DefDescriptor<InterfaceDef>> extendsIntf = new HashSet<>();
         extendsIntf.add(vendor.makeInterfaceDefDescriptor("test:testinterfaceparent"));
@@ -115,6 +114,7 @@ public class InterfaceDefTest extends AuraImplTestCase {
         assertNotNull(registeredED.get("parentEvent"));
     }
 
+    @Test
     public void testGetAttributeDefs() throws Exception {
         Set<DefDescriptor<InterfaceDef>> extendsIntf = new HashSet<>();
         extendsIntf.add(vendor.makeInterfaceDefDescriptor("test:testinterfaceparent"));
@@ -122,13 +122,14 @@ public class InterfaceDefTest extends AuraImplTestCase {
         Map<DefDescriptor<AttributeDef>, AttributeDef> attributes = id.getAttributeDefs();
         assertEquals(2, attributes.size());
         assertTrue("Attribute from parent should be in the map",
-                attributes.containsKey(DefDescriptorImpl.getInstance("mystring", AttributeDef.class)));
+                attributes.containsKey(definitionService.getDefDescriptor("mystring", AttributeDef.class)));
         assertTrue("Attribute from child should be in the map",
-                attributes.containsKey(DefDescriptorImpl.getInstance(vendor.getAttributeName(), AttributeDef.class)));
+                attributes.containsKey(definitionService.getDefDescriptor(vendor.getAttributeName(), AttributeDef.class)));
     }
 
+    @Test
     public void testGetEventDefsWithoutExtensions() throws Exception {
-        DefDescriptor<EventDef> eventTestDescriptor = DefDescriptorImpl.getInstance("aura:testevent", EventDef.class);
+        DefDescriptor<EventDef> eventTestDescriptor = definitionService.getDefDescriptor("aura:testevent", EventDef.class);
         RegisterEventDef regEventDef = vendor.makeRegisterEventDefWithNulls(eventTestDescriptor, true, null);
         Map<String, RegisterEventDef> eventDefs = new HashMap<>();
         eventDefs.put("cans", regEventDef);
@@ -137,19 +138,20 @@ public class InterfaceDefTest extends AuraImplTestCase {
         assertEquals(eventDefs, intDef2.getRegisterEventDefs());
     }
 
+    @Test
     public void testGetAttributeDefsWithoutExtensions() throws Exception {
         Map<DefDescriptor<AttributeDef>, AttributeDef> attributes = new HashMap<>();
-        AttributeDef attDef = new AttributeDefImpl(DefDescriptorImpl.getInstance("Fake Attribute", AttributeDef.class),
-                null, null, null, false, AttributeDef.SerializeToType.BOTH, null);
-        attributes.put(attDef.getDescriptor(), attDef);
+        DefDescriptor<InterfaceDef> descriptor = vendor.makeInterfaceDefDescriptor("aura:testinterfacechild");
+        vendor.insertAttributeDef(attributes, descriptor, "fakeAttribute", "String", false,
+                AttributeDef.SerializeToType.BOTH, null, AuraContext.Access.PUBLIC);
         InterfaceDefImpl intDef2 = vendor.makeInterfaceDefWithNulls(
-                vendor.makeInterfaceDefDescriptor("aura:testinterfacechild"), attributes, null, null, null, null);
+                descriptor, attributes, null, null, null, null);
         Map<DefDescriptor<AttributeDef>, AttributeDef> returnedAttributes = intDef2.getAttributeDefs();
         assertEquals(1, returnedAttributes.size());
-        assertEquals(attDef,
-                returnedAttributes.get(DefDescriptorImpl.getInstance("Fake Attribute", AttributeDef.class)));
+        assertEquals(attributes, returnedAttributes);
     }
 
+    @Test
     public void testGetExtendsDescriptor() {
         Set<DefDescriptor<InterfaceDef>> extensions = new HashSet<>();
         extensions.add(vendor.makeInterfaceDefDescriptor("aura:testinterfacechild"));
@@ -158,6 +160,7 @@ public class InterfaceDefTest extends AuraImplTestCase {
         assertEquals(extensions, intDef2.getExtendsDescriptors());
     }
 
+    @Test
     public void testEqualsObject() {
         Set<DefDescriptor<InterfaceDef>> extensions = new HashSet<>();
         extensions.add(vendor.makeInterfaceDefDescriptor("aura:testinterfaceparent"));
@@ -170,15 +173,17 @@ public class InterfaceDefTest extends AuraImplTestCase {
         assertTrue("Two interfaceDefs with the same attributes failed equality", intDef2.equals(intDef3));
     }
 
+    @Test
     public void testEqualsWithDifferentTypes() {
-        DefDescriptor<EventDef> eventTestDescriptor = DefDescriptorImpl.getInstance("aura:testevent", EventDef.class);
+        DefDescriptor<EventDef> eventTestDescriptor = definitionService.getDefDescriptor("aura:testevent", EventDef.class);
         RegisterEventDefImpl regEventDef = vendor.makeRegisterEventDefWithNulls(eventTestDescriptor, true, null);
         assertFalse(
                 "Two different Defs shouldn't have been equal",
                 vendor.makeInterfaceDef(vendor.makeInterfaceDefDescriptor("aura:testinterfacechild"), null, null,
-                        vendor.makeLocation("filename1", 5, 5, 0), null).equals(regEventDef));
+                        vendor.makeLocation("filename1", 5, 5, 0), null, AuraContext.Access.INTERNAL).equals(regEventDef));
     }
 
+    @Test
     public void testEqualsWithDifferentExtensions() {
         Set<DefDescriptor<InterfaceDef>> extensions = new HashSet<>();
         extensions.add(vendor.makeInterfaceDefDescriptor("aura:testinterfaceparent"));
@@ -188,9 +193,10 @@ public class InterfaceDefTest extends AuraImplTestCase {
         assertFalse(
                 "InterfacesDefs with different extensions shouldn't have been equal",
                 vendor.makeInterfaceDef(vendor.makeInterfaceDefDescriptor("aura:testinterfacechild"), null, null,
-                        vendor.makeLocation("filename1", 5, 5, 0), null).equals(intDef2));
+                        vendor.makeLocation("filename1", 5, 5, 0), null, AuraContext.Access.INTERNAL).equals(intDef2));
     }
 
+    @Test
     public void testEqualsWithDifferentLocations() {
         InterfaceDefImpl intDef2 = vendor.makeInterfaceDefWithNulls(vendor
                 .makeInterfaceDefDescriptor("aura:testinterfacechild"), null, null, new Location("filename1", 4, 4,
@@ -198,26 +204,27 @@ public class InterfaceDefTest extends AuraImplTestCase {
         assertFalse(
                 "InterfacesDefs with different locations shouldn't have been equal",
                 vendor.makeInterfaceDef(vendor.makeInterfaceDefDescriptor("aura:testinterfacechild"), null, null,
-                        vendor.makeLocation("filename1", 5, 5, 0), null).equals(intDef2));
+                        vendor.makeLocation("filename1", 5, 5, 0), null, AuraContext.Access.INTERNAL).equals(intDef2));
     }
 
+    @Test
     public void testSerialize() throws Exception {
         Set<DefDescriptor<InterfaceDef>> extensions = new HashSet<>();
         extensions.add(vendor.makeInterfaceDefDescriptor("aura:testinterfaceparent"));
         Map<DefDescriptor<AttributeDef>, AttributeDef> attributes = new HashMap<>();
-        AttributeDef attDef = new AttributeDefImpl(DefDescriptorImpl.getInstance("Fake Attribute", AttributeDef.class),
-                null, null, null, false, AttributeDef.SerializeToType.BOTH, null);
-        attributes.put(attDef.getDescriptor(), attDef);
-        DefDescriptor<EventDef> eventTestDescriptor = DefDescriptorImpl.getInstance("aura:testevent", EventDef.class);
+        DefDescriptor<EventDef> eventTestDescriptor = definitionService.getDefDescriptor("aura:testevent", EventDef.class);
+        vendor.insertAttributeDef(attributes, eventTestDescriptor, "fakeAttribute", "String", false,
+                AttributeDef.SerializeToType.BOTH, null, AuraContext.Access.PRIVATE);
         RegisterEventDef regEventDef = vendor.makeRegisterEventDefWithNulls(eventTestDescriptor, true, null);
         Map<String, RegisterEventDef> eventDefs = new HashMap<>();
-        eventDefs.put("ass", regEventDef);
+        eventDefs.put("event", regEventDef);
         InterfaceDefImpl intDef2 = vendor.makeInterfaceDefWithNulls(
                 vendor.makeInterfaceDefDescriptor("aura:testinterfacechild"), attributes, eventDefs,
                 vendor.makeLocation("filename1", 5, 5, 0), extensions, null);
         serializeAndGoldFile(intDef2);
     }
 
+    @Test
     public void testExtendsItself() throws Exception {
         DefDescriptor<InterfaceDef> extendsSelf = addSourceAutoCleanup(InterfaceDef.class, "");
         StringSource<?> source = (StringSource<?>) getSource(extendsSelf);
@@ -232,11 +239,11 @@ public class InterfaceDefTest extends AuraImplTestCase {
         }
     }
 
+    @Test
     public void testExtendsNonExistent() {
         DefDescriptor<InterfaceDef> cmpDesc = addSourceAutoCleanup(InterfaceDef.class,
                 "<aura:interface extends='aura:iDontExist'></aura:interface>");
         try {
-            // Aura.getInstanceService().getInstance(cmpDesc.getDescriptorName(), ComponentDef.class);
             InterfaceDef def = cmpDesc.getDef();
             def.validateReferences();
             fail("Did not get expected exception: " + DefinitionNotFoundException.class.getName());
@@ -247,13 +254,14 @@ public class InterfaceDefTest extends AuraImplTestCase {
         }
     }
 
+    @Test
     public void testImplementsAnInterface() throws Exception {
         DefDescriptor<InterfaceDef> d = addSourceAutoCleanup(InterfaceDef.class,
                 "<aura:interface implements='test:fakeInterface'> </aura:interface>");
         try {
             d.getDef();
             fail("An interface cannot implement another interface, it can only extend it.");
-        } catch (InvalidDefinitionException expected) {
+        } catch (InvalidDefinitionException ignored) {
         }
     }
 }

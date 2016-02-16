@@ -15,20 +15,24 @@
  */
 package org.auraframework.http;
 
-import java.io.IOException;
-import java.util.List;
-
-import javax.activation.MimetypesFileTypeMap;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.*;
-
-import org.auraframework.Aura;
+import org.auraframework.adapter.ServletUtilAdapter;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.http.RequestParam.StringParam;
+import org.auraframework.service.ContextService;
 import org.auraframework.system.AuraContext;
 import org.auraframework.system.AuraContext.Mode;
 import org.auraframework.throwable.quickfix.QuickFixException;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+
+import javax.activation.MimetypesFileTypeMap;
+import javax.inject.Inject;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.List;
 
 @SuppressWarnings("serial")
 public abstract class AuraBaseServlet extends HttpServlet {
@@ -73,13 +77,22 @@ public abstract class AuraBaseServlet extends HttpServlet {
     public static final String OUTDATED_MESSAGE = "OUTDATED";
     protected final static StringParam csrfToken = new StringParam(AURA_PREFIX + "token", 0, true);
 
-    public static String getToken() {
-        return Aura.getConfigAdapter().getCSRFToken();
+    @Inject
+    private void setStaticFields(ServletUtilAdapter servletUtilAdapter, ContextService contextService) {
+        AuraBaseServlet.servletUtilAdapter = servletUtilAdapter;
+        AuraBaseServlet.contextService = contextService;
     }
 
-    public static void validateCSRF(String token) {
-        Aura.getConfigAdapter().validateCSRFToken(token);
-    }
+    private static ServletUtilAdapter servletUtilAdapter;
+    private static ContextService contextService;
+
+//    public static String getToken() {
+//        return ConfigAdapter().getCSRFToken();
+//    }
+//
+//    public static void validateCSRF(String token) {
+//        ConfigAdapter().validateCSRFToken(token);
+//    }
 
     /**
      * Tell the browser to not cache.
@@ -90,7 +103,7 @@ public abstract class AuraBaseServlet extends HttpServlet {
      * @param response the HTTP response to which we will add headers.
      */
     public static void setNoCache(HttpServletResponse response) {
-        Aura.getServletUtilAdapter().setNoCache(response);
+        servletUtilAdapter.setNoCache(response);
     }
 
     /**
@@ -102,7 +115,7 @@ public abstract class AuraBaseServlet extends HttpServlet {
      * @param response the HTTP response to which we will add headers.
      */
     public static void setLongCache(HttpServletResponse response) {
-        Aura.getServletUtilAdapter().setLongCache(response);
+        servletUtilAdapter.setLongCache(response);
     }
 
     /**
@@ -114,7 +127,7 @@ public abstract class AuraBaseServlet extends HttpServlet {
      * @param response the HTTP response to which we will add headers.
      */
     public static void setShortCache(HttpServletResponse response) {
-        Aura.getServletUtilAdapter().setShortCache(response);
+        servletUtilAdapter.setShortCache(response);
     }
 
     public AuraBaseServlet() {
@@ -125,55 +138,56 @@ public abstract class AuraBaseServlet extends HttpServlet {
      * Check to see if we are in production mode.
      */
     protected boolean isProductionMode(Mode mode) {
-        return Aura.getServletUtilAdapter().isProductionMode(mode);
+        return servletUtilAdapter.isProductionMode(mode);
     }
 
     public String getContentType(AuraContext.Format format) {
-        return Aura.getServletUtilAdapter().getContentType(format);
+        return servletUtilAdapter.getContentType(format);
     }
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
+        SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this, config.getServletContext());
     }
 
     /**
      * Sets mandatory headers, notably for anti-clickjacking.
      */
     protected void setBasicHeaders(DefDescriptor<?> top, HttpServletRequest req, HttpServletResponse rsp) {
-        Aura.getServletUtilAdapter().setCSPHeaders(top, req, rsp);
+        servletUtilAdapter.setCSPHeaders(top, req, rsp);
     }
 
 
     @Deprecated
     public static List<String> getScripts() throws QuickFixException {
-        return Aura.getServletUtilAdapter().getScripts(Aura.getContextService().getCurrentContext());
+        return servletUtilAdapter.getScripts(contextService.getCurrentContext());
     }
 
     @Deprecated
     public static List<String> getStyles() throws QuickFixException {
-        return Aura.getServletUtilAdapter().getStyles(Aura.getContextService().getCurrentContext());
+        return servletUtilAdapter.getStyles(contextService.getCurrentContext());
     }
 
     @Deprecated
     public static List<String> getBaseScripts(AuraContext context) throws QuickFixException {
-        return Aura.getServletUtilAdapter().getBaseScripts(context);
+        return servletUtilAdapter.getBaseScripts(context);
     }
 
     @Deprecated
     public static List<String> getNamespacesScripts(AuraContext context) throws QuickFixException {
-        return Aura.getServletUtilAdapter().getNamespacesScripts(context);
+        return servletUtilAdapter.getNamespacesScripts(context);
     }
 
     @Deprecated
     protected void send404(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        Aura.getServletUtilAdapter().send404(getServletConfig().getServletContext(), request, response);
+        servletUtilAdapter.send404(getServletConfig().getServletContext(), request, response);
     }
 
     @Deprecated
     public void handleServletException(Throwable t, boolean quickfix, AuraContext context,
             HttpServletRequest request, HttpServletResponse response,
             boolean written) throws IOException {
-        Aura.getServletUtilAdapter().handleServletException(t, quickfix, context, request, response, written);
+        servletUtilAdapter.handleServletException(t, quickfix, context, request, response, written);
     }
 }

@@ -15,14 +15,7 @@
  */
 package org.auraframework.integration.test.validation;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.util.List;
-
-import javax.servlet.http.HttpServletResponse;
-
+import com.google.common.base.Charsets;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -32,8 +25,14 @@ import org.auraframework.util.json.JsonEncoder;
 import org.auraframework.util.test.annotation.UnAdaptableTest;
 import org.auraframework.util.validation.ValidationError;
 import org.auraframework.util.validation.ValidationTestUtil;
+import org.junit.Test;
 
-import com.google.common.base.Charsets;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.List;
 
 /**
  * Testing validation tool functionality. UnAdaptableTest because requires source to check present in file system.
@@ -42,10 +41,6 @@ import com.google.common.base.Charsets;
 public final class AuraValidationServletHttpTest extends AuraHttpTestCase {
 
     private HttpRequestBase method;
-
-    public AuraValidationServletHttpTest(String name) {
-        super(name);
-    }
 
     @Override
     public void tearDown() throws Exception {
@@ -59,6 +54,7 @@ public final class AuraValidationServletHttpTest extends AuraHttpTestCase {
         }
     }
 
+    @Test
     public void testServlet() throws Exception {
         String path = AuraFiles.Core.getPath() + "/aura-components/src/test/components/validationTest/basic";
         assertTrue(path, new File(path).exists());
@@ -79,10 +75,11 @@ public final class AuraValidationServletHttpTest extends AuraHttpTestCase {
     /**
      * Same as testServlet(), but only uses JDK classes
      */
+    @Test
     public void testServletStandalone() throws Exception {
         String path = AuraFiles.Core.getPath() + "/aura-components/src/test/components/validationTest/basic";
         assertTrue(path, new File(path).exists());
-        String url = getTestServletConfig().getBaseUrl().toURI().resolve("/qa/auraValidation?path=" + path).toString();
+        String url = testServletConfig.getBaseUrl().toURI().resolve("/qa/auraValidation?path=" + path).toString();
 
         InputStream stream = new URL(url).openStream();
         List<String> errors = ValidationError.parseErrors(new InputStreamReader(stream));

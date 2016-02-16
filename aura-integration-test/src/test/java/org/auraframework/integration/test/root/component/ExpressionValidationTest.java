@@ -15,7 +15,6 @@
  */
 package org.auraframework.integration.test.root.component;
 
-import org.auraframework.Aura;
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
@@ -23,6 +22,7 @@ import org.auraframework.impl.AuraImplTestCase;
 import org.auraframework.throwable.AuraRuntimeException;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
 import org.auraframework.throwable.quickfix.InvalidExpressionException;
+import org.junit.Test;
 
 /**
  * Test expression validation
@@ -31,10 +31,6 @@ import org.auraframework.throwable.quickfix.InvalidExpressionException;
  * @userStory a07B0000000E82y
  */
 public class ExpressionValidationTest extends AuraImplTestCase {
-
-    public ExpressionValidationTest(String name) {
-        super(name);
-    }
 
     /**
      * Expressions are not allowed for top-level component attributes.
@@ -46,7 +42,7 @@ public class ExpressionValidationTest extends AuraImplTestCase {
         DefDescriptor<ApplicationDef> appDesc = addSourceAutoCleanup(ApplicationDef.class,
                 "<aura:application><aura:attribute name='strAtt' type='String'>{!who.cares}</aura:attribute></aura:application>");
         try {
-            Aura.getInstanceService().getInstance(appDesc);
+            instanceService.getInstance(appDesc);
             fail("Expressions cannot be used as attribute values in top-level components.");
         } catch (AuraRuntimeException e) {
             assertEquals("Expressions cannot be used as attribute values in top-level components.", e.getMessage());
@@ -59,6 +55,7 @@ public class ExpressionValidationTest extends AuraImplTestCase {
      * 
      * @expectedResults AuraRuntimeException with underlying parse exception when instantiating the component
      */
+    @Test
     public void testParseExceptions() throws Exception {
         verifyInvalidExpressionException("{!too bad}", "", "unexpected token: an identifier");
         verifyInvalidExpressionException("{!5+(6-7}", "", "unexpected end of expression");
@@ -89,6 +86,7 @@ public class ExpressionValidationTest extends AuraImplTestCase {
      * 
      * @expectedResults InvalidExpressionException when instantiating the component
      */
+    @Test
     public void testInvalidLabelExpression() throws Exception {
         verifyInvalidExpressionException("{!$Label.SomeSection}", "", "Labels should have a section and a name:");
         verifyInvalidExpressionException("{!$Label.SomeSection.ExtraPart.Name}", "",
@@ -100,6 +98,7 @@ public class ExpressionValidationTest extends AuraImplTestCase {
      * 
      * @expectedResults AuraRuntimeException when instantiating the component
      */
+    @Test
     public void testNestedExpressions() throws Exception {
         verifyInvalidExpressionException("{!$'test'{!'Attribute'}}", "",
                 "Cannot mix expression and literal string in attribute value");
@@ -226,6 +225,7 @@ public class ExpressionValidationTest extends AuraImplTestCase {
      * 
      * @expectedResults AuraRuntimeException when instantiating the component
      */
+    @Test
     public void testFunctionNotFound() throws Exception {
         final String noFunction = "No function found for key: ";
         verifyValidationException("{!isNull(null)}", "", noFunction + "isNull", InvalidDefinitionException.class);
@@ -248,7 +248,7 @@ public class ExpressionValidationTest extends AuraImplTestCase {
         DefDescriptor<ApplicationDef> appDesc = addSourceAutoCleanup(ApplicationDef.class, String.format(
                 "<aura:application>" + "<%s/>" + "</aura:application>", cmpName));
         try {
-            Aura.getInstanceService().getInstance(appDesc);
+            instanceService.getInstance(appDesc);
             fail("Expression validation did not result in a runtime exception for strAtt=\"" + strExpr + "\" dblAtt=\""
                     + dblExpr + "\"");
         } catch (Exception e) {
@@ -265,7 +265,7 @@ public class ExpressionValidationTest extends AuraImplTestCase {
         appDesc = addSourceAutoCleanup(ApplicationDef.class, String.format("<aura:application>"
                 + "<%s strAtt=\"%s\" dblAtt=\"%s\"/>" + "</aura:application>", cmpName, strExpr, dblExpr));
         try {
-            Aura.getInstanceService().getInstance(appDesc);
+            instanceService.getInstance(appDesc);
             fail("Expression validation did not result in a runtime exception for strAtt=\"" + strExpr + "\" dblAtt=\""
                     + dblExpr + "\"");
         } catch (Exception e) {

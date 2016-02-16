@@ -16,10 +16,8 @@
 package org.auraframework.impl.root.parser.handler;
 
 public class ApplicationAccessAttributeTest extends BaseAccessAttributeTest {
-
-	public ApplicationAccessAttributeTest(String name) {
-		super(name);		
-		testResource = TestResource.Application;
-	}
-	
+    public ApplicationAccessAttributeTest() throws Exception {
+        super();
+        testResource = TestResource.Application;
+    }
 }

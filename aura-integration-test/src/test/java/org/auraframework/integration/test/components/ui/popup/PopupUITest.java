@@ -37,10 +37,6 @@ public class PopupUITest extends WebDriverTestCase {
 	private final String POPUP_CONTAINER = ".popupTargetContainer";
     private final String POPUP_CONTAINER_TARGET = POPUP_CONTAINER + " div";
     
-    public PopupUITest(String name) {
-        super(name);
-    }
-    
     /**
      * Creates a popup with an extended target and confirms the
      * popup is launched with the specified height and width

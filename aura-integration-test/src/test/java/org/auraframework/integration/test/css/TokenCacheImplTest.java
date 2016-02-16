@@ -15,11 +15,10 @@
  */
 package org.auraframework.integration.test.css;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import org.auraframework.css.TokenCache;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.TokenMapProvider;
@@ -28,14 +27,16 @@ import org.auraframework.impl.css.StyleTestCase;
 import org.auraframework.impl.css.token.TokenCacheImpl;
 import org.auraframework.impl.java.provider.TestTokenDescriptorProvider;
 import org.auraframework.impl.java.provider.TestTokenMapProvider;
-import org.auraframework.impl.system.DefDescriptorImpl;
+import org.auraframework.service.DefinitionService;
 import org.auraframework.system.Annotations.Provider;
 import org.auraframework.throwable.quickfix.QuickFixException;
+import org.junit.Test;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
+import javax.inject.Inject;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * Unit tests for {@link TokenCacheImpl}.
@@ -46,9 +47,8 @@ public class TokenCacheImplTest extends StyleTestCase {
     private DefDescriptor<TokensDef> desc2;
     private DefDescriptor<TokensDef> desc3;
 
-    public TokenCacheImplTest(String name) {
-        super(name);
-    }
+    @Inject
+    DefinitionService definitionService;
 
     @Override
     public void setUp() throws Exception {
@@ -63,22 +63,26 @@ public class TokenCacheImplTest extends StyleTestCase {
         return new TokenCacheImpl(Lists.newArrayList(defs));
     }
 
+    @Test
     public void testIsEmptyTrue() throws Exception {
         tokens = build();
         assertTrue(tokens.isEmpty());
     }
 
+    @Test
     public void testIsEmptyFalse() throws Exception {
         tokens = build(desc1);
         assertFalse(tokens.isEmpty());
     }
 
+    @Test
     public void testSizeAndEquals() throws Exception {
         tokens = build(desc1);
         assertEquals(1, tokens.size());
         assertEquals(desc1, Iterables.get(tokens, 0));
     }
 
+    @Test
     public void testMultipleTokenDefs() throws Exception {
         tokens = build(desc1, desc2, desc3);
         assertEquals(3, tokens.size());
@@ -87,6 +91,7 @@ public class TokenCacheImplTest extends StyleTestCase {
         assertEquals(desc3, Iterables.get(tokens, 2));
     }
 
+    @Test
     public void testUsesConcrete() throws Exception {
         DefDescriptor<TokensDef> desc = addSeparateTokens(tokens().descriptorProvider(TestTokenDescriptorProvider.REF));
         tokens = build(desc);
@@ -94,6 +99,7 @@ public class TokenCacheImplTest extends StyleTestCase {
         assertEquals(TestTokenDescriptorProvider.DESC, Iterables.get(tokens, 0).getDescriptorName());
     }
 
+    @Test
     public void testAddsDynamicTokens() throws Exception {
         DefDescriptor<TokensDef> desc = addSeparateTokens(tokens().mapProvider(TestTokenMapProvider.REF));
         tokens = build(desc);
@@ -105,6 +111,7 @@ public class TokenCacheImplTest extends StyleTestCase {
         }
     }
 
+    @Test
     public void testOrderedForEvaluation() throws Exception {
         tokens = build(desc1, desc2, desc3);
         List<DefDescriptor<TokensDef>> ordered = tokens.orderedForEvaluation();
@@ -114,12 +121,14 @@ public class TokenCacheImplTest extends StyleTestCase {
         assertEquals(desc1, ordered.get(2));
     }
 
+    @Test
     public void testHasDynamicTokensTrue() throws Exception {
         DefDescriptor<TokensDef> desc = addSeparateTokens(tokens().mapProvider(TestTokenMapProvider.REF));
         tokens = build(desc);
         assertTrue(tokens.hasDynamicTokens());
     }
 
+    @Test
     public void testHasDynamicTokensFalse() throws Exception {
         tokens = build(desc1);
         assertFalse(tokens.hasDynamicTokens());
@@ -142,6 +151,7 @@ public class TokenCacheImplTest extends StyleTestCase {
         }
     }
 
+    @Test
     public void testClashingDynamicTokens() throws Exception {
         DefDescriptor<TokensDef> tokensA = addSeparateTokens(tokens().mapProvider("java://" + P1.class.getName()));
         DefDescriptor<TokensDef> tokensB = addSeparateTokens(tokens().mapProvider("java://" + P2.class.getName()));
@@ -150,11 +160,13 @@ public class TokenCacheImplTest extends StyleTestCase {
         assertEquals("P2", dynamicTokens.get("key"));
     }
 
+    @Test
     public void testGetTokenAbsent() throws Exception {
         tokens = build();
         assertFalse(tokens.getToken("absent").isPresent());
     }
 
+    @Test
     public void testGetTokenPresent() throws Exception {
         tokens = build(desc1);
         assertEquals("1", tokens.getToken("num").get());
@@ -168,6 +180,7 @@ public class TokenCacheImplTest extends StyleTestCase {
         }
     }
 
+    @Test
     public void testGetTokenFromMapProvider() throws Exception {
         DefDescriptor<TokensDef> tokensA = addSeparateTokens(tokens().token("color", "blue"));
         DefDescriptor<TokensDef> tokensB = addSeparateTokens(tokens().mapProvider("java://" + P3.class.getName()));
@@ -186,6 +199,7 @@ public class TokenCacheImplTest extends StyleTestCase {
         }
     }
 
+    @Test
     public void testGetTokenNamesNoFilter() throws Exception {
         DefDescriptor<TokensDef> t1 = addSeparateTokens(tokens().token("aaa", "1"));
         DefDescriptor<TokensDef> t2 = addSeparateTokens(tokens().token("aaa", "2"));
@@ -207,6 +221,7 @@ public class TokenCacheImplTest extends StyleTestCase {
         assertTrue(names.contains("fff"));
     }
 
+    @Test
     public void testGetTokenNamesWithFilter() throws Exception {
         DefDescriptor<TokensDef> t1 = addSeparateTokens(tokens().token("aaa", "1"));
         DefDescriptor<TokensDef> t2 = addSeparateTokens(tokens().token("aaa", "2"));
@@ -230,10 +245,11 @@ public class TokenCacheImplTest extends StyleTestCase {
         assertTrue(names.contains("margin"));
     }
 
+    @Test
     public void testMultipleDescriptorProvidersResolveToSame() throws QuickFixException {
         // multiple providers resolve to the same, and since there's no reason to have them duplicated in this list only
         // the latter ones should be included.
-        DefDescriptor<TokensDef> resolved = DefDescriptorImpl.getInstance(TestTokenDescriptorProvider.DESC, TokensDef.class);
+        DefDescriptor<TokensDef> resolved = definitionService.getDefDescriptor(TestTokenDescriptorProvider.DESC, TokensDef.class);
 
         DefDescriptor<TokensDef> a = addSeparateTokens(tokens().descriptorProvider(TestTokenDescriptorProvider.REF));
         DefDescriptor<TokensDef> b = addSeparateTokens(tokens().token("bbb", "b"));
@@ -257,6 +273,7 @@ public class TokenCacheImplTest extends StyleTestCase {
         }
     }
 
+    @Test
     public void testDuplicateDescriptors() throws Exception {
         DefDescriptor<TokensDef> mapDesc = addSeparateTokens(tokens().mapProvider("java://" + P5.class.getName()));
 

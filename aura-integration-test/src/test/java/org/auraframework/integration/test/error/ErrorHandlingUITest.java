@@ -15,13 +15,14 @@
  */
 package org.auraframework.integration.test.error;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.assertThat;
-
 import org.auraframework.system.AuraContext.Mode;
 import org.auraframework.test.util.WebDriverTestCase.ExcludeBrowsers;
 import org.auraframework.test.util.WebDriverUtil.BrowserType;
+import org.junit.Test;
 import org.openqa.selenium.By;
+
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.assertThat;
 
 // The tests with click are failing on autobuild Firefox. Manually verified error can be handled correctly.
 // The failures can be reproduced in Saucelab. Seems the buttons were not actually clicked when executing click().
@@ -30,14 +31,11 @@ import org.openqa.selenium.By;
 @ExcludeBrowsers({ BrowserType.FIREFOX })
 public class ErrorHandlingUITest extends AbstractErrorUITestCase {
 
-    public ErrorHandlingUITest(String name) {
-        super(name);
-    }
-
     /*
      * Verify that error message box displays in the auraErrorMask div and can be dismissed using the close button.
      * Automation for W-1091838.
      */
+    @Test
     public void testErrorMessageDisplayAndClose() throws Exception {
         open("/auratest/errorHandlingApp.app", Mode.PROD);
         assertErrorMaskIsNotVisible();
@@ -53,6 +51,7 @@ public class ErrorHandlingUITest extends AbstractErrorUITestCase {
      * Verify that error message box displays in the auraErrorMask div and can be dismissed using the close button
      * when $A has not been initialized yet.
      */
+    @Test
     public void testErrorMessageDisplayAndCloseWhenAuraIsNotInitialized() throws Exception {
         open("/auratest/errorHandlingApp.app?throwErrorFromRender=true", Mode.PROD, false);
 
@@ -62,11 +61,12 @@ public class ErrorHandlingUITest extends AbstractErrorUITestCase {
         assertErrorMaskIsNotVisible();
     }
 
-   /*
-    * Disabled for Safari, currently Safari does NOT pass error object to onerror handler, so we are not able to get
-    * or show anything in error object in the handler.
-    */
-   @ExcludeBrowsers({ BrowserType.IPHONE, BrowserType.IPAD, BrowserType.SAFARI, BrowserType.FIREFOX })
+    /*
+     * Disabled for Safari, currently Safari does NOT pass error object to onerror handler, so we are not able to get
+     * or show anything in error object in the handler.
+     */
+    @ExcludeBrowsers({BrowserType.IPHONE, BrowserType.IPAD, BrowserType.SAFARI, BrowserType.FIREFOX})
+    @Test
     public void testErrorMessageFromErrorContainsStacktraceInDevMode() throws Exception {
         open("/auratest/errorHandlingApp.app", Mode.DEV);
         findDomElement(By.cssSelector(".errorFromAppTable .errorFromClientControllerButton")).click();
@@ -74,6 +74,7 @@ public class ErrorHandlingUITest extends AbstractErrorUITestCase {
         assertStacktracePresent();
     }
 
+    @Test
     public void testErrorMessageFromErrorNotContainsStacktraceInProdMode() throws Exception {
         open("/auratest/errorHandlingApp.app", Mode.PROD);
         findDomElement(By.cssSelector(".errorFromAppTable .errorFromClientControllerButton")).click();
@@ -86,6 +87,7 @@ public class ErrorHandlingUITest extends AbstractErrorUITestCase {
      * or show anything in error object in the handler.
      */
     @ExcludeBrowsers({ BrowserType.IPHONE, BrowserType.IPAD, BrowserType.SAFARI, BrowserType.FIREFOX })
+    @Test
     public void testErrorMessageFromAuraAssertContainsStacktraceInDevMode() throws Exception {
         open("/auratest/errorHandlingApp.app", Mode.DEV);
         findDomElement(By.cssSelector(".errorFromAppTable .failAssertInClientControllerButton")).click();
@@ -93,6 +95,7 @@ public class ErrorHandlingUITest extends AbstractErrorUITestCase {
         assertStacktracePresent();
     }
 
+    @Test
     public void testErrorMessageFromAuraAssertNotContainsStacktraceInProdMode() throws Exception {
         open("/auratest/errorHandlingApp.app", Mode.PROD);
         findDomElement(By.cssSelector(".errorFromAppTable .failAssertInClientControllerButton")).click();
@@ -105,6 +108,7 @@ public class ErrorHandlingUITest extends AbstractErrorUITestCase {
      * or show anything in error object in the handler.
      */
     @ExcludeBrowsers({ BrowserType.IPHONE, BrowserType.IPAD, BrowserType.SAFARI, BrowserType.FIREFOX })
+    @Test
     public void testErrorMessageFromAuraErrorContainsStacktraceDevMode() throws Exception {
         open("/auratest/errorHandlingApp.app", Mode.DEV);
         findDomElement(By.cssSelector(".errorFromAppTable .auraErrorFromClientControllerButton")).click();
@@ -112,6 +116,7 @@ public class ErrorHandlingUITest extends AbstractErrorUITestCase {
         assertStacktracePresent();
     }
 
+    @Test
     public void testErrorMessageFromAuraErrorNotContainsStacktraceInProdMode() throws Exception {
         open("/auratest/errorHandlingApp.app", Mode.PROD);
         findDomElement(By.cssSelector(".errorFromAppTable .auraErrorFromClientControllerButton")).click();
@@ -119,6 +124,7 @@ public class ErrorHandlingUITest extends AbstractErrorUITestCase {
         assertNoStacktracePresent();
     }
 
+    @Test
     public void testErrorMessageFromAuraFriendlyErrorNotContainsStacktraceInPRODMode() throws Exception {
         open("/auratest/errorHandlingApp.app", Mode.PROD);
         findDomElement(By.cssSelector(".errorFromAppTable .auraFriendlyErrorFromClientControllerButton")).click();
@@ -133,6 +139,7 @@ public class ErrorHandlingUITest extends AbstractErrorUITestCase {
      * or show anything in error object in the handler.
      */
     @ExcludeBrowsers({ BrowserType.IPHONE, BrowserType.IPAD, BrowserType.SAFARI, BrowserType.FIREFOX })
+    @Test
     public void testAuraFriendlyErrorMessageFromData() throws Exception {
         String expectedContainedMessage = "Friendly Error Message from data";
         open("/auratest/errorHandlingApp.app?useFriendlyErrorMessageFromData=true&handleSystemError=true", Mode.PROD);
@@ -145,6 +152,7 @@ public class ErrorHandlingUITest extends AbstractErrorUITestCase {
         assertErrorMaskIsNotVisible();
     }
 
+    @Test
     public void testCustomHandleFailedAuraAssertFromClientController() throws Exception{
         String expectedContainedMessage = "Assert failed in app client controller";
         open("/auratest/errorHandlingApp.app?handleSystemError=true", Mode.PROD);
@@ -162,6 +170,7 @@ public class ErrorHandlingUITest extends AbstractErrorUITestCase {
      * Verify Aura default error handler can handle systemError event when an error is thrown from
      * an App's client side controller.
      */
+    @Test
     public void testDefaultHandleErrorThrownFromClientController() throws Exception {
         String expectedContainedMessage = "Error from app client controller";
         open("/auratest/errorHandlingApp.app", Mode.PROD);
@@ -175,6 +184,7 @@ public class ErrorHandlingUITest extends AbstractErrorUITestCase {
      * Verify custom error handler can handle systemError event when an error is thrown from
      * an App's client side controller.
      */
+    @Test
     public void testCustomHandleErrorThrownFromClientController() throws Exception {
         String expectedContainedMessage = "Error from app client controller";
         open("/auratest/errorHandlingApp.app?handleSystemError=true", Mode.PROD);
@@ -191,6 +201,7 @@ public class ErrorHandlingUITest extends AbstractErrorUITestCase {
      * Verify Aura default error handler can handle systemError event when an error is thrown from
      * a component's client side controller.
      */
+    @Test
     public void testDefaultHandleErrorThrownFromContainedCmpClientController() throws Exception {
         String expected = "Error from component client controller";
         open("/auratest/errorHandlingApp.app", Mode.PROD);
@@ -202,6 +213,7 @@ public class ErrorHandlingUITest extends AbstractErrorUITestCase {
      * Verify custom error handler can handle systemError event when an error is thrown from
      * a component's client side controller.
      */
+    @Test
     public void testCustomHandleErrorThrownFromContainedCmpClientController() throws Exception {
         String expectedContainedMessage = "Error from component client controller";
         open("/auratest/errorHandlingApp.app?handleSystemErrorInContainedCmp=true", Mode.PROD);
@@ -219,6 +231,7 @@ public class ErrorHandlingUITest extends AbstractErrorUITestCase {
      * Verify custom error handler in a component can handle systemError event when an error is thrown from
      * a component's client side controller.
      */
+    @Test
     public void testComponetCustomHandleErrorThrownFromClientController() throws Exception {
         String expectedContainedMessage = "Error from component client controller";
         open("/auratest/errorHandlingApp.app?handleSystemErrorInContainedCmp=true", Mode.PROD);
@@ -236,6 +249,7 @@ public class ErrorHandlingUITest extends AbstractErrorUITestCase {
      * Verify custom error handler in a component can handle systemError event when an error is thrown from
      * its containing app's client side controller.
      */
+    @Test
     public void testComponentCustomHandleErrorThrownFromContainingAppClientController() throws Exception {
         String expectedContainedMessage = "Error from app client controller";
         open("/auratest/errorHandlingApp.app?handleSystemErrorInContainedCmp=true", Mode.PROD);
@@ -253,6 +267,7 @@ public class ErrorHandlingUITest extends AbstractErrorUITestCase {
      * Verify Aura default error handler can handle systemError event when an error is thrown from
      * a server action's callback.
      */
+    @Test
     public void testDefaultHandleErrorThrownFromServerActionCallback() throws Exception {
         open("/auratest/errorHandlingApp.app", Mode.PROD);
         findDomElement(By.cssSelector(".errorFromAppTable .errorFromServerActionCallbackButton")).click();
@@ -263,6 +278,7 @@ public class ErrorHandlingUITest extends AbstractErrorUITestCase {
      * Verify custom error handler can handle systemError event when an error is thrown from
      * a server action's callback.
      */
+    @Test
     public void testCustomHandleErrorThrownFromServerActionCallback() throws Exception {
         String expectedContainedMessage = "Error from server action callback in app";
         open("/auratest/errorHandlingApp.app?handleSystemError=true", Mode.PROD);
@@ -280,6 +296,7 @@ public class ErrorHandlingUITest extends AbstractErrorUITestCase {
      * Verify Aura default error handler can handle systemError event when an error is thrown from
      * creatComponent's callback.
      */
+    @Test
     public void testDefaultHandleErrorThrownFromCreateComponentCallback() throws Exception {
         open("/auratest/errorHandlingApp.app", Mode.PROD);
         findDomElement(By.cssSelector(".errorFromAppTable .errorFromCreateComponentCallbackButton")).click();
@@ -290,6 +307,7 @@ public class ErrorHandlingUITest extends AbstractErrorUITestCase {
      * Verify custom error handler can handle systemError event when an error is thrown from
      * creatComponent's callback.
      */
+    @Test
     public void testCustomtHandleErrorThrownFromCreateComponentCallback() throws Exception {
         String expectedContainedMessage = "Error from createComponent callback in app";
         open("/auratest/errorHandlingApp.app?handleSystemError=true", Mode.PROD);
@@ -307,6 +325,7 @@ public class ErrorHandlingUITest extends AbstractErrorUITestCase {
      * Verify Aura default error handler can handle systemError event when an error is thrown from
      * a function which is wrapped in $A.getCallback().
      */
+    @Test
     public void testDefaultHandleErrorThrownFromFunctionWrappedInGetCallback() throws Exception {
         open("/auratest/errorHandlingApp.app", Mode.PROD);
         findDomElement(By.cssSelector(".errorFromAppTable .errorFromFunctionWrappedInGetCallbackButton")).click();
@@ -317,6 +336,7 @@ public class ErrorHandlingUITest extends AbstractErrorUITestCase {
      * Verify custom error handler can handle systemError event when an error is thrown from
      * a function which is wrapped in $A.getCallback().
      */
+    @Test
     public void testCustomHandleErrorThrownFromFunctionWrappedInGetCallback() throws Exception {
         String expectedContainedMessage = "Error from function wrapped in getCallback in app";
         open("/auratest/errorHandlingApp.app?handleSystemError=true", Mode.PROD);
@@ -334,6 +354,7 @@ public class ErrorHandlingUITest extends AbstractErrorUITestCase {
      * Verify Aura default error handler can handle systemError event when an error is thrown from
      * a function that is imported from library.
      */
+    @Test
     public void testDefaultHandleErrorFromLibraryCode() throws Exception {
         open("/auratest/errorHandlingApp.app", Mode.PROD);
         findDomElement(By.cssSelector(".errorFromCmpTable .errorFromLibraryCodeButton")).click();
@@ -344,6 +365,7 @@ public class ErrorHandlingUITest extends AbstractErrorUITestCase {
      * Verify custom error handler can handle systemError event when an error is thrown from
      * a function that is imported from library.
      */
+    @Test
     public void testCustomHandleErrorFromLibraryCode() throws Exception {
         String expectedContainedMessage = "Error from library Code";
         open("/auratest/errorHandlingApp.app?handleSystemError=true", Mode.PROD);
@@ -360,6 +382,7 @@ public class ErrorHandlingUITest extends AbstractErrorUITestCase {
     /*
      * Verify Aura default error handler can handle systemError event when an error is thrown from render().
      */
+    @Test
     public void testDefaultHandleErrorFromRenderWhenNoCustomHandler() throws Exception {
         open("/auratest/errorHandlingApp.app?throwErrorFromRender=true", Mode.PROD, false);
         assertDisplayedErrorMessage("Error from app render");
@@ -370,6 +393,7 @@ public class ErrorHandlingUITest extends AbstractErrorUITestCase {
      * if a cmp/app contains custom error handler.
      * When error is thrown from render(), $A is not initialized, so the event has to be handled by default handler.
      */
+    @Test
     public void testDefaultHandleErrorFromRenderWhenMarkEventHandled() throws Exception {
         open("/auratest/errorHandlingApp.app?throwErrorFromRender=true&handleSystemError=true", Mode.PROD, false);
         assertDisplayedErrorMessage("Error from app render");
@@ -378,6 +402,7 @@ public class ErrorHandlingUITest extends AbstractErrorUITestCase {
     /*
      * Verify Aura default error handler can handle systemError event when an error is thrown from afterRender().
      */
+    @Test
     public void testDefaultHandleErrorFromAfterRenderWhenNoCustomHandler() throws Exception {
         open("/auratest/errorHandlingApp.app?throwErrorFromAfterRender=true", Mode.PROD, false);
         assertDisplayedErrorMessage("Error from app afterrender");
@@ -388,6 +413,7 @@ public class ErrorHandlingUITest extends AbstractErrorUITestCase {
      * if a cmp/app contains custom error handler.
      * When error is thrown from afterRender(), $A is not initialized, so the event has to be handled by default handler.
      */
+    @Test
     public void testDefaultHandleErrorFromAfterRenderWhenMarkEventHandled() throws Exception {
         open("/auratest/errorHandlingApp.app?throwErrorFromAfterRender=true&handleSystemError=true", Mode.PROD, false);
         assertDisplayedErrorMessage("Error from app afterrender");
@@ -396,6 +422,7 @@ public class ErrorHandlingUITest extends AbstractErrorUITestCase {
     /*
      * Verify Aura default error handler can handle systemError event when an error is thrown from rerender().
      */
+    @Test
     public void testDefaultHandleErrorThrownFromRerender() throws Exception {
         open("/auratest/errorHandlingApp.app", Mode.PROD);
         findDomElement(By.cssSelector(".errorFromAppTable .errorFromRerenderButton")).click();
@@ -405,6 +432,7 @@ public class ErrorHandlingUITest extends AbstractErrorUITestCase {
     /*
      * Verify custom handle on App can hanle systemError event when an error is thrown from rerender() of its contained component.
      */
+    @Test
     public void testHandleErrorThrownFromRerenderWhenMarkEventHandled() throws Exception {
         String expectedContainedMessage = "Error from component rerender";
         open("/auratest/errorHandlingApp.app?handleSystemError=true", Mode.PROD);
@@ -422,6 +450,7 @@ public class ErrorHandlingUITest extends AbstractErrorUITestCase {
     /*
      * Verify Aura default error handler can handle systemError event when an error is thrown from unrender().
      */
+    @Test
     public void testDefaultHandleErrorThrownFromUnrender() throws Exception {
         open("/auratest/errorHandlingApp.app", Mode.PROD);
         findDomElement(By.cssSelector(".errorFromCmpTable .errorFromUnrenderButton")).click();
@@ -431,6 +460,7 @@ public class ErrorHandlingUITest extends AbstractErrorUITestCase {
     /*
      * Verify custom error handler can handle systemError event when an error is thrown from render().
      */
+    @Test
     public void testCustomHandleErrorThrownFromUnrender() throws Exception {
         String expectedContainedMessage = "Error from component unrender";
         open("/auratest/errorHandlingApp.app?handleSystemError=true", Mode.PROD);
@@ -447,6 +477,7 @@ public class ErrorHandlingUITest extends AbstractErrorUITestCase {
     /*
      * Verify Aura default error handler can handle systemError event when an error is thrown during init phase.
      */
+    @Test
     public void testDefaultHandleErrorFromInitWhenNoCustomHandler() throws Exception {
         open("/auratest/errorHandlingApp.app?throwErrorFromInit=true", Mode.PROD, false);
         assertDisplayedErrorMessage("Error from app init");
@@ -457,6 +488,7 @@ public class ErrorHandlingUITest extends AbstractErrorUITestCase {
      * if a cmp/app contains custom error handler.
      * When error is thrown during init phase, $A is not initialized, so the event has to be handled by default handler.
      */
+    @Test
     public void testDefaultHandleErrorFromInitWhenMarkEventHandled() throws Exception {
         open("/auratest/errorHandlingApp.app?handleSystemError=true&throwErrorFromInit=true", Mode.PROD, false);
         assertDisplayedErrorMessage("Error from app init");
@@ -465,6 +497,7 @@ public class ErrorHandlingUITest extends AbstractErrorUITestCase {
     /*
      * Verify Aura default error handler can handle systemError event when there is an invalid component.
      */
+    @Test
     public void testDefaultHandleInvalidComponentErrorWhenMarkEventHandled() throws Exception {
         open("/auratest/errorHandlingApp.app?handleSystemError=true&addInvalidComponent=true", Mode.PROD, false);
         assertDisplayedErrorMessage("Failed to initialize application");

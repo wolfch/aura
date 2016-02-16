@@ -16,9 +16,6 @@
 
 package org.auraframework.integration.test.javascript.parser;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
-
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.RendererDef;
 import org.auraframework.impl.AuraImplTestCase;
@@ -27,15 +24,21 @@ import org.auraframework.impl.javascript.renderer.JavascriptRendererDef;
 import org.auraframework.system.Source;
 import org.auraframework.test.source.StringSourceLoader;
 import org.auraframework.util.json.JsonEncoder;
+import org.junit.Test;
+
+import javax.inject.Inject;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
 
 public class JavascriptRendererParserTest extends AuraImplTestCase {
-    public JavascriptRendererParserTest(String name) {
-        super(name);
-    }
-
+    @Inject
+    StringSourceLoader loader;
+    
     /**
      * Verify JavascriptRendererParser can parse normal JavaScript Renderer.
      */
+    @Test
     public void testParseNormalJSRenderer() throws Exception {
         String rendererJs =
                 "({\n" +
@@ -45,7 +48,7 @@ public class JavascriptRendererParserTest extends AuraImplTestCase {
                 "    rerender:function() {}\n" +
                 "})";
         DefDescriptor<RendererDef> rendererDesc = addSourceAutoCleanup(RendererDef.class, rendererJs);
-        Source<RendererDef> source = StringSourceLoader.getInstance().getSource(rendererDesc);
+        Source<RendererDef> source = loader.getSource(rendererDesc);
 
         RendererDef rendererDef = new JavascriptRendererParser().parse(rendererDesc, source);
 
@@ -53,6 +56,7 @@ public class JavascriptRendererParserTest extends AuraImplTestCase {
         rendererDef.validateDefinition();
     }
 
+    @Test
     public void testParseJSRendererWithComments() throws Exception {
         String rendererJs =
                 "({\n" +
@@ -65,7 +69,7 @@ public class JavascriptRendererParserTest extends AuraImplTestCase {
                 "    rerender:function() {}\n" +
                 "})";
         DefDescriptor<RendererDef> rendererDesc = addSourceAutoCleanup(RendererDef.class, rendererJs);
-        Source<RendererDef> source = StringSourceLoader.getInstance().getSource(rendererDesc);
+        Source<RendererDef> source = loader.getSource(rendererDesc);
 
         RendererDef rendererDef = new JavascriptRendererParser().parse(rendererDesc, source);
 
@@ -76,6 +80,7 @@ public class JavascriptRendererParserTest extends AuraImplTestCase {
     /**
      * Verify when there are duplicate render functions, only keep the one.
      */
+    @Test
     public void testParseJSRendererWithDuplicateFunction() throws Exception {
         String rendererJs =
                 "({\n" +
@@ -83,7 +88,7 @@ public class JavascriptRendererParserTest extends AuraImplTestCase {
                 "    render: function(cmp) {var v = 2;}\n" +
                 "})";
         DefDescriptor<RendererDef> rendererDesc = addSourceAutoCleanup(RendererDef.class, rendererJs);
-        Source<RendererDef> source = StringSourceLoader.getInstance().getSource(rendererDesc);
+        Source<RendererDef> source = loader.getSource(rendererDesc);
 
         RendererDef rendererDef = new JavascriptRendererParser().parse(rendererDesc, source);
 
@@ -94,6 +99,7 @@ public class JavascriptRendererParserTest extends AuraImplTestCase {
         assertEquals("The latest function should survive.", "{\"render\":function(cmp) {var v = 2;}}", jsonStr);
     }
 
+    @Test
     public void testParseJSRendererWithNonRendererFunctionElements() throws Exception {
         String rendererJs =
                 "({\n" +
@@ -102,7 +108,7 @@ public class JavascriptRendererParserTest extends AuraImplTestCase {
                 "    bar: function(cmp) {var v = 2;}\n"+
                 "})";
         DefDescriptor<RendererDef> rendererDesc = addSourceAutoCleanup(RendererDef.class, rendererJs);
-        Source<RendererDef> source = StringSourceLoader.getInstance().getSource(rendererDesc);
+        Source<RendererDef> source = loader.getSource(rendererDesc);
 
         RendererDef rendererDef = new JavascriptRendererParser().parse(rendererDesc, source);
         String jsonStr = JsonEncoder.serialize(rendererDef);

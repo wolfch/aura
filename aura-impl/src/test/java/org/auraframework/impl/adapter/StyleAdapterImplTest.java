@@ -15,31 +15,27 @@
  */
 package org.auraframework.impl.adapter;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.google.common.collect.Lists;
+import com.salesforce.omakase.ast.declaration.Declaration;
+import com.salesforce.omakase.broadcast.annotation.Observe;
+import com.salesforce.omakase.plugin.Plugin;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.StyleDef;
 import org.auraframework.impl.adapter.format.css.StyleDefCSSFormatAdapter;
 import org.auraframework.impl.css.StyleTestCase;
 import org.auraframework.impl.util.AuraUtil;
+import org.junit.Test;
 
-import com.google.common.collect.Lists;
-import com.salesforce.omakase.ast.declaration.Declaration;
-import com.salesforce.omakase.broadcast.annotation.Observe;
-import com.salesforce.omakase.plugin.Plugin;
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Functional tests for {@link StyleAdapterImpl}.
  */
 public class StyleAdapterImplTest extends StyleTestCase {
-    private Observer observer;
+    @Inject
     private StyleDefCSSFormatAdapter format;
-
-    public StyleAdapterImplTest(String name) {
-        super(name);
-        observer = new Observer();
-    }
 
 //    public void testCompilationPlugins() throws Exception {
 //        TestStyleAdapter adapter = TestStyleAdapter.compilation(observer);
@@ -69,9 +65,10 @@ public class StyleAdapterImplTest extends StyleTestCase {
 //        assertEquals("expected plugin to run at runtime", 2, observer.count);
 //    }
 
+    @Test
     public void testContextualPlugins() throws Exception {
+        Observer observer = new Observer();
         TestStyleAdapter adapter = TestStyleAdapter.contextual(observer);
-        format = new StyleDefCSSFormatAdapter();
         format.setStyleAdapter(adapter);
 
         DefDescriptor<StyleDef> desc1 = addStyleDef(".THIS{color:red}");

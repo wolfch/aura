@@ -15,20 +15,20 @@
  */
 package org.auraframework.impl.java.provider;
 
+import org.auraframework.Aura;
+import org.auraframework.annotations.Annotations.ServiceComponentProvider;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.ComponentDescriptorProvider;
 import org.auraframework.def.DefDescriptor;
-import org.auraframework.impl.system.DefDescriptorImpl;
 import org.auraframework.system.Annotations.Provider;
 
-/**
- */
+@ServiceComponentProvider
 @Provider
 public class TestProviderNoImplementation implements ComponentDescriptorProvider {
     @Override
     public DefDescriptor<ComponentDef> provide() {
         // Provide a component which does not implement
         // tes:test_Provider_InterfaceNoImplementation
-        return DefDescriptorImpl.getInstance("test:test_Provider_NoImpl", ComponentDef.class);
+        return Aura.getDefinitionService().getDefDescriptor("test:test_Provider_NoImpl", ComponentDef.class);
     }
 }

@@ -15,10 +15,11 @@
  */
 package org.auraframework.http.resource;
 
-import org.auraframework.Aura;
 import org.auraframework.adapter.ConfigAdapter;
+import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.system.AuraContext;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -27,9 +28,10 @@ import java.nio.charset.StandardCharsets;
 /**
  * Handles /l/{}/app.encryptionkey requests to retrieve encryption key.
  */
+@ServiceComponent
 public class EncryptionKey extends AuraResourceImpl {
 
-    private ConfigAdapter configAdapter = Aura.getConfigAdapter();
+    private ConfigAdapter configAdapter;
 
     public EncryptionKey() {
         super("app.encryptionkey", AuraContext.Format.HTML, false);
@@ -43,8 +45,9 @@ public class EncryptionKey extends AuraResourceImpl {
         servletUtilAdapter.setNoCache(response);
         response.getOutputStream().write(key.getBytes(StandardCharsets.UTF_8));
     }
-    
+
+    @Inject
     public void setConfigAdapter(ConfigAdapter configAdapter) {
-    	this.configAdapter = configAdapter;
+        this.configAdapter = configAdapter;
     }
 }

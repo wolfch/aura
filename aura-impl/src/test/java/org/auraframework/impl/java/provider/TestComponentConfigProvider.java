@@ -15,22 +15,24 @@
  */
 package org.auraframework.impl.java.provider;
 
+import org.auraframework.Aura;
+import org.auraframework.annotations.Annotations.ServiceComponentProvider;
 import org.auraframework.def.ComponentConfigProvider;
 import org.auraframework.def.ComponentDef;
-import org.auraframework.impl.system.DefDescriptorImpl;
 import org.auraframework.instance.ComponentConfig;
 import org.auraframework.system.Annotations.Provider;
 
 /**
  * An interface provider used for testing.
  */
+@ServiceComponentProvider
 @Provider
 public class TestComponentConfigProvider implements ComponentConfigProvider {
     @Override
     public ComponentConfig provide() {
         ComponentConfig config = new ComponentConfig();
 
-        config.setDescriptor(DefDescriptorImpl.getInstance("test:test_Preload_Interface_Impl", ComponentDef.class));
+        config.setDescriptor(Aura.getDefinitionService().getDefDescriptor("test:test_Preload_Interface_Impl", ComponentDef.class));
         return config;
     }
 }

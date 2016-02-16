@@ -15,6 +15,13 @@
  */
 package org.auraframework.integration.test.java.type;
 
+import org.auraframework.impl.AuraImplTestCase;
+import org.auraframework.impl.expression.PropertyReferenceImpl;
+import org.auraframework.instance.Component;
+import org.auraframework.instance.Model;
+import org.auraframework.throwable.AuraRuntimeException;
+import org.junit.Test;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,20 +31,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.auraframework.impl.AuraImplTestCase;
-import org.auraframework.impl.expression.PropertyReferenceImpl;
-import org.auraframework.instance.Component;
-import org.auraframework.instance.Model;
-import org.auraframework.throwable.AuraRuntimeException;
-
 /**
  * This class has automation to verify the implementation of @Type() annotation in models.
  */
 public class TypeAnnotationInModelTest extends AuraImplTestCase {
-    public TypeAnnotationInModelTest(String name) {
-        super(name);
-    }
-
+    @Test
     public void testValidTypeAnnotationInJavaModel() throws Exception {
         Model model = getJavaModelByQualifiedName("java://org.auraframework.components.test.java.model.TestModelWithJavaTypeAnnotation");
         // Verify model values for basic data types
@@ -53,6 +51,7 @@ public class TypeAnnotationInModelTest extends AuraImplTestCase {
         // assertCollectionAndMapDataTypes(model);
     }
 
+    @Test
     public void testValidAuraTypeAnnotationInJavaModel() throws Exception {
         Model model = getJavaModelByQualifiedName("java://org.auraframework.components.test.java.model.TestModelWithAuraTypeAnnotation");
         // Verify model values for basic data types
@@ -66,6 +65,7 @@ public class TypeAnnotationInModelTest extends AuraImplTestCase {
         assertCollectionAndMapDataTypes(model);
     }
 
+    @Test
     public void testInvalidLiteralTypeAnnotationInJavaModel() throws Exception {
         Model model = getJavaModelByQualifiedName("java://org.auraframework.components.test.java.model.TestModelWithLiteralTypeAnnotation");
         try {
@@ -76,6 +76,7 @@ public class TypeAnnotationInModelTest extends AuraImplTestCase {
 
     }
 
+    @Test
     public void testAuraComponentTypeAnnotationInJavaModel() throws Exception {
         Model model = getJavaModelByQualifiedName("java://org.auraframework.components.test.java.model.TestModelWithAuraTypeAnnotation");
         Object value = model.getValue(new PropertyReferenceImpl("auraComponent", null));
@@ -88,6 +89,7 @@ public class TypeAnnotationInModelTest extends AuraImplTestCase {
 
     }
 
+    @Test
     public void testCaseSensitivityOfTypeAnnotationInJavaModel() throws Exception {
         Model model = getJavaModelByQualifiedName("java://org.auraframework.components.test.java.model.TestModelWithCaseInsensitiveTypeAnnotation");
         assertEachModelMember(model, "string", "Model");

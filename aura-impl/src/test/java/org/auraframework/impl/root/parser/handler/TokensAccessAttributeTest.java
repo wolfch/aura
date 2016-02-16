@@ -17,8 +17,8 @@ package org.auraframework.impl.root.parser.handler;
 
 public class TokensAccessAttributeTest extends BaseAccessAttributeTest {
 
-	public TokensAccessAttributeTest(String name) {
-		super(name);
+	public TokensAccessAttributeTest() {
+		super();
 		testResource = TestResource.Tokens;
 	}
 	

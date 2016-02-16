@@ -15,46 +15,57 @@
  */
 package org.auraframework.integration.test.css;
 
-import javax.xml.stream.XMLStreamReader;
-
-import org.auraframework.Aura;
+import org.auraframework.adapter.DefinitionParserAdapter;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.TokensDef;
 import org.auraframework.def.TokensImportDef;
 import org.auraframework.impl.css.StyleTestCase;
 import org.auraframework.impl.root.parser.XMLParser;
 import org.auraframework.impl.root.parser.handler.TokensImportDefHandler;
-import org.auraframework.impl.system.DefDescriptorImpl;
+import org.auraframework.service.DefinitionService;
 import org.auraframework.system.Parser.Format;
 import org.auraframework.test.source.StringSource;
 import org.auraframework.throwable.AuraRuntimeException;
+import org.auraframework.util.FileMonitor;
+import org.junit.Test;
+
+import javax.inject.Inject;
+import javax.xml.stream.XMLStreamReader;
 
 public class TokensImportDefHandlerTest extends StyleTestCase {
+    @Inject
+    private FileMonitor fileMonitor;
 
-    public TokensImportDefHandlerTest(String name) {
-        super(name);
-    }
+    @Inject
+    DefinitionService definitionService;
 
+    @Inject
+    private DefinitionParserAdapter definitionParserAdapter;
+    
     private TokensImportDef source(String src) throws Exception {
-        DefDescriptor<TokensImportDef> desc = Aura.getDefinitionService().getDefDescriptor("test", TokensImportDef.class);
-        StringSource<TokensImportDef> ss = new StringSource<>(desc, src, "myID", Format.XML);
+        DefDescriptor<TokensImportDef> desc = definitionService.getDefDescriptor("test", TokensImportDef.class);
+        StringSource<TokensImportDef> ss = new StringSource<>(fileMonitor, desc, src, "myID", Format.XML);
         XMLStreamReader xmlReader = XMLParser.createXMLStreamReader(ss.getHashingReader());
         xmlReader.next();
-        TokensImportDefHandler<TokensDef> handler = new TokensImportDefHandler<>(null, xmlReader, ss);
+        TokensImportDefHandler<TokensDef> handler = new TokensImportDefHandler<>(null, xmlReader, ss, true,
+                definitionService, configAdapter, definitionParserAdapter);
         return handler.getElement();
     }
 
+    @Test
     public void testDescriptor() throws Exception {
         TokensImportDef def = source("<aura:import name='test:tokens'/>");
-        DefDescriptor<TokensDef> desc = DefDescriptorImpl.getInstance("test:tokens", TokensDef.class);
+        DefDescriptor<TokensDef> desc = definitionService.getDefDescriptor("test:tokens", TokensDef.class);
         assertEquals(desc, def.getImportDescriptor());
     }
 
+    @Test
     public void testDescription() throws Exception {
         TokensImportDef def = source("<aura:import name='test:tokens' description='test'/>");
         assertEquals("test", def.getDescription());
     }
 
+    @Test
     public void testInvalidChild() throws Exception {
         try {
             source("<aura:import name='test:tokens'><ui:button></aura:import>");
@@ -64,6 +75,7 @@ public class TokensImportDefHandlerTest extends StyleTestCase {
         }
     }
 
+    @Test
     public void testWithTextBetweenTag() throws Exception {
         try {
             source("<aura:import name='test:tokens'>blah</aura:import>");
@@ -73,6 +85,7 @@ public class TokensImportDefHandlerTest extends StyleTestCase {
         }
     }
 
+    @Test
     public void testMissingName() throws Exception {
         try {
             source("<aura:import name=''/>");

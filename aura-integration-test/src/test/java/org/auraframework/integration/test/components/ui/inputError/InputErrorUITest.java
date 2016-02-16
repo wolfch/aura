@@ -35,10 +35,6 @@ public class InputErrorUITest extends WebDriverTestCase {
     final String URL = "/uitest/inputError_Test.cmp";
     final String URL_CST = "/uitest/inputError_CustomTest.cmp";
 
-    public InputErrorUITest(String name) {
-        super(name);
-    }
-
     /**
      * Test error handling setting errors when firing onError event. Test error handling clearing errors when firing
      * onClearErrors event. Test error handling setting a custom error component.

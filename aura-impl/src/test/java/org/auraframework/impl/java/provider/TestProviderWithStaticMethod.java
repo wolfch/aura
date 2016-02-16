@@ -15,9 +15,9 @@
  */
 package org.auraframework.impl.java.provider;
 
+import org.auraframework.Aura;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
-import org.auraframework.impl.system.DefDescriptorImpl;
 import org.auraframework.system.Annotations.Provider;
 /**
  * this provider is for JavaProviderDefTest.testInterfaceWithNoProvider
@@ -25,6 +25,6 @@ import org.auraframework.system.Annotations.Provider;
 @Provider
 public class TestProviderWithStaticMethod {
     public static DefDescriptor<ComponentDef> provide() {
-        return DefDescriptorImpl.getInstance("test:test_Provider_Component", ComponentDef.class);
+        return Aura.getDefinitionService().getDefDescriptor("test:test_Provider_Component", ComponentDef.class);
     }
 }
