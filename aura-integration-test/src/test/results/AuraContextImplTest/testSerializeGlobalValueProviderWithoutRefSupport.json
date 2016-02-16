@@ -1,13 +1,1 @@
-{
-  "mode": "PROD",
-  "fwuid": "#FAKEUID#",
-  "globalValueProviders": [
-    {
-      "type": "$NONE",
-      "hasRefs": false,
-      "values": {
-        "data": "identity"
-      }
-    }
-  ]
-}
+{"mode":"PROD","fwuid":"#FAKEUID#","globalValueProviders":[{"type":"$NONE","hasRefs":false,"values":{"data":"identity"}}]}
