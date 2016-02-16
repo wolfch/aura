@@ -68,7 +68,7 @@ public class BrowserValueProviderTest extends AuraImplTestCase {
 
     @Test
     public void testValidate() throws Exception {
-        BrowserValueProvider bvp = new BrowserValueProvider();
+        BrowserValueProvider bvp = new BrowserValueProvider(contextService);
         bvp.validate(BrowserProperty.isTablet);
         bvp.validate(BrowserProperty.isPhone);
         bvp.validate(BrowserProperty.isAndroid);
@@ -123,7 +123,7 @@ public class BrowserValueProviderTest extends AuraImplTestCase {
         AuraContext context = contextService.getCurrentContext();
         String userAgentString = userAgent == null ? null : userAgent.getUserAgentString();
         context.setClient(new Client(userAgentString));
-        BrowserValueProvider bvp = new BrowserValueProvider();
+        BrowserValueProvider bvp = new BrowserValueProvider(contextService);
         assertBrowserProperty(bvp, BrowserProperty.isTablet, isTablet, userAgentString);
         assertBrowserProperty(bvp, BrowserProperty.isPhone, isPhone, userAgentString);
         assertBrowserProperty(bvp, BrowserProperty.isAndroid, isAndroid, userAgentString);
@@ -189,7 +189,7 @@ public class BrowserValueProviderTest extends AuraImplTestCase {
 
     @Test
     public void testGetValueUndefinedProperty() throws Exception {
-        BrowserValueProvider bvp = new BrowserValueProvider();
+        BrowserValueProvider bvp = new BrowserValueProvider(contextService);
         assertEquals(null,
                 bvp.getValue(new PropertyReferenceImpl("isBlackberry", null))); // undefined property
     }
@@ -246,7 +246,7 @@ public class BrowserValueProviderTest extends AuraImplTestCase {
         AuraContext context = contextService.getCurrentContext();
         String userAgentString = userAgent == null ? null : userAgent.getUserAgentString();
         context.setClient(new Client(userAgentString));
-        BrowserValueProvider bvp = new BrowserValueProvider();
+        BrowserValueProvider bvp = new BrowserValueProvider(contextService);
         assertBrowserType(bvp, BrowserType.isWebKit, isWebKit, userAgentString);
         assertBrowserType(bvp, BrowserType.isFirefox, isFirefox, userAgentString);
         assertBrowserType(bvp, BrowserType.isIE6, isIE6, userAgentString);
