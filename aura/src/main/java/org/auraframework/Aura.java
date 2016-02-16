@@ -15,6 +15,8 @@
  */
 package org.auraframework;
 
+import javax.inject.Inject;
+
 import org.auraframework.adapter.ConfigAdapter;
 import org.auraframework.adapter.LocalizationAdapter;
 import org.auraframework.adapter.ServletUtilAdapter;
@@ -27,13 +29,10 @@ import org.auraframework.service.ConverterService;
 import org.auraframework.service.DefinitionService;
 import org.auraframework.service.InstanceService;
 import org.auraframework.service.IntegrationService;
-import org.auraframework.service.LocalizationService;
 import org.auraframework.service.LoggingService;
 import org.auraframework.system.AuraContext;
 import org.auraframework.test.TestContextAdapter;
 import org.auraframework.util.adapter.SourceControlAdapter;
-
-import javax.inject.Inject;
 
 /**
  * Entry point for accessing Aura services
@@ -48,7 +47,6 @@ public class Aura implements AuraDeprecated {
     private static DefinitionService definitionService;
     private static ContextService contextService;
     private static InstanceService instanceService;
-    private static LocalizationService localizationService;
     private static ServletUtilAdapter servletUtilAdapter;
     private static SourceControlAdapter sourceControlAdapter;
     private static ConverterService converterService;
@@ -82,11 +80,6 @@ public class Aura implements AuraDeprecated {
     @Inject
     public void setInstanceService(InstanceService service) {
         instanceService = service;
-    }
-
-    @Inject
-    public void setLocalizationService(LocalizationService service) {
-        localizationService = service;
     }
 
     @Inject
@@ -160,13 +153,6 @@ public class Aura implements AuraDeprecated {
      */
     public static LocalizationAdapter getLocalizationAdapter() {
         return localizationAdapter;
-    }
-
-    /**
-     * Gets the Localization Service: Gets the localization configuration
-     */
-    public static LocalizationService getLocalizationService() {
-        return localizationService;
     }
 
     /**
