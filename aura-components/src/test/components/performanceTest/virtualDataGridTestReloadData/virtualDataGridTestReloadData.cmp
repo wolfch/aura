@@ -1,8 +1,8 @@
 <!-- tests reloading row data used by ui:virtualDataGrid, uses virtualDataGridTestAppendRows's model-->
 
-<aura:component extends="performance:perfTest" model="js://performanceTest.virtualDataGridTestAppendRows">
+<aura:component extends="performance:perfTest">
     <aura:attribute name="data" type="List"/>
-    <ui:virtualDataGrid aura:id="myData" items="{!m.data}">
+    <ui:virtualDataGrid aura:id="myData" items="{!v.data}">
     
         <aura:set attribute="headerColumns">
         

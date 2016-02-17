@@ -19,11 +19,9 @@ import com.google.common.collect.ImmutableMap;
 import org.auraframework.def.ControllerDef;
 import org.auraframework.def.DefDescriptor.DefType;
 import org.auraframework.def.Definition;
-import org.auraframework.def.ModelDef;
 import org.auraframework.def.TestCaseDef;
 import org.auraframework.def.TestSuiteDef;
 import org.auraframework.impl.AuraImplTestCase;
-import org.auraframework.impl.expression.PropertyReferenceImpl;
 import org.auraframework.impl.javascript.testsuite.JavascriptTestCaseDef;
 import org.junit.Test;
 
@@ -71,10 +69,5 @@ public class ObjectSerializationTest extends AuraImplTestCase {
         assertEquals("what I expected",
                 ((ControllerDef) controllerDef).createAction("getString", ImmutableMap.<String, Object> of())
                         .getReturnValue().toString());
-        Definition modelDef = newtest.getLocalDefs().get(1);
-        assertEquals("java://org.auraframework.components.test.java.model.TestJavaModel", modelDef.getDescriptor()
-                .getQualifiedName());
-        assertEquals("<suite-level>",
-                ((ModelDef) modelDef).newInstance().getValue(new PropertyReferenceImpl("secret", null)).toString());
     }
 }

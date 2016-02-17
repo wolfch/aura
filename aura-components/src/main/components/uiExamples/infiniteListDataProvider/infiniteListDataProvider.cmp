@@ -15,6 +15,6 @@
     limitations under the License.
 
 -->
-<aura:component extends="ui:dataProvider" model="js://uiExamples.infiniteListDataProvider">
+<aura:component extends="ui:dataProvider">
 	<aura:handler name="provide" action="{!c.handleProvide}"/>
 </aura:component>

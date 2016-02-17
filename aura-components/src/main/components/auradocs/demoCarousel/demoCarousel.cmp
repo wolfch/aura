@@ -21,12 +21,12 @@
     <ui:carousel width="300">
 	    <aura:set attribute="pageComponents">
 	        <ui:carouselPage>
-	            <h1>{!m.data[0].header}</h1>
-	            <p>{!m.data[0].str}</p>
+	            <h1>Page 1</h1>
+	            <p>Data from a model.</p>
 	        </ui:carouselPage>
 	        <ui:carouselPage>
-	            <h1>{!m.data[1].header}</h1>
-	            <p>{!m.data[1].str}</p>
+	            <h1>Page 2</h1>
+	            <p>Content from a model.</p>
 	        </ui:carouselPage>
 	    </aura:set>
     </ui:carousel>

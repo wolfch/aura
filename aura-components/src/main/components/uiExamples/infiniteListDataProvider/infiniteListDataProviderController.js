@@ -17,6 +17,27 @@
 	handleProvide: function (cmp, evt, hlp) {
 		// Always return back the model data for demonstration convenience.
 		// Not a proper pattern for actual production use.
-		hlp.fireDataChangeEvent(cmp, cmp.get('m.items'));
+	    var items = [{ 
+	        name : 'Item 0'
+	    }, { 
+	        name : 'Item 1'
+	    }, { 
+	        name : 'Item 2'
+	    }, { 
+	        name : 'Item 3'
+	    }, { 
+	        name : 'Item 4'
+	    }, { 
+	        name : 'Item 5'
+	    }, { 
+	        name : 'Item 6'
+	    }, { 
+	        name : 'Item 7'
+	    }, { 
+	        name : 'Item 8'
+	    }, { 
+	        name : 'Item 9'
+	    },];
+		hlp.fireDataChangeEvent(cmp, items);
 	}
 })

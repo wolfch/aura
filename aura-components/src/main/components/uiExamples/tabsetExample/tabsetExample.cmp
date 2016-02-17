@@ -15,7 +15,7 @@
     limitations under the License.
 
 -->
-<aura:component model="js://uiExamples.tabsetExample">
+<aura:component>
     <div class="container">
         <h1>Basic tabs</h1>
         <ui:tabset class="tabset" lazyRenderTabs="{!true}">

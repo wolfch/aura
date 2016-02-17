@@ -17,7 +17,75 @@
     provide: function(component, event, controller) {
         var sortBy = component.get("v.sortBy");
         var pageSize = component.get("v.pageSize");
-    	var data = component.get("m.items");
+    	var data = [
+           {
+               id: "0",
+               name: "Mary Scott Fitzgerald",
+               gender: "F",
+               age: "7",
+               grade: "2nd"
+           }, {
+               id: "1",
+               name: "Dan Neal",
+               gender: "M",
+               age: "8",
+               grade: "3rd"
+           }, {
+               id: "2",
+               name: "Helen Beagle",
+               gender: "F",
+               age: "9",
+               grade: "4th"
+           }, {
+               id: "3",
+               name: "Monica Rodrige",
+               gender: "F",
+               age: "10",
+               grade: "5th"
+           }, {
+               id: "4",
+               name: "Jenny Wang",
+               gender: "F",
+               age: "7",
+               grade: "1st"
+           }, {
+               id: "5",
+               name: "Michael Hass",
+               gender: "M",
+               age: "10",
+               grade: "4th"
+           }, {
+               id: "6",
+               name: "Katty Liu",
+               gender: "F",
+               age: "10",
+               grade: "5th"
+           }, {
+               id: "7",
+               name: "Preeya Khan",
+               gender: "F",
+               age: "9",
+               grade: "4th"
+           }, {
+               id: "8",
+               name: "Ravi Vaz",
+               gender: "M",
+               age: "8",
+               grade: "3rd"
+           }, {
+               id: "9",
+               name: "Ted Snider",
+               gender: "M",
+               age: "6",
+               grade: "1st"
+           }, {
+               id: "10",
+               name: "Carl Swasson",
+               gender: "M",
+               age: "9",
+               grade: "4th"
+           }
+       ];
     	var helper = this;
     	data.sort(helper.compare(sortBy));
         var dataProvider = component.getConcreteComponent();

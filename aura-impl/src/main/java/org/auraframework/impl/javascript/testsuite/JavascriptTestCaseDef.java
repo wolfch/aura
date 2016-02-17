@@ -166,8 +166,6 @@ public class JavascriptTestCaseDef extends DefinitionImpl<TestCaseDef> implement
             Map<String, Object> map) throws QuickFixException {
         DefType mockType = DefType.valueOf((String) map.get("type"));
         switch (mockType) {
-        case MODEL:
-            return new JavascriptMockModelHandler(compDesc, map).getDefinition();
         case ACTION:
             return new JavascriptMockActionHandler(compDesc, map).getDefinition();
         case PROVIDER:
