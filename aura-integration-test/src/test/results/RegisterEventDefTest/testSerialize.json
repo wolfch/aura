@@ -22,7 +22,7 @@
             "s":4,
             "v":{
               "name":"att1",
-              "type": "aura://String"
+              "type":"aura://String"
             }
           },
           "att2":{

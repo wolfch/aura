@@ -3,12 +3,12 @@
   "v":{
     "descriptor":"markup://aura:testinterfacechild",
     "attributes":{
-      "fakeAttribute": {
+      "fakeAttribute":{
         "s":2,
         "v":{
-          "name": "fakeAttribute",
-          "type": "java://fakeAttribute",
-          "xs": "p"
+          "name":"fakeAttribute",
+          "type":"java://fakeAttribute",
+          "xs":"p"
         }
       }
     },

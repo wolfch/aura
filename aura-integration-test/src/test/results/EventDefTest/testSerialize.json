@@ -20,7 +20,7 @@
         "s":3,
         "v":{
           "name":"testString",
-          "type": "java://testString",
+          "type":"java://testString",
           "xs":"P",
           "required":true
         }
@@ -29,7 +29,7 @@
         "s":4,
         "v":{
           "name":"testInt",
-          "type": "java://testInt",
+          "type":"java://testInt",
           "xs":"P",
           "required":true
         }
