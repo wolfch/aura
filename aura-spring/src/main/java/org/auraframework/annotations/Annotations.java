@@ -119,12 +119,8 @@ public interface Annotations {
     @interface ServiceComponentModelFactory {
     }
 
-    @Target({ElementType.TYPE})
-    @Retention(RetentionPolicy.RUNTIME)
-    @Documented
     @Provider
-    @Component
-    @Scope(BeanDefinition.SCOPE_SINGLETON)
+    @ServiceComponent
     @interface ServiceComponentProvider {
     }
 

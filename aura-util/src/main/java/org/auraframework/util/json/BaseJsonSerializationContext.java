@@ -28,7 +28,7 @@ public abstract class BaseJsonSerializationContext implements JsonSerializationC
     private final int dataSizeLimit;
     private final int collectionSizeLimit;
     private boolean nullValues;
-	private Deque<Boolean> refSupportStack;
+    private Deque<Boolean> refSupportStack;
 
     public BaseJsonSerializationContext(boolean format, boolean refSupport, int dataSizeLimit, int collectionSizeLimit,
             boolean nullValues) {

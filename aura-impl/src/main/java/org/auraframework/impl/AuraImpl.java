@@ -28,10 +28,6 @@ public class AuraImpl {
         return AuraImpl.getCollection(RegistryAdapter.class);
     }
 
-    public static Collection<JsonSerializerAdapter> getJsonSerializerAdapters() {
-        return AuraImpl.getCollection(JsonSerializerAdapter.class);
-    }
-
     public static ExpressionAdapter getExpressionAdapter() {
         return AuraImpl.get(ExpressionAdapter.class);
     }

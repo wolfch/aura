@@ -34,6 +34,7 @@ import org.auraframework.system.AuraContext.Authentication;
 import org.auraframework.system.AuraContext.Format;
 import org.auraframework.system.AuraContext.Mode;
 import org.auraframework.system.MasterDefRegistry;
+import org.auraframework.test.TestContextAdapter;
 import org.auraframework.throwable.AuraRuntimeException;
 import org.auraframework.util.json.JsonSerializationContext;
 
@@ -57,6 +58,9 @@ public class ContextAdapterImpl implements ContextAdapter {
     private LoggingService loggingService;
 
     @Inject
+    private TestContextAdapter testContextAdapter;
+
+    @Inject
     private ImplementationProvider implementationProvider;
 
     private static ThreadLocal<AuraContext> currentContext = new ThreadLocal<>();
@@ -70,7 +74,7 @@ public class ContextAdapterImpl implements ContextAdapter {
             Format format, Authentication access, JsonSerializationContext jsonContext,
             Map<String, GlobalValueProvider> globalProviders,
             DefDescriptor<? extends BaseComponentDef> appDesc) {
-    	return establish(mode, masterRegistry, defaultPrefixes, format, access, jsonContext,
+        return establish(mode, masterRegistry, defaultPrefixes, format, access, jsonContext,
                 globalProviders, appDesc, false);
     }
 
@@ -82,7 +86,7 @@ public class ContextAdapterImpl implements ContextAdapter {
                                  DefDescriptor<? extends BaseComponentDef> appDesc,
                                  boolean isDebugToolEnabled) {
         AuraContext context = new AuraContextImpl(mode, masterRegistry, defaultPrefixes, format, access, jsonContext,
-                globalProviders, isDebugToolEnabled);
+                globalProviders, isDebugToolEnabled, configAdapter, definitionService, testContextAdapter);
         currentContext.set(context);
         context.setApplicationDescriptor(appDesc);
         
@@ -93,7 +97,8 @@ public class ContextAdapterImpl implements ContextAdapter {
         MasterDefRegistryImpl mdr = new MasterDefRegistryImpl(configAdapter, definitionService, loggingService,
                 cachingService, implementationProvider, (MasterDefRegistryImpl) original.getDefRegistry());
         AuraContext context = new AuraContextImpl(original.getMode(), mdr, original.getDefaultPrefixes(), original.getFormat(), original.getAccess(),
-                original.getJsonSerializationContext(), original.getGlobalProviders(), false);
+                original.getJsonSerializationContext(), original.getGlobalProviders(), false, configAdapter,
+                definitionService, testContextAdapter);
         mdr.setContext(context);
         return context;
     }

@@ -20,12 +20,11 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.apache.log4j.Logger;
-import org.auraframework.Aura;
+import org.auraframework.adapter.ConfigAdapter;
 import org.auraframework.css.StyleContext;
 import org.auraframework.def.BaseComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.DefDescriptor.DefType;
-import org.auraframework.def.Definition;
 import org.auraframework.def.EventDef;
 import org.auraframework.def.EventType;
 import org.auraframework.impl.css.token.StyleContextImpl;
@@ -35,6 +34,7 @@ import org.auraframework.instance.BaseComponent;
 import org.auraframework.instance.Event;
 import org.auraframework.instance.GlobalValueProvider;
 import org.auraframework.instance.InstanceStack;
+import org.auraframework.service.DefinitionService;
 import org.auraframework.system.AuraContext;
 import org.auraframework.system.Client;
 import org.auraframework.system.LoggingContext.KeyValueLogger;
@@ -49,12 +49,10 @@ import org.auraframework.util.AuraTextUtil;
 import org.auraframework.util.json.Json;
 import org.auraframework.util.json.JsonEncoder;
 import org.auraframework.util.json.JsonSerializationContext;
-import org.auraframework.util.json.JsonSerializers.NoneSerializer;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -68,171 +66,6 @@ import static com.google.common.base.Preconditions.checkState;
 
 public class AuraContextImpl implements AuraContext {
     private static final Logger logger = Logger.getLogger(AuraContextImpl.class);
-
-    private static class DefSorter implements Comparator<Definition> {
-        @Override
-        public int compare(Definition arg0, Definition arg1) {
-            return arg0.getDescriptor().compareTo(arg1.getDescriptor());
-        }
-    }
-
-    private static final DefSorter DEFSORTER = new DefSorter();
-
-    private static class Serializer extends NoneSerializer<AuraContext> {
-        private Serializer() {
-        }
-
-        public static final String DELETED = "deleted";
-
-        private void writeDefs(Json json, String name, List<Definition> writable) throws IOException {
-            if (writable.size() > 0) {
-                Collections.sort(writable, DEFSORTER);
-                json.writeMapEntry(name, writable);
-            }
-        }
-
-        @Override
-        public void serialize(Json json, AuraContext ctx) throws IOException {
-            json.writeMapBegin();
-            json.writeMapEntry("mode", ctx.getMode());
-
-            DefDescriptor<? extends BaseComponentDef> appDesc = ctx.getApplicationDescriptor();
-            if (appDesc != null) {
-                if (appDesc.getDefType().equals(DefType.APPLICATION)) {
-                    json.writeMapEntry("app", String.format("%s:%s", appDesc.getNamespace(), appDesc.getName()));
-                } else {
-                    json.writeMapEntry("cmp", String.format("%s:%s", appDesc.getNamespace(), appDesc.getName()));
-                }
-            }
-
-            String contextPath = ctx.getContextPath();
-            if (!contextPath.isEmpty()) {
-                // serialize servlet context path for html component to prepend for client created components
-                json.writeMapEntry("contextPath", contextPath);
-            }
-
-            if (ctx.getRequestedLocales() != null) {
-                List<String> locales = new ArrayList<>();
-                for (Locale locale : ctx.getRequestedLocales()) {
-                    locales.add(locale.toString());
-                }
-                json.writeMapEntry("requestedLocales", locales);
-            }
-            Map<String, String> loadedStrings = Maps.newHashMap();
-            Map<DefDescriptor<?>, String> clientLoaded = Maps.newHashMap();
-            clientLoaded.putAll(ctx.getClientLoaded());
-            for (Map.Entry<DefDescriptor<?>, String> entry : ctx.getLoaded().entrySet()) {
-                loadedStrings.put(String.format("%s@%s", entry.getKey().getDefType().toString(),
-                        entry.getKey().getQualifiedName()), entry.getValue());
-                clientLoaded.remove(entry.getKey());
-            }
-            for (DefDescriptor<?> deleted : clientLoaded.keySet()) {
-                loadedStrings.put(String.format("%s@%s", deleted.getDefType().toString(),
-                        deleted.getQualifiedName()), DELETED);
-            }
-            if (loadedStrings.size() > 0) {
-                json.writeMapKey("loaded");
-                json.writeMap(loadedStrings);
-            }
-
-            TestContextAdapter testContextAdapter = Aura.getTestContextAdapter();
-            if (testContextAdapter != null) {
-                TestContext testContext = testContextAdapter.getTestContext();
-                if (testContext != null) {
-                    json.writeMapEntry("test", testContext.getName());
-                }
-            }
-
-            if (ctx.getFrameworkUID() != null) {
-                json.writeMapEntry("fwuid", ctx.getFrameworkUID());
-            } else {
-                json.writeMapEntry("fwuid", Aura.getConfigAdapter().getAuraFrameworkNonce());
-            }
-
-            //
-            // Now comes the tricky part, we have to serialize all of the definitions that are
-            // required on the client side, and, of all types. This way, we won't have to handle
-            // ugly cases of actual definitions nested inside our configs, and, we ensure that
-            // all dependencies actually get sent to the client. Note that the 'loaded' set needs
-            // to be updated as well, but that needs to happen prior to this.
-            //
-            Map<DefDescriptor<? extends Definition>, Definition> defMap;
-
-            defMap = ctx.getDefRegistry().filterRegistry(ctx.getPreloadedDefinitions());
-
-            if (defMap.size() > 0) {
-                List<Definition> componentDefs = Lists.newArrayList();
-                List<Definition> eventDefs = Lists.newArrayList();
-                List<Definition> libraryDefs = Lists.newArrayList();
-
-                for (Map.Entry<DefDescriptor<? extends Definition>, Definition> entry : defMap.entrySet()) {
-                    DefDescriptor<? extends Definition> desc = entry.getKey();
-                    DefType dt = desc.getDefType();
-                    Definition d = entry.getValue();
-                    //
-                    // Ignore defs that ended up not being valid. This is arguably something
-                    // that the MDR should have done when filtering.
-                    //
-                    if (d != null) {
-                        try {
-                            d.retrieveLabels();
-                        } catch (QuickFixException qfe) {
-                            // this should not throw a QFE
-                        }
-                        if (DefType.COMPONENT.equals(dt) || DefType.APPLICATION.equals(dt)) {
-                            componentDefs.add(d);
-                        } else if (DefType.EVENT.equals(dt)) {
-                            eventDefs.add(d);
-                        } else if (DefType.LIBRARY.equals(dt)) {
-                            libraryDefs.add(d);
-                        }
-                    }
-                }
-                writeDefs(json, "componentDefs", componentDefs);
-                writeDefs(json, "eventDefs", eventDefs);
-                writeDefs(json, "libraryDefs", libraryDefs);
-            }
-
-            ctx.serializeAsPart(json);
-
-            //
-            // client needs value providers, urls don't
-            // Note that we do this _post_ components, because they load labels.
-            //
-            boolean started = false;
-
-            for (GlobalValueProvider valueProvider : ctx.getGlobalProviders().values()) {
-                if (!valueProvider.isEmpty()) {
-                    if (!started) {
-                        json.writeMapKey("globalValueProviders");
-                        json.writeArrayBegin();
-                        started = true;
-                    }
-                    try {  
-                        // Conditionally disable refSupport for specific value providers.
-                    	json.getSerializationContext().pushRefSupport(valueProvider.refSupport()); 
-                        json.writeComma();
-                        json.writeIndent();
-                        json.writeMapBegin();
-                        json.writeMapEntry("type", valueProvider.getValueProviderKey().getPrefix());
-                    	json.writeMapEntry("hasRefs", valueProvider.refSupport());
-	                    json.writeMapEntry("values", valueProvider.getData());
-	                    json.writeMapEnd();
-                    } finally { 
-                    	json.getSerializationContext().popRefSupport(); 
-                    }
-                }
-            }
-
-            if (started) {
-                json.writeArrayEnd();
-            }
-            json.writeMapEnd();
-        }
-    }
-
-    // serializer with everything for the client
-    public static final Serializer FULL_SERIALIZER = new Serializer();
 
     private final Set<DefDescriptor<?>> staleChecks = new HashSet<>();
 
@@ -290,16 +123,18 @@ public class AuraContextImpl implements AuraContext {
     private static final int MAX_COMPONENT_COUNT = 10000;
     private int componentCount;
 
-    private static final Map<String, GlobalValue> allowedGlobalValues;
+    private static final Map<String, GlobalValue> allowedGlobalValues = new HashMap<>();
     private Map<String, AuraContext.GlobalValue> globalValues;
 
-    static {
-        allowedGlobalValues = new HashMap<>();
-    }
+    private final DefinitionService definitionService;
+    private final ConfigAdapter configAdapter;
+    private final TestContextAdapter testContextAdapter;
 
     public AuraContextImpl(Mode mode, MasterDefRegistry masterRegistry, Map<DefType, String> defaultPrefixes,
             Format format, Authentication access, JsonSerializationContext jsonContext,
-            Map<String, GlobalValueProvider> globalProviders, boolean isDebugToolEnabled) {
+            Map<String, GlobalValueProvider> globalProviders, boolean isDebugToolEnabled,
+                           ConfigAdapter configAdapter, DefinitionService definitionService,
+                           TestContextAdapter testContextAdapter) {
         this.mode = mode;
         this.masterRegistry = masterRegistry;
         this.defaultPrefixes = defaultPrefixes;
@@ -308,7 +143,10 @@ public class AuraContextImpl implements AuraContext {
         this.jsonContext = jsonContext;
         this.globalProviders = globalProviders;
         this.isDebugToolEnabled = isDebugToolEnabled;
-        globalValues = new HashMap<>();
+        this.configAdapter = configAdapter;
+        this.definitionService = definitionService;
+        this.testContextAdapter = testContextAdapter;
+        this.globalValues = new HashMap<>();
     }
 
     @Override
@@ -532,7 +370,7 @@ public class AuraContextImpl implements AuraContext {
     public void addClientApplicationEvent(Event event) throws QuickFixException {
         if (event != null) {
             DefDescriptor<EventDef> desc = event.getDescriptor();
-            EventDef def = Aura.getDefinitionService().getDefinition(desc);
+            EventDef def = definitionService.getDefinition(desc);
             if (def == null || def.getEventType() != EventType.APPLICATION) {
                 throw new InvalidEventTypeException(
                         String.format("%s is not an Application event. "
@@ -725,7 +563,7 @@ public class AuraContextImpl implements AuraContext {
             throw new AuraRuntimeException("Attempt to retrieve unknown $Global variable: " + approvedName);
         }
         if (globalValues.containsKey(approvedName)) {
-        	return globalValues.get(approvedName).getValue();
+            return globalValues.get(approvedName).getValue();
         }
         return allowedGlobalValues.get(approvedName).getValue();
     }
@@ -815,7 +653,7 @@ public class AuraContextImpl implements AuraContext {
                 if (getFrameworkUID() != null) {
                     json.writeMapEntry("fwuid", getFrameworkUID());
                 } else {
-                    json.writeMapEntry("fwuid", Aura.getConfigAdapter().getAuraFrameworkNonce());
+                    json.writeMapEntry("fwuid", configAdapter.getAuraFrameworkNonce());
                 }
 
                 Map<String, String> loadedStrings = Maps.newHashMap();
@@ -855,7 +693,6 @@ public class AuraContextImpl implements AuraContext {
                     json.writeMapEntry("contextPath", contextPath);
                 }
             }
-            TestContextAdapter testContextAdapter = Aura.getTestContextAdapter();
             if (testContextAdapter != null) {
                 TestContext testContext = testContextAdapter.getTestContext();
                 if (testContext != null) {

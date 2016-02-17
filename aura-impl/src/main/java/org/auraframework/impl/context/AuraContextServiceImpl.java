@@ -41,6 +41,7 @@ import org.auraframework.system.AuraContext.Mode;
 import org.auraframework.system.DefRegistry;
 import org.auraframework.system.SourceLoader;
 import org.auraframework.throwable.NoContextException;
+import org.auraframework.util.json.JsonSerializerFactory;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -80,6 +81,9 @@ public class AuraContextServiceImpl implements ContextService {
     @Inject
     private ImplementationProvider implementationProvider;
 
+    @Inject
+    private JsonSerializerFactory jsonSerializerFactory;
+
     private CachingService cachingService;
 
     @Inject
@@ -114,7 +118,8 @@ public class AuraContextServiceImpl implements ContextService {
         MasterDefRegistryImpl mdr = getDefRegistry(mode, access, loaders);
         AuraContext context = contextAdapter.establish(mode, mdr,
                 this.prefixDefaultsAdapter.getPrefixDefaults(mode), format, access,
-                AuraJsonContext.createContext(mode, true), getGlobalProviders(), null);
+                AuraJsonContext.createContext(mode, true, jsonSerializerFactory),
+                getGlobalProviders(), null);
         mdr.setContext(context);
         return context;
     }
@@ -146,7 +151,7 @@ public class AuraContextServiceImpl implements ContextService {
         MasterDefRegistryImpl mdr = getDefRegistry(mode, access, loaders);
         AuraContext context = contextAdapter.establish(mode, mdr,
                 this.prefixDefaultsAdapter.getPrefixDefaults(mode), format, access,
-                AuraJsonContext.createContext(mode, true), getGlobalProviders(), appDesc, isDebugToolEnabled);
+                AuraJsonContext.createContext(mode, true, jsonSerializerFactory), getGlobalProviders(), appDesc, isDebugToolEnabled);
         mdr.setContext(context);
         return context;
     }
