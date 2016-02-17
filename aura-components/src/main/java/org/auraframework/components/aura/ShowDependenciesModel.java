@@ -20,38 +20,34 @@ import java.util.Map;
 import java.util.SortedSet;
 
 import org.auraframework.Aura;
-
+import org.auraframework.annotations.Annotations.ServiceComponentModelInstance;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.DefDescriptor.DefType;
 import org.auraframework.def.Definition;
-
+import org.auraframework.ds.servicecomponent.ModelInstance;
+import org.auraframework.service.ContextService;
+import org.auraframework.service.DefinitionService;
 import org.auraframework.system.Annotations.AuraEnabled;
-import org.auraframework.system.Annotations.Model;
 import org.auraframework.system.AuraContext;
 import org.auraframework.system.MasterDefRegistry;
-
 import org.auraframework.throwable.quickfix.QuickFixException;
-
 import org.auraframework.util.AuraTextUtil;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
-@Model
-public class ShowDependenciesModel {
+@ServiceComponentModelInstance
+public class ShowDependenciesModel implements ModelInstance {
+	
 	public ShowDependenciesModel() throws QuickFixException {
-		this((String) getAttributeValue("component"));
+		this(Aura.getContextService(), Aura.getDefinitionService());
 	}
-
-	private static Object getAttributeValue(String name)
-			throws QuickFixException {
-		return Aura.getContextService().getCurrentContext()
-				.getCurrentComponent().getAttributes().getValue(name);
-	}
-
-	public ShowDependenciesModel(final String cmpname) {
-		AuraContext context = Aura.getContextService().getCurrentContext();
+	
+	public ShowDependenciesModel(ContextService contextService, DefinitionService definitionService) throws QuickFixException {
+		final String cmpname = (String) contextService.getCurrentContext().getCurrentComponent().getAttributes().getValue("component");
+		
+		AuraContext context = contextService.getCurrentContext();
 		DefDescriptor<?> descriptor;
 		SortedSet<DefDescriptor<?>> sorted;
 		MasterDefRegistry mdr = context.getDefRegistry();
@@ -60,7 +56,7 @@ public class ShowDependenciesModel {
 		this.error = true;
 		this.items = Lists.newArrayList();
 		try {
-			Definition def = Aura.getDefinitionService().getDefinition(cmpname,
+			Definition def = definitionService.getDefinition(cmpname,
 					DefType.COMPONENT, DefType.APPLICATION);
 			if (def == null) {
 				this.title = "Unable to find component for input "
@@ -104,6 +100,7 @@ public class ShowDependenciesModel {
 			// nothing useful to do here.
 			this.error = true;
 		}
+		
 	}
 
 	@AuraEnabled

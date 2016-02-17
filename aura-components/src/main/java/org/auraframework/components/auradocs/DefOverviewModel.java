@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.auraframework.Aura;
+import org.auraframework.annotations.Annotations.ServiceComponentModelInstance;
 import org.auraframework.def.AttributeDef;
 import org.auraframework.def.BaseComponentDef;
 import org.auraframework.def.DefDescriptor;
@@ -31,7 +32,10 @@ import org.auraframework.def.LibraryDef;
 import org.auraframework.def.RegisterEventDef;
 import org.auraframework.def.RootDefinition;
 import org.auraframework.docs.ReferenceTreeModel;
+import org.auraframework.ds.servicecomponent.ModelInstance;
 import org.auraframework.instance.BaseComponent;
+import org.auraframework.service.ContextService;
+import org.auraframework.service.DefinitionService;
 import org.auraframework.system.Annotations.AuraEnabled;
 import org.auraframework.system.Annotations.Model;
 import org.auraframework.system.AuraContext;
@@ -44,8 +48,8 @@ import com.google.common.collect.Lists;
 /**
  * @since 0.0.196
  */
-@Model
-public class DefOverviewModel {
+@ServiceComponentModelInstance
+public class DefOverviewModel implements ModelInstance {
 
     private final DefDescriptor<?> descriptor;
     private final Definition definition;
@@ -60,15 +64,19 @@ public class DefOverviewModel {
     private final List<String> interfaces = Lists.newArrayList();
 
     public DefOverviewModel() throws QuickFixException {
+    	this(Aura.getContextService(), Aura.getDefinitionService());
+    }
+    
+    public DefOverviewModel(ContextService contextService, DefinitionService definitionService) throws QuickFixException {
 
-        AuraContext context = Aura.getContextService().getCurrentContext();
+        AuraContext context = contextService.getCurrentContext();
         BaseComponent<?, ?> component = context.getCurrentComponent();
 
         String desc = (String) component.getAttributes().getValue("descriptor");
 
         DefType defType = DefType.valueOf(((String) component.getAttributes().getValue("defType")).toUpperCase());
-        descriptor = Aura.getDefinitionService().getDefDescriptor(desc, defType.getPrimaryInterface());
-        definition = descriptor.getDef();
+        descriptor = definitionService.getDefDescriptor(desc, defType.getPrimaryInterface());
+        definition = definitionService.getDefinition(descriptor);
         
         ReferenceTreeModel.assertAccess(definition);
 
