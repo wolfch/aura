@@ -16,25 +16,29 @@
 package org.auraframework.integration.test.model;
 
 import com.google.common.collect.Maps;
+
 import org.auraframework.Aura;
+import org.auraframework.annotations.Annotations.ServiceComponentModelInstance;
 import org.auraframework.components.test.java.model.TestReinitializeModel;
+import org.auraframework.service.ContextService;
 import org.auraframework.system.Annotations.AuraEnabled;
 import org.auraframework.system.Annotations.Model;
 import org.auraframework.test.TestContext;
+import org.auraframework.test.TestContextAdapter;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
 import java.util.ArrayList;
 import java.util.Map;
 
-@Model
+@ServiceComponentModelInstance
 public class TestReinitializeModelWithCount extends TestReinitializeModel {
     
     private static Map<TestContext, Integer> counters = Maps.newHashMap();
 
-    public TestReinitializeModelWithCount() throws QuickFixException {
-        super();
+    public TestReinitializeModelWithCount(ContextService contextService, TestContextAdapter testContextAdapter) throws QuickFixException {
+        super(contextService);
         //increase the corresponding counter by 1 if it exist, if not, create it
-        TestContext testContext = Aura.getTestContextAdapter().getTestContext();
+        TestContext testContext = testContextAdapter.getTestContext();
         Integer c = counters.get(testContext);
         if(c!=null && c>=0) {
             c = c+1;
