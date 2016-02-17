@@ -15,25 +15,19 @@
  */
 package org.auraframework.components.loadLevel;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.auraframework.annotations.Annotations.ServiceComponentModelFactory;
+import org.auraframework.ds.servicecomponent.ModelFactory;
+import org.auraframework.ds.servicecomponent.ModelInitializationException;
 
-import org.auraframework.annotations.Annotations.ServiceComponentModelInstance;
-import org.auraframework.ds.servicecomponent.ModelInstance;
-import org.auraframework.system.Annotations.AuraEnabled;
-
-@ServiceComponentModelInstance
-public class SleepyServerModel implements ModelInstance {
-    public SleepyServerModel() throws InterruptedException {
-        Thread.sleep(10000);
-    }
-
-    @AuraEnabled
-    public List<String> getStringList() {
-        ArrayList<String> sl = new ArrayList<>();
-        sl.add("foo");
-        sl.add("bar");
-        sl.add("beer");
-        return sl;
-    }
+@ServiceComponentModelFactory
+public class SleepyServerModelFactory  implements ModelFactory<SleepyServerModel> {
+	
+	@Override
+	public SleepyServerModel modelInstance() throws ModelInitializationException {
+		try {
+			return new SleepyServerModel();
+		} catch (InterruptedException e) {
+			throw new ModelInitializationException(e.getMessage(), e);
+		}
+	}
 }
