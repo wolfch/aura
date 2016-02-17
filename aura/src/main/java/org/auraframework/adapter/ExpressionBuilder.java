@@ -20,10 +20,10 @@ import org.auraframework.system.Location;
 import org.auraframework.throwable.quickfix.AuraValidationException;
 
 /**
- * adapt a parser that takes in strings and returns {@link Expression} objects
+ * Takes in strings and returns {@link Expression} objects
  * default implementation is in the aura-impl-expression module
  */
-public interface ExpressionAdapter extends AuraAdapter {
+public interface ExpressionBuilder extends AuraAdapter {
 
     /**
      * parses the given string from the given location into Expressions

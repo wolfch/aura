@@ -28,8 +28,7 @@ import org.antlr.runtime.MismatchedTokenException;
 import org.antlr.runtime.NoViableAltException;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.Token;
-import org.auraframework.adapter.ExpressionAdapter;
-import org.auraframework.ds.serviceloader.AuraServiceProvider;
+import org.auraframework.adapter.ExpressionBuilder;
 import org.auraframework.expression.Expression;
 import org.auraframework.impl.expression.parser.ExpressionLexer;
 import org.auraframework.impl.expression.parser.ExpressionParser;
@@ -38,13 +37,15 @@ import org.auraframework.throwable.AuraRuntimeException;
 import org.auraframework.throwable.quickfix.AuraValidationException;
 import org.auraframework.throwable.quickfix.InvalidExpressionException;
 
-import aQute.bnd.annotation.component.Component;
-
 /**
  * adapter that calls our expression factory
  */
-@Component (provide=AuraServiceProvider.class)
-public class ExpressionAdapterImpl implements ExpressionAdapter {
+public class AuraExpressionBuilder implements ExpressionBuilder {
+
+    public static final AuraExpressionBuilder INSTANCE = new AuraExpressionBuilder();
+
+    private AuraExpressionBuilder() {
+    }
 
     @Override
     public Expression buildExpression(String s, Location l) throws AuraValidationException {

@@ -16,8 +16,6 @@
 package org.auraframework.impl;
 
 import org.auraframework.adapter.AuraAdapter;
-import org.auraframework.adapter.ExpressionAdapter;
-import org.auraframework.adapter.JsonSerializerAdapter;
 import org.auraframework.adapter.RegistryAdapter;
 import org.auraframework.util.ServiceLocator;
 
@@ -26,10 +24,6 @@ import java.util.Collection;
 public class AuraImpl {
     public static Collection<RegistryAdapter> getRegistryAdapters() {
         return AuraImpl.getCollection(RegistryAdapter.class);
-    }
-
-    public static ExpressionAdapter getExpressionAdapter() {
-        return AuraImpl.get(ExpressionAdapter.class);
     }
 
     public static <T extends AuraAdapter> T get(Class<T> type) {

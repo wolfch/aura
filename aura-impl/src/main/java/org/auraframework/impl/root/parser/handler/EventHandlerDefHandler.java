@@ -21,7 +21,7 @@ import org.auraframework.def.EventDef;
 import org.auraframework.def.RootDefinition;
 import org.auraframework.expression.Expression;
 import org.auraframework.expression.PropertyReference;
-import org.auraframework.impl.AuraImpl;
+import org.auraframework.impl.expression.AuraExpressionBuilder;
 import org.auraframework.impl.root.event.EventHandlerDefImpl;
 import org.auraframework.impl.util.TextTokenizer;
 import org.auraframework.service.DefinitionService;
@@ -76,7 +76,7 @@ public class EventHandlerDefHandler extends XMLHandler<EventHandlerDefImpl> {
 
         String action = getAttributeValue(ATTRIBUTE_ACTION);
         if (action != null) {
-            Expression e = AuraImpl.getExpressionAdapter().buildExpression(
+            Expression e = AuraExpressionBuilder.INSTANCE.buildExpression(
                     TextTokenizer.unwrap(getAttributeValue(ATTRIBUTE_ACTION)), getLocation());
             if (!(e instanceof PropertyReference)) {
                 error("value of 'action' attribute must be a reference to an Action");
@@ -85,7 +85,7 @@ public class EventHandlerDefHandler extends XMLHandler<EventHandlerDefImpl> {
         }
         String value = getAttributeValue(ATTRIBUTE_VALUE);
         if (value != null) {
-            Expression valueExpression = AuraImpl.getExpressionAdapter().buildExpression(TextTokenizer.unwrap(value),
+            Expression valueExpression = AuraExpressionBuilder.INSTANCE.buildExpression(TextTokenizer.unwrap(value),
                     getLocation());
             if (!(valueExpression instanceof PropertyReference)) {
                 error("value of 'value' attribute must be a reference to a Value");

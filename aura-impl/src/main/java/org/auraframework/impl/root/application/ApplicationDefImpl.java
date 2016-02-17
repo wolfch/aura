@@ -25,7 +25,7 @@ import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.EventDef;
 import org.auraframework.expression.Expression;
 import org.auraframework.expression.PropertyReference;
-import org.auraframework.impl.AuraImpl;
+import org.auraframework.impl.expression.AuraExpressionBuilder;
 import org.auraframework.impl.root.component.BaseComponentDefImpl;
 import org.auraframework.impl.system.DefDescriptorImpl;
 import org.auraframework.impl.util.TextTokenizer;
@@ -136,7 +136,7 @@ public class ApplicationDefImpl extends BaseComponentDefImpl<ApplicationDef> imp
         List<String> urls = Collections.emptyList();
 
         if (additionalAppCacheURLs != null) {
-            Expression expression = AuraImpl.getExpressionAdapter().buildExpression(
+            Expression expression = AuraExpressionBuilder.INSTANCE.buildExpression(
                     TextTokenizer.unwrap(additionalAppCacheURLs), null);
             if (!(expression instanceof PropertyReference)) {
                 throw new AuraRuntimeException(

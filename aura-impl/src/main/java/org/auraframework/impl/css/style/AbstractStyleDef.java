@@ -18,7 +18,6 @@ package org.auraframework.impl.css.style;
 import com.google.common.collect.ImmutableList;
 import com.salesforce.omakase.plugin.Plugin;
 import org.auraframework.Aura;
-import org.auraframework.adapter.ExpressionAdapter;
 import org.auraframework.adapter.StyleAdapter;
 import org.auraframework.builder.BaseStyleDefBuilder;
 import org.auraframework.css.ResolveStrategy;
@@ -27,9 +26,9 @@ import org.auraframework.def.BaseStyleDef;
 import org.auraframework.def.TokenDef;
 import org.auraframework.expression.Expression;
 import org.auraframework.expression.PropertyReference;
-import org.auraframework.impl.AuraImpl;
 import org.auraframework.impl.DefinitionAccessImpl;
 import org.auraframework.impl.css.parser.CssPreprocessor;
+import org.auraframework.impl.expression.AuraExpressionBuilder;
 import org.auraframework.impl.system.DefinitionImpl;
 import org.auraframework.impl.util.AuraUtil;
 import org.auraframework.system.AuraContext;
@@ -93,9 +92,8 @@ public abstract class AbstractStyleDef<D extends BaseStyleDef> extends Definitio
 
         if (!expressions.isEmpty()) {
             Set<PropertyReference> tmp = new HashSet<>();
-            ExpressionAdapter adapter = AuraImpl.getExpressionAdapter();
             for (String rawExpression : expressions) {
-                Expression expression = adapter.buildExpression(rawExpression, null);
+                Expression expression = AuraExpressionBuilder.INSTANCE.buildExpression(rawExpression, null);
                 expression.gatherPropertyReferences(tmp);
             }
 
