@@ -151,7 +151,7 @@ public class FlavoredStyleDefImplTest extends StyleTestCase {
         DefDescriptor<FlavoredStyleDef> custom = addStandardFlavor(cmp, ".THIS--test {color:red}");
 
         try {
-            definitionService.getDefinition(custom).validateReferences();
+        	definitionService.getDefinition(custom).validateReferences();
             fail("expected to get an exception");
         } catch (Exception e) {
             checkExceptionContains(e, InvalidDefinitionException.class, "must contain at least one");
@@ -165,7 +165,7 @@ public class FlavoredStyleDefImplTest extends StyleTestCase {
         DefDescriptor<FlavoredStyleDef> custom = addCustomFlavor(cmp, ".THIS--test {color:red}");
 
         try {
-            definitionService.getDefinition(custom).validateReferences();
+        	definitionService.getDefinition(custom).validateReferences();
             fail("expected to get an exception");
         } catch (Exception e) {
             checkExceptionContains(e, InvalidDefinitionException.class, "must contain at least one");

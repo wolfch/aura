@@ -80,7 +80,7 @@ public class StyleParserTest extends AuraImplTestCase {
         DefDescriptor<StyleDef> descriptor = definitionService.getDefDescriptor("test.testStyleSelectorCaseSensitivity",
                 StyleDef.class);
         try {
-            definitionService.getDefinition(descriptor);
+        	definitionService.getDefinition(descriptor);
             fail("Should have caught the css selector in caps.");
         } catch (StyleParserException expected) {
             assertTrue(expected.getMessage().contains(
@@ -115,7 +115,7 @@ public class StyleParserTest extends AuraImplTestCase {
     public void testInvalidCss() throws Exception {
         DefDescriptor<StyleDef> descriptor = definitionService.getDefDescriptor("test.testInValidCSS", StyleDef.class);
         try {
-            definitionService.getDefinition(descriptor);
+        	definitionService.getDefinition(descriptor);
             fail("Should have caught the bad css");
         } catch (StyleParserException expected) {
             assertTrue("Incorrect message in StyleParserException",
@@ -179,7 +179,7 @@ public class StyleParserTest extends AuraImplTestCase {
         DefDescriptor<StyleDef> descriptor = definitionService.getDefDescriptor("test.testStyleNamespaceTokenInvalidCSS",
                 StyleDef.class);
         try {
-            definitionService.getDefinition(descriptor);
+        	definitionService.getDefinition(descriptor);
             fail("Exception not thrown for some set of invalid CSS rules!");
         } catch (StyleParserException expected) {
             assertTrue("Incorrect message in StyleParserException", expected.getMessage().contains(
@@ -267,7 +267,7 @@ public class StyleParserTest extends AuraImplTestCase {
         DefDescriptor<StyleDef> descriptor = definitionService.getDefDescriptor("test.testStyleNamespaceInvalidConditions",
                 StyleDef.class);
         try {
-            definitionService.getDefinition(descriptor);
+        	definitionService.getDefinition(descriptor);
             fail("Exception not thrown for some set of invalid CSS rules!");
         } catch (StyleParserException expected) {
             assertTrue("Incorrect message in StyleParserException", expected.getMessage().contains(
@@ -288,14 +288,14 @@ public class StyleParserTest extends AuraImplTestCase {
 
         // templateCss should work here since not validated
         try {
-            definitionService.getDefinition(templateCssDesc);
+        	definitionService.getDefinition(templateCssDesc);
         } catch (Exception e) {
             fail("CSS should be valid for templateCss, no Exception should be thrown.");
         }
 
         // CSS should fail on validation
         try {
-            definitionService.getDefinition(cssDesc);
+        	definitionService.getDefinition(cssDesc);
             fail("Parser should have thrown StyleParserException trying to parse invalid CSS.");
         } catch (StyleParserException e) {
             assertTrue("Incorrect message in StyleParserException",

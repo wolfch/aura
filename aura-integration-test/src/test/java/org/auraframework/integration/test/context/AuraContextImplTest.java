@@ -40,7 +40,6 @@ import org.auraframework.instance.Action;
 import org.auraframework.instance.Event;
 import org.auraframework.instance.GlobalValueProvider;
 import org.auraframework.instance.ValueProviderType;
-import org.auraframework.service.DefinitionService;
 import org.auraframework.system.AuraContext;
 import org.auraframework.system.AuraContext.Authentication;
 import org.auraframework.system.AuraContext.Format;
@@ -90,12 +89,11 @@ public class AuraContextImplTest extends AuraImplTestCase {
                 "preloadTest:dependenciesApp", ApplicationDef.class);
         AuraContext context = contextService.startContext(Mode.UTEST, Format.HTML,
                 Authentication.AUTHENTICATED, appDesc);
-        DefinitionService ds = definitionService;
-        ApplicationDef appDef = ds.getDefinition("preloadTest:dependenciesApp", ApplicationDef.class);
+        ApplicationDef appDef = definitionService.getDefinition("preloadTest:dependenciesApp", ApplicationDef.class);
         Map<DefDescriptor<?>, String> clientLoaded = Maps.newHashMap();
         clientLoaded.put(appDesc, context.getDefRegistry().getUid(null, appDesc));
         context.setClientLoaded(clientLoaded);
-        ds.updateLoaded(null);
+        definitionService.updateLoaded(null);
 
         assertEquals("{\"descriptor\":\"markup://preloadTest:dependenciesApp\"}", JsonEncoder.serialize(appDef));
     }

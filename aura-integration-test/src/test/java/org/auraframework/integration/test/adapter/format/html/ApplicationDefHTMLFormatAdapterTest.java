@@ -78,7 +78,8 @@ public class ApplicationDefHTMLFormatAdapterTest extends BaseComponentDefHTMLFor
                 "<aura:application render='client' useAppcache='false'></aura:application>");
         context.setApplicationDescriptor(desc);
         context.addLoaded(desc, context.getDefRegistry().getUid(null, desc));
-        String body = doWrite(definitionService.getDefinition(desc));
+        String body = doWrite(definitionService.getDefinition(desc)
+        		);
         int start = body.indexOf("<html");
         String tag = body.substring(start, body.indexOf('>', start) + 1);
         if (tag.contains(" manifest=")) {

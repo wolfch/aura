@@ -38,7 +38,7 @@ import java.util.Map;
  */
 public class TokenResolutionTest extends StyleTestCase {
     private void assertStyle(DefDescriptor<StyleDef> style, String expected) throws QuickFixException {
-        expected = expected.replace(".THIS", "." + style.getDef().getClassName());
+        expected = expected.replace(".THIS", "." + definitionService.getDefinition(style).getClassName());
         assertEquals("Did not get the expected css code", expected, getParsedCssUseAppTokens(style));
     }
 
@@ -133,7 +133,7 @@ public class TokenResolutionTest extends StyleTestCase {
     @Test
     public void testNonexistentDef() throws Exception {
         try {
-            addStyleDef(".THIS{color: token(color)").getDef().getCode();
+            definitionService.getDefinition(addStyleDef(".THIS{color: token(color)")).getCode();
             fail("expected exception");
         } catch (Exception e) {
         }
@@ -144,7 +144,7 @@ public class TokenResolutionTest extends StyleTestCase {
     public void testNonexistentToken() throws Exception {
         addNsTokens(tokens().token("color", "red"));
         try {
-            addStyleDef(".THIS{color: token(dolor)").getDef().getCode();
+            definitionService.getDefinition(addStyleDef(".THIS{color: token(dolor)")).getCode();
             fail("expected exception");
         } catch (Exception e) {
         }
@@ -211,7 +211,7 @@ public class TokenResolutionTest extends StyleTestCase {
                 "}";
 
         try {
-            addStyleDef(src).getDef().getCode();
+            definitionService.getDefinition(addStyleDef(src)).getCode();
             fail("expected exception");
         } catch (Exception e) {
             checkExceptionContains(e, AuraRuntimeException.class, "Expected to find keyword");
@@ -228,7 +228,7 @@ public class TokenResolutionTest extends StyleTestCase {
                 "}";
 
         try {
-            addStyleDef(src).getDef().getCode();
+            definitionService.getDefinition(addStyleDef(src)).getCode();
             fail("expected exception");
         } catch (Exception e) {
             checkExceptionContains(e, AuraRuntimeException.class, "must not evaluate to an empty string");

@@ -106,7 +106,7 @@ public class TemplateDefTest extends AuraImplTestCase {
         DefDescriptor<ApplicationDef> app = addSourceAutoCleanup(ApplicationDef.class,
                 String.format(baseApplicationTag, "isTemplate='true'", ""));
         try {
-            definitionService.getDefinition(app);
+        	definitionService.getDefinition(app);
             fail("Applications cannot be marked as template.");
         } catch (Exception expected) {
             checkExceptionContains(expected, InvalidDefinitionException.class, "Invalid attribute \"isTemplate\"");
@@ -139,7 +139,7 @@ public class TemplateDefTest extends AuraImplTestCase {
                 String.format(baseComponentTag,
                         String.format("template='%s:%s'", template.getNamespace(), template.getName()), ""));
         try {
-            definitionService.getDefinition(cmp);
+        	definitionService.getDefinition(cmp);
         } catch (Exception unexpected) {
             fail("Failed to use a template component.");
         }
@@ -151,7 +151,7 @@ public class TemplateDefTest extends AuraImplTestCase {
                 String.format(baseComponentTag,
                         String.format("template='%s:%s'", nonTemplate.getNamespace(), nonTemplate.getName()), ""));
         try {
-            definitionService.getDefinition(cmp);
+        	definitionService.getDefinition(cmp);
             fail("Should have failed to use a template marked with isTemplate='false'");
         } catch (Exception expected) {
             checkExceptionFull(expected, InvalidDefinitionException.class,
@@ -171,7 +171,8 @@ public class TemplateDefTest extends AuraImplTestCase {
                 String.format(baseComponentTag,
                         String.format("template='%s:%s'", template.getNamespace(), template.getName()), ""));
         try {
-            definitionService.getDefinition(cmp);
+            //Aura.getInstanceService().getInstance(template);
+        	definitionService.getDefinition(cmp);
             fail("Template components cannot be abstract.");
         } catch (Exception expected) {
             checkExceptionFull(expected, InvalidDefinitionException.class,
@@ -193,7 +194,7 @@ public class TemplateDefTest extends AuraImplTestCase {
                 String.format(baseComponentTag,
                         String.format("extends='%s:%s'", parent.getNamespace(), parent.getName()), ""));
         try {
-            definitionService.getDefinition(child);
+        	definitionService.getDefinition(child);
             fail("Non-templates cannot extend template.");
         } catch (Exception expected) {
             checkExceptionFull(expected, InvalidDefinitionException.class,
@@ -290,7 +291,7 @@ public class TemplateDefTest extends AuraImplTestCase {
     private void assertExceptionDueToScripts(String msg, DefDescriptor<? extends BaseComponentDef> desc,
             boolean expectException) {
         try {
-            definitionService.getDefinition(desc);
+        	definitionService.getDefinition(desc);
             if (expectException) {
                 fail(msg);
             }

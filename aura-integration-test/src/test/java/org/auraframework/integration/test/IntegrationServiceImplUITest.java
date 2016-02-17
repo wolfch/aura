@@ -153,9 +153,9 @@ public class IntegrationServiceImplUITest extends WebDriverTestCase {
                 .getDefDescriptor(cmpDesc, DefDescriptor.JAVASCRIPT_PREFIX, ControllerDef.class);
         DefDescriptor<ProviderDef> jsProviderdesc = definitionService
                 .getDefDescriptor(cmpDesc, DefDescriptor.JAVASCRIPT_PREFIX, ProviderDef.class);
-        DefDescriptor<HelperDef> jsHelperdesc = definitionService
+    	DefDescriptor<HelperDef> jsHelperdesc = definitionService
                 .getDefDescriptor(cmpDesc,  DefDescriptor.JAVASCRIPT_PREFIX, HelperDef.class);
-        DefDescriptor<StyleDef> CSSdesc = definitionService
+    	DefDescriptor<StyleDef> CSSdesc = definitionService
                 .getDefDescriptor(cmpDesc,  DefDescriptor.CSS_PREFIX, StyleDef.class);
     	//fill in component to be injected
         String jsProviderName = jsProviderdesc.getQualifiedName();

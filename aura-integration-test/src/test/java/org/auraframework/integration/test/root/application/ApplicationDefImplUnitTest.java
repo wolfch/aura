@@ -15,6 +15,8 @@
  */
 package org.auraframework.integration.test.root.application;
 
+import javax.inject.Inject;
+
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.DefinitionAccess;
@@ -22,11 +24,15 @@ import org.auraframework.def.EventDef;
 import org.auraframework.impl.root.application.ApplicationDefImpl;
 import org.auraframework.impl.root.application.ApplicationDefImpl.Builder;
 import org.auraframework.impl.root.component.BaseComponentDefImplUnitTest;
+import org.auraframework.service.DefinitionService;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
 public class ApplicationDefImplUnitTest extends
         BaseComponentDefImplUnitTest<ApplicationDefImpl, ApplicationDef, Builder> {
+
+	@Inject
+    DefinitionService definitionService;
 
     @Mock
     DefDescriptor<EventDef> locationChangeEventDescriptor;

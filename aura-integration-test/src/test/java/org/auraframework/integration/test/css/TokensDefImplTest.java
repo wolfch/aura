@@ -46,7 +46,8 @@ public class TokensDefImplTest extends StyleTestCase {
 
     @Test
     public void testEmpty() throws QuickFixException {
-        TokensDef emptyDef = definitionService.getDefinition(addSeparateTokens("<aura:tokens />")); // should parse without error
+        TokensDef emptyDef = definitionService.getDefinition(addSeparateTokens("<aura:tokens />"));
+        // should parse without error
         Map<String, TokenDef> tokens = emptyDef.getDeclaredTokenDefs();
         assertTrue(tokens.isEmpty());
         assertNull("Description should be null", emptyDef.getDescription());
@@ -66,7 +67,7 @@ public class TokensDefImplTest extends StyleTestCase {
     @Test
     public void testWithBadMarkup() {
         try {
-            definitionService.getDefinition(addSeparateTokens("<aura:tokens><aura:token name='one' value='1' />"));
+        	definitionService.getDefinition(addSeparateTokens("<aura:tokens><aura:token name='one' value='1' />"));
             fail("Bad markup should be caught");
         } catch (Exception e) {
             // sjsxp: XML document structures must start and end within the same entity
@@ -79,7 +80,7 @@ public class TokensDefImplTest extends StyleTestCase {
     @Test
     public void testTokensBadMarkupTokenNesting() {
         try {
-            definitionService.getDefinition(addSeparateTokens("<aura:tokens><aura:token name='one' value='1'>"
+        	definitionService.getDefinition(addSeparateTokens("<aura:tokens><aura:token name='one' value='1'>"
                     + "	<aura:token name='two' value='2' />" + "</aura:token></aura:tokens>"));
             fail("Invalid nesting of tokens should be caught");
         } catch (Exception e) {
@@ -90,7 +91,7 @@ public class TokensDefImplTest extends StyleTestCase {
     @Test
     public void testUnsupportedAttributes() {
         try {
-            definitionService.getDefinition(addSeparateTokens("<aura:tokens fakeattrib='fakeattribvalue' />"));
+        	definitionService.getDefinition(addSeparateTokens("<aura:tokens fakeattrib='fakeattribvalue' />"));
             fail("Unsupported attributes should not be allowed");
         } catch (Exception e) {
             checkExceptionContains(e, InvalidDefinitionException.class, "Invalid attribute \"fakeattrib\"");
@@ -477,7 +478,8 @@ public class TokensDefImplTest extends StyleTestCase {
     /** cross references to declared tokens should not throw an error */
     @Test
     public void testValidCrossRefDeclared() throws Exception {
-        definitionService.getDefinition(addSeparateTokens(tokens().token("one", "one").token("two", "{!one}"))).validateReferences();
+    	definitionService.getDefinition(addSeparateTokens(tokens().token("one", "one").token("two", "{!one}")))
+    	.validateReferences();
     }
 
     /** cross references to inherited tokens should not throw an error */
@@ -507,7 +509,7 @@ public class TokensDefImplTest extends StyleTestCase {
         DefDescriptor<TokensDef> desc = addSeparateTokens(tokens().imported(import1));
 
         try {
-            definitionService.getDefinition(desc).validateReferences();
+        	definitionService.getDefinition(desc).validateReferences();
             fail("expected exception");
         } catch (Exception e) {
             checkExceptionContains(e, TokenValueNotFoundException.class, "was not found");
@@ -576,7 +578,7 @@ public class TokensDefImplTest extends StyleTestCase {
     @Test
     public void testErrorsIfProviderHasTokens() throws Exception {
         try {
-            definitionService.getDefinition(addSeparateTokens(tokens().descriptorProvider(TestTokenDescriptorProvider.REF).token("color", "red")))
+        	definitionService.getDefinition(addSeparateTokens(tokens().descriptorProvider(TestTokenDescriptorProvider.REF).token("color", "red")))
                     .getConcreteDescriptor();
             fail("Expected to catch an exception.");
         } catch (Exception e) {
@@ -588,7 +590,7 @@ public class TokensDefImplTest extends StyleTestCase {
     public void testErrorsIfProviderHasImports() throws Exception {
         DefDescriptor<TokensDef> import1 = addSeparateTokens(tokens().token("imported", "imported"));
         try {
-            definitionService.getDefinition(addSeparateTokens(tokens().descriptorProvider(TestTokenDescriptorProvider.REF).imported(import1)))
+        	definitionService.getDefinition(addSeparateTokens(tokens().descriptorProvider(TestTokenDescriptorProvider.REF).imported(import1)))
                     .getConcreteDescriptor();
             fail("Expected to catch an exception.");
         } catch (Exception e) {
@@ -600,7 +602,7 @@ public class TokensDefImplTest extends StyleTestCase {
     public void testErrorsIfProviderHasExtends() throws Exception {
         DefDescriptor<TokensDef> parent = addSeparateTokens(tokens().token("parent", "parent"));
         try {
-            definitionService.getDefinition(addSeparateTokens(tokens().descriptorProvider(TestTokenDescriptorProvider.REF).parent(parent)))
+        	definitionService.getDefinition(addSeparateTokens(tokens().descriptorProvider(TestTokenDescriptorProvider.REF).parent(parent)))
                     .getConcreteDescriptor();
             fail("Expected to catch an exception.");
         } catch (Exception e) {
@@ -611,7 +613,8 @@ public class TokensDefImplTest extends StyleTestCase {
     @Test
     public void testErrorsIfProviderIsNsDefault() throws Exception {
         try {
-            definitionService.getDefinition(addNsTokens(tokens().descriptorProvider(TestTokenDescriptorProvider.REF))).getConcreteDescriptor();
+        	definitionService.getDefinition(addNsTokens(tokens().descriptorProvider(TestTokenDescriptorProvider.REF))).
+            getConcreteDescriptor();
             fail("Expected to catch an exception.");
         } catch (Exception e) {
             checkExceptionContains(e, InvalidDefinitionException.class, "must not specify a provider");
@@ -644,7 +647,7 @@ public class TokensDefImplTest extends StyleTestCase {
     @Test
     public void testErrorsIfMapProviderHasTokens() throws Exception {
         try {
-            definitionService.getDefinition(addSeparateTokens(tokens().mapProvider(TestTokenMapProvider.REF).token("color", "red")));
+        	definitionService.getDefinition(addSeparateTokens(tokens().mapProvider(TestTokenMapProvider.REF).token("color", "red")));
             fail("Expected to catch an exception.");
         } catch (Exception e) {
             checkExceptionContains(e, InvalidDefinitionException.class, "must not specify tokens");
@@ -655,7 +658,7 @@ public class TokensDefImplTest extends StyleTestCase {
     public void testErrorsIfMapProviderHasImports() throws Exception {
         DefDescriptor<TokensDef> import1 = addSeparateTokens(tokens().token("imported", "imported"));
         try {
-            definitionService.getDefinition(addSeparateTokens(tokens().mapProvider(TestTokenMapProvider.REF).imported(import1)));
+        	definitionService.getDefinition(addSeparateTokens(tokens().mapProvider(TestTokenMapProvider.REF).imported(import1)));
             fail("Expected to catch an exception.");
         } catch (Exception e) {
             checkExceptionContains(e, InvalidDefinitionException.class, "must not specify imports");
@@ -666,7 +669,7 @@ public class TokensDefImplTest extends StyleTestCase {
     public void testErrorsIfMapProviderHasExtends() throws Exception {
         DefDescriptor<TokensDef> parent = addSeparateTokens(tokens().token("parent", "parent"));
         try {
-            definitionService.getDefinition(addSeparateTokens(tokens().mapProvider(TestTokenMapProvider.REF).parent(parent)));
+        	definitionService.getDefinition(addSeparateTokens(tokens().mapProvider(TestTokenMapProvider.REF).parent(parent)));
             fail("Expected to catch an exception.");
         } catch (Exception e) {
             checkExceptionContains(e, InvalidDefinitionException.class, "must not use 'extends'");
@@ -676,7 +679,7 @@ public class TokensDefImplTest extends StyleTestCase {
     @Test
     public void testErrorsIfMapProviderIsNsDefault() throws Exception {
         try {
-            definitionService.getDefinition(addNsTokens(tokens().mapProvider(TestTokenMapProvider.REF)));
+        	definitionService.getDefinition(addNsTokens(tokens().mapProvider(TestTokenMapProvider.REF)));
             fail("Expected to catch an exception.");
         } catch (Exception e) {
             checkExceptionContains(e, InvalidDefinitionException.class, "must not specify a provider");

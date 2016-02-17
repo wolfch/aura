@@ -15,7 +15,6 @@
  */
 package org.auraframework.integration.test.css;
 
-import org.auraframework.Aura;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.TokenDef;
 import org.auraframework.def.TokensDef;
@@ -69,7 +68,7 @@ public class TokensDefHandlerTest extends StyleTestCase {
         DefDescriptor<TokensDef> imp = addSeparateTokens(tokens().token("token1", "1"));
 
         try {
-            definitionService.getDefinition(addSeparateTokens(tokens().token("token2", "2").imported(imp)));
+        	definitionService.getDefinition(addSeparateTokens(tokens().token("token2", "2").imported(imp)));
             fail("expected to get an exception");
         } catch (Exception e) {
             checkExceptionContains(e, InvalidDefinitionException.class, "must come before");
@@ -79,7 +78,7 @@ public class TokensDefHandlerTest extends StyleTestCase {
     @Test
     public void testInvalidChild() throws Exception {
         try {
-            definitionService.getDefinition(addSeparateTokens("<aura:tokens><aura:foo/></aura:tokens>"));
+        	definitionService.getDefinition(addSeparateTokens("<aura:tokens><aura:foo/></aura:tokens>"));
             fail("Should have thrown AuraException aura:foo isn't a valid child tag for aura:tokens");
         } catch (Exception e) {
             checkExceptionContains(e, InvalidDefinitionException.class, "Found unexpected tag");
@@ -89,7 +88,7 @@ public class TokensDefHandlerTest extends StyleTestCase {
     @Test
     public void testWithTextBetweenTag() throws Exception {
         try {
-            definitionService.getDefinition(addSeparateTokens("<aura:tokens>Test</aura:tokens>"));
+        	definitionService.getDefinition(addSeparateTokens("<aura:tokens>Test</aura:tokens>"));
             fail("Should have thrown AuraException because text is between aura:tokens tags");
         } catch (Exception e) {
             checkExceptionContains(e, InvalidDefinitionException.class, "No literal text");
@@ -99,7 +98,7 @@ public class TokensDefHandlerTest extends StyleTestCase {
     @Test
     public void testDuplicateTokens() throws Exception {
         try {
-            definitionService.getDefinition(addSeparateTokens(tokens().token("test", "1").token("test", "1")));
+        	definitionService.getDefinition(addSeparateTokens(tokens().token("test", "1").token("test", "1")));
             fail("expected to get an exception");
         } catch (Exception e) {
             checkExceptionContains(e, InvalidDefinitionException.class, "Duplicate token");
@@ -111,7 +110,7 @@ public class TokensDefHandlerTest extends StyleTestCase {
         DefDescriptor<TokensDef> import1 = addSeparateTokens(tokens().token("token1", "1"));
 
         try {
-            definitionService.getDefinition(addSeparateTokens(tokens().imported(import1).imported(import1)));
+        	definitionService.getDefinition(addSeparateTokens(tokens().imported(import1).imported(import1)));
             fail("expected to get an exception");
         } catch (Exception e) {
             checkExceptionContains(e, InvalidDefinitionException.class, "Duplicate import");

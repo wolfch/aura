@@ -66,8 +66,8 @@ public class MarkupCaseSensitivityUITest extends AbstractErrorUITestCase {
 			context = contextService.startContext(Mode.SELENIUM, Format.HTML,
 					Authentication.AUTHENTICATED);
         }
-		ApplicationDef ad = definitionService.getDefinition(
-				String.format("%s:%s", testAppNamespace, testAppName), ApplicationDef.class);
+        ApplicationDef ad = definitionService.getDefinition(
+                String.format("%s:%s", testAppNamespace, testAppName), ApplicationDef.class);
         List<ImportDef> aid = ad.getImportDefs();
         DefDescriptor<? extends Definition> idd;
         Source<?> source = null;

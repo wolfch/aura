@@ -139,12 +139,12 @@ public class JavaModelTest extends AuraImplTestCase {
     public void testClassLevelAnnotationForJavaModel() throws Exception {
         DefDescriptor<ModelDef> javaModelDefDesc = definitionService.getDefDescriptor(
                 "java://org.auraframework.components.test.java.model.TestModel", ModelDef.class);
-        assertNotNull(javaModelDefDesc.getDef());
+        assertNotNull(definitionService.getDefinition(javaModelDefDesc));
 
         DefDescriptor<ModelDef> javaModelWOAnnotationDefDesc = definitionService.getDefDescriptor(
                 "java://org.auraframework.components.test.java.model.TestModelWithoutAnnotation", ModelDef.class);
         try {
-            javaModelWOAnnotationDefDesc.getDef();
+        	definitionService.getDefinition(javaModelWOAnnotationDefDesc);
             fail("Expected InvalidDefinitionException");
         } catch (Exception e) {
             checkExceptionStart(e, InvalidDefinitionException.class, "@Model annotation is required on all Models.",
@@ -159,7 +159,7 @@ public class JavaModelTest extends AuraImplTestCase {
     public void testModelSubclass() throws Exception {
         DefDescriptor<ModelDef> javaModelDefDesc = definitionService.getDefDescriptor(
                 "java://org.auraframework.components.test.java.model.TestModelSubclass", ModelDef.class);
-        ModelDef def = javaModelDefDesc.getDef();
+        ModelDef def = definitionService.getDefinition(javaModelDefDesc);
         assertNotNull(def);
         Model model = instanceService.getInstance(def);
         ValueDef vd = def.getMemberByName("nextThing");
@@ -252,7 +252,7 @@ public class JavaModelTest extends AuraImplTestCase {
     public void testNonExistingPropertiesOnModel() throws Exception {
         DefDescriptor<ModelDef> javaModelDefDesc = definitionService.getDefDescriptor(
                 "java://org.auraframework.components.test.java.model.TestModel", ModelDef.class);
-        ModelDef mDef = javaModelDefDesc.getDef();
+        ModelDef mDef = definitionService.getDefinition(javaModelDefDesc);
         assertNotNull(mDef);
         Model model = instanceService.getInstance(mDef);
         try {

@@ -37,7 +37,6 @@ import org.auraframework.impl.system.DefDescriptorImpl;
 import org.auraframework.impl.system.DefFactoryImpl;
 import org.auraframework.impl.system.DefinitionImpl;
 import org.auraframework.instance.BaseComponent;
-import org.auraframework.service.DefinitionService;
 import org.auraframework.system.AuraContext;
 import org.auraframework.system.AuraContext.Authentication;
 import org.auraframework.system.AuraContext.Format;
@@ -609,9 +608,8 @@ public class DefinitionServiceImplTest extends AuraImplTestCase {
         AuraContext context = contextService.startContext(Mode.PROD, Format.JSON,
                 Authentication.AUTHENTICATED,
                 laxSecurityApp);
-        DefinitionService ds = definitionService;
-        DefDescriptor<?> compDesc = ds.getDefDescriptor("markup://aura:component", ComponentDef.class);
-        DefDescriptor<?> tempDesc = ds.getDefDescriptor("markup://aura:template", ComponentDef.class);
+        DefDescriptor<?> compDesc = definitionService.getDefDescriptor("markup://aura:component", ComponentDef.class);
+        DefDescriptor<?> tempDesc = definitionService.getDefDescriptor("markup://aura:template", ComponentDef.class);
         String compUid = context.getDefRegistry().getUid(null, compDesc);
         String tempUid = context.getDefRegistry().getUid(null, tempDesc);
 
@@ -655,9 +653,8 @@ public class DefinitionServiceImplTest extends AuraImplTestCase {
         AuraContext context = contextService.startContext(Mode.PROD, Format.JSON,
                 Authentication.AUTHENTICATED,
                 laxSecurityApp);
-        DefinitionService ds = definitionService;
-        DefDescriptor<?> compDesc = ds.getDefDescriptor("markup://aura:component", ComponentDef.class);
-        DefDescriptor<?> tempDesc = ds.getDefDescriptor("markup://aura:template", ComponentDef.class);
+        DefDescriptor<?> compDesc = definitionService.getDefDescriptor("markup://aura:component", ComponentDef.class);
+        DefDescriptor<?> tempDesc = definitionService.getDefDescriptor("markup://aura:template", ComponentDef.class);
         String compUid = context.getDefRegistry().getUid(null, compDesc);
         String tempUid = context.getDefRegistry().getUid(null, tempDesc);
 

@@ -57,7 +57,7 @@ public class ClientComponentClassTest extends AuraImplTestCase {
 
         // Since addSourceAutoCleanup randomly assign component's name, mock cmp's descriptor
         // to make sure the gold file contents are consistent.
-        ComponentDef spyCmpDef = spy(definitionService.getDefinition(cmpDescriptor));
+        ComponentDef spyCmpDef =spy(definitionService.getDefinition(cmpDescriptor));
         when(spyCmpDef.getDescriptor()).thenReturn(mockCmpDescriptor);
 
         StringBuilder sb = new StringBuilder();
@@ -82,7 +82,7 @@ public class ClientComponentClassTest extends AuraImplTestCase {
                 "})\n";
         addSourceAutoCleanup(controllerDescriptor, controllerJs);
 
-        ComponentDef spyCmpDef = spy(definitionService.getDefinition(cmpDescriptor));
+        ComponentDef spyCmpDef =spy(definitionService.getDefinition(cmpDescriptor));
         when(spyCmpDef.getDescriptor()).thenReturn(mockCmpDescriptor);
 
         StringBuilder sb = new StringBuilder();
@@ -107,7 +107,7 @@ public class ClientComponentClassTest extends AuraImplTestCase {
                 "})\n";
         addSourceAutoCleanup(helperDescriptor, helperJs);
 
-        ComponentDef spyCmpDef = spy(definitionService.getDefinition(cmpDescriptor));
+        ComponentDef spyCmpDef =spy(definitionService.getDefinition(cmpDescriptor));
         when(spyCmpDef.getDescriptor()).thenReturn(mockCmpDescriptor);
 
         StringBuilder sb = new StringBuilder();
@@ -160,7 +160,7 @@ public class ClientComponentClassTest extends AuraImplTestCase {
                 "})\n";
         addSourceAutoCleanup(rendererDescriptor, rendererJs);
 
-        ComponentDef spyCmpDef = spy(definitionService.getDefinition(cmpDescriptor));
+        ComponentDef spyCmpDef =spy(definitionService.getDefinition(cmpDescriptor));
         when(spyCmpDef.getDescriptor()).thenReturn(mockCmpDescriptor);
 
         StringBuilder sb = new StringBuilder();
@@ -211,7 +211,7 @@ public class ClientComponentClassTest extends AuraImplTestCase {
         when(mockImportDef2.getLibraryDescriptor()).thenReturn(libraryDescriptor);
         importDefs.add(mockImportDef2);
 
-        ComponentDef spyCmpDef = spy(definitionService.getDefinition(cmpDescriptor));
+        ComponentDef spyCmpDef =spy(definitionService.getDefinition(cmpDescriptor));
         when(spyCmpDef.getDescriptor()).thenReturn(mockCmpDescriptor);
         when(spyCmpDef.getImportDefs()).thenReturn(importDefs);
 

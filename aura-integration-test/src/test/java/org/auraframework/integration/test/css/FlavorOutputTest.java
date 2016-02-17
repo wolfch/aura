@@ -16,26 +16,20 @@
 package org.auraframework.integration.test.css;
 
 import com.salesforce.omakase.broadcast.emitter.SubscriptionException;
+
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.FlavoredStyleDef;
 import org.auraframework.impl.css.StyleTestCase;
 import org.auraframework.impl.css.util.Flavors;
 import org.auraframework.impl.css.util.Styles;
-import org.auraframework.service.DefinitionService;
 import org.auraframework.throwable.quickfix.StyleParserException;
 import org.junit.Test;
-
-import javax.inject.Inject;
 
 /**
  * General unit tests for expected flavor parsed output.
  */
 public class FlavorOutputTest extends StyleTestCase {
-
-    @Inject
-    DefinitionService definitionService;
-
     /** [flavorName] -> [namespace][Component]--[flavorName] */
     @Test
     public void testRenameFlavorClassNames() throws Exception {
@@ -51,7 +45,7 @@ public class FlavorOutputTest extends StyleTestCase {
         String addedClass = Styles.buildClassName(cmp);
 
         String expected = String.format(fmt, addedClass, addedClass);
-        assertEquals(expected, flavor.getDef().getCode());
+        assertEquals(expected, definitionService.getDefinition(flavor).getCode());
     }
 
     /** nested selectors with the flavor name should be renamed too */
@@ -66,7 +60,7 @@ public class FlavorOutputTest extends StyleTestCase {
         String addedClass = Styles.buildClassName(cmp);
 
         String expected = String.format(fmt, addedClass, addedClass);
-        assertEquals(expected, flavor.getDef().getCode());
+        assertEquals(expected, definitionService.getDefinition(flavor).getCode());
     }
 
     /** test other valid key selectors, such as .THIS-foo, .THIS__foo */
@@ -92,7 +86,7 @@ public class FlavorOutputTest extends StyleTestCase {
         String addedClass = Styles.buildClassName(cmp);
 
         String expected = String.format(fmt, addedClass, addedClass);
-        assertEquals(expected, flavor.getDef().getCode());
+        assertEquals(expected, definitionService.getDefinition(flavor).getCode());
     }
 
     @Test
@@ -106,7 +100,7 @@ public class FlavorOutputTest extends StyleTestCase {
 
         String addedClass = Styles.buildClassName(cmp);
         String expected = String.format(fmt, addedClass);
-        assertEquals(expected, flavor.getDef().getCode());
+        assertEquals(expected, definitionService.getDefinition(flavor).getCode());
     }
 
     @Test
@@ -119,14 +113,14 @@ public class FlavorOutputTest extends StyleTestCase {
 
         String addedClass = Styles.buildClassName(cmp);
         String expected = String.format(fmt, addedClass);
-        assertEquals(expected, flavor.getDef().getCode());
+        assertEquals(expected, definitionService.getDefinition(flavor).getCode());
     }
 
     /** selectors must begin with a class selector containing one of the declared flavor names */
     @Test
     public void testErrorsOnUnscopedSelectorInFlavor() throws Exception {
         try {
-            addCustomFlavor(addFlavorableComponentDef(), ".bad{}").getDef();
+            definitionService.getDefinition(addCustomFlavor(addFlavorableComponentDef(), ".bad{}"));
             fail("Parser should have thrown StyleParserException trying to parse invalid CSS.");
         } catch (Exception e) {
             checkExceptionContains(e, StyleParserException.class,
@@ -138,7 +132,7 @@ public class FlavorOutputTest extends StyleTestCase {
     @Test
     public void testErrorsOnUnscopedSelectorNested() throws Exception {
         try {
-            addStandardFlavor(addFlavorableComponentDef(), "div .THIS--primary{}").getDef();
+            definitionService.getDefinition(addStandardFlavor(addFlavorableComponentDef(), "div .THIS--primary{}"));
             fail("Parser should have thrown StyleParserException trying to parse invalid CSS.");
         } catch (Exception e) {
             checkExceptionContains(e, StyleParserException.class,
@@ -158,7 +152,7 @@ public class FlavorOutputTest extends StyleTestCase {
         String fmt = ".%1$s--default, .%1$s--foo {color:red}\n"
                 + ".%1$s--foo {color:black}";
 
-        FlavoredStyleDef def = addStandardFlavor(cmp, src).getDef();
+        FlavoredStyleDef def = definitionService.getDefinition(addStandardFlavor(cmp, src));
         String addedClass = Styles.buildClassName(cmp);
 
         assertEquals(String.format(fmt, addedClass), def.getCode());
@@ -168,7 +162,7 @@ public class FlavorOutputTest extends StyleTestCase {
     public void testFlavorExtendsComplex() throws Exception {
         DefDescriptor<ComponentDef> cmp = definitionService.getDefDescriptor("markup://flavorTest:sample_extends", ComponentDef.class);
         DefDescriptor<FlavoredStyleDef> dd = Flavors.standardFlavorDescriptor(cmp);
-        goldFileText(dd.getDef().getCode(), ".css");
+        goldFileText(definitionService.getDefinition(dd).getCode(), ".css");
     }
 
     @Test
@@ -179,7 +173,7 @@ public class FlavorOutputTest extends StyleTestCase {
                     + "   /*@flavor foo, extends default */ \n"
                     + "   /*@flavor foo, extends bar */ \n"
                     + "   .THIS--foo{color: green}";
-            addStandardFlavor(addFlavorableComponentDef(), src).getDef();
+            definitionService.getDefinition(addStandardFlavor(addFlavorableComponentDef(), src));
             fail("parser should have thrown exception.");
         } catch (Exception e) {
             checkExceptionContains(e, SubscriptionException.class, "it was already specified to extend");
@@ -192,7 +186,7 @@ public class FlavorOutputTest extends StyleTestCase {
             String src = ".THIS--default{color:red} \n"
                     + "    /*@flavor foo, extends bar */ \n"
                     + "   .THIS--foo{color: green}";
-            addStandardFlavor(addFlavorableComponentDef(), src).getDef();
+            definitionService.getDefinition(addStandardFlavor(addFlavorableComponentDef(), src));
             fail("parser should have thrown exception.");
         } catch (Exception e) {
             checkExceptionContains(e, SubscriptionException.class, "unknown flavor");
@@ -207,7 +201,7 @@ public class FlavorOutputTest extends StyleTestCase {
                     + "   .THIS--foo{color:black} \n"
                     + "   /*@flavor bar, extends foo */ \n"
                     + "   .THIS--bar{color: green}";
-            addStandardFlavor(addFlavorableComponentDef(), src).getDef();
+            definitionService.getDefinition(addStandardFlavor(addFlavorableComponentDef(), src));
             fail("parser should have thrown exception.");
         } catch (Exception e) {
             checkExceptionContains(e, SubscriptionException.class, "multi-level extension not allowed");

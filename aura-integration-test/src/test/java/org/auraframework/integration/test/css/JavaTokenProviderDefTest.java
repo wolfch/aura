@@ -38,7 +38,7 @@ public class JavaTokenProviderDefTest extends StyleTestCase {
     @Test
     public void testProviderBasic() throws Exception {
         DefDescriptor<TokensDef> desc = addSeparateTokens(tokens().descriptorProvider(TestTokenDescriptorProvider.REF));
-        DefDescriptor<TokensDef> concrete = desc.getDef().getConcreteDescriptor();
+        DefDescriptor<TokensDef> concrete = definitionService.getDefinition(desc).getConcreteDescriptor();
         DefDescriptor<TokensDef> expected = definitionService.getDefDescriptor(TestTokenDescriptorProvider.DESC, TokensDef.class);
         assertEquals(expected, concrete);
     }
@@ -67,7 +67,7 @@ public class JavaTokenProviderDefTest extends StyleTestCase {
         DefDescriptor<TokensDef> expected = definitionService.getDefDescriptor("tokenProviderTest:javaProviderTest3",
                 TokensDef.class);
 
-        DefDescriptor<TokensDef> concrete = initial.getDef().getConcreteDescriptor();
+        DefDescriptor<TokensDef> concrete = definitionService.getDefinition(initial).getConcreteDescriptor();
 
         assertEquals(expected, concrete);
     }
@@ -87,8 +87,8 @@ public class JavaTokenProviderDefTest extends StyleTestCase {
     @Test
     public void testProviderThrowsDuringInstantiation() throws Exception {
         try {
-            addSeparateTokens(tokens().descriptorProvider("java://" + ProviderThrowsOnInstantiate.class.getName()))
-            .getDef().getConcreteDescriptor();
+        	definitionService.getDefinition(addSeparateTokens(tokens().descriptorProvider("java://" + ProviderThrowsOnInstantiate.class.getName())))
+        	.getConcreteDescriptor();
             fail("expected to get an exception");
         } catch (Exception e) {
             checkExceptionContains(e, InvalidDefinitionException.class, "Failed to instantiate");
@@ -106,8 +106,7 @@ public class JavaTokenProviderDefTest extends StyleTestCase {
     @Test
     public void testProviderThrowsQFE() throws Exception {
         try {
-            addSeparateTokens(tokens().descriptorProvider("java://" + ProviderThrowsOnProvide.class.getName()))
-            .getDef().getConcreteDescriptor();
+        	definitionService.getDefinition(addSeparateTokens(tokens().descriptorProvider("java://" + ProviderThrowsOnProvide.class.getName()))).getConcreteDescriptor();
             fail("expected to get an exception");
         } catch (Exception e) {
             checkExceptionContains(e, InvalidDefinitionException.class, "provider error");
@@ -128,8 +127,7 @@ public class JavaTokenProviderDefTest extends StyleTestCase {
     @Test
     public void testProviderWithoutNoArgConstructor() throws Exception {
         try {
-            addSeparateTokens(tokens().descriptorProvider("java://" + ProviderConstructorArg.class.getName()))
-            .getDef().getConcreteDescriptor();
+        	definitionService.getDefinition(addSeparateTokens(tokens().descriptorProvider("java://" + ProviderConstructorArg.class.getName()))).getConcreteDescriptor();
             fail("expected to get an exception");
         } catch (Exception e) {
             checkExceptionContains(e, InvalidDefinitionException.class, "Cannot instantiate");
@@ -150,8 +148,7 @@ public class JavaTokenProviderDefTest extends StyleTestCase {
     @Test
     public void testProviderWithPrivateConstructor() throws Exception {
         try {
-            addSeparateTokens(tokens().descriptorProvider("java://" + ProviderPrivateConstructor.class.getName()))
-            .getDef().getConcreteDescriptor();
+        	definitionService.getDefinition(addSeparateTokens(tokens().descriptorProvider("java://" + ProviderPrivateConstructor.class.getName()))).getConcreteDescriptor();
             fail("expected to get an exception");
         } catch (Exception e) {
             checkExceptionContains(e, InvalidDefinitionException.class, "Constructor is inaccessible");
@@ -169,8 +166,7 @@ public class JavaTokenProviderDefTest extends StyleTestCase {
     @Test
     public void testProviderReturnsNonexistentDef() throws Exception {
         try {
-            addSeparateTokens(tokens().descriptorProvider("java://" + ProviderNonexistent.class.getName()))
-            .getDef().getConcreteDescriptor();
+        	definitionService.getDefinition(addSeparateTokens(tokens().descriptorProvider("java://" + ProviderNonexistent.class.getName()))).getConcreteDescriptor();
             fail("expected to get an exception");
         } catch (Exception e) {
             checkExceptionContains(e, DefinitionNotFoundException.class, "No TOKENS");
@@ -184,8 +180,7 @@ public class JavaTokenProviderDefTest extends StyleTestCase {
     @Test
     public void testProviderMissingInterface() throws Exception {
         try {
-            addSeparateTokens(tokens().descriptorProvider("java://" + MissingInterface.class.getName()))
-            .getDef().getConcreteDescriptor();
+        	definitionService.getDefinition(addSeparateTokens(tokens().descriptorProvider("java://" + MissingInterface.class.getName()))).getConcreteDescriptor();
             fail("expected to get an exception");
         } catch (Exception e) {
             checkExceptionContains(e, InvalidDefinitionException.class, "Provider must implement");
@@ -202,8 +197,8 @@ public class JavaTokenProviderDefTest extends StyleTestCase {
     @Test
     public void testProviderMissingAnnotation() throws Exception {
         try {
-            addSeparateTokens(tokens().descriptorProvider("java://" + MissingAnnotation.class.getName()))
-            .getDef().getConcreteDescriptor();
+        	definitionService.getDefinition(addSeparateTokens(tokens().descriptorProvider("java://" + MissingAnnotation.class.getName())))
+            .getConcreteDescriptor();
             fail("expected to get an exception");
         } catch (Exception e) {
             checkExceptionContains(e, InvalidDefinitionException.class, "annotation is required");

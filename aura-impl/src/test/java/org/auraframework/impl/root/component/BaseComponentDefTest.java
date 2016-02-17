@@ -448,7 +448,7 @@ public abstract class BaseComponentDefTest<T extends BaseComponentDef> extends R
                 String.format(baseTag, "model='java://org.auraframework.components.test.java.model.TestModel,js://test.jsModel'",
                         ""));
         try {
-            definitionService.getDefinition(compDesc);
+        	definitionService.getDefinition(compDesc);
             fail("Should not be able to load component with multiple models");
         } catch (QuickFixException e) {
             checkExceptionFull(e, InvalidDefinitionException.class,
@@ -466,7 +466,7 @@ public abstract class BaseComponentDefTest<T extends BaseComponentDef> extends R
                 DefDescriptor.JAVASCRIPT_PREFIX);
         addSourceAutoCleanup(modelDesc, "{obj:{}}");
         try {
-            definitionService.getDefinition(compDesc);
+        	definitionService.getDefinition(compDesc);
             fail("Should not be able to load component with explicit and implicit models");
         } catch (QuickFixException e) {
             checkExceptionFull(e, QuickFixException.class, "need to update this class and description when fixed");
@@ -1474,7 +1474,7 @@ public abstract class BaseComponentDefTest<T extends BaseComponentDef> extends R
                 "extensible='true' extends='" + extendsSelf.getDescriptorName() + "'", ""));
         DefType defType = DefType.getDefType(this.getDefClass());
         try {
-            definitionService.getDefinition(extendsSelf);
+        	definitionService.getDefinition(extendsSelf);
             fail(defType + " should not be able to extend itself.");
         } catch (QuickFixException e) {
             checkExceptionFull(e, InvalidDefinitionException.class, extendsSelf.getQualifiedName()
@@ -1491,7 +1491,7 @@ public abstract class BaseComponentDefTest<T extends BaseComponentDef> extends R
 
         DefType defType = DefType.getDefType(this.getDefClass());
         try {
-            definitionService.getDefinition(extendsCmp);
+        	definitionService.getDefinition(extendsCmp);
             fail(defType + " should not be able to extend a non-extensible component");
         } catch (QuickFixException e) {
             checkExceptionFull(e, InvalidDefinitionException.class, extendsCmp.getQualifiedName()
@@ -1510,7 +1510,7 @@ public abstract class BaseComponentDefTest<T extends BaseComponentDef> extends R
 
         DefType defType = DefType.getDefType(this.getDefClass());
         try {
-            definitionService.getDefinition(cmp);
+        	definitionService.getDefinition(cmp);
             fail(defType + " should throw Exception when extending non-existent component");
         } catch (QuickFixException e) {
             checkExceptionFull(e, DefinitionNotFoundException.class,
@@ -1529,7 +1529,7 @@ public abstract class BaseComponentDefTest<T extends BaseComponentDef> extends R
 
         DefType defType = DefType.getDefType(this.getDefClass());
         try {
-            definitionService.getDefinition(cmp);
+        	definitionService.getDefinition(cmp);
             fail(defType + " should throw Exception when extends is empty");
         } catch (QuickFixException e) {
             checkExceptionFull(e, InvalidDefinitionException.class, "QualifiedName is required for descriptors");
@@ -1569,11 +1569,11 @@ public abstract class BaseComponentDefTest<T extends BaseComponentDef> extends R
                 String.format(baseTag, "implements='" + parentInterface.getDescriptorName() + "'", ""));
 
         assertTrue("Failed to assert interface implementation one level.",
-                definitionService.getDefinition(interfaceImpl).isInstanceOf(parentInterface));
+        		definitionService.getDefinition(interfaceImpl).isInstanceOf(parentInterface));
         assertTrue("Failed to assert inherface extension across one level.",
-                definitionService.getDefinition(parentInterface).isInstanceOf(grandParentInterface));
-        assertTrue("Failed to assert inheritance implementation across multiple levels.",
-                definitionService.getDefinition(interfaceImpl)
+        		definitionService.getDefinition(parentInterface).isInstanceOf(grandParentInterface));
+        assertTrue("Failed to assert inheritance implementation across multiple levels.", 
+        		definitionService.getDefinition(interfaceImpl)
                 .isInstanceOf(grandParentInterface));
 
     }
@@ -1619,7 +1619,7 @@ public abstract class BaseComponentDefTest<T extends BaseComponentDef> extends R
         DefDescriptor<T> desc = addSourceAutoCleanup(getDefClass(),
                 String.format(baseTag, "", "<aura:fooBar999 aura:load='LAZY'/>"));
         try {
-            definitionService.getDefinition(desc);
+        	definitionService.getDefinition(desc);
             fail("should not be able to use a non-existing component by marking it to be lazy loaded");
         } catch (DefinitionNotFoundException e) {
             assertTrue(e.getMessage().contains("No COMPONENT named markup://aura:fooBar999"));
@@ -1634,7 +1634,7 @@ public abstract class BaseComponentDefTest<T extends BaseComponentDef> extends R
         DefDescriptor<T> desc = addSourceAutoCleanup(getDefClass(),
                 String.format(baseTag, "", "<aura:text aura:load='LAZY' fooBar999='hoze'/>"));
         try {
-            definitionService.getDefinition(desc);
+        	definitionService.getDefinition(desc);
             fail("should not be able to use a non-existing attribute by marking it to be lazy loaded");
         } catch (InvalidReferenceException e) {
             assertTrue(e.getMessage().contains("Attribute fooBar999 does not exist"));
@@ -1654,7 +1654,7 @@ public abstract class BaseComponentDefTest<T extends BaseComponentDef> extends R
                         "<" + cmpAttr.getDescriptorName() + " aura:load='LAZY'>" + "<aura:set attribute='cmps'>"
                                 + "<aura:text/>" + "</aura:set>" + "</" + cmpAttr.getDescriptorName() + ">"));
         try {
-            definitionService.getDefinition(desc);
+        	definitionService.getDefinition(desc);
             fail("should not be able to use a non-basic attribute type in lazy loaded component");
         } catch (QuickFixException e) {
             checkExceptionFull(
@@ -1690,7 +1690,7 @@ public abstract class BaseComponentDefTest<T extends BaseComponentDef> extends R
                 String.format(baseTag, "extensible='true' extends='" + grandParentDesc.getDescriptorName()
                         + "' support='GA'", ""));
         try {
-            definitionService.getDefinition(parentDesc);
+        	definitionService.getDefinition(parentDesc);
             fail("A child cannot widen the support level of its parent.");
         } catch (QuickFixException e) {
             checkExceptionFull(e, InvalidDefinitionException.class,
@@ -1713,7 +1713,7 @@ public abstract class BaseComponentDefTest<T extends BaseComponentDef> extends R
         DefDescriptor<T> testDesc = addSourceAutoCleanup(getDefClass(),
                 String.format(baseTag, "", "<" + childCmp.getDescriptorName() + "/>"), "validateReferences_testCmp");
         try {
-            definitionService.getDefinition(testDesc);
+        	definitionService.getDefinition(testDesc);
             fail("Test component's facet has a component which tries to widen the support level of its parent.");
         } catch (QuickFixException e) {
             checkExceptionFull(e, InvalidDefinitionException.class,
@@ -1733,7 +1733,7 @@ public abstract class BaseComponentDefTest<T extends BaseComponentDef> extends R
 
         DefType defType = DefType.getDefType(this.getDefClass());
         try {
-            definitionService.getDefinition(dd);
+        	definitionService.getDefinition(dd);
             fail(defType + " should not be able to have attribute and event with same name");
         } catch (QuickFixException e) {
             checkExceptionFull(e, InvalidDefinitionException.class,
@@ -1750,7 +1750,7 @@ public abstract class BaseComponentDefTest<T extends BaseComponentDef> extends R
         DefDescriptor<T> dd = addSourceAutoCleanup(getDefClass(),
                 String.format(baseTag, "abstract='true' extensible='false'", ""));
         try {
-            definitionService.getDefinition(dd);
+        	definitionService.getDefinition(dd);
             fail(DefType.getDefType(getDefClass()) + " must be extensible if abstract");
         } catch (QuickFixException e) {
             checkExceptionFull(e, InvalidDefinitionException.class,
@@ -1767,7 +1767,7 @@ public abstract class BaseComponentDefTest<T extends BaseComponentDef> extends R
         DefDescriptor<T> dd = addSourceAutoCleanup(getDefClass(),
                 String.format(baseTag, "implements='aura:rootComponent'", ""));
         try {
-            definitionService.getDefinition(dd);
+        	definitionService.getDefinition(dd);
             fail(DefType.getDefType(getDefClass())
                     + " should not be able to implement rootComponent if not in aura namespace");
         } catch (QuickFixException e) {
@@ -2012,7 +2012,7 @@ public abstract class BaseComponentDefTest<T extends BaseComponentDef> extends R
         DefDescriptor<T> missingRequiredAttr = addSourceAutoCleanup(getDefClass(),
                 String.format(baseTag, "", "<aura:clientLibrary type='JS' />"));
         try {
-            definitionService.getDefinition(missingRequiredAttr);
+        	definitionService.getDefinition(missingRequiredAttr);
             fail("Failed to validate client library type which didn't specify a name attribute.");
         } catch (InvalidDefinitionException e) {
             assertEquals("Must have either a name or url", e.getMessage());
@@ -2021,7 +2021,7 @@ public abstract class BaseComponentDefTest<T extends BaseComponentDef> extends R
         DefDescriptor<T> invalidResource = addSourceAutoCleanup(getDefClass(),
                 String.format(baseTag, "", "<aura:clientLibrary name='doesntExist' type='js' url='js://foo.bar'/>"));
         try {
-            definitionService.getDefinition(invalidResource);
+        	definitionService.getDefinition(invalidResource);
             fail("Failed to validate client library type which specified non existing component resource.");
         } catch (QuickFixException e) {
             checkExceptionFull(e, InvalidDefinitionException.class, "No resource named js://foo.bar found");

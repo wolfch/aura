@@ -198,7 +198,7 @@ public class ServerServiceImplTest extends AuraImplTestCase {
         }
     }
 
-    private static class EmptyAction extends AbstractActionImpl<EmptyActionDef> {
+    private class EmptyAction extends AbstractActionImpl<EmptyActionDef> {
         private String returnValue = "";
         private Integer count = 0;
         private String parameter = "";
@@ -224,7 +224,8 @@ public class ServerServiceImplTest extends AuraImplTestCase {
 
         @Override
         public DefDescriptor<ActionDef> getDescriptor() {
-            return definitionService.getDefDescriptor("java://aura.empty/ACTION$emptyAction", ActionDef.class);
+            return definitionService
+                    .getDefDescriptor("java://aura.empty/ACTION$emptyAction", ActionDef.class);
         }
 
         @Override

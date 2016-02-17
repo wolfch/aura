@@ -17,18 +17,12 @@ package org.auraframework.integration.test.service;
 
 import org.auraframework.def.ComponentDef;
 import org.auraframework.impl.AuraImplTestCase;
-import org.auraframework.impl.DefinitionServiceImpl;
 import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class AuraComponentServiceImplTest extends AuraImplTestCase {
-
-    @Test
-    public void testAuraComponentService() {
-        assertTrue(definitionService instanceof DefinitionServiceImpl);
-    }
 
     @Test
     public void testGetComponent() throws Exception {

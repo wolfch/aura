@@ -15,7 +15,6 @@
  */
 package org.auraframework.test.util;
 
-import junit.framework.AssertionFailedError;
 import org.auraframework.AuraDeprecated;
 import org.auraframework.adapter.ConfigAdapter;
 import org.auraframework.adapter.ExceptionAdapter;
@@ -37,9 +36,12 @@ import org.auraframework.util.FileMonitor;
 import org.auraframework.util.test.util.UnitTestCase;
 
 import javax.inject.Inject;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+
+import junit.framework.AssertionFailedError;
 
 /**
  * Base class for unit tests referencing the Aura framework.
