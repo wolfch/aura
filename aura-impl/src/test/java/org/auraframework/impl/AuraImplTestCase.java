@@ -15,6 +15,14 @@
  */
 package org.auraframework.impl;
 
+import java.io.StringWriter;
+import java.io.Writer;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamWriter;
+
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.ModelDef;
@@ -29,13 +37,6 @@ import org.auraframework.system.AuraContext.Format;
 import org.auraframework.system.AuraContext.Mode;
 import org.auraframework.test.util.AuraTestCase;
 import org.auraframework.util.json.JsonSerializationContext;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamWriter;
-import java.io.StringWriter;
-import java.io.Writer;
 
 /**
  * Base class for Aura unit tests that establishes a AuraTestContext that looks up components in the
@@ -109,7 +110,7 @@ public abstract class AuraImplTestCase extends AuraTestCase {
     protected Model getJavaModelByQualifiedName(String qualifiedName) throws Exception {
         ModelDef javaModelDef = definitionService.getDefinition(qualifiedName, ModelDef.class);
         assertTrue(javaModelDef instanceof JavaModelDefImpl);
-        Model model = javaModelDef.newInstance();
+        Model model = instanceService.getInstance(javaModelDef);
         assertNotNull("Failed to retrieve model instance of " + qualifiedName, model);
         return model;
     }

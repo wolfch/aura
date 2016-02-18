@@ -15,8 +15,10 @@
  */
 package org.auraframework.integration.test.mock;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
+import java.util.Map;
+
+import javax.inject.Inject;
+
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.ControllerDef;
@@ -33,15 +35,14 @@ import org.auraframework.system.AuraContext.Mode;
 import org.auraframework.test.TestContextAdapter;
 import org.auraframework.test.mock.MockModel;
 import org.auraframework.test.util.WebDriverTestCase;
-import org.auraframework.throwable.AuraRuntimeException;
 import org.auraframework.util.FileMonitor;
 import org.auraframework.util.test.annotation.UnAdaptableTest;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.openqa.selenium.By;
 
-import javax.inject.Inject;
-import java.util.Map;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 
 @UnAdaptableTest("W-2329849: Failing on SFDC but passing on standalone ios-driver builds. Needs investigation")
 public class MockingUtilUITest extends WebDriverTestCase {
@@ -141,8 +142,8 @@ public class MockingUtilUITest extends WebDriverTestCase {
         // chain 2 different string values followed by an exception
         MockModel model1 = new MockModel(modelDefDescriptor, ImmutableMap.of("string", (Object) "age"));
         MockModel model2 = new MockModel(modelDefDescriptor, ImmutableMap.of("string", (Object) "beauty"));
-        Mockito.doReturn(model1).doReturn(model2).doThrow(new AuraRuntimeException("the afterlife")).when(modelDef)
-                .newInstance();
+        // Mockito.doReturn(model1).doReturn(model2).doThrow(new AuraRuntimeException("the afterlife")).when(modelDef)
+        // .newInstance();
         // rather than build another component, we'll just instantiate the same
         // component consecutively
         open(appDescriptor);

@@ -15,6 +15,8 @@
  */
 package org.auraframework.components.test.java.model;
 
+import java.io.IOException;
+
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.Definition;
@@ -35,8 +37,6 @@ import org.auraframework.throwable.quickfix.InvalidDefinitionException;
 import org.auraframework.util.json.Json;
 import org.junit.Ignore;
 import org.junit.Test;
-
-import java.io.IOException;
 
 /**
  * This class provides automation for Java models.
@@ -126,7 +126,7 @@ public class JavaModelTest extends AuraImplTestCase {
     public void testSerializeData() throws Exception {
         JavaModelDefFactory factory = new JavaModelDefFactory(null);
         ModelDef def = factory.getDef(descriptor);
-        Model model = def.newInstance();
+        Model model = instanceService.getInstance(def);
         serializeAndGoldFile(model);
     }
 
@@ -161,7 +161,7 @@ public class JavaModelTest extends AuraImplTestCase {
                 "java://org.auraframework.components.test.java.model.TestModelSubclass", ModelDef.class);
         ModelDef def = javaModelDefDesc.getDef();
         assertNotNull(def);
-        Model model = def.newInstance();
+        Model model = instanceService.getInstance(def);
         ValueDef vd = def.getMemberByName("nextThing");
 
         PropertyReferenceImpl refNextThing = new PropertyReferenceImpl("nextThing", new Location("test", 0));
@@ -254,7 +254,7 @@ public class JavaModelTest extends AuraImplTestCase {
                 "java://org.auraframework.components.test.java.model.TestModel", ModelDef.class);
         ModelDef mDef = javaModelDefDesc.getDef();
         assertNotNull(mDef);
-        Model model = mDef.newInstance();
+        Model model = instanceService.getInstance(mDef);
         try {
             model.getValue(new PropertyReferenceImpl("fooBar", new Location("test", 0)));
             fail("Model should not be able to getValue of a non existing property.");

@@ -15,8 +15,14 @@
  */
 package org.auraframework.impl.root.component;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.auraframework.Aura;
 import org.auraframework.def.AttributeDef;
 import org.auraframework.def.AttributeDefRef;
@@ -45,6 +51,7 @@ import org.auraframework.instance.ValueProvider;
 import org.auraframework.service.ContextService;
 import org.auraframework.service.ConverterService;
 import org.auraframework.service.DefinitionService;
+import org.auraframework.service.InstanceService;
 import org.auraframework.service.LoggingService;
 import org.auraframework.system.AuraContext;
 import org.auraframework.system.MasterDefRegistry;
@@ -56,13 +63,8 @@ import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.AuraTextUtil;
 import org.auraframework.util.json.Json;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 public abstract class BaseComponentImpl<D extends BaseComponentDef, I extends BaseComponent<D, I>> implements
 BaseComponent<D, I> {
@@ -87,7 +89,9 @@ BaseComponent<D, I> {
     protected final ContextService contextService;
     protected final DefinitionService definitionService;
     protected final ConverterService converterService;
-    
+
+    private final InstanceService instanceService;
+
     /**
      * Top level component instance with attributes passed in. Builds out the tree recursively, but only after the
      * attribute values are all set.
@@ -174,6 +178,7 @@ BaseComponent<D, I> {
         this.definitionService = Aura.getDefinitionService();
         this.converterService = Aura.getConverterService();
         this.loggingService = Aura.getLoggingService();
+        this.instanceService = Aura.getInstanceService();
 
         AuraContext context = contextService.getCurrentContext();
         DefDescriptor<? extends RootDefinition> desc = null;
@@ -407,7 +412,7 @@ BaseComponent<D, I> {
             if (modelDef != null) {
                 definitionService.getDefRegistry().assertAccess(descriptor, modelDef);
 
-                model = modelDef.newInstance();
+                model = instanceService.getInstance(modelDef);
                 if (modelDef.hasMembers()) {
                     hasLocalDependencies = true;
                     valueProviders.put(AuraValueProviderType.MODEL.getPrefix(), model);

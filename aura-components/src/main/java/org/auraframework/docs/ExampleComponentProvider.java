@@ -21,7 +21,6 @@ import org.auraframework.def.ComponentDef;
 import org.auraframework.def.ComponentDescriptorProvider;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.instance.BaseComponent;
-import org.auraframework.system.Annotations.Provider;
 import org.auraframework.throwable.AuraRuntimeException;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
@@ -30,7 +29,6 @@ import org.auraframework.throwable.quickfix.QuickFixException;
  */
 
 @ServiceComponentProvider
-@Provider
 public class ExampleComponentProvider implements ComponentDescriptorProvider {
 
     @Override

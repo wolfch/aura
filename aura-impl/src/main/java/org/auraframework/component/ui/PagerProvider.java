@@ -15,17 +15,17 @@
  */
 package org.auraframework.component.ui;
 
-import com.google.common.base.Joiner;
-import com.google.common.collect.ImmutableMap;
 import org.auraframework.Aura;
 import org.auraframework.annotations.Annotations.ServiceComponentProvider;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.ComponentDescriptorProvider;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.instance.BaseComponent;
-import org.auraframework.system.Annotations.Provider;
 import org.auraframework.throwable.AuraRuntimeException;
 import org.auraframework.throwable.quickfix.QuickFixException;
+
+import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableMap;
 
 /**
  * Determine which type of pager implementation to render, based on type
@@ -35,7 +35,6 @@ import org.auraframework.throwable.quickfix.QuickFixException;
  * 'PageSize', or a namespaced component, eg. ns:CustomPager
  */
 @ServiceComponentProvider
-@Provider
 public class PagerProvider implements ComponentDescriptorProvider {
     // attribute name
     private static final String TYPE_ATTRIBUTE = "type";

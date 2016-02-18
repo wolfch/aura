@@ -15,7 +15,10 @@
  */
 package org.auraframework.impl.root.component;
 
-import com.google.common.collect.Maps;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.auraframework.Aura;
 import org.auraframework.annotations.Annotations.ServiceComponentProvider;
 import org.auraframework.def.ComponentConfigProvider;
@@ -24,19 +27,15 @@ import org.auraframework.instance.BaseComponent;
 import org.auraframework.instance.Component;
 import org.auraframework.instance.ComponentConfig;
 import org.auraframework.instance.InstanceStack;
-import org.auraframework.system.Annotations.Provider;
 import org.auraframework.system.AuraContext;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import com.google.common.collect.Maps;
 
 /**
  * server side provider for if.cmp
  */
 @ServiceComponentProvider
-@Provider
 public class IfProvider implements ComponentConfigProvider {
 
     @Override

@@ -15,18 +15,18 @@
  */
 package org.auraframework.annotations;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 import org.auraframework.system.Annotations.Model;
 import org.auraframework.system.Annotations.Provider;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 
 /**
  * Meta annotations covering Spring component and scope.
@@ -120,7 +120,12 @@ public interface Annotations {
     }
 
     @Provider
-    @ServiceComponent
+    @Target({ ElementType.TYPE })
+    @Retention(RetentionPolicy.RUNTIME)
+    @Documented
+    @Component
+    @Lazy
+    @Scope(BeanDefinition.SCOPE_SINGLETON)
     @interface ServiceComponentProvider {
     }
 

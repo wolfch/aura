@@ -15,6 +15,9 @@
  */
 package org.auraframework.component.ui;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.auraframework.Aura;
 import org.auraframework.annotations.Annotations.ServiceComponentProvider;
 import org.auraframework.def.ComponentConfigProvider;
@@ -23,11 +26,7 @@ import org.auraframework.def.DefDescriptor;
 import org.auraframework.instance.AttributeSet;
 import org.auraframework.instance.BaseComponent;
 import org.auraframework.instance.ComponentConfig;
-import org.auraframework.system.Annotations.Provider;
 import org.auraframework.throwable.quickfix.QuickFixException;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Render inputCheckbox, inputRadio and inputSelectOption based on "type"
@@ -37,7 +36,6 @@ import java.util.Map;
  * @since Touch.174.3
  */
 @ServiceComponentProvider
-@Provider
 public class InputOptionProvider implements ComponentConfigProvider {
     @Override
     public ComponentConfig provide() throws QuickFixException {

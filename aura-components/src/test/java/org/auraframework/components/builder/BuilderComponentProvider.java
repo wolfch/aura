@@ -15,7 +15,11 @@
  */
 package org.auraframework.components.builder;
 
-import com.google.common.collect.Lists;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.inject.Inject;
+
 import org.auraframework.annotations.Annotations.ServiceComponentProvider;
 import org.auraframework.builder.ComponentDefBuilder;
 import org.auraframework.builder.ComponentDefRefBuilder;
@@ -26,15 +30,11 @@ import org.auraframework.def.DefDescriptor;
 import org.auraframework.instance.ComponentConfig;
 import org.auraframework.service.BuilderService;
 import org.auraframework.service.DefinitionService;
-import org.auraframework.system.Annotations.Provider;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
-import javax.inject.Inject;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+import com.google.common.collect.Lists;
 
 @ServiceComponentProvider
-@Provider
 public class BuilderComponentProvider implements ComponentConfigProvider {
     @Inject
     private DefinitionService definitionService;

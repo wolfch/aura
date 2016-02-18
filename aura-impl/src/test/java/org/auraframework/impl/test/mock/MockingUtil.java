@@ -15,6 +15,10 @@
  */
 package org.auraframework.impl.test.mock;
 
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Set;
+
 import org.auraframework.def.ControllerDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.Definition;
@@ -36,10 +40,6 @@ import org.auraframework.test.source.StringSource;
 import org.auraframework.throwable.quickfix.DefinitionNotFoundException;
 import org.auraframework.util.FileMonitor;
 import org.mockito.Mockito;
-
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Provides access to mocks for internal framework objects that would be difficult to mock traditionally in the context
@@ -127,7 +127,7 @@ public class MockingUtil {
             throws Exception {
         final ModelDef modelDef = Mockito.spy(definitionService.getDefinition(modelDefDescriptor));
         final MockModel model = Mockito.spy(new MockModel(modelDefDescriptor, properties));
-        Mockito.doReturn(model).when(modelDef).newInstance();
+        // Mockito.doReturn(model).when(modelDef).newInstance();
         mockDef(modelDef);
         return model;
     }

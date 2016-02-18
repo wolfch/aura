@@ -15,7 +15,11 @@
  */
 package org.auraframework.integration.test.serialization;
 
-import com.google.common.collect.ImmutableMap;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 import org.auraframework.def.ControllerDef;
 import org.auraframework.def.DefDescriptor.DefType;
 import org.auraframework.def.Definition;
@@ -25,10 +29,7 @@ import org.auraframework.impl.AuraImplTestCase;
 import org.auraframework.impl.javascript.testsuite.JavascriptTestCaseDef;
 import org.junit.Test;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import com.google.common.collect.ImmutableMap;
 
 public class ObjectSerializationTest extends AuraImplTestCase {
     @Test

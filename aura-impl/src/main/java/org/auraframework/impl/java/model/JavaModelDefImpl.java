@@ -15,6 +15,14 @@
  */
 package org.auraframework.impl.java.model;
 
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+
 import org.auraframework.Aura;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.JavaModelDef;
@@ -23,21 +31,12 @@ import org.auraframework.def.TypeDef;
 import org.auraframework.def.ValueDef;
 import org.auraframework.impl.system.DefinitionImpl;
 import org.auraframework.impl.util.AuraUtil;
-import org.auraframework.instance.Model;
 import org.auraframework.system.Annotations.AuraEnabled;
 import org.auraframework.system.Annotations.Type;
 import org.auraframework.system.Location;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.json.Json;
-
-import java.io.IOException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
 
 /**
  * JavaModelDef describes a single java model.
@@ -85,11 +84,6 @@ public class JavaModelDefImpl extends DefinitionImpl<ModelDef> implements JavaMo
     @Override
     public TypeDef getType(String s) throws QuickFixException {
         return getMemberByName(s).getType();
-    }
-
-    @Override
-    public Model newInstance() {
-        return new JavaModel(this);
     }
 
     @Override
