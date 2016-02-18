@@ -15,20 +15,24 @@
  */
 package org.auraframework.impl.adapter.format.css;
 
-import org.auraframework.Aura;
+import java.io.IOException;
+import java.util.Map;
+
+import javax.inject.Inject;
+
+import org.auraframework.adapter.ConfigAdapter;
 import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.service.ContextService;
 import org.auraframework.system.AuraContext.Mode;
 import org.auraframework.throwable.AuraExceptionUtil;
 
-import javax.inject.Inject;
-import java.io.IOException;
-import java.util.Map;
-
 @ServiceComponent
 public class ThrowableCSSFormatAdapter extends CSSFormatAdapter<Throwable> {
     @Inject
     private ContextService contextService;
+
+    @Inject
+    private ConfigAdapter configAdapter;
 
     @Override
     public Class<Throwable> getType() {
@@ -40,7 +44,7 @@ public class ThrowableCSSFormatAdapter extends CSSFormatAdapter<Throwable> {
         out.append("/** \nAN EXCEPTION OCCURRED WHILE PROCESSING CSS\n");
         // FIXME: this is pretty ugly.
         Mode mode = contextService.getCurrentContext().getMode();
-        if (mode != Mode.PROD && mode != Mode.PRODDEBUG && !Aura.getConfigAdapter().isProduction()) {
+        if (mode != Mode.PROD && mode != Mode.PRODDEBUG && !configAdapter.isProduction()) {
             out.append(AuraExceptionUtil.getStackTrace(value));
         }
 

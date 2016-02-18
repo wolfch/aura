@@ -31,7 +31,6 @@ import org.auraframework.service.InstanceService;
 import org.auraframework.service.IntegrationService;
 import org.auraframework.service.LoggingService;
 import org.auraframework.system.AuraContext;
-import org.auraframework.test.TestContextAdapter;
 import org.auraframework.util.adapter.SourceControlAdapter;
 
 /**
@@ -50,7 +49,6 @@ public class Aura implements AuraDeprecated {
     private static ServletUtilAdapter servletUtilAdapter;
     private static SourceControlAdapter sourceControlAdapter;
     private static ConverterService converterService;
-    private static TestContextAdapter testContextAdapter;
 
     @Inject
     public void setContextService(ContextService service) {
@@ -105,11 +103,6 @@ public class Aura implements AuraDeprecated {
     @Inject
     public void setConverterService(ConverterService service) {
         converterService = service;
-    }
-
-    @Inject
-    public void setTestContextAdapter(TestContextAdapter adapter) {
-        testContextAdapter = adapter;
     }
 
     /**
@@ -185,9 +178,5 @@ public class Aura implements AuraDeprecated {
 
     public static ConverterService getConverterService() {
         return converterService;
-    }
-
-    public static TestContextAdapter getTestContextAdapter() {
-        return testContextAdapter;
     }
 }
