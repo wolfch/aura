@@ -15,7 +15,14 @@
  */
 package org.auraframework.impl.java.converter;
 
-import com.google.common.collect.Maps;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+
+import org.auraframework.adapter.LocalizationAdapter;
 import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.impl.java.type.LocalizedConverter;
 import org.auraframework.service.ConverterService;
@@ -28,11 +35,7 @@ import org.auraframework.util.type.MultiConverter;
 import org.auraframework.util.type.MultiConverterInitError;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import com.google.common.collect.Maps;
 
 @ServiceComponent
 public final class ConverterServiceImpl implements ConverterService {
@@ -52,6 +55,9 @@ public final class ConverterServiceImpl implements ConverterService {
 
     @Inject
     private LoggingService loggingService;
+
+    @Inject
+    private LocalizationAdapter localizationAdapter;
 
     private final Map<String, Map<String, LocalizedConverter<?, ?>>> localizedConverterMap = Maps.newHashMap();
     private final Map<String, Map<String, Map<String, LocalizedConverter<?, ?>>>> localizedParameterizedConverters = Maps.newHashMap();
@@ -155,6 +161,25 @@ public final class ConverterServiceImpl implements ConverterService {
         }
 
         return converter.convert(value, locale);
+    }
+
+    /**
+     * Attempt to use the Locale to convert the values. Will revert to the non localized convert if no special localized
+     * converter was present for the type.
+     *
+     * @param value the Raw value to convert to the specific type. We have different converter classes to convert from
+     *            one value to another. So "1,2,3" to List.class would convert from String to List.
+     * @param to A Class instance to convert the value to. List.class would convert it to a class. Integer.class would
+     *            convert the value to an integer.
+     * @param of Used for types that have a parameter specification. Think of this as Collection<Of> as in List<String>
+     * @param trim Should the result be trimmed if the value is a string?
+     * @param hasLocale We should use the localized converts and the specified local to convert the value. If you
+     *            specify null, we use the non localized converters.
+     */
+    @Override
+    public <F, T> T convert(F value, Class<T> to, String of, boolean trim, boolean hasLocale) {
+        return hasLocale ? convert(value, to, of, trim, localizationAdapter.getAuraLocale()) : convert(value, to, of,
+                trim);
     }
 
     @SuppressWarnings("unchecked")

@@ -15,6 +15,14 @@
  */
 package org.auraframework.impl.java.type;
 
+import java.io.IOException;
+import java.lang.reflect.Array;
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Set;
+
 import org.auraframework.Aura;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.TypeDef;
@@ -24,14 +32,6 @@ import org.auraframework.instance.BaseComponent;
 import org.auraframework.service.ConverterService;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.json.Json;
-
-import java.io.IOException;
-import java.lang.reflect.Array;
-import java.lang.reflect.GenericArrayType;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Set;
 
 /**
  */
@@ -103,7 +103,7 @@ public class JavaTypeDef extends DefinitionImpl<TypeDef> implements TypeDef {
         if (hasCollectionConverters()) {
             return converterService.convert(value, clazz, simpleParamName, false);
         }
-        return converterService.convert(value, clazz, null, false, Aura.getLocalizationAdapter().getAuraLocale());
+        return converterService.convert(value, clazz, null, false, true);
     }
 
     @Override

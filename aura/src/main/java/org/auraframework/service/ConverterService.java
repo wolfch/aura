@@ -27,6 +27,8 @@ public interface ConverterService {
 
     <F, T> T convert(F value, Class<T> to, String of, boolean trim, AuraLocale locale);
 
+    <F, T> T convert(F value, Class<T> to, String of, boolean trim, boolean hasLocale);
+
     /* Mostly for testing? */
     boolean hasConverter(Class<?> from, Class<?> to);
 

@@ -18,7 +18,6 @@ package org.auraframework;
 import javax.inject.Inject;
 
 import org.auraframework.adapter.ConfigAdapter;
-import org.auraframework.adapter.LocalizationAdapter;
 import org.auraframework.adapter.ServletUtilAdapter;
 import org.auraframework.adapter.StyleAdapter;
 import org.auraframework.annotations.Annotations.ServiceComponent;
@@ -41,7 +40,6 @@ public class Aura implements AuraDeprecated {
     private static IntegrationService integrationService;
     private static StyleAdapter styleAdapter;
     private static ConfigAdapter configAdapter;
-    private static LocalizationAdapter localizationAdapter;
     private static LoggingService loggingService;
     private static DefinitionService definitionService;
     private static ContextService contextService;
@@ -58,11 +56,6 @@ public class Aura implements AuraDeprecated {
     @Inject
     public void setConfigAdapter(ConfigAdapter adapter) {
         configAdapter = adapter;
-    }
-
-    @Inject
-    public void setLocalizationAdapter(LocalizationAdapter adapter) {
-        localizationAdapter = adapter;
     }
 
     @Inject
@@ -139,13 +132,6 @@ public class Aura implements AuraDeprecated {
      */
     public static ConfigAdapter getConfigAdapter() {
         return configAdapter;
-    }
-
-    /**
-     * Get the Localization Adapter: Provides Aura with Localization configuration from the host environments
-     */
-    public static LocalizationAdapter getLocalizationAdapter() {
-        return localizationAdapter;
     }
 
     /**
