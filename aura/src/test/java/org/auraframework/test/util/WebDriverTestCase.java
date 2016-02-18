@@ -997,7 +997,10 @@ public abstract class WebDriverTestCase extends IntegrationTestCase {
         params.put("aura.mode", mode.name());
         params.put("aura.test", getQualifiedName());
         url = addUrlParams(url, params);
-        auraUITestingUtil.getRawEval("document._waitingForReload = true;");
+        // If this is the first time we're loading a page, the test util would probably be null.
+        if(auraUITestingUtil != null) {
+        	auraUITestingUtil.getRawEval("document._waitingForReload = true;");
+        }
         try {
             openAndWait(url, waitForInit);
         } catch (TimeoutException e) {
@@ -1012,7 +1015,10 @@ public abstract class WebDriverTestCase extends IntegrationTestCase {
     }
 
     private void openAndWait(String url, boolean waitForInit) throws MalformedURLException, URISyntaxException {
-        auraUITestingUtil.getRawEval("document._waitingForReload = true;");
+        // If this is the first time we're loading a page, the test util would probably be null.
+        if(auraUITestingUtil != null) {
+        	auraUITestingUtil.getRawEval("document._waitingForReload = true;");
+        }
         openRaw(url);
         auraUITestingUtil.waitUntil(new ExpectedCondition<Boolean>() {
             @Override
