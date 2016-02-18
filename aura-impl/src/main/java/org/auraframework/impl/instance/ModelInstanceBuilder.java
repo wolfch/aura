@@ -17,6 +17,8 @@ package org.auraframework.impl.instance;
 
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.annotations.Annotations.ServiceComponentModelInstance;
 import org.auraframework.def.JavaModelDef;
@@ -27,6 +29,8 @@ import org.auraframework.impl.java.model.JavaModel;
 import org.auraframework.impl.java.model.JavaModelDefImpl;
 import org.auraframework.instance.InstanceBuilder;
 import org.auraframework.instance.Model;
+import org.auraframework.service.ContextService;
+import org.auraframework.service.LoggingService;
 import org.auraframework.throwable.AuraExecutionException;
 import org.auraframework.throwable.AuraRuntimeException;
 import org.springframework.beans.BeansException;
@@ -35,6 +39,13 @@ import org.springframework.context.ApplicationContextAware;
 
 @ServiceComponent
 public class ModelInstanceBuilder implements InstanceBuilder<Model, ModelDef>, ApplicationContextAware {
+
+    @Inject
+    private ContextService contextService;
+
+    @Inject
+    private LoggingService loggingService;
+
     private ApplicationContext applicationContext;
 
     @Override
@@ -72,7 +83,7 @@ public class ModelInstanceBuilder implements InstanceBuilder<Model, ModelDef>, A
             }
         }
 
-        return new JavaModel((JavaModelDefImpl) modelDef, bean);
+        return new JavaModel((JavaModelDefImpl) modelDef, bean, contextService, loggingService);
     }
 
     @Override
