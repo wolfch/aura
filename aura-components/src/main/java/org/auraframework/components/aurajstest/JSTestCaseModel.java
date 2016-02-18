@@ -15,7 +15,6 @@
  */
 package org.auraframework.components.aurajstest;
 
-import org.auraframework.Aura;
 import org.auraframework.def.TestCaseDef;
 import org.auraframework.ds.servicecomponent.ModelInstance;
 import org.auraframework.instance.BaseComponent;
@@ -29,9 +28,6 @@ import org.auraframework.annotations.Annotations.ServiceComponentModelInstance;
 public class JSTestCaseModel implements ModelInstance {
     private final String url;
 
-    public JSTestCaseModel() throws QuickFixException {
-    	this(Aura.getContextService());
-    }
     public JSTestCaseModel(ContextService contextService) throws QuickFixException {
         AuraContext context = contextService.getCurrentContext();
         BaseComponent<?, ?> component = context.getCurrentComponent();

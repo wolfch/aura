@@ -25,8 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.auraframework.annotations.Annotations.ServiceComponentModelInstance;
 import org.auraframework.components.ui.TreeNode;
 import org.auraframework.ds.servicecomponent.ModelInstance;
@@ -43,7 +41,6 @@ public class ApiContentsModel implements ModelInstance {
     //private static final Log log = LogFactory.getLog(ApiContentsModel.class);
 
     private static Map<String, Map<String, Object>> symbols;
-    //private static final ResourceLoader resourceLoader = Aura.getConfigAdapter().getResourceLoader();
 
     private static final Comparator<Map<String, Object>> SYMBOL_COMPARATOR = new Comparator<Map<String, Object>>() {
         @Override
@@ -53,14 +50,6 @@ public class ApiContentsModel implements ModelInstance {
     };
 
     private final List<TreeNode> nodes;
-
-//    static {
-//        try {
-//            refreshSymbols();
-//        } catch (Throwable t) {
-//            log.error(t.getClass() + ": " + t.getMessage(), t);
-//        }
-//    }
 
     public static Map<String, Map<String, Object>> getSymbols() {
         return symbols;

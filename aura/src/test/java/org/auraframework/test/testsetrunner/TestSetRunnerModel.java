@@ -25,7 +25,6 @@ import javax.annotation.concurrent.ThreadSafe;
 
 import junit.framework.Test;
 
-import org.auraframework.Aura;
 import org.auraframework.ds.servicecomponent.ModelInstance;
 import org.auraframework.service.ContextService;
 import org.auraframework.system.Annotations.AuraEnabled;
@@ -41,10 +40,7 @@ import org.auraframework.annotations.Annotations.ServiceComponentModelInstance;
 @ThreadSafe
 public class TestSetRunnerModel implements ModelInstance {
 	private String scope;
-	
-	public TestSetRunnerModel() throws QuickFixException {
-		this(Aura.getContextService());
-	}
+
 	
 	public TestSetRunnerModel(ContextService contextService) throws QuickFixException {
 		Object scope_param;

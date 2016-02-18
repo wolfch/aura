@@ -26,6 +26,7 @@ import org.auraframework.def.BaseComponentDef;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.DefDescriptor.DefType;
+import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.Definition;
 import org.auraframework.def.DocumentationDef;
 import org.auraframework.def.EventDef;
@@ -42,6 +43,7 @@ import org.auraframework.service.ContextService;
 import org.auraframework.service.DefinitionService;
 import org.auraframework.system.Annotations.AuraEnabled;
 import org.auraframework.system.AuraContext;
+import org.auraframework.system.MasterDefRegistry;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.json.Json;
 import org.auraframework.util.json.JsonSerializable;
@@ -53,7 +55,29 @@ import com.google.common.collect.Lists;
  */
 @ServiceComponentModelInstance
 public class ComponentDefModel implements ModelInstance {
+
+    private final DefDescriptor<?> descriptor;
+    private final Definition definition;
+    private final List<AttributeModel> attributes = Lists.newArrayList();
+    private final List<AttributeModel> handledEvents = Lists.newArrayList();
+    private final List<AttributeModel> events = Lists.newArrayList();
+    private final String support;
+    private final String theSuper;
+    private final String type;
+    private final boolean isExtensible;
+    private final boolean isAbstract;
+    private final List<String> interfaces = Lists.newArrayList();
+    private final List<DefModel> defs = Lists.newArrayList();
+    private final List<IncludeDefModel> includeDefs = Lists.newArrayList();
+    private final DocumentationDefModel doc;
+    private final boolean showSource;
+    private final DefinitionService definitionService;
+    private final ConfigAdapter configAdapter;
+    
     public ComponentDefModel(ContextService contextService, DefinitionService definitionService, ConfigAdapter configAdapter) throws QuickFixException {
+    	this.definitionService = definitionService;
+    	this.configAdapter = configAdapter;
+    	
         AuraContext context = contextService.getCurrentContext();
         BaseComponent<?, ?> component = context.getCurrentComponent();
 
@@ -63,17 +87,17 @@ public class ComponentDefModel implements ModelInstance {
         descriptor = definitionService.getDefDescriptor(desc, defType.getPrimaryInterface());
         definition = definitionService.getDefinition(descriptor);
 
-        ReferenceTreeModel.assertAccess(definition);
+        assertAccess(definition);
 
         // Show source tab if there is no default namespace (e.g. running raw open source) or if the target and source namespace are the same
         String defaultNamespace = configAdapter.getDefaultNamespace();
-        showSource = defaultNamespace == null || ReferenceTreeModel.getReferencingDescriptor().getNamespace().equalsIgnoreCase(definition.getDescriptor().getNamespace());
+        showSource = defaultNamespace == null || getReferencingDescriptor().getNamespace().equalsIgnoreCase(definition.getDescriptor().getNamespace());
 
         String type = null;
         if (definition instanceof RootDefinition) {
             RootDefinition rootDef = (RootDefinition) definition;
             for (AttributeDef attribute : rootDef.getAttributeDefs().values()) {
-                if (ReferenceTreeModel.hasAccess(attribute)) {
+                if (hasAccess(attribute)) {
                     attributes.add(new AttributeModel(attribute));
                 }
             }
@@ -84,7 +108,7 @@ public class ComponentDefModel implements ModelInstance {
             if (definition instanceof BaseComponentDef) {
                 BaseComponentDef cmpDef = (BaseComponentDef) definition;
                 for (RegisterEventDef reg : cmpDef.getRegisterEventDefs().values()) {
-                    if (ReferenceTreeModel.hasAccess(reg)) {
+                    if (hasAccess(reg)) {
                         events.add(new AttributeModel(reg));
                     }
                 }
@@ -94,7 +118,7 @@ public class ComponentDefModel implements ModelInstance {
                 }
 
                 for (DefDescriptor<InterfaceDef> intf : cmpDef.getInterfaces()) {
-                    if (ReferenceTreeModel.hasAccess(definitionService.getDefinition(intf))) {
+                    if (hasAccess(definitionService.getDefinition(intf))) {
                         interfaces.add(intf.getNamespace() + ":" + intf.getName());
                     }
                 }
@@ -140,7 +164,7 @@ public class ComponentDefModel implements ModelInstance {
                     // we already surface the documentation--users don't need to see the source for it.
                     if (dep.getDefType() != DefType.DOCUMENTATION) {
                         Definition def = definitionService.getDefinition(dep);
-                        if (ReferenceTreeModel.hasAccess(def)) {
+                        if (hasAccess(def)) {
                             defs.add(new DefModel(dep));
                         }
                     }
@@ -153,7 +177,7 @@ public class ComponentDefModel implements ModelInstance {
 
                 for (ImportDef importDef : importDefs) {
                     LibraryDef libraryDef = definitionService.getDefinition(importDef.getLibraryDescriptor());
-                    if (ReferenceTreeModel.hasAccess(libraryDef)) {
+                    if (hasAccess(libraryDef)) {
                         defs.add(new DefModel(libraryDef.getDescriptor()));
 
                         // Treat the included js files specially because they load source differently:
@@ -368,19 +392,28 @@ public class ComponentDefModel implements ModelInstance {
 
     }
 
-    private final DefDescriptor<?> descriptor;
-    private final Definition definition;
-    private final List<AttributeModel> attributes = Lists.newArrayList();
-    private final List<AttributeModel> handledEvents = Lists.newArrayList();
-    private final List<AttributeModel> events = Lists.newArrayList();
-    private final String support;
-    private final String theSuper;
-    private final String type;
-    private final boolean isExtensible;
-    private final boolean isAbstract;
-    private final List<String> interfaces = Lists.newArrayList();
-    private final List<DefModel> defs = Lists.newArrayList();
-    private final List<IncludeDefModel> includeDefs = Lists.newArrayList();
-    private final DocumentationDefModel doc;
-    private final boolean showSource;
+    private DefDescriptor<ApplicationDef> getReferencingDescriptor() {
+        String defaultNamespace = configAdapter.getDefaultNamespace();
+        if (defaultNamespace == null) {
+            defaultNamespace = "aura";
+        }
+
+        return definitionService.getDefDescriptor(String.format("%s:application", defaultNamespace),
+                ApplicationDef.class);
+    }
+	
+    public boolean hasAccess(Definition def) throws QuickFixException {
+        MasterDefRegistry registry = definitionService.getDefRegistry();
+        return registry.hasAccess(getReferencingDescriptor(), def) == null;
+    }
+
+    public void assertAccess(Definition def) throws QuickFixException {
+        MasterDefRegistry registry = definitionService.getDefRegistry();
+        registry.assertAccess(getReferencingDescriptor(), def);
+    }
+
+    public boolean isRunningInPrivilegedNamespace() {
+        String ns = configAdapter.getDefaultNamespace();
+        return ns != null ? configAdapter.isPrivilegedNamespace(ns) : true;
+    }
 }

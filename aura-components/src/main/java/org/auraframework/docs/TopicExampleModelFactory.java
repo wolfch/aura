@@ -17,6 +17,7 @@ package org.auraframework.docs;
 
 import javax.inject.Inject;
 
+import org.auraframework.adapter.ConfigAdapter;
 import org.auraframework.annotations.Annotations.ServiceComponentModelFactory;
 import org.auraframework.ds.servicecomponent.ModelFactory;
 import org.auraframework.ds.servicecomponent.ModelInitializationException;
@@ -26,15 +27,18 @@ import org.auraframework.service.DefinitionService;
 @ServiceComponentModelFactory
 public class TopicExampleModelFactory implements ModelFactory<TopicExampleModel> {
     @Inject
-    private ContextService contextService;
+    ContextService contextService;
 
     @Inject
-    private DefinitionService definitionService;
+    DefinitionService definitionService;
+    
+    @Inject
+    ConfigAdapter configAdapter;
 
     @Override
     public TopicExampleModel modelInstance() throws ModelInitializationException {
         try {
-            return new TopicExampleModel(contextService, definitionService);
+            return new TopicExampleModel(contextService, definitionService, configAdapter);
         } catch (Exception x) {
             throw new ModelInitializationException("Error creating model instance", x);
         }

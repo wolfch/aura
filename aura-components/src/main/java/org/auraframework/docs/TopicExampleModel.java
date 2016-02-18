@@ -18,10 +18,12 @@ package org.auraframework.docs;
 import java.util.Collection;
 import java.util.List;
 
+import org.auraframework.adapter.ConfigAdapter;
 import org.auraframework.annotations.Annotations.ServiceComponentModelInstance;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.DefDescriptor.DefType;
+import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.Definition;
 import org.auraframework.def.ImportDef;
 import org.auraframework.def.IncludeDefRef;
@@ -33,6 +35,7 @@ import org.auraframework.service.ContextService;
 import org.auraframework.service.DefinitionService;
 import org.auraframework.system.Annotations.AuraEnabled;
 import org.auraframework.system.AuraContext;
+import org.auraframework.system.MasterDefRegistry;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
 import com.google.common.collect.Lists;
@@ -44,11 +47,15 @@ public class TopicExampleModel implements ModelInstance {
 
     private final List<DefModel> defs = Lists.newArrayList();
     private final List<IncludeDefModel> includeDefs = Lists.newArrayList();
+    private final DefinitionService definitionService;
+    private final ConfigAdapter configAdapter;
 
     @SuppressWarnings("unchecked")
-    public TopicExampleModel(ContextService contextService, DefinitionService definitionService)
+    public TopicExampleModel(ContextService contextService, DefinitionService definitionService, ConfigAdapter configAdapter)
             throws QuickFixException {
-
+    	this.definitionService = definitionService;
+    	this.configAdapter = configAdapter;
+    	
         AuraContext context = contextService.getCurrentContext();
         BaseComponent<?, ?> component = context.getCurrentComponent();
 
@@ -58,7 +65,7 @@ public class TopicExampleModel implements ModelInstance {
         DefDescriptor<? extends RootDefinition> descriptor = (DefDescriptor<? extends RootDefinition>) definitionService
                 .getDefDescriptor(desc, defType.getPrimaryInterface());
 
-        Definition def = descriptor.getDef();
+        Definition def = definitionService.getDefinition(descriptor);
 
         defs.add(new DefModel(descriptor));
 
@@ -76,7 +83,7 @@ public class TopicExampleModel implements ModelInstance {
 
             for (ImportDef importDef : importDefs) {
                 LibraryDef libraryDef = definitionService.getDefinition(importDef.getLibraryDescriptor());
-                if (ReferenceTreeModel.hasAccess(libraryDef)) {
+                if (hasAccess(libraryDef)) {
                     defs.add(new DefModel(libraryDef.getDescriptor()));
 
                     // Treat the included js files specially because they load source differently:
@@ -96,5 +103,20 @@ public class TopicExampleModel implements ModelInstance {
     @AuraEnabled
     public List<IncludeDefModel> getIncludeDefs() {
         return includeDefs;
+    }
+    
+    private DefDescriptor<ApplicationDef> getReferencingDescriptor() {
+        String defaultNamespace = configAdapter.getDefaultNamespace();
+        if (defaultNamespace == null) {
+            defaultNamespace = "aura";
+        }
+
+        return definitionService.getDefDescriptor(String.format("%s:application", defaultNamespace),
+                ApplicationDef.class);
+    }
+	
+    public boolean hasAccess(Definition def) throws QuickFixException {
+        MasterDefRegistry registry = definitionService.getDefRegistry();
+        return registry.hasAccess(getReferencingDescriptor(), def) == null;
     }
 }

@@ -357,7 +357,7 @@ public class CSPReportLoggingUITest extends WebDriverTestCase {
         int waitedFor = 0;
         int interval = 500;
 
-        if (!(testLoggingAdapter instanceof TestLoggingAdapter)) {
+        if (testLoggingAdapter == null) {
             throw new Error("TestLoggingAdapter not configured!");
         }
         List<Map<String, Object>> cspRecords = Lists.newArrayList();

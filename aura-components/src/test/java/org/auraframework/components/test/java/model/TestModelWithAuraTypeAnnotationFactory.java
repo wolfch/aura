@@ -13,35 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.auraframework.docs;
+package org.auraframework.components.test.java.model;
 
 import javax.inject.Inject;
 
-import org.auraframework.adapter.ConfigAdapter;
 import org.auraframework.annotations.Annotations.ServiceComponentModelFactory;
 import org.auraframework.ds.servicecomponent.ModelFactory;
 import org.auraframework.ds.servicecomponent.ModelInitializationException;
-import org.auraframework.service.ContextService;
-import org.auraframework.service.DefinitionService;
-import org.auraframework.throwable.quickfix.QuickFixException;
+import org.auraframework.service.InstanceService;
 
 @ServiceComponentModelFactory
-public class DefOverviewModelFactory  implements ModelFactory<DefOverviewModel> {
-	@Inject
-	ContextService contextService;
+public class TestModelWithAuraTypeAnnotationFactory  implements ModelFactory<TestModelWithAuraTypeAnnotation> {
 	
 	@Inject
-	DefinitionService definitionService;
-	
-	@Inject
-	ConfigAdapter configAdapter;
+	InstanceService instanceService;
 	
 	@Override
-	public DefOverviewModel modelInstance() throws ModelInitializationException {
-		try {
-			return new DefOverviewModel(contextService, definitionService, configAdapter);
-		} catch (QuickFixException e) {
-			throw new ModelInitializationException(e.getMessage(), e);
-		}
+	public TestModelWithAuraTypeAnnotation modelInstance() throws ModelInitializationException {
+		return new TestModelWithAuraTypeAnnotation(instanceService);
 	}
 }

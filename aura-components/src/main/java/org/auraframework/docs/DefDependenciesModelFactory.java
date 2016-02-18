@@ -17,6 +17,7 @@ package org.auraframework.docs;
 
 import javax.inject.Inject;
 
+import org.auraframework.adapter.ConfigAdapter;
 import org.auraframework.annotations.Annotations.ServiceComponentModelFactory;
 import org.auraframework.ds.servicecomponent.ModelFactory;
 import org.auraframework.ds.servicecomponent.ModelInitializationException;
@@ -32,10 +33,13 @@ public class DefDependenciesModelFactory  implements ModelFactory<DefDependencie
 	@Inject
 	DefinitionService definitionService;
 	
+	@Inject
+	ConfigAdapter configAdapter;
+	
 	@Override
 	public DefDependenciesModel modelInstance() throws ModelInitializationException {
 		try {
-			return new DefDependenciesModel(contextService, definitionService);
+			return new DefDependenciesModel(contextService, definitionService, configAdapter);
 		} catch (QuickFixException e) {
 			throw new ModelInitializationException(e.getMessage(), e);
 		}

@@ -18,7 +18,6 @@ package org.auraframework.component.auradev;
 import org.auraframework.annotations.Annotations.ServiceComponentModelInstance;
 import org.auraframework.ds.servicecomponent.ModelInstance;
 import org.auraframework.system.Annotations.AuraEnabled;
-import org.auraframework.system.Annotations.Model;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

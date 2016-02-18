@@ -21,7 +21,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.auraframework.adapter.ConfigAdapter;
 import org.auraframework.annotations.Annotations.ServiceComponentModelInstance;
+import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.DefDescriptor.DefType;
 import org.auraframework.def.Definition;
@@ -31,6 +33,7 @@ import org.auraframework.service.ContextService;
 import org.auraframework.service.DefinitionService;
 import org.auraframework.system.Annotations.AuraEnabled;
 import org.auraframework.system.AuraContext;
+import org.auraframework.system.MasterDefRegistry;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.AuraTextUtil;
 
@@ -44,9 +47,13 @@ import com.google.common.collect.Sets;
 public class DefOverviewModel implements ModelInstance {
 
     private final List<Map<String, Object>> dependencies = Lists.newArrayList();
+    private final DefinitionService definitionService;
+    private final ConfigAdapter configAdapter;
 
-    public DefOverviewModel(ContextService contextService, DefinitionService definitionService) throws QuickFixException {
-
+    public DefOverviewModel(ContextService contextService, DefinitionService definitionService, ConfigAdapter configAdapter) throws QuickFixException {
+    	this.definitionService = definitionService;
+    	this.configAdapter = configAdapter;
+    	
         AuraContext context = contextService.getCurrentContext();
         BaseComponent<?, ?> component = context.getCurrentComponent();
 
@@ -56,7 +63,7 @@ public class DefOverviewModel implements ModelInstance {
 		DefDescriptor<?> descriptor = definitionService.getDefDescriptor(desc, defType.getPrimaryInterface());
 
         Definition def = definitionService.getDefinition(descriptor);
-		ReferenceTreeModel.assertAccess(def);
+		assertAccess(def);
 		
         Map<DefType, List<DefModel>> depsMap = Maps.newEnumMap(DefType.class);
 
@@ -90,5 +97,26 @@ public class DefOverviewModel implements ModelInstance {
     @AuraEnabled
     public List<Map<String, Object>> getDependencies() {
         return this.dependencies;
+    }
+    
+
+    private DefDescriptor<ApplicationDef> getReferencingDescriptor() {
+        String defaultNamespace = configAdapter.getDefaultNamespace();
+        if (defaultNamespace == null) {
+            defaultNamespace = "aura";
+        }
+
+        return definitionService.getDefDescriptor(String.format("%s:application", defaultNamespace),
+                ApplicationDef.class);
+    }
+	
+    public boolean hasAccess(Definition def) throws QuickFixException {
+        MasterDefRegistry registry = definitionService.getDefRegistry();
+        return registry.hasAccess(getReferencingDescriptor(), def) == null;
+    }
+
+    public void assertAccess(Definition def) throws QuickFixException {
+        MasterDefRegistry registry = definitionService.getDefRegistry();
+        registry.assertAccess(getReferencingDescriptor(), def);
     }
 }

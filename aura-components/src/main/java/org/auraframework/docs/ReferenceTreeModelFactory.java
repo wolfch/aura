@@ -15,15 +15,29 @@
  */
 package org.auraframework.docs;
 
+import javax.inject.Inject;
+
+import org.auraframework.adapter.ConfigAdapter;
 import org.auraframework.annotations.Annotations.ServiceComponentModelFactory;
 import org.auraframework.ds.servicecomponent.ModelFactory;
 import org.auraframework.ds.servicecomponent.ModelInitializationException;
+import org.auraframework.service.ContextService;
+import org.auraframework.service.DefinitionService;
 
 @ServiceComponentModelFactory
 public class ReferenceTreeModelFactory implements ModelFactory<ReferenceTreeModel> {
 
+	@Inject
+	ContextService contextService;
+	
+	@Inject
+	DefinitionService definitionService;
+	
+	@Inject
+	ConfigAdapter configAdapter;
+	
 	@Override
 	public ReferenceTreeModel modelInstance() throws ModelInitializationException {
-		return new ReferenceTreeModel();
+		return new ReferenceTreeModel(contextService, definitionService, configAdapter);
 	}
 }

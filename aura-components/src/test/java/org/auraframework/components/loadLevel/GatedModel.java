@@ -18,13 +18,11 @@ package org.auraframework.components.loadLevel;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.auraframework.Aura;
 import org.auraframework.annotations.Annotations.ServiceComponentModelInstance;
 import org.auraframework.ds.servicecomponent.ModelInstance;
 import org.auraframework.instance.BaseComponent;
 import org.auraframework.service.ContextService;
 import org.auraframework.system.Annotations.AuraEnabled;
-import org.auraframework.system.Annotations.Model;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
 /**

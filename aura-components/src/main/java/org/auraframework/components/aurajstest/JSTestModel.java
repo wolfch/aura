@@ -43,10 +43,6 @@ public class JSTestModel implements ModelInstance {
     private final List<TestCaseDef> tcds;
     private final DefinitionService definitionService;
     
-    public JSTestModel() throws QuickFixException {
-    	this(Aura.getContextService(), Aura.getDefinitionService());
-    }
-    
     public JSTestModel(ContextService contextService, DefinitionService definitionService) throws QuickFixException {
         this.definitionService = definitionService;
         

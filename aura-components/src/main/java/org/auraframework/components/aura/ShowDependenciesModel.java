@@ -40,10 +40,6 @@ import com.google.common.collect.Sets;
 @ServiceComponentModelInstance
 public class ShowDependenciesModel implements ModelInstance {
 	
-	public ShowDependenciesModel() throws QuickFixException {
-		this(Aura.getContextService(), Aura.getDefinitionService());
-	}
-	
 	public ShowDependenciesModel(ContextService contextService, DefinitionService definitionService) throws QuickFixException {
 		final String cmpname = (String) contextService.getCurrentContext().getCurrentComponent().getAttributes().getValue("component");
 		
