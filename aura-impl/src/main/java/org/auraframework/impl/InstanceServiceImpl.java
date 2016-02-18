@@ -106,9 +106,9 @@ public class InstanceServiceImpl implements InstanceService {
                 if (descriptor.getDefType() == DefType.COMPONENT) {
                     //DefDescriptor<InterfaceDef> interfaceDesc;
                 }
-                if (def == null) {
+                //if (def == null) {
                     throw dfe;
-                }
+                //}
             }
         }
         return getInstance(def, attributes);

@@ -19,7 +19,8 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
-import org.auraframework.Aura;
+import org.auraframework.adapter.ConfigAdapter;
+import org.auraframework.annotations.Annotations.ServiceComponentModelInstance;
 import org.auraframework.def.AttributeDef;
 import org.auraframework.def.BaseComponentDef;
 import org.auraframework.def.ComponentDef;
@@ -35,10 +36,11 @@ import org.auraframework.def.InterfaceDef;
 import org.auraframework.def.LibraryDef;
 import org.auraframework.def.RegisterEventDef;
 import org.auraframework.def.RootDefinition;
+import org.auraframework.ds.servicecomponent.ModelInstance;
 import org.auraframework.instance.BaseComponent;
+import org.auraframework.service.ContextService;
 import org.auraframework.service.DefinitionService;
 import org.auraframework.system.Annotations.AuraEnabled;
-import org.auraframework.system.Annotations.Model;
 import org.auraframework.system.AuraContext;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.json.Json;
@@ -49,23 +51,22 @@ import com.google.common.collect.Lists;
 /**
  * @since 0.0.196
  */
-@Model
-public class ComponentDefModel {
-    public ComponentDefModel() throws QuickFixException {
-        AuraContext context = Aura.getContextService().getCurrentContext();
+@ServiceComponentModelInstance
+public class ComponentDefModel implements ModelInstance {
+    public ComponentDefModel(ContextService contextService, DefinitionService definitionService, ConfigAdapter configAdapter) throws QuickFixException {
+        AuraContext context = contextService.getCurrentContext();
         BaseComponent<?, ?> component = context.getCurrentComponent();
 
         String desc = (String) component.getAttributes().getValue("descriptor");
 
         DefType defType = DefType.valueOf(((String) component.getAttributes().getValue("defType")).toUpperCase());
-        DefinitionService definitionService = Aura.getDefinitionService();
         descriptor = definitionService.getDefDescriptor(desc, defType.getPrimaryInterface());
-        definition = descriptor.getDef();
+        definition = definitionService.getDefinition(descriptor);
 
         ReferenceTreeModel.assertAccess(definition);
 
         // Show source tab if there is no default namespace (e.g. running raw open source) or if the target and source namespace are the same
-        String defaultNamespace = Aura.getConfigAdapter().getDefaultNamespace();
+        String defaultNamespace = configAdapter.getDefaultNamespace();
         showSource = defaultNamespace == null || ReferenceTreeModel.getReferencingDescriptor().getNamespace().equalsIgnoreCase(definition.getDescriptor().getNamespace());
 
         String type = null;
@@ -93,7 +94,7 @@ public class ComponentDefModel {
                 }
 
                 for (DefDescriptor<InterfaceDef> intf : cmpDef.getInterfaces()) {
-                    if (ReferenceTreeModel.hasAccess(intf.getDef())) {
+                    if (ReferenceTreeModel.hasAccess(definitionService.getDefinition(intf))) {
                         interfaces.add(intf.getNamespace() + ":" + intf.getName());
                     }
                 }
@@ -138,7 +139,7 @@ public class ComponentDefModel {
                 for (DefDescriptor<?> dep : deps) {
                     // we already surface the documentation--users don't need to see the source for it.
                     if (dep.getDefType() != DefType.DOCUMENTATION) {
-                        Definition def = dep.getDef();
+                        Definition def = definitionService.getDefinition(dep);
                         if (ReferenceTreeModel.hasAccess(def)) {
                             defs.add(new DefModel(dep));
                         }
@@ -151,7 +152,7 @@ public class ComponentDefModel {
                 Collection<ImportDef> importDefs = ((ComponentDef) definition).getImportDefs();
 
                 for (ImportDef importDef : importDefs) {
-                    LibraryDef libraryDef = Aura.getDefinitionService().getDefinition(importDef.getLibraryDescriptor());
+                    LibraryDef libraryDef = definitionService.getDefinition(importDef.getLibraryDescriptor());
                     if (ReferenceTreeModel.hasAccess(libraryDef)) {
                         defs.add(new DefModel(libraryDef.getDescriptor()));
 

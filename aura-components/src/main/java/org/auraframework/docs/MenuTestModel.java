@@ -18,15 +18,17 @@ package org.auraframework.docs;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.auraframework.annotations.Annotations.ServiceComponentModelInstance;
 import org.auraframework.components.ui.MenuItem;
+import org.auraframework.ds.servicecomponent.ModelInstance;
 import org.auraframework.system.Annotations.AuraEnabled;
 import org.auraframework.system.Annotations.Model;
 
 /**
  * Model for auradocs:demoMenu to demo aura:menu
  */
-@Model
-public class MenuTestModel {
+@ServiceComponentModelInstance
+public class MenuTestModel implements ModelInstance {
 
     @AuraEnabled
     public List<MenuItem> getData() {

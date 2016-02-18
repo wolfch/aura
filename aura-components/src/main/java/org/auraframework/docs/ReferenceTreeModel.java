@@ -17,14 +17,17 @@ package org.auraframework.docs;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
 import org.auraframework.Aura;
 import org.auraframework.adapter.ConfigAdapter;
+import org.auraframework.annotations.Annotations.ServiceComponentModelInstance;
 import org.auraframework.components.ui.TreeNode;
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.DefDescriptor.DefType;
 import org.auraframework.def.Definition;
 import org.auraframework.def.DescriptorFilter;
+import org.auraframework.ds.servicecomponent.ModelInstance;
 import org.auraframework.service.DefinitionService;
 import org.auraframework.system.Annotations.AuraEnabled;
 import org.auraframework.system.Annotations.Model;
@@ -36,8 +39,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-@Model
-public class ReferenceTreeModel {
+@ServiceComponentModelInstance
+public class ReferenceTreeModel implements ModelInstance{
+	
+//	public ReferenceTreeModel(ContextService contextService, DefinitionService definitionService, ConfigAdapter configAdapter) {
+//		
+//	}
+	
     public static boolean hasAccess(Definition def) throws QuickFixException {
         DefinitionService definitionService = Aura.getDefinitionService();
         MasterDefRegistry registry = definitionService.getDefRegistry();

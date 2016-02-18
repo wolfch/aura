@@ -20,10 +20,10 @@ import org.auraframework.ds.servicecomponent.ModelFactory;
 import org.auraframework.ds.servicecomponent.ModelInitializationException;
 
 @ServiceComponentModelFactory
-public class MenuTestModelFactory  implements ModelFactory<MenuTestModel> {
+public class MenuItemsTestModelFactory  implements ModelFactory<MenuItemsTestModel> {
 	
 	@Override
-	public MenuTestModel modelInstance() throws ModelInitializationException {
-		return new MenuTestModel();
+	public MenuItemsTestModel modelInstance() throws ModelInitializationException {
+		return new MenuItemsTestModel();
 	}
 }

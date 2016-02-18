@@ -21,14 +21,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.auraframework.Aura;
+import org.auraframework.annotations.Annotations.ServiceComponentModelInstance;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.DefDescriptor.DefType;
 import org.auraframework.def.Definition;
+import org.auraframework.ds.servicecomponent.ModelInstance;
 import org.auraframework.instance.BaseComponent;
+import org.auraframework.service.ContextService;
 import org.auraframework.service.DefinitionService;
 import org.auraframework.system.Annotations.AuraEnabled;
-import org.auraframework.system.Annotations.Model;
 import org.auraframework.system.AuraContext;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.AuraTextUtil;
@@ -39,23 +40,22 @@ import com.google.common.collect.Sets;
 
 /**
  */
-@Model
-public class DefOverviewModel {
+@ServiceComponentModelInstance
+public class DefOverviewModel implements ModelInstance {
 
     private final List<Map<String, Object>> dependencies = Lists.newArrayList();
 
-    public DefOverviewModel() throws QuickFixException {
+    public DefOverviewModel(ContextService contextService, DefinitionService definitionService) throws QuickFixException {
 
-        AuraContext context = Aura.getContextService().getCurrentContext();
+        AuraContext context = contextService.getCurrentContext();
         BaseComponent<?, ?> component = context.getCurrentComponent();
 
         String desc = (String) component.getAttributes().getValue("descriptor");
 
         DefType defType = DefType.valueOf(((String) component.getAttributes().getValue("defType")).toUpperCase());
-        DefinitionService definitionService = Aura.getDefinitionService();
 		DefDescriptor<?> descriptor = definitionService.getDefDescriptor(desc, defType.getPrimaryInterface());
 
-        Definition def = descriptor.getDef();
+        Definition def = definitionService.getDefinition(descriptor);
 		ReferenceTreeModel.assertAccess(def);
 		
         Map<DefType, List<DefModel>> depsMap = Maps.newEnumMap(DefType.class);

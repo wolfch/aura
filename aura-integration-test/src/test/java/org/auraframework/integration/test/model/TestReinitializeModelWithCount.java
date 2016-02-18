@@ -17,12 +17,11 @@ package org.auraframework.integration.test.model;
 
 import com.google.common.collect.Maps;
 
-import org.auraframework.Aura;
 import org.auraframework.annotations.Annotations.ServiceComponentModelInstance;
 import org.auraframework.components.test.java.model.TestReinitializeModel;
+import org.auraframework.ds.servicecomponent.ModelInstance;
 import org.auraframework.service.ContextService;
 import org.auraframework.system.Annotations.AuraEnabled;
-import org.auraframework.system.Annotations.Model;
 import org.auraframework.test.TestContext;
 import org.auraframework.test.TestContextAdapter;
 import org.auraframework.throwable.quickfix.QuickFixException;
@@ -31,7 +30,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 @ServiceComponentModelInstance
-public class TestReinitializeModelWithCount extends TestReinitializeModel {
+public class TestReinitializeModelWithCount extends TestReinitializeModel implements ModelInstance {
     
     private static Map<TestContext, Integer> counters = Maps.newHashMap();
 

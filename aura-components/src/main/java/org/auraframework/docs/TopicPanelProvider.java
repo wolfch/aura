@@ -24,8 +24,10 @@ import org.auraframework.def.DefDescriptor;
 import org.auraframework.instance.BaseComponent;
 import org.auraframework.service.ContextService;
 import org.auraframework.service.DefinitionService;
+import org.auraframework.system.Annotations.Provider;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
+@Provider
 @ServiceComponentProvider
 public class TopicPanelProvider implements ComponentDescriptorProvider {
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.auraframework.components.auradocs;
+package org.auraframework.docs;
 
 import javax.inject.Inject;
 
@@ -25,8 +25,7 @@ import org.auraframework.service.DefinitionService;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
 @ServiceComponentModelFactory
-public class DefOverviewModelFactory implements ModelFactory<DefOverviewModel>{
-
+public class EditorPanelModelFactory  implements ModelFactory<EditorPanelModel> {
 	@Inject
 	ContextService contextService;
 	
@@ -34,12 +33,11 @@ public class DefOverviewModelFactory implements ModelFactory<DefOverviewModel>{
 	DefinitionService definitionService;
 	
 	@Override
-	public DefOverviewModel modelInstance() throws ModelInitializationException {
+	public EditorPanelModel modelInstance() throws ModelInitializationException {
 		try {
-			return new DefOverviewModel(contextService, definitionService);
+			return new EditorPanelModel(contextService, definitionService);
 		} catch (QuickFixException e) {
 			throw new ModelInitializationException(e.getMessage(), e);
 		}
 	}
-	
 }

@@ -31,7 +31,7 @@ import org.auraframework.system.Annotations.Model;
  * A Aura model I used to test ui:menu.
  */
 @ServiceComponentModelInstance
-public class MenuTestModel implements ModelInstance {
+public class MenuItemsTestModel implements ModelInstance {
 
     @AuraEnabled
     public List<MenuItem> getData() {
