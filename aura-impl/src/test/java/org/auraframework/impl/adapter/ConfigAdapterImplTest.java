@@ -16,11 +16,13 @@
 package org.auraframework.impl.adapter;
 
 import org.auraframework.adapter.ConfigAdapter;
+import org.auraframework.adapter.LocalizationAdapter;
 import org.auraframework.impl.context.AuraContextServiceImpl;
 import org.auraframework.impl.javascript.AuraJavascriptGroup;
 import org.auraframework.impl.source.AuraResourcesHashingGroup;
 import org.auraframework.impl.util.AuraImplFiles;
 import org.auraframework.service.ContextService;
+import org.auraframework.service.InstanceService;
 import org.auraframework.throwable.AuraRuntimeException;
 import org.auraframework.util.FileMonitor;
 import org.auraframework.util.IOUtil;
@@ -31,6 +33,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import javax.inject.Inject;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
@@ -54,11 +57,20 @@ import static org.mockito.Mockito.when;
  */
 public class ConfigAdapterImplTest extends UnitTestCase {
     @Inject
-    private ConfigAdapter configAdapter;
+    ConfigAdapter configAdapter;
 
     @Inject
-    private FileMonitor fileMonitor;
+    FileMonitor fileMonitor;
 
+    @Inject
+    ContextService contextService;
+    
+    @Inject
+    InstanceService instanceService;
+    
+    @Inject
+    LocalizationAdapter localizationAdapter;
+    
     // An exception thrown to test error handling.
     public static class MockException extends RuntimeException {
         private static final long serialVersionUID = -8065118313848222864L;
@@ -111,7 +123,7 @@ public class ConfigAdapterImplTest extends UnitTestCase {
         // But an error case should fail, and not be swallowed.
         final AuraJavascriptGroup mockJsGroup = mock(AuraJavascriptGroup.class);
 
-        ConfigAdapterImpl mockAdapter = new ConfigAdapterImpl(IOUtil.newTempDir(getName())) {
+        ConfigAdapterImpl mockAdapter = new ConfigAdapterImpl(IOUtil.newTempDir(getName()), localizationAdapter, instanceService, contextService, fileMonitor) {
             @Override
             public AuraJavascriptGroup newAuraJavascriptGroup() throws IOException {
                 return mockJsGroup;
@@ -180,7 +192,7 @@ public class ConfigAdapterImplTest extends UnitTestCase {
         when(resourcesGroup.isStale()).thenReturn(false);
         when(resourcesGroup.getGroupHash()).thenReturn(resourcesHash);
 
-        ConfigAdapterImpl configAdapter = new ConfigAdapterImpl(IOUtil.newTempDir(getName())) {
+        ConfigAdapterImpl configAdapter = new ConfigAdapterImpl(IOUtil.newTempDir(getName()), localizationAdapter, instanceService, contextService, fileMonitor) {
             @Override
             protected AuraJavascriptGroup newAuraJavascriptGroup() throws IOException {
                 return jsGroup;
@@ -233,7 +245,7 @@ public class ConfigAdapterImplTest extends UnitTestCase {
 
     @Test
     public void testIsPrivilegedNamespacesWithBadArguments() {
-        ConfigAdapterImpl impl = new ConfigAdapterImpl(IOUtil.newTempDir(getName()));
+        ConfigAdapterImpl impl = new ConfigAdapterImpl(IOUtil.newTempDir(getName()), localizationAdapter, instanceService, contextService, fileMonitor);
         assertFalse("null should not be a privileged namespace", impl.isPrivilegedNamespace(null));
         assertFalse("Empty string should not be a privileged namespace", impl.isPrivilegedNamespace(""));
         assertFalse("Wild characters should not be privileged namespace", impl.isPrivilegedNamespace("*"));
@@ -243,7 +255,7 @@ public class ConfigAdapterImplTest extends UnitTestCase {
     @Test
     public void testIsPrivilegedNamespacesAfterRegistering() {
         String namespace = this.getName() + System.currentTimeMillis();
-        ConfigAdapterImpl impl = new ConfigAdapterImpl(IOUtil.newTempDir(getName()));
+        ConfigAdapterImpl impl = new ConfigAdapterImpl(IOUtil.newTempDir(getName()), localizationAdapter, instanceService, contextService, fileMonitor);
         impl.addPrivilegedNamespace(namespace);
         assertTrue("Failed to register a privileged namespace.", impl.isPrivilegedNamespace(namespace));
         assertTrue("Privileged namespace checks are case sensitive.",
@@ -252,7 +264,7 @@ public class ConfigAdapterImplTest extends UnitTestCase {
 
     @Test
     public void testAddPrivilegedNamespacesWithBadArguments() {
-        ConfigAdapterImpl impl = new ConfigAdapterImpl(IOUtil.newTempDir(getName()));
+        ConfigAdapterImpl impl = new ConfigAdapterImpl(IOUtil.newTempDir(getName()), localizationAdapter, instanceService, contextService, fileMonitor);
         impl.addPrivilegedNamespace(null);
         assertFalse(impl.isPrivilegedNamespace(null));
 
@@ -262,7 +274,7 @@ public class ConfigAdapterImplTest extends UnitTestCase {
 
     @Test
     public void testGetPrivilegedNamespacesReturnsSortedNamespaces() {
-        ConfigAdapterImpl impl = new ConfigAdapterImpl(IOUtil.newTempDir(getName()));
+        ConfigAdapterImpl impl = new ConfigAdapterImpl(IOUtil.newTempDir(getName()), localizationAdapter, instanceService, contextService, fileMonitor);
         impl.getPrivilegedNamespaces().clear();
         String[] namespaces = new String[] {"c", "a", "d", "b","e"};
         for(String namespace : namespaces) {

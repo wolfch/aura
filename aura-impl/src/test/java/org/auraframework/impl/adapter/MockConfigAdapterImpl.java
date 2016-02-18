@@ -17,19 +17,25 @@ package org.auraframework.impl.adapter;
 
 import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Sets;
+
 import org.auraframework.adapter.ContentSecurityPolicy;
 import org.auraframework.adapter.DefaultContentSecurityPolicy;
+import org.auraframework.adapter.LocalizationAdapter;
 import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.Definition;
+import org.auraframework.service.ContextService;
+import org.auraframework.service.InstanceService;
 import org.auraframework.test.TestContext;
 import org.auraframework.test.TestContextAdapter;
 import org.auraframework.test.adapter.MockConfigAdapter;
 import org.auraframework.test.source.StringSourceLoader;
+import org.auraframework.util.FileMonitor;
 import org.springframework.context.annotation.Primary;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -151,8 +157,8 @@ public class MockConfigAdapterImpl extends ConfigAdapterImpl implements MockConf
         super();
     }
 
-    public MockConfigAdapterImpl(String resourceCacheDir) {
-        super(resourceCacheDir);
+    public MockConfigAdapterImpl(String resourceCacheDir, LocalizationAdapter localizationAdapter, InstanceService instanceService, ContextService contextService, FileMonitor fileMonitor) {
+        super(resourceCacheDir, localizationAdapter, instanceService, contextService, fileMonitor);
     }
 
     @Override

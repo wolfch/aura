@@ -112,20 +112,30 @@ public class ConfigAdapterImpl implements ConfigAdapter {
     @Inject
     private InstanceService instanceService;
 
+    @Inject
     private ContextService contextService;
+    
+    @Inject
     private FileMonitor fileMonitor;
+    
     private String resourceCacheDir;
 
     public ConfigAdapterImpl() {
-        this(getDefaultCacheDir());
+        this.resourceCacheDir = getDefaultCacheDir();
     }
 
     private static String getDefaultCacheDir() {
         return IOUtil.newTempDir("auracache");
     }
 
-    public ConfigAdapterImpl(String resourceCacheDir) {
+    public ConfigAdapterImpl(String resourceCacheDir, LocalizationAdapter localizationAdapter, InstanceService instanceService, ContextService contextService, FileMonitor fileMonitor) {
         this.resourceCacheDir = resourceCacheDir;
+        this.localizationAdapter = localizationAdapter;
+        this.instanceService = instanceService;
+        this.contextService = contextService;
+        this.fileMonitor = fileMonitor;
+        
+        initialize();
     }
 
     @PostConstruct
@@ -194,17 +204,14 @@ public class ConfigAdapterImpl implements ConfigAdapter {
 
         contextService.registerGlobal("isVoiceOver", true, false);
         contextService.registerGlobal("dynamicTypeSize", true, "");
+        
+        if (!isProduction()) {
+            fileMonitor.start();
+        }
     }
 
     protected FileGroup newAuraResourcesHashingGroup() throws IOException {
         return new AuraResourcesHashingGroup(fileMonitor, true);
-    }
-
-    @PostConstruct
-    public void init() {
-        if (!isProduction()) {
-            fileMonitor.start();
-        }
     }
     
     @Override
@@ -661,22 +668,14 @@ public class ConfigAdapterImpl implements ConfigAdapter {
         return new DefaultContentSecurityPolicy(inlineStyle);
     }
 
-    /**
-     * Injection override.
-     */
     public void setLocalizationAdapter(LocalizationAdapter adapter) {
         this.localizationAdapter = adapter;
     }
 
-    /**
-     * Injection override.
-     */
-    @Inject
     public void setContextService(ContextService service) {
         this.contextService = service;
     }
 
-    @Inject
     public void setFileMonitor(FileMonitor fileMonitor) {
         this.fileMonitor = fileMonitor;
     }

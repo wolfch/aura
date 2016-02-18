@@ -53,8 +53,11 @@ public class ConfigAdapterIntegrationTest extends AuraImplTestCase {
     @Inject
     ConfigAdapter realConfigAdapter;
 
+    @Inject
+    LocalizationAdapter localizationAdapter;
+    
     private void validateTimezoneIds(String[] timezonesToCheck) throws Exception {
-        ConfigAdapterImpl configAdapter = new ConfigAdapterImpl(IOUtil.newTempDir(getName()));
+        ConfigAdapterImpl configAdapter = new ConfigAdapterImpl(IOUtil.newTempDir(getName()), localizationAdapter, instanceService, contextService, fileMonitor);
         ResourceLoader loader = realConfigAdapter.getResourceLoader();
         List<String> failures = Lists.newLinkedList();
         for (String timezone : timezonesToCheck) {
@@ -82,7 +85,7 @@ public class ConfigAdapterIntegrationTest extends AuraImplTestCase {
 
     @Test
     public void testGetEquivalentTimezoneSamples() throws Exception {
-        ConfigAdapterImpl impl = new ConfigAdapterImpl(IOUtil.newTempDir(getName()));
+        ConfigAdapterImpl impl = new ConfigAdapterImpl(IOUtil.newTempDir(getName()), localizationAdapter, instanceService, contextService, fileMonitor);
         String tz = impl.getAvailableTimezone("US/Pacific");
         assertEquals("US/Pacific should return America/Los_Angeles as available equivalent",
                 "America/Los_Angeles", tz);
@@ -116,7 +119,7 @@ public class ConfigAdapterIntegrationTest extends AuraImplTestCase {
     @Test
     public void testAllWalltimeMapped() throws Exception {
         Set<String> timezones = Sets.newHashSet();
-        Map<String, String> timezonesMap = AuraPrivateAccessor.<Map<String, String>>invoke(new ConfigAdapterImpl(IOUtil.newTempDir(getName())), "readEquivalentTimezones");
+        Map<String, String> timezonesMap = AuraPrivateAccessor.<Map<String, String>>invoke(new ConfigAdapterImpl(IOUtil.newTempDir(getName()), localizationAdapter, instanceService, contextService, fileMonitor), "readEquivalentTimezones");
         for (String equivalent : timezonesMap.values()) {
             timezones.add(equivalent.replace("/", "-"));
         }
@@ -424,7 +427,7 @@ public class ConfigAdapterIntegrationTest extends AuraImplTestCase {
         LocalizationAdapter mockAdapter = mock(LocalizationAdapter.class);
         when(mockAdapter.getAuraLocale()).thenReturn(auraLocale);
 
-        ConfigAdapterImpl configAdapter = new ConfigAdapterImpl(IOUtil.newTempDir(getName()));
+        ConfigAdapterImpl configAdapter = new ConfigAdapterImpl(IOUtil.newTempDir(getName()), localizationAdapter, instanceService, contextService, fileMonitor);
         configAdapter.setLocalizationAdapter(mockAdapter);
         startAppContext("<aura:application></aura:application>");
 
@@ -438,7 +441,7 @@ public class ConfigAdapterIntegrationTest extends AuraImplTestCase {
         LocalizationAdapter mockAdapter = mock(LocalizationAdapter.class);
         when(mockAdapter.getAuraLocale()).thenReturn(auraLocale);
 
-        ConfigAdapterImpl configAdapter = new ConfigAdapterImpl(IOUtil.newTempDir(getName()));
+        ConfigAdapterImpl configAdapter = new ConfigAdapterImpl(IOUtil.newTempDir(getName()), localizationAdapter, instanceService, contextService, fileMonitor);
         configAdapter.setLocalizationAdapter(mockAdapter);
 
         startAppContext("<aura:application></aura:application>");
