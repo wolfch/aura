@@ -18,6 +18,7 @@ package org.auraframework.impl.instance;
 import java.util.Map;
 
 import org.auraframework.annotations.Annotations.ServiceComponent;
+import org.auraframework.annotations.Annotations.ServiceComponentModelInstance;
 import org.auraframework.def.JavaModelDef;
 import org.auraframework.def.ModelDef;
 import org.auraframework.ds.servicecomponent.ModelFactory;
@@ -26,6 +27,8 @@ import org.auraframework.impl.java.model.JavaModel;
 import org.auraframework.impl.java.model.JavaModelDefImpl;
 import org.auraframework.instance.InstanceBuilder;
 import org.auraframework.instance.Model;
+import org.auraframework.throwable.AuraExecutionException;
+import org.auraframework.throwable.AuraRuntimeException;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -43,12 +46,12 @@ public class ModelInstanceBuilder implements InstanceBuilder<Model, ModelDef>, A
     @Override
     public Model getInstance(ModelDef modelDef, Map<String, Object> attributes) {
         Class<?> clazz = ((JavaModelDef) modelDef).getJavaType();
-        String modelFactoryClassName = clazz.getName() + "Factory";
+        boolean isServiceComponentModelInstance = clazz.getAnnotation(ServiceComponentModelInstance.class) != null;
         Object bean = null;
-        try {
-            bean = clazz.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
+
+        if (isServiceComponentModelInstance) {
             try {
+                String modelFactoryClassName = clazz.getName() + "Factory";
                 @SuppressWarnings("unchecked")
                 Class<? extends ModelFactory> modelFactoryClass = (Class<? extends ModelFactory>) Class
                         .forName(modelFactoryClassName);
@@ -56,11 +59,16 @@ public class ModelInstanceBuilder implements InstanceBuilder<Model, ModelDef>, A
                 if (instance instanceof ModelFactory) {
                     bean = ((ModelFactory) instance).modelInstance();
                 }
-                // Factory class exists but factory bean could not be found
-            } catch (ClassNotFoundException e1) {
-                // Factory class could not be found
-            } catch (ModelInitializationException x) {
-                // The factory was apparently found but failed to create model instance
+            } catch (ClassNotFoundException e) {
+                throw new AuraRuntimeException("Factory class could not be found", e);
+            } catch (ModelInitializationException e) {
+                throw new AuraRuntimeException("Factory failed to create model instance", e);
+            }
+        } else {
+            try {
+                bean = clazz.newInstance();
+            } catch (InstantiationException | IllegalAccessException e) {
+                throw new AuraExecutionException(e.getMessage(), modelDef.getLocation(), e);
             }
         }
 
