@@ -15,26 +15,26 @@
  */
 package org.auraframework.impl.validation;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.Set;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.google.common.base.Charsets;
+import com.google.common.collect.Lists;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.auraframework.Aura;
+import org.auraframework.adapter.ServletUtilAdapter;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.http.AuraBaseServlet;
+import org.auraframework.service.ContextService;
 import org.auraframework.system.AuraContext;
 import org.auraframework.util.json.JsonEncoder;
 import org.auraframework.util.validation.ValidationError;
 
-import com.google.common.base.Charsets;
-import com.google.common.collect.Lists;
+import javax.inject.Inject;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Servlet used as endpoint for the Aura ValidationClient
@@ -43,13 +43,19 @@ public class AuraValidationServlet extends AuraBaseServlet {
 
     private static final Log LOG = LogFactory.getLog(AuraValidationServlet.class);
 
+    @Inject
+    private ServletUtilAdapter servletUtilAdapter;
+
+    @Inject
+    private ContextService contextService;
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         AuraContext context = ValidationUtil.startValidationContext();
         try {
             handle(request, response);
         } catch (Exception ex) {
-            Aura.getServletUtilAdapter().handleServletException(ex, false, context, request, response, false);
+            servletUtilAdapter.handleServletException(ex, false, context, request, response, false);
         } finally {
             ValidationUtil.endValidationContext();
         }
@@ -77,7 +83,7 @@ public class AuraValidationServlet extends AuraBaseServlet {
         String charset = Charsets.UTF_8.toString();
         response.setStatus(HttpServletResponse.SC_OK);
         response.setCharacterEncoding(charset);
-        setBasicHeaders(Aura.getContextService().getCurrentContext().getApplicationDescriptor(),
+        setBasicHeaders(contextService.getCurrentContext().getApplicationDescriptor(),
                 request, response);
 
         if (report != null) {

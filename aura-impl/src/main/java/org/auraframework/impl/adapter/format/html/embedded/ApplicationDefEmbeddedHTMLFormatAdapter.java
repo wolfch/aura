@@ -16,8 +16,8 @@
 package org.auraframework.impl.adapter.format.html.embedded;
 
 import com.google.common.collect.Maps;
-import org.auraframework.Aura;
 import org.auraframework.adapter.ConfigAdapter;
+import org.auraframework.adapter.ServletUtilAdapter;
 import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.ComponentDef;
@@ -58,6 +58,9 @@ public class ApplicationDefEmbeddedHTMLFormatAdapter extends EmbeddedHTMLFormatA
     @Inject
     private ConfigAdapter configAdapter;
 
+    @Inject
+    private ServletUtilAdapter servletUtilAdapter;
+
     @Override
     public Class<ApplicationDef> getType() {
         return ApplicationDef.class;
@@ -72,10 +75,10 @@ public class ApplicationDefEmbeddedHTMLFormatAdapter extends EmbeddedHTMLFormatA
             Map<String, Object> attributes = Maps.newHashMap();
 
             StringBuilder sb = new StringBuilder();
-            writeHtmlStyles(Aura.getServletUtilAdapter().getStyles(context), sb);
+            writeHtmlStyles(servletUtilAdapter.getStyles(context), sb);
             attributes.put("auraStyleTags", sb.toString());
             sb.setLength(0);
-            writeHtmlScripts(Aura.getServletUtilAdapter().getScripts(context), sb);
+            writeHtmlScripts(servletUtilAdapter.getScripts(context), sb);
             DefDescriptor<StyleDef> styleDefDesc = templateDef.getStyleDescriptor();
             if (styleDefDesc != null) {
                 attributes.put("auraInlineStyle", styleDefDesc.getDef().getCode());

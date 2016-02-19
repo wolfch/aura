@@ -16,7 +16,7 @@
 package org.auraframework.impl.adapter.format.html;
 
 import com.google.common.collect.Maps;
-import org.auraframework.Aura;
+import org.auraframework.adapter.ServletUtilAdapter;
 import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.TestSuiteDef;
@@ -49,6 +49,9 @@ public class TestSuiteDefHTMLFormatAdapter extends HTMLFormatAdapter<TestSuiteDe
     @Inject
     private SerializationService serializationService;
 
+    @Inject
+    private ServletUtilAdapter servletUtilAdapter;
+
     @Override
     public Class<TestSuiteDef> getType() {
         return TestSuiteDef.class;
@@ -63,11 +66,11 @@ public class TestSuiteDefHTMLFormatAdapter extends HTMLFormatAdapter<TestSuiteDe
         attribs.put("bodyClass", " ");
 
         StringBuilder sb = new StringBuilder();
-        writeHtmlStyles(Aura.getServletUtilAdapter().getStyles(context), sb);
+        writeHtmlStyles(servletUtilAdapter.getStyles(context), sb);
         attribs.put("auraStyleTags", sb.toString());
 
         sb = new StringBuilder();
-        writeHtmlScripts(Aura.getServletUtilAdapter().getScripts(context), sb);
+        writeHtmlScripts(servletUtilAdapter.getScripts(context), sb);
         attribs.put("auraScriptTags", sb.toString());
 
         sb = new StringBuilder();

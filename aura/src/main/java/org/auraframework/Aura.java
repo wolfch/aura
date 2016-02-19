@@ -15,10 +15,7 @@
  */
 package org.auraframework;
 
-import javax.inject.Inject;
-
 import org.auraframework.adapter.ConfigAdapter;
-import org.auraframework.adapter.ServletUtilAdapter;
 import org.auraframework.adapter.StyleAdapter;
 import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.def.Definition;
@@ -32,6 +29,8 @@ import org.auraframework.service.LoggingService;
 import org.auraframework.system.AuraContext;
 import org.auraframework.util.adapter.SourceControlAdapter;
 
+import javax.inject.Inject;
+
 /**
  * Entry point for accessing Aura services
  */
@@ -44,7 +43,6 @@ public class Aura implements AuraDeprecated {
     private static DefinitionService definitionService;
     private static ContextService contextService;
     private static InstanceService instanceService;
-    private static ServletUtilAdapter servletUtilAdapter;
     private static SourceControlAdapter sourceControlAdapter;
     private static ConverterService converterService;
 
@@ -76,11 +74,6 @@ public class Aura implements AuraDeprecated {
     @Inject
     public void setStyleAdapter(StyleAdapter adapter) {
         styleAdapter = adapter;
-    }
-
-    @Inject
-    public void setServletUtilAdapter(ServletUtilAdapter adapter) {
-        servletUtilAdapter = adapter;
     }
 
     @Inject
@@ -146,13 +139,6 @@ public class Aura implements AuraDeprecated {
      */
     public static StyleAdapter getStyleAdapter() {
         return styleAdapter;
-    }
-
-    /**
-     * Get the Servlet Util Adapter: Used to provide overrides for servlet functionality.
-     */
-    public static ServletUtilAdapter getServletUtilAdapter() {
-        return servletUtilAdapter;
     }
 
     /**

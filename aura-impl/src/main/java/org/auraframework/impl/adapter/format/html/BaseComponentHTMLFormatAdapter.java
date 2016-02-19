@@ -17,8 +17,9 @@ package org.auraframework.impl.adapter.format.html;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.auraframework.Aura;
 import org.auraframework.adapter.ConfigAdapter;
+import org.auraframework.adapter.ServletUtilAdapter;
+import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.def.BaseComponentDef;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
@@ -42,6 +43,7 @@ import java.io.IOException;
 import java.util.Map;
 
 @ThreadSafe
+@ServiceComponent
 public abstract class BaseComponentHTMLFormatAdapter<T extends BaseComponent<?, ?>> extends HTMLFormatAdapter<T> {
     @Inject
     private ContextService contextService;
@@ -57,6 +59,9 @@ public abstract class BaseComponentHTMLFormatAdapter<T extends BaseComponent<?, 
 
     @Inject
     private ConfigAdapter configAdapter;
+
+    @Inject
+    private ServletUtilAdapter servletUtilAdapter;
     
     @Override
     public void write(T value, Map<String, Object> componentAttributes, Appendable out) throws IOException {
@@ -73,10 +78,10 @@ public abstract class BaseComponentHTMLFormatAdapter<T extends BaseComponent<?, 
             attributes.put("auraResetTags", sb.toString());
 
             sb.setLength(0);
-            writeHtmlStyles(Aura.getServletUtilAdapter().getStyles(context), sb);
+            writeHtmlStyles(servletUtilAdapter.getStyles(context), sb);
             attributes.put("auraStyleTags", sb.toString());
             sb.setLength(0);
-            writeHtmlScripts(Aura.getServletUtilAdapter().getScripts(context), sb);
+            writeHtmlScripts(servletUtilAdapter.getScripts(context), sb);
             DefDescriptor<StyleDef> styleDefDesc = templateDef.getStyleDescriptor();
             if (styleDefDesc != null) {
                 attributes.put("auraInlineStyle", styleDefDesc.getDef().getCode());
@@ -86,7 +91,7 @@ public abstract class BaseComponentHTMLFormatAdapter<T extends BaseComponent<?, 
             Mode mode = context.getMode();
 
             if (mode.allowLocalRendering() && def.isLocallyRenderable()) {
-                BaseComponent<?,?> cmp = (BaseComponent<?,?>)instanceService.getInstance(def, componentAttributes);
+                BaseComponent<?, ?> cmp = (BaseComponent<?, ?>) instanceService.getInstance(def, componentAttributes);
 
                 attributes.put("body", Lists.<BaseComponent<?, ?>> newArrayList(cmp));
                 attributes.put("bodyClass", "");

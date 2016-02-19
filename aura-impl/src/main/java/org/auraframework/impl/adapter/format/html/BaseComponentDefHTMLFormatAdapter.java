@@ -17,8 +17,9 @@ package org.auraframework.impl.adapter.format.html;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.auraframework.Aura;
 import org.auraframework.adapter.ConfigAdapter;
+import org.auraframework.adapter.ServletUtilAdapter;
+import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.def.BaseComponentDef;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
@@ -43,18 +44,22 @@ import java.io.IOException;
 import java.util.Map;
 
 @ThreadSafe
+@ServiceComponent
 public abstract class BaseComponentDefHTMLFormatAdapter<T extends BaseComponentDef> extends HTMLFormatAdapter<T> {
     @Inject
-    ConfigAdapter configAdapter;
+    private ConfigAdapter configAdapter;
 
     @Inject
-    ContextService contextService;
+    private ContextService contextService;
 
     @Inject
-    InstanceService instanceService;
+    private InstanceService instanceService;
 
     @Inject
-    RenderingService renderingService;
+    private RenderingService renderingService;
+
+    @Inject
+    private ServletUtilAdapter servletUtilAdapter;
 
     private ManifestUtil manifestUtil;
 
@@ -76,7 +81,7 @@ public abstract class BaseComponentDefHTMLFormatAdapter<T extends BaseComponentD
             AuraContext context = contextService.getCurrentContext();
 
             sb.setLength(0);
-            writeHtmlStyles(Aura.getServletUtilAdapter().getStyles(context), sb);
+            writeHtmlStyles(servletUtilAdapter.getStyles(context), sb);
             attributes.put("auraStyleTags", sb.toString());
 
             DefDescriptor<StyleDef> styleDefDesc = templateDef.getStyleDescriptor();
@@ -88,9 +93,7 @@ public abstract class BaseComponentDefHTMLFormatAdapter<T extends BaseComponentD
             Mode mode = context.getMode();
 
             if (mode.allowLocalRendering() && value.isLocallyRenderable()) {
-                BaseComponent<?, ?> cmp = null;
-
-                cmp = (BaseComponent<?, ?>) instanceService.getInstance(value, componentAttributes);
+                BaseComponent<?, ?> cmp = (BaseComponent<?, ?>) instanceService.getInstance(value, componentAttributes);
 
                 attributes.put("body", Lists.<BaseComponent<?, ?>> newArrayList(cmp));
                 attributes.put("bodyClass", "");
@@ -102,11 +105,11 @@ public abstract class BaseComponentDefHTMLFormatAdapter<T extends BaseComponentD
                 }
 
                 sb.setLength(0);
-                writeHtmlScripts(Aura.getServletUtilAdapter().getBaseScripts(context), sb);
+                writeHtmlScripts(servletUtilAdapter.getBaseScripts(context), sb);
                 attributes.put("auraBaseScriptTags", sb.toString());
 
                 sb.setLength(0);
-                writeHtmlScripts(Aura.getServletUtilAdapter().getNamespacesScripts(context), true, sb);
+                writeHtmlScripts(servletUtilAdapter.getNamespacesScripts(context), true, sb);
                 attributes.put("auraNamespacesScriptTags", sb.toString());
 
                 if(mode != Mode.PROD && mode != Mode.PRODDEBUG &&
