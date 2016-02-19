@@ -15,6 +15,8 @@
  */
 package org.auraframework.impl.java.provider;
 
+import java.io.IOException;
+
 import org.auraframework.builder.ComponentDefRefBuilder;
 import org.auraframework.def.ComponentConfigProvider;
 import org.auraframework.def.ComponentDescriptorProvider;
