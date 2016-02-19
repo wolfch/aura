@@ -15,6 +15,18 @@
     limitations under the License.
 
 -->
-<aura:component extends="ui:dataProvider" model="js://uiExamples.infiniteListDataProvider">
-	<aura:handler name="provide" action="{!c.handleProvide}"/>
+<aura:component>
+    <aura:attribute name="value" type="String"/>
+    <aura:attribute name="headerComponents" type="Aura.Component[]"/>
+    <aura:attribute name="innerComponents" type="Aura.Component[]"/>
+    <aura:attribute name="footerComponents" type="Aura.Component[]">
+        <componentTest:hasBody aura:id="footerbody">
+            footerdefault
+        </componentTest:hasBody>
+    </aura:attribute>
+    {!v.headerComponents}
+    {!v.value}
+    {!v.body}
+    {!v.innerComponents}
+    {!v.footerComponents}
 </aura:component>

@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 ({
-	handleProvide: function (cmp, evt, hlp) {
-		// Always return back the model data for demonstration convenience.
-		// Not a proper pattern for actual production use.
-		hlp.fireDataChangeEvent(cmp, cmp.get('m.items'));
+	layoutChange : function(cmp, evt, hlp) {
+		cmp._layoutChanged = true;
 	}
-})
+});

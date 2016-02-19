@@ -42,7 +42,7 @@
                 </ul>
             </ui:carouselPageDeprecated>
             <ui:carouselPageDeprecated aura:id="c1-pageWithLongString" title="PAGE 3">
-                Understanding Execution Governors and Limits%0D%0ABecause Apex runs in a multitenant environment, the Apex runtime engine strictly enforces a number of limits to ensure that runaway Apex does not monopolize shared resources. These limits, or governors, track and enforce the statistics outlined in the following table. If some Apex code ever exceeds a limit, the associated governor issues a runtime exception that cannot be handled.%0D%0AGovernor limits apply to an entire organization, as well as to specific namespaces. For example, if you install a managed package created by a salesforce.com ISV Partner from Force.com AppExchange, the components in the package belong to a namespace unique from other components in your organization. Consequently, any Apex code in that package can issue up to 150 DML statements while executing. In addition, any Apex code that is native to your organization can also issue up to 150 DML statements, meaning more than 150 DML statements might execute during a single request if code from the managed package and your native organization both execute. Conversely, if you install a package from AppExchange that is not created by a salesforce.com ISV Partner, the code from that package does not have its own separate governor limit count. Any resources it uses counts against the total for your organization. Cumulative resource messages and warning emails are also generated based on managed package namespaces as well. For more information on salesforce.com ISV Partner packages, see salesforce.com Partner Programs.%0D%0ADescription  Limit%0D%0ATotal number of SOQL queries issued1 100%0D%0ATotal number of SOQL queries issued for Batch Apex and future methods1 200%0D%0ATotal number of records retrieved by SOQL queries  50,000%0D%0ATotal number of records retrieved by Database.getQueryLocator   10,000%0D%0ATotal number of SOSL queries issued 20%0D%0ATotal number of records retrieved by a single SOSL query    2000%0D%0ATotal number of DML statements issued2    150%0D%0ATotal number of records processed as a result of DML statements, Approval.process, or database.emptyRecycleBin 10,000%0D%0ATotal number of executed code statements    200,000%0D%0ATotal number of executed code statements for Batch Apex and future methods 1,000,000%0D%0ATotal heap size3 6 MB%0D%0ATotal heap size for Batch Apex and future methods 12 MB%0D%0ATotal stack depth for any Apex invocation that recursively fires triggers due to insert, update, or delete statements4   16%0D%0AFor loop list batch size    200%0D%0ATotal number of callouts (HTTP requests or Web services calls) in a request    10%0D%0AMaximum timeout for all callouts (HTTP requests or Web services calls) in a request 120 seconds%0D%0ADefault timeout of callouts (HTTP requests or Web services calls) in a request 10 seconds%0D%0ATotal number of methods with the future annotation allowed per Apex invocation5 10%0D%0AMaximum size of callout request or response (HTTP request or Web services call)6    3 MB%0D%0ATotal number of sendEmail methods allowed 10%0D%0ATotal number of describes allowed7  100%0D%0ATotal number of classes that can be scheduled concurrently 100%0D%0ATotal number of test classes that can be queued per a 24-hour period8  The greater of 500 or 10 multiplied by the number of test classes in the organization%0D%0A 1 In a SOQL query with parent-child relationship sub-queries, each parent-child relationship counts as an additional query. These types of queries have a limit of three times the number for top-level queries. The row counts from these relationship queries contribute to the row counts of the overall code execution. ...
+                {!m.longStr}
             </ui:carouselPageDeprecated>
             <ui:carouselPageDeprecated aura:id="c1-bigImage">
                 <ui:image src="/auraFW/resources/aura/images/auraNoteDemo.png" imageType="decorative"/>
@@ -207,6 +207,18 @@
         <ui:carouselPageDeprecated title="Im Page 3">
             <ui:outputText aura:id="cdo-p3-output" value="page 3"/>
         </ui:carouselPageDeprecated>
+    </aura:set>
+</ui:carouselDeprecated>
+
+
+<br/><br/>Carousel with Max Pages<br/><br/>
+<ui:carouselDeprecated aura:id="carouselMaxPages" width="450" height="450">
+    <aura:set attribute="pageComponents">
+        <aura:iteration items="{!m.pageList}" var="page"> 
+            <ui:carouselPageDeprecated>
+                {!page}
+            </ui:carouselPageDeprecated>
+        </aura:iteration>
     </aura:set>
 </ui:carouselDeprecated>
 

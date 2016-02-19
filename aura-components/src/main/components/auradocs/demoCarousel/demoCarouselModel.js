@@ -13,10 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 ({
-	handleProvide: function (cmp, evt, hlp) {
-		// Always return back the model data for demonstration convenience.
-		// Not a proper pattern for actual production use.
-		hlp.fireDataChangeEvent(cmp, cmp.get('m.items'));
-	}
+    "data": [
+     {
+         "header" : "Page 1",
+         "str" : "Data from a model."
+     },
+     {
+         "header" : "Page 2",
+         "str" : "Content from a model."
+     }       
+     ]
+	 
 })

@@ -15,11 +15,7 @@
  */
 package org.auraframework.impl.parser;
 
-import java.util.List;
-import java.util.Map;
-
-import javax.inject.Inject;
-
+import com.google.common.collect.Maps;
 import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.DefDescriptor.DefType;
@@ -28,7 +24,9 @@ import org.auraframework.system.Parser;
 import org.auraframework.system.Parser.Format;
 import org.auraframework.throwable.AuraRuntimeException;
 
-import com.google.common.collect.Maps;
+import javax.inject.Inject;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Factory for returning the appropriate Parser for the given Format.
