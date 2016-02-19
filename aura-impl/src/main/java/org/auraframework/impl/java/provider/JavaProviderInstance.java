@@ -15,7 +15,8 @@
  */
 package org.auraframework.impl.java.provider;
 
-import org.auraframework.Aura;
+import java.io.IOException;
+
 import org.auraframework.builder.ComponentDefRefBuilder;
 import org.auraframework.def.ComponentConfigProvider;
 import org.auraframework.def.ComponentDescriptorProvider;
@@ -29,8 +30,6 @@ import org.auraframework.service.LoggingService;
 import org.auraframework.throwable.AuraExceptionUtil;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.json.Json;
-
-import java.io.IOException;
 
 public class JavaProviderInstance implements ProviderInstance {
 
@@ -89,7 +88,6 @@ public class JavaProviderInstance implements ProviderInstance {
     public ComponentConfig provide(ComponentDefRefBuilder ref)
             throws QuickFixException {
         ComponentConfig config = null;
-        LoggingService loggingService = Aura.getLoggingService();
         loggingService.stopTimer(LoggingService.TIMER_AURA);
         loggingService.startTimer("java");
 
