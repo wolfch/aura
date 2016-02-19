@@ -15,15 +15,20 @@
  */
 package org.auraframework.impl.adapter.format.json;
 
-import org.auraframework.Aura;
-import org.auraframework.annotations.Annotations.ServiceComponent;
-import org.auraframework.util.json.JsonEncoder;
-
 import java.io.IOException;
 import java.util.Map;
 
+import javax.inject.Inject;
+
+import org.auraframework.annotations.Annotations.ServiceComponent;
+import org.auraframework.service.ContextService;
+import org.auraframework.util.json.JsonEncoder;
+
 @ServiceComponent
 public class ThrowableJSONFormatAdapter extends JSONFormatAdapter<Throwable> {
+    @Inject
+    ContextService contextService;
+
     @Override
     public Class<Throwable> getType() {
         return Throwable.class;
@@ -31,6 +36,6 @@ public class ThrowableJSONFormatAdapter extends JSONFormatAdapter<Throwable> {
 
     @Override
     public void write(Throwable value, Map<String, Object> attributes, Appendable out) throws IOException {
-        JsonEncoder.serialize(value, out, Aura.getContextService().getCurrentContext().getJsonSerializationContext());
+        JsonEncoder.serialize(value, out, contextService.getCurrentContext().getJsonSerializationContext());
     }
 }
