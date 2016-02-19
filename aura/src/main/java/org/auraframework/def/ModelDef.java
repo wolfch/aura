@@ -15,6 +15,7 @@
  */
 package org.auraframework.def;
 
+import org.auraframework.instance.Model;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
 /**
@@ -36,6 +37,13 @@ public interface ModelDef extends Definition {
      * @return Does this model expose any data to serialize?
      */
     boolean hasMembers();
+
+    /**
+     * Create a new instance of this model.
+     *
+     * @return an instance of this model type
+     */
+    Model newInstance();
 
     /**
      * Parses a formula reference and returns the type of the target

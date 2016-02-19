@@ -25,9 +25,11 @@ import org.auraframework.def.ModelDef;
 import org.auraframework.def.TypeDef;
 import org.auraframework.def.ValueDef;
 import org.auraframework.instance.Model;
+import org.auraframework.throwable.AuraRuntimeException;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.json.Json;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 /**
@@ -36,6 +38,7 @@ import com.google.common.collect.Maps;
 public class MockModelDef extends MockDefinition<ModelDef> implements ModelDef {
 	private static final long serialVersionUID = 8237818157530284425L;
 	private final Map<String, ValueDef> members;
+    private final List<Answer<Model>> instances;
 
     public MockModelDef(DefDescriptor<ModelDef> descriptor, Set<ValueDef> members, List<Answer<Model>> instances) {
         super(descriptor);
@@ -45,6 +48,7 @@ public class MockModelDef extends MockDefinition<ModelDef> implements ModelDef {
                 this.members.put(val.getName(), val);
             }
         }
+        this.instances = instances != null ? Lists.newLinkedList(instances) : Lists.<Answer<Model>> newLinkedList();
     }
 
     @Override
@@ -53,6 +57,22 @@ public class MockModelDef extends MockDefinition<ModelDef> implements ModelDef {
         json.writeMapEntry("descriptor", getDescriptor());
         json.writeMapEntry("members", members.values());
         json.writeMapEnd();
+    }
+
+    @Override
+    public Model newInstance() {
+        if (instances.isEmpty()) {
+            return null;
+        }
+        try {
+            if (instances.size() > 1) {
+                return instances.remove(0).answer();
+            } else {
+                return instances.get(0).answer();
+            }
+        } catch (Throwable e) {
+            throw new AuraRuntimeException(e);
+        }
     }
 
     @Override

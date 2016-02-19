@@ -31,6 +31,7 @@ import org.auraframework.def.TypeDef;
 import org.auraframework.def.ValueDef;
 import org.auraframework.impl.system.DefinitionImpl;
 import org.auraframework.impl.util.AuraUtil;
+import org.auraframework.instance.Model;
 import org.auraframework.system.Annotations.AuraEnabled;
 import org.auraframework.system.Annotations.Type;
 import org.auraframework.system.Location;
@@ -84,6 +85,11 @@ public class JavaModelDefImpl extends DefinitionImpl<ModelDef> implements JavaMo
     @Override
     public TypeDef getType(String s) throws QuickFixException {
         return getMemberByName(s).getType();
+    }
+
+    @Override
+    public Model newInstance() {
+        throw new UnsupportedOperationException();
     }
 
     @Override
