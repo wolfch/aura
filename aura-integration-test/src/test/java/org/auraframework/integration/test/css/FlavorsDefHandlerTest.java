@@ -34,7 +34,7 @@ public class FlavorsDefHandlerTest extends StyleTestCase {
     @Test
     public void testWithTextBetweenTag() throws Exception {
         try {
-        	Aura.getDefinitionService().getDefinition(addFlavorAssortment("<aura:flavors>Test</aura:flavors>"));
+            definitionService.getDefinition(addFlavorAssortment("<aura:flavors>Test</aura:flavors>"));
             fail("Should have thrown AuraException because text is between aura:flavors tags");
         } catch (Exception e) {
             checkExceptionContains(e, InvalidDefinitionException.class, "No literal text");

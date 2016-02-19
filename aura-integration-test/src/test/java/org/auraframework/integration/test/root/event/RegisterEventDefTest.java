@@ -15,7 +15,6 @@
  */
 package org.auraframework.integration.test.root.event;
 
-import org.auraframework.Aura;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.impl.AuraImplTestCase;
@@ -108,8 +107,8 @@ public class RegisterEventDefTest extends AuraImplTestCase {
         String markup = String.format(cmpMarkup,
                 "<aura:registerevent name='eventName' type='aura:componentEvent' description='Describe the event'/>");
         DefDescriptor<ComponentDef> cmpDesc = addSourceAutoCleanup(ComponentDef.class, markup);
-        assertEquals("Description of registerevent not processed", "Describe the event", cmpDesc.getDef()
-                .getRegisterEventDefs().get("eventName").getDescription());
+        assertEquals("Description of registerevent not processed", "Describe the event",
+                definitionService.getDefinition(cmpDesc).getRegisterEventDefs().get("eventName").getDescription());
     }
 
     @Test
@@ -119,7 +118,7 @@ public class RegisterEventDefTest extends AuraImplTestCase {
                 "<aura:registerevent name='eventName' type='aura:valueEvent'/>");
         DefDescriptor<ComponentDef> cmpDesc = addSourceAutoCleanup(ComponentDef.class, markup);
         try {
-        	Aura.getDefinitionService().getDefinition(cmpDesc);
+        	definitionService.getDefinition(cmpDesc);
             fail("Should have thrown exception when registering for an event of type Value");
         } catch (Exception e) {
             checkExceptionFull(e, InvalidDefinitionException.class,
