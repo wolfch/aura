@@ -24,6 +24,7 @@ import org.auraframework.impl.AuraImplTestCase;
 import org.auraframework.impl.adapter.LocaleValueProvider;
 import org.auraframework.impl.adapter.LocaleValueProvider.LocalizedLabel;
 import org.auraframework.impl.expression.PropertyReferenceImpl;
+import org.auraframework.service.DefinitionService;
 import org.auraframework.system.AuraContext;
 import org.auraframework.throwable.quickfix.InvalidExpressionException;
 import org.auraframework.util.test.annotation.UnAdaptableTest;
@@ -31,6 +32,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import javax.inject.Inject;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -74,6 +76,9 @@ public class LocaleValueProviderTest extends AuraImplTestCase {
     private LocalizationAdapter localizationAdapter;
 
     private ConfigAdapter configAdapter;
+    
+    @Inject
+    DefinitionService definitionService;
 
     @Before
     public void setUp() throws Exception {
@@ -83,7 +88,7 @@ public class LocaleValueProviderTest extends AuraImplTestCase {
 
     @Test
     public void testValidateLocaleProperty() throws Exception {
-        LocaleValueProvider lvp = new LocaleValueProvider(configAdapter, localizationAdapter);
+        LocaleValueProvider lvp = new LocaleValueProvider(configAdapter, localizationAdapter, definitionService);
         for (LocaleProperty lp : LocaleProperty.values()) {
             lvp.validate(lp.getRef());
         }
@@ -182,7 +187,7 @@ public class LocaleValueProviderTest extends AuraImplTestCase {
             HashMap<String, Object> localeProperties) {
         AuraContext context = contextService.getCurrentContext();
         context.setRequestedLocales(localeList == null ? null : localeList);
-        LocaleValueProvider lvp = new LocaleValueProvider(configAdapter, localizationAdapter);
+        LocaleValueProvider lvp = new LocaleValueProvider(configAdapter, localizationAdapter, definitionService);
         String countryName = localeList == null ? "" : localeList.get(0).getCountry();
         for (Map.Entry<String, Object> entry : localeProperties.entrySet()) {
             assertLocaleProperty(lvp, entry.getKey(), entry.getValue(), countryName);
@@ -250,7 +255,7 @@ public class LocaleValueProviderTest extends AuraImplTestCase {
 	public void testGetValueUndefinedProperty() throws Exception {
         AuraContext context = contextService.getCurrentContext();
         context.setRequestedLocales(Arrays.asList(Locale.UK));
-        LocaleValueProvider lvp = new LocaleValueProvider(configAdapter, localizationAdapter);
+        LocaleValueProvider lvp = new LocaleValueProvider(configAdapter, localizationAdapter, definitionService);
         assertEquals(null,
                 lvp.getValue(new PropertyReferenceImpl("ISO3Language", null))); // undefined
                                                                                 // property
@@ -332,7 +337,7 @@ public class LocaleValueProviderTest extends AuraImplTestCase {
             HashMap<String, String> expectedData) {
         AuraContext context = contextService.getCurrentContext();
         context.setRequestedLocales(locale == null ? null : Arrays.asList(locale));
-        LocaleValueProvider lvp = new LocaleValueProvider(configAdapter, localizationAdapter);
+        LocaleValueProvider lvp = new LocaleValueProvider(configAdapter, localizationAdapter, definitionService);
         
         ArrayList<LocalizedLabel> values = (ArrayList<LocalizedLabel>) lvp.getData().get(dateName);
         Set<String> expectedShortNames = expectedData.keySet();
@@ -351,7 +356,7 @@ public class LocaleValueProviderTest extends AuraImplTestCase {
     private void assertTodayLocaleProperty(Locale locale, String expectedLabel) {
         AuraContext context = contextService.getCurrentContext();
         context.setRequestedLocales(locale == null ? null : Arrays.asList(locale));
-        LocaleValueProvider lvp = new LocaleValueProvider(configAdapter, localizationAdapter);
+        LocaleValueProvider lvp = new LocaleValueProvider(configAdapter, localizationAdapter, definitionService);
         String actualLabel = (String) lvp.getData().get(LocaleValueProvider.TODAY_LABEL);
         assertEquals("Today label for locale " + locale + " is incorrect", expectedLabel, actualLabel);
     }

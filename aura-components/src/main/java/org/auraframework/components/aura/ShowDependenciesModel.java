@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 
-import org.auraframework.Aura;
 import org.auraframework.annotations.Annotations.ServiceComponentModelInstance;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.DefDescriptor.DefType;

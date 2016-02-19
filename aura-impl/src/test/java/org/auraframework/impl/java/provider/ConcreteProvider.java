@@ -16,7 +16,7 @@
 package org.auraframework.impl.java.provider;
 
 import com.google.common.collect.Maps;
-import org.auraframework.Aura;
+
 import org.auraframework.annotations.Annotations.ServiceComponentProvider;
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.AttributeDef;
@@ -30,6 +30,8 @@ import org.auraframework.impl.root.component.ComponentDefImpl;
 import org.auraframework.impl.root.component.ComponentDefImpl.Builder;
 import org.auraframework.instance.BaseComponent;
 import org.auraframework.instance.ComponentConfig;
+import org.auraframework.service.ContextService;
+import org.auraframework.service.DefinitionService;
 import org.auraframework.system.Annotations.Provider;
 import org.auraframework.system.AuraContext;
 import org.auraframework.system.MasterDefRegistry;
@@ -38,6 +40,8 @@ import org.auraframework.throwable.quickfix.QuickFixException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 /**
  * A class to test a variety of scenarios for the concrete component with
  * provider.
@@ -45,35 +49,42 @@ import java.util.Map;
 @ServiceComponentProvider
 @Provider
 public class ConcreteProvider implements ComponentConfigProvider {
+
+	@Inject
+	ContextService contextService;
+	
+	@Inject
+	DefinitionService definitionService;
+	
     /**
      * A demonstration of broken Java generics.
      */
     private Object getMagicDescriptor() {
-        return Aura.getDefinitionService().getDefDescriptor("test:fakeApplication", ApplicationDef.class);
+        return definitionService.getDefDescriptor("test:fakeApplication", ApplicationDef.class);
     }
 
     @Override
     public ComponentConfig provide() throws QuickFixException {
         ComponentConfig config = new ComponentConfig();
 
-        BaseComponent<?, ?> component = Aura.getContextService().getCurrentContext().getCurrentComponent();
+        BaseComponent<?, ?> component = contextService.getCurrentContext().getCurrentComponent();
         String whatToDo = (String) component.getAttributes().getExpression("whatToDo");
         if (whatToDo.equalsIgnoreCase("label")) {
             Map<String, Object> attrs = Maps.newHashMap();
             attrs.put("name", "Null Returned");
             config.setAttributes(attrs);
         } else if (whatToDo.equalsIgnoreCase("replace")) {
-            config.setDescriptor(Aura.getDefinitionService().getDefDescriptor("test:test_Provider_Concrete_Sub", ComponentDef.class));
+            config.setDescriptor(definitionService.getDefDescriptor("test:test_Provider_Concrete_Sub", ComponentDef.class));
         } else if (whatToDo.equalsIgnoreCase("replaceBad")) {
             @SuppressWarnings("unchecked")
             DefDescriptor<ComponentDef> foo = (DefDescriptor<ComponentDef>) getMagicDescriptor();
 
             config.setDescriptor(foo);
         } else if (whatToDo.equalsIgnoreCase("replaceNotFound")) {
-            config.setDescriptor(Aura.getDefinitionService().getDefDescriptor("test:test_Provider_Concrete_Sub_NotHere",
+            config.setDescriptor(definitionService.getDefDescriptor("test:test_Provider_Concrete_Sub_NotHere",
                     ComponentDef.class));
         } else if (whatToDo.equalsIgnoreCase("provideTestModelParentCmp")) {
-            config.setDescriptor(Aura.getDefinitionService().getDefDescriptor("auratest:test_Model_Parent",
+            config.setDescriptor(definitionService.getDefDescriptor("auratest:test_Model_Parent",
                     ComponentDef.class));
         } else if (whatToDo.equalsIgnoreCase("mockRecordLayout")) {
         	//this is the mimic of recordLayoutProvider. 
@@ -81,19 +92,19 @@ public class ConcreteProvider implements ComponentConfigProvider {
             String hash = "HASH";
             String hashName = String.format("layout://%s_%s_%s_%s_%s:c", "rl",
                     "001", "VIEW", "ACCOUNT", hash);
-            DefDescriptor<ComponentDef> hashedDescriptor = Aura.getDefinitionService().getDefDescriptor(hashName,
+            DefDescriptor<ComponentDef> hashedDescriptor = definitionService.getDefDescriptor(hashName,
                     ComponentDef.class);
             Builder builder = new ComponentDefImpl.Builder();
             builder.setDescriptor(hashedDescriptor);
             //set up attribute definitions. we don't need "whatToDo" any more, but the build still require it
             Map<DefDescriptor<AttributeDef>, AttributeDef> attributeDefs = new HashMap<>();
-            DefDescriptor<TypeDef> type = Aura.getDefinitionService().getDefDescriptor("String", TypeDef.class);
-            attributeDefs.put(Aura.getDefinitionService().getDefDescriptor("whatToDo", AttributeDef.class), new AttributeDefImpl(
-                    Aura.getDefinitionService().getDefDescriptor("whatToDo", AttributeDef.class), null, type, null, true,
+            DefDescriptor<TypeDef> type = definitionService.getDefDescriptor("String", TypeDef.class);
+            attributeDefs.put(definitionService.getDefDescriptor("whatToDo", AttributeDef.class), new AttributeDefImpl(
+                    definitionService.getDefDescriptor("whatToDo", AttributeDef.class), null, type, null, true,
                     AttributeDef.SerializeToType.BOTH, null, new DefinitionAccessImpl(AuraContext.Access.PUBLIC)));
             builder.attributeDefs = attributeDefs;
             ComponentDef cmpDef = builder.build();
-            AuraContext context = Aura.getContextService().getCurrentContext();
+            AuraContext context = contextService.getCurrentContext();
             //add dynamic namespace to MasterDefRegistry so later we can getDef from it during the injectComponent();
             MasterDefRegistry mdr = context.getDefRegistry();
             mdr.addLocalDef(cmpDef);

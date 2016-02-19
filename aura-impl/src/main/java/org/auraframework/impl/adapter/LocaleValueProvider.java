@@ -20,7 +20,7 @@ import com.google.common.collect.ImmutableMap.Builder;
 import com.ibm.icu.text.DecimalFormat;
 import com.ibm.icu.text.DecimalFormatSymbols;
 import com.ibm.icu.util.Currency;
-import org.auraframework.Aura;
+
 import org.auraframework.adapter.ConfigAdapter;
 import org.auraframework.adapter.LocalizationAdapter;
 import org.auraframework.def.DefDescriptor;
@@ -29,6 +29,7 @@ import org.auraframework.expression.PropertyReference;
 import org.auraframework.instance.AuraValueProviderType;
 import org.auraframework.instance.GlobalValueProvider;
 import org.auraframework.instance.ValueProviderType;
+import org.auraframework.service.DefinitionService;
 import org.auraframework.throwable.quickfix.InvalidExpressionException;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.AuraLocale;
@@ -84,8 +85,11 @@ public class LocaleValueProvider implements GlobalValueProvider {
     public static String IS_EASTERN_NAME_STYLE = "isEasternNameStyle";
 
     private final Map<String, Object> data;
+    private final DefinitionService definitionService;
 
-    public LocaleValueProvider(ConfigAdapter configAdapter, LocalizationAdapter localizationAdapter) {
+    public LocaleValueProvider(ConfigAdapter configAdapter, LocalizationAdapter localizationAdapter, DefinitionService definitionService) {
+    	this.definitionService = definitionService;
+    	
         Builder<String, Object> builder = ImmutableMap.builder();
 
         AuraLocale al = localizationAdapter.getAuraLocale();
@@ -176,7 +180,7 @@ public class LocaleValueProvider implements GlobalValueProvider {
 
     @Override
     public DefDescriptor<TypeDef> getReturnTypeDef() {
-        return Aura.getDefinitionService().getDefDescriptor("String", TypeDef.class);
+        return definitionService.getDefDescriptor("String", TypeDef.class);
     }
 
     @Override

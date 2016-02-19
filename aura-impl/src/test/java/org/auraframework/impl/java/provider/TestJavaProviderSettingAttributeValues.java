@@ -15,17 +15,20 @@
  */
 package org.auraframework.impl.java.provider;
 
-import org.auraframework.Aura;
 import org.auraframework.annotations.Annotations.ServiceComponentProvider;
 import org.auraframework.def.ComponentConfigProvider;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.instance.BaseComponent;
 import org.auraframework.instance.ComponentConfig;
+import org.auraframework.service.ContextService;
+import org.auraframework.service.DefinitionService;
 import org.auraframework.system.Annotations.Provider;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.inject.Inject;
 
 /**
  */
@@ -33,11 +36,17 @@ import java.util.Map;
 @ServiceComponentProvider
 @Provider
 public class TestJavaProviderSettingAttributeValues implements ComponentConfigProvider {
+    @Inject
+    private ContextService contextService;
+    
+    @Inject
+    private DefinitionService definitionService;
+    
     @Override
     public ComponentConfig provide() throws QuickFixException {
         ComponentConfig config = new ComponentConfig();
 
-        config.setDescriptor(Aura.getDefinitionService().getDefDescriptor("test:testJavaProviderSettingAttributeValuesHelper",
+        config.setDescriptor(definitionService.getDefDescriptor("test:testJavaProviderSettingAttributeValuesHelper",
                     ComponentDef.class));
         Map<String, Object> attributes = new HashMap<>();
         attributes.put("a1", "a1Provider");
@@ -45,7 +54,7 @@ public class TestJavaProviderSettingAttributeValues implements ComponentConfigPr
         attributes.put("b1", "b1Provider");
         attributes.put("ar1", new String[] { "ar1Provider0", "ar1Provider1" });
 
-        BaseComponent<?, ?> component = Aura.getContextService().getCurrentContext().getCurrentComponent();
+        BaseComponent<?, ?> component = contextService.getCurrentContext().getCurrentComponent();
 
         if (component.getAttributes().getValue("a3") != null) {
             attributes.put("b2", "b2Provider");

@@ -17,7 +17,7 @@ package org.auraframework.impl.java.provider;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.auraframework.Aura;
+
 import org.auraframework.annotations.Annotations.ServiceComponentProvider;
 import org.auraframework.def.ComponentConfigProvider;
 import org.auraframework.def.ComponentDef;
@@ -25,11 +25,14 @@ import org.auraframework.def.DefDescriptor.DefType;
 import org.auraframework.instance.BaseComponent;
 import org.auraframework.instance.Component;
 import org.auraframework.instance.ComponentConfig;
+import org.auraframework.service.ContextService;
+import org.auraframework.service.DefinitionService;
 import org.auraframework.service.InstanceService;
 import org.auraframework.system.Annotations.Provider;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
 import javax.inject.Inject;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,11 +42,17 @@ public class TestJavaProviderSettingAttributeValuesViaComponentConfig implements
     @Inject
     private InstanceService instanceService;
 
+    @Inject
+    private ContextService contextService;
+    
+    @Inject
+    private DefinitionService definitionService;
+    
     @Override
     public ComponentConfig provide() throws QuickFixException {
         ComponentConfig c = new ComponentConfig();
 
-        c.setDescriptor(Aura.getDefinitionService().getDefDescriptor(
+        c.setDescriptor(definitionService.getDefDescriptor(
                 "test:testJavaProviderSettingAttributeValuesViaComponentConfigHelper", ComponentDef.class));
         c.setAttributes(provideAttributes());
 
@@ -57,7 +66,7 @@ public class TestJavaProviderSettingAttributeValuesViaComponentConfig implements
         attributes.put("b1", "b1Provider");
         attributes.put("ar1", new String[] { "ar1Provider0", "ar1Provider1" });
 
-        BaseComponent<?, ?> component = Aura.getContextService().getCurrentContext().getCurrentComponent();
+        BaseComponent<?, ?> component = contextService.getCurrentContext().getCurrentComponent();
 
         if (component.getAttributes().getValue("a3") != null) {
             attributes.put("b2", "b2Provider");

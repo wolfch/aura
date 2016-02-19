@@ -15,16 +15,28 @@
  */
 package org.auraframework.impl.java.provider;
 
-import org.auraframework.Aura;
+import javax.inject.Inject;
+
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
+import org.auraframework.service.DefinitionService;
 import org.auraframework.system.Annotations.Provider;
+import org.auraframework.annotations.Annotations.ServiceComponentProvider;
 /**
  * this provider is for JavaProviderDefTest.testInterfaceWithNoProvider
  */
+@ServiceComponentProvider
 @Provider
 public class TestProviderWithStaticMethod {
+    
+    private static DefinitionService definitionService;
+    
     public static DefDescriptor<ComponentDef> provide() {
-        return Aura.getDefinitionService().getDefDescriptor("test:test_Provider_Component", ComponentDef.class);
+        return definitionService.getDefDescriptor("test:test_Provider_Component", ComponentDef.class);
+    }
+    
+    @Inject
+    public void setDefinitionService(DefinitionService service) {
+    	definitionService = service;
     }
 }

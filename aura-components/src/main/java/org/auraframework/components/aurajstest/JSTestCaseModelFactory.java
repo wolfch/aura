@@ -21,7 +21,6 @@ import org.auraframework.annotations.Annotations.ServiceComponentModelFactory;
 import org.auraframework.ds.servicecomponent.ModelFactory;
 import org.auraframework.ds.servicecomponent.ModelInitializationException;
 import org.auraframework.service.ContextService;
-import org.auraframework.service.DefinitionService;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
 @ServiceComponentModelFactory

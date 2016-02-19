@@ -25,8 +25,6 @@ import org.auraframework.instance.Event;
 import org.auraframework.service.ContextService;
 import org.auraframework.service.InstanceService;
 import org.auraframework.system.Annotations.AuraEnabled;
-import org.auraframework.throwable.quickfix.DefinitionNotFoundException;
-import org.auraframework.throwable.quickfix.QuickFixException;
 
 @ServiceComponentModelInstance
 public class TestModelToAttachEvents implements ModelInstance {

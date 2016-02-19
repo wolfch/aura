@@ -18,7 +18,6 @@ package org.auraframework.components.aurajstest;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.auraframework.Aura;
 import org.auraframework.annotations.Annotations.ServiceComponentModelInstance;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.DefDescriptor.DefType;

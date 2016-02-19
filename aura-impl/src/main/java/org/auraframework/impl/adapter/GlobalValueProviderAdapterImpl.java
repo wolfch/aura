@@ -56,7 +56,7 @@ public class GlobalValueProviderAdapterImpl implements GlobalValueProviderAdapte
         l.add(new LabelValueProvider(localizationAdapter, definitionService));
 
         // $Locale
-        l.add(new LocaleValueProvider(configAdapter, localizationAdapter));
+        l.add(new LocaleValueProvider(configAdapter, localizationAdapter, definitionService));
 
         // $Browser
         l.add(new BrowserValueProvider(contextService));

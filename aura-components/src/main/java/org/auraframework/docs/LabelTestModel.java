@@ -23,7 +23,6 @@ import java.util.Map;
 import org.auraframework.annotations.Annotations.ServiceComponentModelInstance;
 import org.auraframework.ds.servicecomponent.ModelInstance;
 import org.auraframework.system.Annotations.AuraEnabled;
-import org.auraframework.system.Annotations.Model;
 
 /**
  * Model for auradocs:demoLabel to demo ui:label
