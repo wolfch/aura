@@ -112,7 +112,7 @@ public class JavaAction extends AbstractActionImpl<JavaActionDef> {
                 ex = new AuraExecutionException(ex, new Location(controllerDescriptor.toString(), 0));
             }
             if (loggable) {
-                exceptionAdapter.handleException(ex, this);
+                ex = exceptionAdapter.handleException(ex, this);
             }
             this.errors.add(ex);
         }
