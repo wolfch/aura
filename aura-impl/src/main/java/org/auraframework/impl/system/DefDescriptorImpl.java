@@ -60,7 +60,7 @@ public class DefDescriptorImpl<T extends Definition> implements DefDescriptor<T>
         return String.format(format, namespace, name);
     }
 
-    protected DefDescriptorImpl(DefDescriptor<?> associate, Class<T> defClass, String newPrefix) {
+    public DefDescriptorImpl(DefDescriptor<?> associate, Class<T> defClass, String newPrefix) {
         this.bundle = null;
         this.defType = DefType.getDefType(defClass);
         this.prefix = newPrefix;

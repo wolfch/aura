@@ -16,8 +16,8 @@
 package org.auraframework.impl;
 
 import com.google.common.base.Optional;
+
 import org.apache.log4j.Logger;
-import org.auraframework.Aura;
 import org.auraframework.adapter.LoggingAdapter;
 import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.builder.CacheBuilder;
@@ -27,13 +27,14 @@ import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.Definition;
 import org.auraframework.impl.cache.CacheImpl;
+import org.auraframework.impl.system.DefDescriptorImpl;
 import org.auraframework.service.CachingService;
-import org.auraframework.service.DefinitionService;
 import org.auraframework.system.DependencyEntry;
 import org.auraframework.system.SourceListener;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+
 import java.lang.ref.WeakReference;
 import java.util.Collection;
 import java.util.Set;
@@ -253,11 +254,8 @@ public class CachingServiceImpl implements CachingService {
             defsCache.invalidateAll();
             existsCache.invalidateAll();
         } else {
-            DefinitionService ds = Aura.getDefinitionService();
-            DefDescriptor<ComponentDef> cdesc = ds.getDefDescriptor(descriptor,
-                    "markup", ComponentDef.class);
-            DefDescriptor<ApplicationDef> adesc = ds.getDefDescriptor(
-                    descriptor, "markup", ApplicationDef.class);
+            DefDescriptor<ComponentDef> cdesc = new DefDescriptorImpl<>(descriptor, ComponentDef.class, "markup");
+            DefDescriptor<ApplicationDef> adesc = new DefDescriptorImpl<>(descriptor, ApplicationDef.class, "markup");
 
             defsCache.invalidate(descriptor);
             existsCache.invalidate(descriptor);
