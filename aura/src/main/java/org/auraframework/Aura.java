@@ -95,6 +95,7 @@ public class Aura implements AuraDeprecated {
      * Get the Context Service: for creating or interacting with a {@link AuraContext} A AuraContext must be started
      * before working using any other service.
      */
+    // Used by: Lots
     public static ContextService getContextService() {
         return contextService;
     }
@@ -102,6 +103,7 @@ public class Aura implements AuraDeprecated {
     /**
      * Get the Definition Service: for loading, finding or interacting with a {@link Definition}
      */
+    // Used by: Lots
     public static DefinitionService getDefinitionService() {
         return definitionService;
     }
@@ -109,6 +111,7 @@ public class Aura implements AuraDeprecated {
     /**
      * Get the Logging Service: Provides Aura with a top-level Logging handler from the host environments
      */
+    // Used by: ApexAuraComponent, BaseComponentImpl, SFDCAuraContextFilter, CoreLightningComponentFacadeImpl, JavaModel, ServiceComponentModel, RecordValueProvider, and more...
     public static LoggingService getLoggingService() {
         return loggingService;
     }
@@ -116,6 +119,7 @@ public class Aura implements AuraDeprecated {
     /**
      * Get the Instance Service: for constructing an {@link Instance} of a {@link Definition}
      */
+    // Used by: Everybody
     public static InstanceService getInstanceService() {
         return instanceService;
     }
@@ -123,6 +127,7 @@ public class Aura implements AuraDeprecated {
     /**
      * Get the Config Adapter: Provides Aura with configuration from the host environment
      */
+    // Used by: Everybody
     public static ConfigAdapter getConfigAdapter() {
         return configAdapter;
     }
@@ -130,6 +135,7 @@ public class Aura implements AuraDeprecated {
     /**
      * Get the Source Control Adapter : Allows interaction with the source control system.
      */
+    // Used by FileSource
     public static SourceControlAdapter getSourceControlAdapter() {
         return sourceControlAdapter;
     }
@@ -137,6 +143,7 @@ public class Aura implements AuraDeprecated {
     /**
      * Get the Style Adapter: Used to provide CSS/Style specific functionality.
      */
+    // Used by StyleContextImpl, Tokens, FlavoredStyleParser, StyleParser, ParserConfiguration, AbstractStyleDef
     public static StyleAdapter getStyleAdapter() {
         return styleAdapter;
     }
@@ -144,10 +151,12 @@ public class Aura implements AuraDeprecated {
     /**
      * Gets the Integration Service: Service that makes integrating into other containers easy.
      */
+    // Used in AuraElement, AuraServicesImpl (not used after that), ImportWizardAuraIntegrationServlet, and AuraIntegrationHolder
     public static IntegrationService getIntegrationService() {
         return integrationService;
     }
 
+    // Used in BaseComponentImpl and JavaTypeDef
     public static ConverterService getConverterService() {
         return converterService;
     }

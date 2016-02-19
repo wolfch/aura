@@ -168,7 +168,7 @@ public class JavaControllerTest extends AuraImplTestCase {
         checkPassAction(controller, "doSomething", empty, State.SUCCESS, null);
         checkPassAction(controller, "doSomething", hasOne, State.SUCCESS, null);
         checkPassAction(controller, "getString", empty, State.SUCCESS, "TestController");
-        checkFailAction(controller, "throwException", empty, State.ERROR, AuraExecutionException.class,
+        checkFailAction(controller, "throwException", empty, State.ERROR, AuraUnhandledException.class,
                 "java://org.auraframework.components.test.java.controller.TestController: java.lang.RuntimeException: intentionally generated");
     }
 
@@ -187,7 +187,7 @@ public class JavaControllerTest extends AuraImplTestCase {
 
         // No parameters to a controller method that requires params
         args.clear();
-        checkFailAction(controller, "sumValues", args, State.ERROR, AuraExecutionException.class,
+        checkFailAction(controller, "sumValues", args, State.ERROR, AuraUnhandledException.class,
                 "java://org.auraframework.impl.java.controller.TestControllerWithParameters: java.lang.NullPointerException");
 
         // Passing the wrong type (Strings instead of Integers)
