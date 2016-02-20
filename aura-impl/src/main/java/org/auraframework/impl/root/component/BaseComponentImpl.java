@@ -30,6 +30,7 @@ import org.auraframework.def.BaseComponentDef;
 import org.auraframework.def.ComponentDefRefArray;
 import org.auraframework.def.ControllerDef;
 import org.auraframework.def.DefDescriptor;
+import org.auraframework.def.JavaModelDef;
 import org.auraframework.def.ModelDef;
 import org.auraframework.def.RendererDef;
 import org.auraframework.def.RootDefinition;
@@ -412,7 +413,12 @@ BaseComponent<D, I> {
             if (modelDef != null) {
                 definitionService.getDefRegistry().assertAccess(descriptor, modelDef);
 
-                model = instanceService.getInstance(modelDef);
+                if (modelDef instanceof JavaModelDef) {
+                    model = instanceService.getInstance(modelDef);
+                } else {
+                    model = modelDef.newInstance();
+                }
+
                 if (modelDef.hasMembers()) {
                     hasLocalDependencies = true;
                     valueProviders.put(AuraValueProviderType.MODEL.getPrefix(), model);
