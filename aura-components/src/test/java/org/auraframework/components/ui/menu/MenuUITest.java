@@ -129,7 +129,8 @@ public class MenuUITest extends WebDriverTestCase {
         testActionMenuViaKeyboardInteractionForApp(MENUTEST_APP, "Image", false);
     }
 
-    public void testActionMenuViaKeyboardInteraction() throws Exception {
+    // Fix the flapper : W-2943867
+    public void _testActionMenuViaKeyboardInteraction() throws Exception {
         testActionMenuViaKeyboardInteractionForApp(MENUTEST_APP, "");
     }
 
