@@ -18,10 +18,12 @@ package org.auraframework.components.ui.tooltip;
 import org.auraframework.test.util.WebDriverTestCase;
 import org.auraframework.test.util.WebDriverTestCase.ExcludeBrowsers;
 import org.auraframework.test.util.WebDriverUtil.BrowserType;
+import org.junit.Ignore;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
 @ExcludeBrowsers({ BrowserType.ANDROID_PHONE, BrowserType.ANDROID_TABLET, BrowserType.IPHONE, BrowserType.IPAD, BrowserType.IE7, BrowserType.IE8})
+@Ignore
 public class TooltipUiTest extends WebDriverTestCase {
 	private final String URL_FULL_CMP = "/uitest/tooltip_FullTest.cmp";
 

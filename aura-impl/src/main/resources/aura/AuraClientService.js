@@ -99,7 +99,7 @@ Aura.Services.AuraClientService$AuraActionCollector = function AuraActionCollect
  *  (3) currentTransactionId - if we are executing in context of an abortable group, this is the group to use.
  *
  * Queue Processing Notes:
- *  * The queue is processed synchronously, but almost all of the interesting functionily occurs asynchronously.
+ *  * The queue is processed synchronously, but almost all of the interesting functionality occurs asynchronously.
  *  * client actions are run in a single flow of setTimeout calls.
  *  * storable server actions get processed in the "then" clause of the promise
  *  * non-storable server actions are processed synchronously.
@@ -140,6 +140,9 @@ AuraClientService = function AuraClientService () {
     this.protocols={"layout":true};
     this.namespaces={};
     this.lastSendTime = Date.now();
+
+    // XHR timeout (milliseconds)
+    this.xhrTimeout = undefined;
 
     // token storage key should not be changed because external client may query independently
     this._tokenStorageKey = "$AuraClientService.token$";
@@ -226,16 +229,19 @@ AuraClientService.prototype.setQueueSize = function(queueSize) {
 /**
  * Take a json (hopefully) response and decode it. If the input is invalid JSON, we try to handle it gracefully.
  *
+ * @param {XmlHttpRequest} response the XHR object.
+ * @param {Boolean} [noStrip] true to not strip off the JSON hijacking prevention (while(1) prefix).
+ * @param {Boolean} [timedOut] true if the XHR timed out; false otherwise.
  * @returns {Object} An object with properties 'status', which represents the status of the response, and potentially
  *          'message', which contains the decoded server response or an error message.
  */
-AuraClientService.prototype.decode = function(response, noStrip) {
+AuraClientService.prototype.decode = function(response, noStrip, timedOut) {
     var ret = {};
 
     var e;
 
-    // failure to communicate with server
-    if (this.isDisconnectedOrCancelled(response)) {
+    // timed out or failure to communicate with server
+    if (timedOut || this.isDisconnectedOrCancelled(response)) {
         this.setConnected(false);
         ret["status"] = "INCOMPLETE";
         return ret;
@@ -1798,6 +1804,8 @@ AuraClientService.prototype.send = function(auraXHR, actions, method, options) {
     }
 
     var processed = false;
+    var timedOut = false;
+    var timerId = undefined;
     var qs;
     try {
         var params = {
@@ -1836,14 +1844,21 @@ AuraClientService.prototype.send = function(auraXHR, actions, method, options) {
     //
     var onReady = function() {
         // Ordering is important. auraXHR will no longer be valid after processed.
-        if (processed === false && auraXHR.request["readyState"] === 4) {
+        if (processed === false && (auraXHR.request["readyState"] === 4 || timedOut)) {
             processed = true;
-            that.receive(auraXHR);
+
+            if (timerId !== undefined) {
+                that.xhrClearTimeout(timerId);
+            }
+
+            that.receive(auraXHR, timedOut);
         }
     };
+
     if(context&&context.getCurrentAccess()&&this.inAuraLoop()){
         onReady = $A.getCallback(onReady);
     }
+
     auraXHR.request["onreadystatechange"] = onReady;
 
     if (options && options["headers"]) {
@@ -1865,6 +1880,15 @@ AuraClientService.prototype.send = function(auraXHR, actions, method, options) {
         auraXHR.request["send"]();
     }
 
+    // start the timer if necessary
+    if (this.xhrTimeout !== undefined) {
+        timerId = this.xhrSetTimeout(function() {
+            timedOut = true;
+            timerId = undefined;
+            onReady();
+        });
+    }
+
     // legacy code, spinner actually relies on the waiting event, need a proper fix
     setTimeout(function() {
         $A.get("e.aura:waiting").fire();
@@ -1873,6 +1897,24 @@ AuraClientService.prototype.send = function(auraXHR, actions, method, options) {
     this.lastSendTime = Date.now();
     return true;
 };
+
+
+/**
+ * Sets a timeout for use by the XHR timeout mechanism. Hook for testing.
+ * @private
+ */
+AuraClientService.prototype.xhrSetTimeout = function(f) {
+    return setTimeout(f, this.xhrTimeout);
+};
+
+/**
+ * Clears a timeout used by the XHR timeout mechanism. Hook for testing.
+ * @private
+ */
+AuraClientService.prototype.xhrClearTimeout = function(id) {
+    return clearTimeout(id);
+};
+
 
 
 /**
@@ -1949,17 +1991,18 @@ AuraClientService.prototype.buildParams = function(map) {
  * This function does all of the processing for a set of actions that come back from the server. It correctly deals
  * with the case of interrupted communications, and handles aborts.
  *
- * @param {AuraXHR} the xhr container.
+ * @param {AuraXHR} auraXHR the xhr container.
+ * @param {Boolean} timedOut true if the XHR timed out, false otherwise.
  * @private
  */
-AuraClientService.prototype.receive = function(auraXHR) {
+AuraClientService.prototype.receive = function(auraXHR, timedOut) {
     var responseMessage;
     this.auraStack.push("AuraClientService$receive");
     if (auraXHR.transactionId) {
         this.setCurrentTransactionId(auraXHR.transactionId);
     }
     try {
-        responseMessage = this.decode(auraXHR.request);
+        responseMessage = this.decode(auraXHR.request, undefined, timedOut);
 
         if (responseMessage["status"] === "SUCCESS") {
             this.processResponses(auraXHR, responseMessage["message"]);
@@ -2760,6 +2803,28 @@ AuraClientService.prototype.getUseBootstrapCache = function() {
     var value = cookies.substring(begin + key.length, end);
     // stored value is string true; see disableBootstrapCacheOnNextLoad()
     return value !== 'true';
+};
+
+
+
+/**
+ * This is a temporary API to workaround a broken network stack found on Samsung
+ * Galaxy S5/S6 devices on Android 5.x.
+ *
+ * Sets the timeout for all Aura-initiated XHRs.
+ *
+ * The timeout applies to each XHR. The timer starts when XHR.send() is invoked
+ * and ends when XHR.onreadystatechange (readyState = 4) is fired. If the timeout
+ * expires before XHR.onreadystatechange then the actions in the XHR are moved to
+ * INCOMPLETE state.
+ *
+ * @param {Number} timeout The XHR timeout in milliseconds.
+ * @memberOf AuraClientService
+ * @export
+ */
+AuraClientService.prototype.setXHRTimeout = function(timeout) {
+    $A.assert($A.util.isFiniteNumber(timeout) && timeout > 0, "Timeout must be a positive number");
+    this.xhrTimeout = timeout;
 };
 
 
