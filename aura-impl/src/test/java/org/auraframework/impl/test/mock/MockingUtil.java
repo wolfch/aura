@@ -16,7 +16,6 @@
 package org.auraframework.impl.test.mock;
 
 import java.util.Arrays;
-import java.util.Map;
 import java.util.Set;
 
 import org.auraframework.def.ControllerDef;
@@ -33,7 +32,6 @@ import org.auraframework.system.Parser;
 import org.auraframework.test.TestContext;
 import org.auraframework.test.TestContextAdapter;
 import org.auraframework.test.mock.MockAction;
-import org.auraframework.test.mock.MockModel;
 import org.auraframework.test.mock.MockModelDef;
 import org.auraframework.test.mock.MockProviderDef;
 import org.auraframework.test.source.StringSource;
@@ -113,23 +111,6 @@ public class MockingUtil {
                         descriptor.getQualifiedName(), org.auraframework.system.Parser.Format.XML));
         mockDef(def);
         return def;
-    }
-
-    /**
-     * Mock a Model. This will still rely on the current ModelDef to be valid.
-     * 
-     * @param modelDefDescriptor
-     * @param properties the complete set of properties to be mocked
-     * @return the MockModel that will be provided when instantiating the requested ModelDef
-     * @throws Exception
-     */
-    public MockModel mockModel(DefDescriptor<ModelDef> modelDefDescriptor, Map<String, Object> properties)
-            throws Exception {
-        final ModelDef modelDef = Mockito.spy(definitionService.getDefinition(modelDefDescriptor));
-        final MockModel model = Mockito.spy(new MockModel(modelDefDescriptor, properties));
-        // Mockito.doReturn(model).when(modelDef).newInstance();
-        mockDef(modelDef);
-        return model;
     }
 
     /**

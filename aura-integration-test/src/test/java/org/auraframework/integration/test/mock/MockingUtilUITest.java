@@ -33,16 +33,13 @@ import org.auraframework.system.AuraContext.Authentication;
 import org.auraframework.system.AuraContext.Format;
 import org.auraframework.system.AuraContext.Mode;
 import org.auraframework.test.TestContextAdapter;
-import org.auraframework.test.mock.MockModel;
 import org.auraframework.test.util.WebDriverTestCase;
 import org.auraframework.util.FileMonitor;
 import org.auraframework.util.test.annotation.UnAdaptableTest;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.openqa.selenium.By;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
 
 @UnAdaptableTest("W-2329849: Failing on SFDC but passing on standalone ios-driver builds. Needs investigation")
 public class MockingUtilUITest extends WebDriverTestCase {
@@ -82,82 +79,6 @@ public class MockingUtilUITest extends WebDriverTestCase {
         // sanity without mocks
         open(appDescriptor);
         assertEquals("Modelonetwothree", getText(By.cssSelector("body")));
-    }
-
-    @Test
-    public void testMockModelString() throws Exception {
-        if (!contextService.isEstablished()) {
-            contextService.startContext(Mode.SELENIUM, Format.HTML, Authentication.AUTHENTICATED);
-        }
-        DefDescriptor<ModelDef> modelDefDescriptor = definitionService.getDefDescriptor(
-                "java://org.auraframework.components.test.java.model.TestJavaModel", ModelDef.class);
-        DefDescriptor<ApplicationDef> appDescriptor = addSourceAutoCleanup(
-                ApplicationDef.class,
-                String.format(baseApplicationTag, String.format("model='%s'", modelDefDescriptor.getQualifiedName()),
-                        "{!m.string}<aura:iteration items='{!m.stringList}' var='i'>{!i}</aura:iteration>"));
-        Map<String, Object> modelProperties = ImmutableMap.of("string", (Object) "not a list");
-        mockingUtil.mockModel(modelDefDescriptor, modelProperties);
-        open(appDescriptor);
-        assertEquals("not a list", getText(By.cssSelector("body")));
-    }
-
-    @Test
-    public void testMockModelList() throws Exception {
-        if (!contextService.isEstablished()) {
-            contextService.startContext(Mode.SELENIUM, Format.HTML, Authentication.AUTHENTICATED);
-        }
-        DefDescriptor<ModelDef> modelDefDescriptor = definitionService.getDefDescriptor(
-                "java://org.auraframework.components.test.java.model.TestJavaModel", ModelDef.class);
-        DefDescriptor<ApplicationDef> appDescriptor = addSourceAutoCleanup(
-                ApplicationDef.class,
-                String.format(baseApplicationTag, String.format("model='%s'", modelDefDescriptor.getQualifiedName()),
-                        "{!m.string}<aura:iteration items='{!m.stringList}' var='i'>{!i}</aura:iteration>"));
-
-        Map<String, Object> modelProperties;
-        modelProperties = ImmutableMap.of("string", (Object) "override", "stringList",
-                Lists.newArrayList("X", "Y", "Z"));
-        mockingUtil.mockModel(modelDefDescriptor, modelProperties);
-        open(appDescriptor);
-        assertEquals("overrideXYZ", getText(By.cssSelector("body")));
-    }
-
-    @Test
-    public void testMockModelChain() throws Exception {
-        if (!contextService.isEstablished()) {
-            contextService.startContext(Mode.SELENIUM, Format.HTML, Authentication.AUTHENTICATED);
-        }
-        DefDescriptor<ModelDef> modelDefDescriptor = definitionService.getDefDescriptor(
-                "java://org.auraframework.components.test.java.model.TestJavaModel", ModelDef.class);
-        DefDescriptor<ApplicationDef> appDescriptor = addSourceAutoCleanup(
-                ApplicationDef.class,
-                String.format(baseApplicationTag, String.format("model='%s'", modelDefDescriptor.getQualifiedName()),
-                        "{!m.string}<aura:iteration items='{!m.stringList}' var='i'>{!i}</aura:iteration>"));
-
-        // If we want to "chain" mocks (where it may be instantiated multiple times in a single request), Mockito
-        // let us do it, but we don't have a convenience function for that because it shouldn't be a common case (in
-        // tests)
-        ModelDef modelDef = Mockito.spy(definitionService.getDefinition(modelDefDescriptor));
-        mockingUtil.mockDef(modelDef);
-
-        // chain 2 different string values followed by an exception
-        MockModel model1 = new MockModel(modelDefDescriptor, ImmutableMap.of("string", (Object) "age"));
-        MockModel model2 = new MockModel(modelDefDescriptor, ImmutableMap.of("string", (Object) "beauty"));
-        // Mockito.doReturn(model1).doReturn(model2).doThrow(new AuraRuntimeException("the afterlife")).when(modelDef)
-        // .newInstance();
-        // rather than build another component, we'll just instantiate the same
-        // component consecutively
-        open(appDescriptor);
-        assertEquals("age", getText(By.cssSelector("body")));
-        // get url with nonce
-        String newurl = getUrl(appDescriptor) + "?randomnum=" + getAuraTestingUtil().getNonce();
-        open(newurl);
-        assertEquals("beauty", getText(By.cssSelector("body")));
-        try {
-            open(appDescriptor);
-            fail("didn't get the error I expected");
-        } catch (AssertionError e) {
-            assertTrue(e.getMessage().contains("the afterlife"));
-        }
     }
 
     // Start with a broken component and mock to provide a "working" one.
