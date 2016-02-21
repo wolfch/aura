@@ -327,8 +327,9 @@ public class Panel2ModalOverlayUITest extends WebDriverTestCase {
 
     /**
      * Verify custom close action Bug: W-2619406
+     * Fix this flapper plz: W-2943868
      */
-    public void testPanelTabOutCallsCustomCloseActionWhenSet() throws Exception {
+    public void _testPanelTabOutCallsCustomCloseActionWhenSet() throws Exception {
         String panelType = "panel";
         String url = APP + "?" + PARAM_PANEL_TYPE + panelType;
         open(url);

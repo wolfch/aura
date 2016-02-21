@@ -33,6 +33,7 @@ public class InputSearchUITest extends WebDriverTestCase {
     }
 
     // W-1551076: Webdriver not firing search event in Safari, IPAD and IPHONE
+    // W-2943854: disable because it's failing on Jenkins, and Jenkins only
     @ExcludeBrowsers({ BrowserType.ANDROID_PHONE, BrowserType.ANDROID_TABLET, BrowserType.IPAD, BrowserType.IPHONE,
             BrowserType.SAFARI })
     @Ignore
