@@ -19,9 +19,14 @@ import org.auraframework.adapter.ConfigAdapter;
 import org.auraframework.components.ui.TreeNode;
 import org.auraframework.docs.ApiContentsModel;
 import org.auraframework.impl.AuraImplTestCase;
+import org.auraframework.util.resource.ResourceLoader;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.mockito.Mockito;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -37,14 +42,33 @@ public class ApiContentsModelTest extends AuraImplTestCase {
      */
     @Test
     public void testLoadJavaScriptApi() {
-    	// TODO: KRIS
-    	// This is going to try to load the symbols from the wrong location.
-    	// I'd suggest providing your own resource loader, and populating it with the symbolSet.json file.
-    	// That also makes this test less dependent on the jsDoc generation.
-    	//ApiContentsModel.refreshSymbols(configAdapter.getResourceLoader());
+    	/* 
+    	 * Nodes string is equal to this, which was taken from symbolSet.json
+    	 
+    	[{
+		    'description': 'The Aura Event Service, accessible using $A.eventService. Creates and Manages Events.',
+		    'kind': 'class',
+		    'name': 'AuraEventService',
+		    'tags': [{
+		        'originalTitle': 'export',
+		        'title': 'export',
+		        'text': ''
+		    }],
+		    'longname': 'AuraEventService'
+		}]
+
+    	 */
+    	final String nodes = "[{\"description\":\"The Aura Event Service, accessible using $A.eventService. Creates and Manages Events.\",\"kind\":\"class\",\"name\":\"AuraEventService\",\"tags\":[{\"originalTitle\":\"export\",\"title\":\"export\",\"text\":\"\"}],\"longname\":\"AuraEventService\"}]";
+
     	
-    	//ApiContentsModel model = new ApiContentsModel();
-        //List<TreeNode> jsDocTreeNodes = model.getNodes();
-        //assertTrue("No jsdoc nodes loaded from generated JSON file.", jsDocTreeNodes.size() > 0);
+    	InputStream stream = new ByteArrayInputStream(nodes.getBytes(StandardCharsets.UTF_8));
+    	ResourceLoader loader = Mockito.mock(ResourceLoader.class);
+    	Mockito.when(loader.getResourceAsStream(Mockito.eq("jsdoc/symbolSet.json"))).thenReturn(stream);
+
+    	ApiContentsModel.refreshSymbols(loader);
+    	
+    	ApiContentsModel model = new ApiContentsModel();
+        List<TreeNode> jsDocTreeNodes = model.getNodes();
+        assertTrue("No jsdoc nodes loaded from generated JSON file.", jsDocTreeNodes.size() > 0);
     }
 }
