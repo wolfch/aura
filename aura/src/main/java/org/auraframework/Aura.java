@@ -20,6 +20,7 @@ import org.auraframework.adapter.StyleAdapter;
 import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.def.Definition;
 import org.auraframework.instance.Instance;
+import org.auraframework.service.BuilderService;
 import org.auraframework.service.ContextService;
 import org.auraframework.service.ConverterService;
 import org.auraframework.service.DefinitionService;
@@ -45,6 +46,7 @@ public class Aura implements AuraDeprecated {
     private static InstanceService instanceService;
     private static SourceControlAdapter sourceControlAdapter;
     private static ConverterService converterService;
+    private static BuilderService builderService;
 
     @Inject
     public void setContextService(ContextService service) {
@@ -89,6 +91,11 @@ public class Aura implements AuraDeprecated {
     @Inject
     public void setConverterService(ConverterService service) {
         converterService = service;
+    }
+
+    @Inject
+    public void setBuilderService(BuilderService service) {
+        builderService = service;
     }
 
     /**
@@ -159,5 +166,10 @@ public class Aura implements AuraDeprecated {
     // Used in BaseComponentImpl and JavaTypeDef
     public static ConverterService getConverterService() {
         return converterService;
+    }
+
+    // Used in many places in sfdc
+    public static BuilderService getBuilderService() {
+        return builderService;
     }
 }
