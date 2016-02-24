@@ -36,7 +36,7 @@ public class AccessChecksUITest extends WebDriverTestCase {
 
     /**
      * Cannot create a component with PUBLIC access from an unprivileged namespace.
-     * 
+     *
      * Note that since auratest:accessPublicComponent IS included as a dependency on accessUnprivilegedNamespace, this
      * will try to the component on the client and fail.
      */
@@ -56,7 +56,7 @@ public class AccessChecksUITest extends WebDriverTestCase {
 
     /**
      * Cannot create a component with INTERNAL access from an unprivileged namespace.
-     * 
+     *
      * Note that since we did not include auratest:accessInternalComponent as a dependency on
      * accessUnprivilegedNamespace, this will attempt to get the component from the server.
      */
@@ -76,7 +76,8 @@ public class AccessChecksUITest extends WebDriverTestCase {
         getMockConfigAdapter().setUnprivilegedNamespace("auratest");
         open("/componentTest/accessUnprivilegedNamespace.cmp?cmpToCreate=componentTest:accessExtendsPublic");
         clickCreateComponentButton();
-        waitForElementTextContains(getDriver().findElement(By.className("output")), "componentTest:accessExtendsPublic");
+        waitForElementTextContains(getDriver().findElement(By.className("output")),
+                "componentTest:accessExtendsPublic");
     }
 
     /**

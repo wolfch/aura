@@ -15,17 +15,27 @@
  */
 package org.auraframework.impl.adapter;
 
-import com.google.common.collect.ImmutableSortedSet;
-import com.google.common.collect.Sets;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+
+import org.auraframework.Aura;
 import org.auraframework.adapter.ContentSecurityPolicy;
 import org.auraframework.adapter.DefaultContentSecurityPolicy;
 import org.auraframework.adapter.LocalizationAdapter;
 import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.Definition;
+import org.auraframework.http.CSP;
 import org.auraframework.service.ContextService;
 import org.auraframework.service.InstanceService;
+import org.auraframework.system.AuraContext;
 import org.auraframework.test.TestContext;
 import org.auraframework.test.TestContextAdapter;
 import org.auraframework.test.adapter.MockConfigAdapter;
@@ -33,20 +43,11 @@ import org.auraframework.test.source.StringSourceLoader;
 import org.auraframework.util.FileMonitor;
 import org.springframework.context.annotation.Primary;
 
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import com.google.common.collect.ImmutableSortedSet;
+import com.google.common.collect.Sets;
 
 /**
  * ConfigAdapter for Aura tests.
- * 
- * 
- * @since 0.0.178
  */
 @Primary
 @ServiceComponent
@@ -86,12 +87,33 @@ public class MockConfigAdapterImpl extends ConfigAdapterImpl implements MockConf
 
         @Override
         public Collection<String> getScriptSources() {
-            return baseline.getScriptSources();
+            List<String> list = (List<String>) baseline.getScriptSources();
+            AuraContext context = Aura.getContextService().getCurrentContext();
+            if (context != null && context.isTestMode()) {
+                list = removeNonceCspEntry(list);
+                list.add(CSP.UNSAFE_EVAL);
+            }
+            return list;
         }
 
         @Override
         public Collection<String> getStyleSources() {
-            return baseline.getStyleSources();
+            List<String> list = (List<String>) baseline.getStyleSources();
+            AuraContext context = Aura.getContextService().getCurrentContext();
+            if (context != null && context.isTestMode()) {
+                list = removeNonceCspEntry(list);
+            }
+            return list;
+        }
+
+        private List<String> removeNonceCspEntry(List<String> csp) {
+            for (Iterator<String> iterator = csp.iterator(); iterator.hasNext();) {
+                String entry = iterator.next();
+                if (entry != null && entry.startsWith("'nonce")) {
+                    iterator.remove();
+                }
+            }
+            return csp;
         }
 
         @Override
@@ -136,14 +158,14 @@ public class MockConfigAdapterImpl extends ConfigAdapterImpl implements MockConf
     }
 
     private static final Set<String> SYSTEM_TEST_NAMESPACES = new ImmutableSortedSet.Builder<>(
-            String.CASE_INSENSITIVE_ORDER).add(
-            "auratest", "actionsTest", "attributesTest", "auraStorageTest", "gvpTest", "preloadTest",
-            "clientLibraryTest", "clientApiTest",
-            "clientServiceTest", "componentTest", "docstest", "expressionTest", "forEachDefTest", "forEachTest",
-            "handleEventTest", "ifTest", "iterationTest",
-            "listTest", "loadLevelTest", "perfTest", "performanceTest", "renderingTest",
-            "setAttributesTest", "test", "tokenSanityTest", "uitest", "utilTest",
-            "updateTest", "whitespaceBehaviorTest", "appCache").build();
+            String.CASE_INSENSITIVE_ORDER)
+                    .add("auratest", "actionsTest", "attributesTest", "auraStorageTest", "gvpTest", "preloadTest",
+                            "clientLibraryTest", "clientApiTest", "clientServiceTest", "componentTest", "docstest",
+                            "expressionTest", "forEachDefTest", "forEachTest", "handleEventTest", "ifTest",
+                            "iterationTest", "listTest", "loadLevelTest", "perfTest", "performanceTest",
+                            "renderingTest", "setAttributesTest", "test", "tokenSanityTest", "uitest", "utilTest",
+                            "updateTest", "whitespaceBehaviorTest", "appCache")
+                    .build();
 
     private Boolean isClientAppcacheEnabled = null;
     private Boolean isProduction = null;
@@ -152,6 +174,7 @@ public class MockConfigAdapterImpl extends ConfigAdapterImpl implements MockConf
     private ContentSecurityPolicy csp;
     private String csrfToken = null;
     private final Set<String> unprivilegedNamespaces = new HashSet<>();
+    private Boolean lockerServiceEnabled = null;
 
     public MockConfigAdapterImpl() {
         super();
@@ -169,6 +192,7 @@ public class MockConfigAdapterImpl extends ConfigAdapterImpl implements MockConf
         validateCss = null;
         csrfToken = null;
         unprivilegedNamespaces.clear();
+        lockerServiceEnabled = null;
     }
 
     @Override
@@ -288,5 +312,18 @@ public class MockConfigAdapterImpl extends ConfigAdapterImpl implements MockConf
     @Override
     public String getCSRFToken() {
         return (this.csrfToken == null) ? super.getCSRFToken() : this.csrfToken;
+    }
+
+    @Override
+    public void setLockerServiceEnabled(boolean isLockerServiceEnabled) {
+        this.lockerServiceEnabled = isLockerServiceEnabled;
+    }
+
+    @Override
+    public boolean isLockerServiceEnabled() {
+        if (lockerServiceEnabled == null) {
+            return super.isLockerServiceEnabled();
+        }
+        return this.lockerServiceEnabled;
     }
 }

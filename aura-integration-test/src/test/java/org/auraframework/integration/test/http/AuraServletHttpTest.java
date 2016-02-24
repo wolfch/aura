@@ -578,7 +578,7 @@ public class AuraServletHttpTest extends AuraHttpTestCase {
         assertEquals("Expected response to be marked for long cache",
                 String.format("max-age=%s, public", AuraBaseServlet.LONG_EXPIRE / 1000),
                 response.getFirstHeader(HttpHeaders.CACHE_CONTROL).getValue());
-        assertDefaultAntiClickjacking(response, true, true);
+        assertDefaultAntiClickjacking(response, true, false);
         String expiresHdr = response.getFirstHeader(HttpHeaders.EXPIRES).getValue();
         Date expires = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.ENGLISH).parse(expiresHdr);
         //
@@ -606,7 +606,7 @@ public class AuraServletHttpTest extends AuraHttpTestCase {
         assertEquals("Expected response to be marked for no-cache", "no-cache, no-store",
                 response.getFirstHeader(HttpHeaders.CACHE_CONTROL).getValue());
         assertEquals("no-cache", response.getFirstHeader(HttpHeaders.PRAGMA).getValue());
-        assertDefaultAntiClickjacking(response, true, true);
+        assertDefaultAntiClickjacking(response, true, false);
 
         String expiresHdr = response.getFirstHeader(HttpHeaders.EXPIRES).getValue();
         Date expires = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.ENGLISH).parse(expiresHdr);
@@ -679,7 +679,7 @@ public class AuraServletHttpTest extends AuraHttpTestCase {
         assertTrue("Expected Aura FW Script tag not found. Expected to see: " + scriptTag,
                 getResponseBody(response).contains(scriptTag));
 
-        assertDefaultAntiClickjacking(response, true, true);
+        assertDefaultAntiClickjacking(response, true, false);
         get.releaseConnection();
     }
 

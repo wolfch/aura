@@ -138,7 +138,7 @@ public class ApplicationDefTest extends BaseComponentDefTest<ApplicationDef> {
     @Test
     public void testExplicitTokenOverrides() throws QuickFixException {
         DefDescriptor<TokensDef> tokens = addSourceAutoCleanup(TokensDef.class, "<aura:tokens></aura:tokens>");
-        String src = String.format("<aura:application tokenOverrides=\"%s\"/>", tokens.getDescriptorName());
+        String src = String.format("<aura:application tokens=\"%s\"/>", tokens.getDescriptorName());
         DefDescriptor<ApplicationDef> desc = addSourceAutoCleanup(ApplicationDef.class, src);
         assertEquals(1, definitionService.getDefinition(desc).getTokenOverrides().size());
         assertEquals(tokens, definitionService.getDefinition(desc).getTokenOverrides().get(0));
@@ -148,7 +148,7 @@ public class ApplicationDefTest extends BaseComponentDefTest<ApplicationDef> {
     @Test
     public void testTokensAddedToDeps() throws QuickFixException {
         DefDescriptor<TokensDef> tokens = addSourceAutoCleanup(TokensDef.class, "<aura:tokens></aura:tokens>");
-        String src = String.format("<aura:application tokenOverrides=\"%s\"/>", tokens.getDescriptorName());
+        String src = String.format("<aura:application tokens=\"%s\"/>", tokens.getDescriptorName());
         DefDescriptor<ApplicationDef> desc = addSourceAutoCleanup(ApplicationDef.class, src);
 
         Set<DefDescriptor<?>> deps = Sets.newHashSet();
@@ -159,7 +159,7 @@ public class ApplicationDefTest extends BaseComponentDefTest<ApplicationDef> {
     /** verify tokens descriptor ref is validated */
     @Test
     public void testInvalidTokensRef() throws QuickFixException {
-        String src = String.format("<aura:application tokenOverrides=\"%s\"/>", "wall:maria");
+        String src = String.format("<aura:application tokens=\"%s\"/>", "wall:maria");
         DefDescriptor<ApplicationDef> desc = addSourceAutoCleanup(ApplicationDef.class, src);
 
         try {

@@ -190,7 +190,7 @@ public class ConfigAdapterImpl implements ConfigAdapter {
         } else {
             buildTimestamp = System.currentTimeMillis();
         }
-        
+
         if (auraVersionString == null || auraVersionString.isEmpty()) {
             throw new AuraError("Unable to read build version from version.prop file");
         }
@@ -433,6 +433,14 @@ public class ConfigAdapterImpl implements ConfigAdapter {
         return String.format("%s/auraFW/javascript/%s/aura_%s.js", contextPath, nonce, suffix);
     }
 
+    @Override
+    public String getLockerWorkerURL() {
+        AuraContext context = contextService.getCurrentContext();
+        String contextPath = context.getContextPath();
+        String nonce = context.getFrameworkUID();
+        return String.format("%s/auraFW/resources/%s/lockerservice/safeEval.html", contextPath, nonce);
+    }
+
     /**
      * Returns default aura url for encryption key
      */
@@ -662,9 +670,12 @@ public class ConfigAdapterImpl implements ConfigAdapter {
         if ("HTML".equals(format)) {
             String defType = request.getParameter("aura.deftype");
             if ("APPLICATION".equals(defType) || "COMPONENT".equals(defType)) {
-                inlineStyle = true;  // apps and components allow inlines.  Sigh.
+                inlineStyle = !isLockerServiceEnabled();
             }
+        } else {
+            inlineStyle = isSafeEvalWorkerURI(request.getRequestURI());
         }
+
         return new DefaultContentSecurityPolicy(inlineStyle);
     }
 
@@ -680,8 +691,13 @@ public class ConfigAdapterImpl implements ConfigAdapter {
         this.fileMonitor = fileMonitor;
     }
 
+
     @Override
     public boolean isLockerServiceEnabled() {
         return true;
     }
+
+	protected boolean isSafeEvalWorkerURI(String uri) {
+        return uri.endsWith("/lockerservice/safeEval.html");
+	}
 }

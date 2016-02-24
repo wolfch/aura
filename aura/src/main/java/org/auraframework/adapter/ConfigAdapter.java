@@ -35,6 +35,8 @@ public interface ConfigAdapter extends AuraAdapter {
 
     String getAuraJSURL();
 
+    String getLockerWorkerURL();
+
     /** Returns a string to identify this unique version of the Aura framework. */
     String getAuraFrameworkNonce();
 

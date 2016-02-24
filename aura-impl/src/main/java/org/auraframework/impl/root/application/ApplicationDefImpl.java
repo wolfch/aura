@@ -23,6 +23,8 @@ import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.ControllerDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.EventDef;
+import org.auraframework.def.TokenDef;
+import org.auraframework.def.TokensDef;
 import org.auraframework.expression.Expression;
 import org.auraframework.expression.PropertyReference;
 import org.auraframework.impl.expression.AuraExpressionBuilder;
@@ -37,9 +39,12 @@ import org.auraframework.throwable.quickfix.InvalidDefinitionException;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.json.Json;
 
+import com.google.common.collect.Maps;
+
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -105,6 +110,10 @@ public class ApplicationDefImpl extends BaseComponentDefImpl<ApplicationDef> imp
         DefDescriptor<EventDef> locationChangeEventDescriptor = getLocationChangeEventDescriptor();
         if (locationChangeEventDescriptor != null) {
             json.writeMapEntry("locationChangeEventDef", locationChangeEventDescriptor.getDef());
+        }
+        Map<String,String> tokens = getTokens();
+        if (tokens != null && !tokens.isEmpty()) {
+            json.writeMapEntry("tokens",tokens);
         }
     }
 
@@ -184,6 +193,35 @@ public class ApplicationDefImpl extends BaseComponentDefImpl<ApplicationDef> imp
                 EventDef.class))) {
             throw new InvalidDefinitionException(String.format("%s must extend aura:locationChange",
                     locationChangeDef.getDescriptor()), getLocation());
+        }
+    }
+
+    public Map<String, String> getTokens(){
+        Map<String,String> tokens=Maps.newHashMap();
+        try {
+            List<DefDescriptor<TokensDef>> tokensDefs = Aura.getContextService().getCurrentContext().getLoadingApplicationDescriptor().getDef().getTokenOverrides();
+            for (DefDescriptor<TokensDef> descriptor : tokensDefs) {
+                addTokens(descriptor, tokens);
+            }
+        } catch (QuickFixException e) {
+            //?? No Application Def -- Borked
+        } catch (NullPointerException e){
+            //?? No Context -- Borked
+        }
+        return tokens;
+    }
+
+    private void addTokens(DefDescriptor<TokensDef> tokenDescriptor,Map<String,String> tokens) throws QuickFixException{
+        TokensDef tokensDef=tokenDescriptor.getDef();
+        DefDescriptor<TokensDef> extendsDef = tokensDef.getExtendsDescriptor();
+        if (extendsDef != null) {
+            addTokens(extendsDef,tokens);
+        }
+        if(tokensDef.getSerializable()) {
+            Map<String, TokenDef> tokenDefs = tokensDef.getDeclaredTokenDefs();
+            for (Map.Entry<String, TokenDef> token : tokenDefs.entrySet()) {
+                tokens.put(token.getKey(), (String) token.getValue().getValue());
+            }
         }
     }
 

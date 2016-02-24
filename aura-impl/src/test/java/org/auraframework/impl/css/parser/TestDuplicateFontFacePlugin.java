@@ -51,7 +51,7 @@ public class TestDuplicateFontFacePlugin extends StyleTestCase {
 
         StyleDefCSSFormatAdapter cssFormatAdapter = new StyleDefCSSFormatAdapter();
         cssFormatAdapter.setStyleAdapter(adapter);
-        cssFormatAdapter.writeCollection(Lists.newArrayList(desc1.getDef(), desc2.getDef()), out);
+        cssFormatAdapter.writeCollection(Lists.newArrayList(definitionService.getDefinition(desc1), definitionService.getDefinition(desc2)), out);
         // no error
     }
 
@@ -64,7 +64,7 @@ public class TestDuplicateFontFacePlugin extends StyleTestCase {
         StyleDefCSSFormatAdapter cssFormatAdapter = new StyleDefCSSFormatAdapter();
         cssFormatAdapter.setStyleAdapter(adapter);
         try {
-            cssFormatAdapter.writeCollection(Lists.newArrayList(desc.getDef()), out);
+            cssFormatAdapter.writeCollection(Lists.newArrayList(definitionService.getDefinition(desc)), out);
             fail("expected to get exception");
         } catch (Exception e) {
             checkExceptionContains(e, AuraRuntimeException.class, "was already declared");
@@ -81,7 +81,9 @@ public class TestDuplicateFontFacePlugin extends StyleTestCase {
         StyleDefCSSFormatAdapter cssFormatAdapter = new StyleDefCSSFormatAdapter();
         cssFormatAdapter.setStyleAdapter(adapter);
         try {
-            cssFormatAdapter.writeCollection(Lists.newArrayList(desc1.getDef(), desc2.getDef(), desc3.getDef()), out);
+            cssFormatAdapter.writeCollection(Lists.newArrayList(definitionService.getDefinition(desc1), 
+            		definitionService.getDefinition(desc2), 
+            		definitionService.getDefinition(desc3)), out);
             fail("expected to get exception");
         } catch (Exception e) {
             checkExceptionContains(e, AuraRuntimeException.class, "was already declared");
@@ -97,7 +99,8 @@ public class TestDuplicateFontFacePlugin extends StyleTestCase {
         StyleDefCSSFormatAdapter cssFormatAdapter = new StyleDefCSSFormatAdapter();
         cssFormatAdapter.setStyleAdapter(adapter);
         try {
-            cssFormatAdapter.writeCollection(Lists.newArrayList(desc1.getDef(), desc2.getDef()), out);
+            cssFormatAdapter.writeCollection(Lists.newArrayList(definitionService.getDefinition(desc1),
+            		definitionService.getDefinition(desc2)), out);
             fail("expected to get exception");
         } catch (Exception e) {
             checkExceptionContains(e, AuraRuntimeException.class, "was already declared");
@@ -113,7 +116,8 @@ public class TestDuplicateFontFacePlugin extends StyleTestCase {
         StyleDefCSSFormatAdapter cssFormatAdapter = new StyleDefCSSFormatAdapter();
         cssFormatAdapter.setStyleAdapter(adapter);
         try {
-            cssFormatAdapter.writeCollection(Lists.newArrayList(desc1.getDef(), desc2.getDef()), out);
+            cssFormatAdapter.writeCollection(Lists.newArrayList(definitionService.getDefinition(desc1), 
+            		definitionService.getDefinition(desc2)), out);
             fail("expected to get exception");
         } catch (Exception e) {
             checkExceptionContains(e, AuraRuntimeException.class, "was already declared");
@@ -129,7 +133,8 @@ public class TestDuplicateFontFacePlugin extends StyleTestCase {
         StyleDefCSSFormatAdapter cssFormatAdapter = new StyleDefCSSFormatAdapter();
         cssFormatAdapter.setStyleAdapter(adapter);
         try {
-            cssFormatAdapter.writeCollection(Lists.newArrayList(desc1.getDef(), desc2.getDef()), out);
+            cssFormatAdapter.writeCollection(Lists.newArrayList(definitionService.getDefinition(desc1), 
+            		definitionService.getDefinition(desc2)), out);
             fail("expected to get exception");
         } catch (Exception e) {
             checkExceptionContains(e, AuraRuntimeException.class, "was already declared");
@@ -145,7 +150,8 @@ public class TestDuplicateFontFacePlugin extends StyleTestCase {
         StyleDefCSSFormatAdapter cssFormatAdapter = new StyleDefCSSFormatAdapter();
         cssFormatAdapter.setStyleAdapter(adapter);
         try {
-            cssFormatAdapter.writeCollection(Lists.newArrayList(desc1.getDef(), desc2.getDef()), out);
+            cssFormatAdapter.writeCollection(Lists.newArrayList(definitionService.getDefinition(desc1), 
+            		definitionService.getDefinition(desc2)), out);
             fail("expected to get exception");
         } catch (Exception e) {
             checkExceptionContains(e, AuraRuntimeException.class, "was already declared");
@@ -160,7 +166,8 @@ public class TestDuplicateFontFacePlugin extends StyleTestCase {
 
         StyleDefCSSFormatAdapter cssFormatAdapter = new StyleDefCSSFormatAdapter();
         cssFormatAdapter.setStyleAdapter(adapter);
-        cssFormatAdapter.writeCollection(Lists.newArrayList(desc1.getDef(), desc2.getDef()), out);
+        cssFormatAdapter.writeCollection(Lists.newArrayList(definitionService.getDefinition(desc1), 
+        		definitionService.getDefinition(desc2)), out);
         // no error
     }
 
@@ -173,7 +180,8 @@ public class TestDuplicateFontFacePlugin extends StyleTestCase {
         StyleDefCSSFormatAdapter cssFormatAdapter = new StyleDefCSSFormatAdapter();
         cssFormatAdapter.setStyleAdapter(adapter);
         try {
-            cssFormatAdapter.writeCollection(Lists.newArrayList(desc1.getDef(), desc2.getDef()), out);
+            cssFormatAdapter.writeCollection(Lists.newArrayList(definitionService.getDefinition(desc1), 
+            		definitionService.getDefinition(desc2)), out);
             fail("expected to get exception");
         } catch (Exception e) {
             checkExceptionContains(e, AuraRuntimeException.class, "was already declared");
@@ -188,7 +196,8 @@ public class TestDuplicateFontFacePlugin extends StyleTestCase {
 
         StyleDefCSSFormatAdapter cssFormatAdapter = new StyleDefCSSFormatAdapter();
         cssFormatAdapter.setStyleAdapter(adapter);
-        cssFormatAdapter.writeCollection(Lists.newArrayList(desc1.getDef(), desc2.getDef()), out);
+        cssFormatAdapter.writeCollection(Lists.newArrayList(definitionService.getDefinition(desc1), 
+        		definitionService.getDefinition(desc2)), out);
         // no error
     }
 
@@ -201,7 +210,8 @@ public class TestDuplicateFontFacePlugin extends StyleTestCase {
         StyleDefCSSFormatAdapter cssFormatAdapter = new StyleDefCSSFormatAdapter();
         cssFormatAdapter.setStyleAdapter(adapter);
         try {
-            cssFormatAdapter.writeCollection(Lists.newArrayList(desc1.getDef(), desc2.getDef()), out);
+            cssFormatAdapter.writeCollection(Lists.newArrayList(definitionService.getDefinition(desc1), 
+            		definitionService.getDefinition(desc2)), out);
             fail("expected to get exception");
         } catch (Exception e) {
             checkExceptionContains(e, AuraRuntimeException.class, "was already declared");
@@ -217,7 +227,7 @@ public class TestDuplicateFontFacePlugin extends StyleTestCase {
         StyleDefCSSFormatAdapter cssFormatAdapter = new StyleDefCSSFormatAdapter();
         cssFormatAdapter.setStyleAdapter(adapter);
         try {
-            cssFormatAdapter.writeCollection(Lists.newArrayList(desc1.getDef(), desc2.getDef()), out);
+            cssFormatAdapter.writeCollection(Lists.newArrayList(definitionService.getDefinition(desc1), definitionService.getDefinition(desc2)), out);
             fail("expected to get exception");
         } catch (Exception e) {
             checkExceptionContains(e, AuraRuntimeException.class, "was already declared");
@@ -233,7 +243,7 @@ public class TestDuplicateFontFacePlugin extends StyleTestCase {
         StyleDefCSSFormatAdapter cssFormatAdapter = new StyleDefCSSFormatAdapter();
         cssFormatAdapter.setStyleAdapter(adapter);
         try {
-            cssFormatAdapter.writeCollection(Lists.newArrayList(desc1.getDef(), desc2.getDef()), out);
+            cssFormatAdapter.writeCollection(Lists.newArrayList(definitionService.getDefinition(desc1), definitionService.getDefinition(desc2)), out);
             fail("expected to get exception");
         } catch (Exception e) {
             checkExceptionContains(e, AuraRuntimeException.class, "was already declared");

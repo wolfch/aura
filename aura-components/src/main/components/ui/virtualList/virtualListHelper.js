@@ -37,10 +37,17 @@
     initializeBody: function (cmp) {
         var body = cmp.get('v.body');
         if (!body.length) {
-            var bodyCmp = $A.newCmp({
-                componentDef: 'aura:html',
-                attributes: { values: { tag: 'section' } }
-            }, cmp);
+            var bodyCmp = $A.createComponentFromConfig({
+                componentDef: {
+                    descriptor: 'markup://aura:html'
+                },
+                attributes: {
+                    valueProvider: cmp,
+                    values: {
+                        tag: 'section'
+                    }
+                }
+            });
             cmp.set('v.body', [bodyCmp]);
         }
     },
@@ -77,10 +84,11 @@
         return container;
     },
     initializeTemplate: function (cmp) {
-        var tmpl  = cmp.get('v.itemTemplate')[0],
-            ref   = cmp.get('v.itemVar'),
-            ptv   = this._createPassthroughValue(cmp, ref),
-            shape = $A.newCmp(tmpl, ptv);
+        var tmpl  = cmp.get('v.itemTemplate')[0];
+        var ref   = cmp.get('v.itemVar');
+        var ptv   = this._createPassthroughValue(cmp, ref);
+        tmpl["attributes"]["valueProvider"] = ptv;
+        var shape = $A.createComponentFromConfig(tmpl);
 
         // Initialize internal setup
         cmp._shape             = shape;
@@ -178,6 +186,31 @@
         this.ignorePTVChanges(cmp, false);
         $A.metricsService.markEnd(this.NS, this.NAME + ".appendVirtualRows");
     },
+    updateItem: function (cmp, item, index) {
+        this._rerenderDirtyElement(cmp, item, null, index);
+    },
+    getComponentByIndex: function(cmp, index, callback) {
+        var items = cmp._virtualItems;
+        if (index<0 || index>=items.length) {
+            callback(null);
+            return;
+        }
+
+        var shape  = cmp._shape,
+            ptv    = cmp._ptv,
+            ref    = cmp.get('v.itemVar'),
+            target = cmp._virtualItems[index],
+            item   = this._getItemAttached(target);
+
+        // Setting up the component with the current item
+        shape.getElement = function () { return target; };
+        ptv.sync  = true;
+        ptv.set(ref, item, true);
+        ptv.ignoreChanges = false;
+        ptv.dirty = false;
+
+        callback(shape);
+    },
     _findVirtualElementPosition: function (virtualElements, item, element) {
         for (var i = 0; i < virtualElements.length; i++) {
             var ve = virtualElements[i];
@@ -189,18 +222,22 @@
     _replaceDOMElement: function (parent, newChild, oldChild) {
         parent.replaceChild(newChild, oldChild);
     },
-    _rerenderDirtyElement: function (cmp, item, oldElement) {
+    // oldElement or index may be null
+    _rerenderDirtyElement: function (cmp, item, oldElement, index) {
         var listRoot   = this.getListBody(cmp),
             items      = cmp._virtualItems,
-            position   = this._findVirtualElementPosition(items, item, oldElement),
+            // if the index is passed in, then we take it, otherwise we try to find it
+            position   = (!$A.util.isUndefined(index))?index:this._findVirtualElementPosition(items, item, oldElement),
             newElement = this._generateVirtualItem(cmp, item);
 
-        if (!oldElement) {
-            oldElement = items[position];
-        }
+        if (!$A.util.isUndefinedOrNull(listRoot) && !$A.util.isUndefined(position) && position>=0 && position<items.length) {
+            if (!oldElement) {
+                oldElement = items[position];
+            }
 
-        items[position] = newElement;
-        this._replaceDOMElement(listRoot, newElement, oldElement);
+            items[position] = newElement;
+            this._replaceDOMElement(listRoot, newElement, oldElement);
+        }
     },
     _getRenderingComponentForElement: function (domElement) {
         var id  = $A.util.getDataAttribute(domElement, 'auraRenderedBy');
@@ -284,5 +321,14 @@
             ptv.ignoreChanges = true;
             ptv.sync = false;
         }
+    },
+    _getRootComponent: function (cmp) {
+        var superCmp   = cmp.getSuper(),
+            isExtended = superCmp.getDef().getDescriptor().getName() !== 'component';
+
+        if (isExtended) {
+            cmp = superCmp;
+        }
+        return cmp;
     }
 })// eslint-disable-line semi

@@ -20,6 +20,7 @@ import org.auraframework.service.LoggingService;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  */
@@ -37,4 +38,7 @@ public interface ApplicationDef extends BaseComponentDef {
     List<String> getAdditionalAppCacheURLs(LoggingService loggingService, ExceptionAdapter exceptionAdapter) throws QuickFixException;
 
     Boolean isOnePageApp() throws QuickFixException;
+
+    Map<String, String> getTokens();
+
 }

@@ -387,7 +387,7 @@ public class AuraContextImplTest extends AuraImplTestCase {
     @Test
     public void testStyleContext() throws Exception {
         DefDescriptor<TokensDef> t = addSourceAutoCleanup(TokensDef.class, "<aura:tokens></aura:tokens>");
-        String src = String.format("<aura:application access='unauthenticated' tokenOverrides='%s'/>", t.getDescriptorName());
+        String src = String.format("<aura:application access='unauthenticated' tokens='%s'/>", t.getDescriptorName());
         DefDescriptor<ApplicationDef> app = addSourceAutoCleanup(ApplicationDef.class, src);
 
         AuraContext ctx = contextService.startContext(Mode.UTEST, Format.JSON,

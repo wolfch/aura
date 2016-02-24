@@ -33,7 +33,8 @@ public class DesignDefHandlerTest extends AuraImplTestCase {
     @Test
     public void testRetrieveSingleAttributeDesign() throws Exception {
         DesignDef element = definitionService.getDefinition(setupSimpleDesignDef(
-                "<design:component><design:attribute name=\"mystring\" required=\"true\"/></design:component>"));
+                "<design:component><design:attribute name=\"mystring\" required=\"true\"/></design:component>")
+                );
         DesignAttributeDef child = element.getAttributeDesignDef("mystring");
         assertNotNull("Expected one AttributeDesignDef", child);
         assertTrue(child.isRequired());
@@ -43,7 +44,8 @@ public class DesignDefHandlerTest extends AuraImplTestCase {
     public void testMultipleDesignTemplatesFailure() throws Exception {
         try {
         	definitionService.getDefinition(setupSimpleDesignDef(
-                    "<design:component><design:template /><design:template /></design:component>"));
+                    "<design:component><design:template /><design:template /></design:component>")
+                    );
             fail("Expected InvalidDefinitionException to be thrown");
         } catch (Exception t) {
             assertExceptionMessageEndsWith(t, InvalidDefinitionException.class,

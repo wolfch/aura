@@ -25,6 +25,7 @@ import org.openqa.selenium.By;
 @ThreadHostileTest("Tests modify what namespaces are privileged or not")
 public class GetDefinitionAccessCheckUITest extends WebDriverTestCase {
 
+
     @Ignore("TODO: (W-2799335): Disabled this test since $A.getDeifinition() doesn't do access check for Event")
     @Test
     public void testGetEventDefinitionWithoutAccess() throws Exception {
