@@ -46,7 +46,13 @@ public class Aura implements AuraDeprecated {
     private static LocalizationService localizationService;
     private static JsonSerializerFactory jsonSerializerFactory;
     private static List<JsonSerializerAdapter> jsonSerializerAdapters;
+    private static CachingService cachingService;
 
+    @Inject
+    public void setCachingService(CachingService service) {
+        cachingService = service;
+    }
+    
     @Inject
     public void setJsonSerializerFactory(JsonSerializerFactory factory) {
         jsonSerializerFactory = factory;
@@ -210,5 +216,13 @@ public class Aura implements AuraDeprecated {
     @Deprecated
     public static List<JsonSerializerAdapter> getJsonSerializerAdapters() {
         return jsonSerializerAdapters;
+    }
+    /**
+     * USE INJECTION INSTEAD
+     * @return
+     */
+    @Deprecated
+    public static CachingService getCachingService() {
+        return cachingService;
     }
 }
