@@ -2002,7 +2002,7 @@ AuraClientService.prototype.receive = function(auraXHR, timedOut) {
         this.setCurrentTransactionId(auraXHR.transactionId);
     }
     try {
-        responseMessage = this.decode(auraXHR.request, undefined, timedOut);
+        responseMessage = this.decode(auraXHR.request, false, timedOut);
 
         if (responseMessage["status"] === "SUCCESS") {
             this.processResponses(auraXHR, responseMessage["message"]);

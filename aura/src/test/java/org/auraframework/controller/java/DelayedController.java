@@ -40,4 +40,14 @@ public class DelayedController {
         }
         return new Component[] { cmp };
     }
+
+    @AuraEnabled
+    public static boolean delayAction(@Key("delayMs") long delayMs) {
+        try {
+            Thread.sleep(delayMs);
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
 }
