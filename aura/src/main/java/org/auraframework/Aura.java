@@ -15,23 +15,18 @@
  */
 package org.auraframework;
 
-import org.auraframework.adapter.ConfigAdapter;
-import org.auraframework.adapter.StyleAdapter;
+import java.util.List;
+
+import javax.inject.Inject;
+
+import org.auraframework.adapter.*;
 import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.def.Definition;
 import org.auraframework.instance.Instance;
-import org.auraframework.service.BuilderService;
-import org.auraframework.service.ContextService;
-import org.auraframework.service.ConverterService;
-import org.auraframework.service.DefinitionService;
-import org.auraframework.service.InstanceService;
-import org.auraframework.service.IntegrationService;
-import org.auraframework.service.LocalizationService;
-import org.auraframework.service.LoggingService;
+import org.auraframework.service.*;
 import org.auraframework.system.AuraContext;
 import org.auraframework.util.adapter.SourceControlAdapter;
-
-import javax.inject.Inject;
+import org.auraframework.util.json.JsonSerializerFactory;
 
 /**
  * Entry point for accessing Aura services
@@ -49,7 +44,19 @@ public class Aura implements AuraDeprecated {
     private static ConverterService converterService;
     private static BuilderService builderService;
     private static LocalizationService localizationService;
+    private static JsonSerializerFactory jsonSerializerFactory;
+    private static List<JsonSerializerAdapter> jsonSerializerAdapters;
 
+    @Inject
+    public void setJsonSerializerFactory(JsonSerializerFactory factory) {
+        jsonSerializerFactory = factory;
+    }
+    
+    @Inject
+    public void setJsonSerializerAdapter(List<JsonSerializerAdapter> adapters) {
+        jsonSerializerAdapters = adapters;
+    }
+    
     @Inject
     public void setContextService(ContextService service) {
         contextService = service;
@@ -185,5 +192,23 @@ public class Aura implements AuraDeprecated {
     @Deprecated
     public static LocalizationService getLocalizationService() {
         return localizationService;
+    }
+    
+    /**
+     * USE INJECTION INSTEAD
+     * @return
+     */
+    @Deprecated
+    public static JsonSerializerFactory getJsonSerializerFactory() {
+        return jsonSerializerFactory;
+    }
+
+    /**
+     * USE INJECTION INSTEAD
+     * @return
+     */
+    @Deprecated
+    public static List<JsonSerializerAdapter> getJsonSerializerAdapters() {
+        return jsonSerializerAdapters;
     }
 }
