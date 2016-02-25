@@ -77,7 +77,6 @@ public class InstanceServiceImpl implements InstanceService {
         return this.<T, D> getInstance(descriptor, null);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public <T extends Instance<D>, D extends Definition> T getInstance(DefDescriptor<D> descriptor,
             Map<String, Object> attributes) throws QuickFixException {
@@ -90,26 +89,20 @@ public class InstanceServiceImpl implements InstanceService {
         // Special cases are awesome!!!!!!!!!!!!!!!!!!!!!!!!!
         //
         if (descriptor.getDefType() == DefType.ACTION) {
+            @SuppressWarnings("unchecked")
             SubDefDescriptor<ActionDef, ControllerDef> actionDesc = (SubDefDescriptor<ActionDef, ControllerDef>) descriptor;
             DefDescriptor<ControllerDef> controllerDesc = actionDesc.getParentDescriptor();
 
             ControllerDef controller = definitionService.getDefinition(controllerDesc);
 
-            def = (D) controller.getSubDefinition(actionDesc);
-        } else {
-            try {
-                def = definitionService.getDefinition(descriptor);
-            } catch (DefinitionNotFoundException dfe) {
-                //
-                // Ugh.. how broken can you get?
-                //
-                if (descriptor.getDefType() == DefType.COMPONENT) {
-                    //DefDescriptor<InterfaceDef> interfaceDesc;
-                }
-                //if (def == null) {
-                    throw dfe;
-                //}
+            @SuppressWarnings("unchecked")
+            D actionDef = (D) controller.getSubDefinition(actionDesc);
+            if (actionDef == null) {
+                throw new DefinitionNotFoundException(actionDesc);
             }
+            def = actionDef;
+        } else {
+            def = definitionService.getDefinition(descriptor);
         }
         return getInstance(def, attributes);
     }
@@ -172,5 +165,4 @@ public class InstanceServiceImpl implements InstanceService {
     public Instance<?> getInstance(ComponentDefRef defRef, BaseComponent<?, ?> valueProvider) throws QuickFixException {
         return new ComponentImpl(defRef.getDescriptor(), defRef.getAttributeValueList(), valueProvider, defRef.getLocalId());
     }
-
 }
