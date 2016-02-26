@@ -25,12 +25,10 @@ import org.apache.http.util.EntityUtils;
 import org.auraframework.adapter.ConfigAdapter;
 import org.auraframework.adapter.ContentSecurityPolicy;
 import org.auraframework.adapter.DefaultContentSecurityPolicy;
-import org.auraframework.adapter.ExceptionAdapter;
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.http.AuraBaseServlet;
-import org.auraframework.service.LoggingService;
 import org.auraframework.system.AuraContext.Mode;
 import org.auraframework.test.adapter.MockConfigAdapter;
 import org.auraframework.test.client.UserAgent;
@@ -61,12 +59,6 @@ import java.util.Map;
  * @since 0.0.139
  */
 public class AuraServletHttpTest extends AuraHttpTestCase {
-
-    @Inject
-    private LoggingService loggingService;
-
-    @Inject
-    private ExceptionAdapter exceptionAdapter;
 
     @Inject
     private ConfigAdapter configAdapter;
@@ -166,7 +158,7 @@ public class AuraServletHttpTest extends AuraHttpTestCase {
         ServerAction a = new ServerAction(
                 "java://org.auraframework.components.test.java.controller.JavaTestController/ACTION$getString",
                 actionParams);
-        a.run(loggingService, exceptionAdapter);
+        a.run();
         String rawRes = a.getrawResponse();
         Integer posActions = rawRes.indexOf("actions");
         Integer posContex = rawRes.indexOf("context");
@@ -187,7 +179,7 @@ public class AuraServletHttpTest extends AuraHttpTestCase {
         ServerAction a = new ServerAction(
                 "java://org.auraframework.impl.controller.ComponentController/ACTION$getComponent",
                 actionParams);
-        a.run(loggingService, exceptionAdapter);
+        a.run();
         String rawRes = a.getrawResponse();
 
         int firstOccurrence = rawRes.indexOf("componentClass");
@@ -214,7 +206,7 @@ public class AuraServletHttpTest extends AuraHttpTestCase {
         actionParamsArrayList.add(actionParams1);
 
         ServerAction a = new ServerAction(qNameList, actionParamsArrayList);
-        a.run(loggingService, exceptionAdapter);
+        a.run();
         assertTrue("The response does not have the expected number of actions", a.getReturnValueList().size() == 2);
         assertTrue(a.getReturnValueList().get(0).equals("some string")
                 && a.getReturnValueList().get(1).equals(new BigDecimal(6)));

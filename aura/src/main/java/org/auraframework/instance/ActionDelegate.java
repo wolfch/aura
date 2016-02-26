@@ -15,11 +15,9 @@
  */
 package org.auraframework.instance;
 
-import org.auraframework.adapter.ExceptionAdapter;
 import org.auraframework.def.ActionDef;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
-import org.auraframework.service.LoggingService;
 import org.auraframework.system.LoggingContext.KeyValueLogger;
 import org.auraframework.throwable.AuraExecutionException;
 import org.auraframework.util.json.Json;
@@ -54,8 +52,8 @@ public abstract class ActionDelegate implements Action {
     }
 
     @Override
-    public void run(LoggingService loggingService, ExceptionAdapter exceptionAdapter) throws AuraExecutionException {
-        original.run(loggingService, exceptionAdapter);
+    public void run() throws AuraExecutionException {
+        original.run();
     }
 
     @Override

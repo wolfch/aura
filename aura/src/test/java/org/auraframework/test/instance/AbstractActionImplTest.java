@@ -17,14 +17,12 @@ package org.auraframework.test.instance;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.auraframework.adapter.ExceptionAdapter;
 import org.auraframework.def.ActionDef;
 import org.auraframework.def.ControllerDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.instance.AbstractActionImpl;
 import org.auraframework.instance.Action;
 import org.auraframework.instance.InstanceStack;
-import org.auraframework.service.LoggingService;
 import org.auraframework.system.LoggingContext;
 import org.auraframework.throwable.AuraExecutionException;
 import org.auraframework.util.json.Json;
@@ -49,7 +47,7 @@ public class AbstractActionImplTest extends UnitTestCase {
         }
 
         @Override
-        public void run(LoggingService loggingService, ExceptionAdapter exceptionAdapter) throws AuraExecutionException {
+        public void run() throws AuraExecutionException {
         }
 
         @Override

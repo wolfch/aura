@@ -35,7 +35,7 @@ public interface ApplicationDef extends BaseComponentDef {
 
     Boolean isAppcacheEnabled() throws QuickFixException;
 
-    List<String> getAdditionalAppCacheURLs(LoggingService loggingService, ExceptionAdapter exceptionAdapter) throws QuickFixException;
+    List<String> getAdditionalAppCacheURLs() throws QuickFixException;
 
     Boolean isOnePageApp() throws QuickFixException;
 

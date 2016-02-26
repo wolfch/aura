@@ -44,6 +44,9 @@ public class JavaAction extends AbstractActionImpl<JavaActionDef> {
     private final List<Object> errors = Lists.newArrayList();
     private final Object instance;
 
+    private final ExceptionAdapter exceptionAdapter;
+    private final LoggingService loggingService;
+
     /**
      * The constructor for an action.
      *
@@ -56,9 +59,12 @@ public class JavaAction extends AbstractActionImpl<JavaActionDef> {
      * @param paramValues the parameter values.
      */
     public JavaAction(DefDescriptor<ControllerDef> controllerDescriptor, JavaActionDef actionDef,
-            Object bean, Map<String, Object> paramValues) {
+                      Object bean, Map<String, Object> paramValues, ExceptionAdapter exceptionAdapter,
+                      LoggingService loggingService) {
         super(controllerDescriptor, actionDef, paramValues);
         this.instance = bean;
+        this.exceptionAdapter = exceptionAdapter;
+        this.loggingService = loggingService;
     }
 
     private Object[] getArgs(ExceptionAdapter exceptionAdapter) {
@@ -119,7 +125,7 @@ public class JavaAction extends AbstractActionImpl<JavaActionDef> {
     }
 
     @Override
-    public void run(LoggingService loggingService, ExceptionAdapter exceptionAdapter) {
+    public void run() {
         if (this.actionDef == null) {
             addException(new InvalidDefinitionException("No action found", new Location(this.controllerDescriptor.getQualifiedName(), 0)),
                     State.ERROR, true, false, exceptionAdapter);

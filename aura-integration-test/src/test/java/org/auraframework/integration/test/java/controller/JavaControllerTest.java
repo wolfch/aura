@@ -17,7 +17,6 @@ package org.auraframework.integration.test.java.controller;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.auraframework.adapter.ExceptionAdapter;
 import org.auraframework.cache.Cache;
 import org.auraframework.components.test.java.controller.CustomParamType;
 import org.auraframework.def.ActionDef;
@@ -34,15 +33,12 @@ import org.auraframework.impl.java.model.JavaValueDef;
 import org.auraframework.instance.Action;
 import org.auraframework.instance.Action.State;
 import org.auraframework.service.CachingService;
-import org.auraframework.service.InstanceService;
-import org.auraframework.service.LoggingService;
 import org.auraframework.service.ServerService;
 import org.auraframework.system.Location;
 import org.auraframework.system.LoggingContext.KeyValueLogger;
 import org.auraframework.system.Message;
 import org.auraframework.test.controller.TestLoggingAdapterController;
 import org.auraframework.test.source.StringSourceLoader;
-import org.auraframework.throwable.AuraExecutionException;
 import org.auraframework.throwable.AuraUnhandledException;
 import org.auraframework.throwable.NoAccessException;
 import org.auraframework.throwable.quickfix.DefinitionNotFoundException;
@@ -66,16 +62,7 @@ import java.util.Map;
 public class JavaControllerTest extends AuraImplTestCase {
 
     @Inject
-    private LoggingService loggingService;
-
-    @Inject
-    private ExceptionAdapter exceptionAdapter;
-
-    @Inject
     private CachingService cachingService;
-
-    @Inject
-    private InstanceService instanceService;
 
     @Inject
     private ServerService serverService;
@@ -100,18 +87,22 @@ public class JavaControllerTest extends AuraImplTestCase {
     }
 
     private void checkPassAction(ControllerDef controller, String name, Map<String, Object> args, State expState,
-            Object returnValue) throws DefinitionNotFoundException {
-        Action action = controller.createAction(name, args);
-        action.run(loggingService, exceptionAdapter);
+                                 Object returnValue) throws QuickFixException {
+
+        ActionDef actionDef = controller.getSubDefinition(name);
+        Action action = instanceService.getInstance(actionDef, args);
+
+        action.run();
         assertEquals(name + " State", expState, action.getState());
         assertEquals(name + " expected no errors", 0, action.getErrors().size());
         assertEquals(name + " return", returnValue, action.getReturnValue());
     }
 
     private void checkFailAction(ControllerDef controller, String name, Map<String, Object> args, State expState,
-            Class<? extends Exception> error, String errorMessage) throws DefinitionNotFoundException {
-        Action action = controller.createAction(name, args);
-        action.run(loggingService, exceptionAdapter);
+                                 Class<? extends Exception> error, String errorMessage) throws QuickFixException {
+        ActionDef actionDef = controller.getSubDefinition(name);
+        Action action = instanceService.getInstance(actionDef, args);
+        action.run();
         assertEquals(name + " State", expState, action.getState());
         assertEquals(name + " expected an error", 1, action.getErrors().size());
         checkExceptionContains((Exception) action.getErrors().get(0), error, errorMessage);
@@ -286,16 +277,6 @@ public class JavaControllerTest extends AuraImplTestCase {
             assertTrue("Missing error message in "+e.getMessage(),
                     e.getMessage().startsWith("No CONTROLLER named java://goats found"));
         }
-        ControllerDef controller = getJavaController("java://org.auraframework.components.test.java.controller.TestController");
-        Map<String, Object> empty = new HashMap<>();
-        try {
-            controller.createAction("imNotHere", empty);
-            fail("Should not be able to create JavaAction when method does not exist in Controller class");
-        } catch (DefinitionNotFoundException e) {
-            assertEquals(
-                    "No ACTION named java://org.auraframework.components.test.java.controller.TestController/ACTION$imNotHere found",
-                    e.getMessage());
-        }
     }
 
     /**
@@ -370,19 +351,21 @@ public class JavaControllerTest extends AuraImplTestCase {
     @Test
     public void testStorable() throws Exception {
         ControllerDef controller = getJavaController("java://org.auraframework.components.test.java.controller.TestController");
-        Action freshAction = controller.createAction("getString", null);
+
+        ActionDef actionDef = controller.getSubDefinition("getString");
+        Action freshAction = instanceService.getInstance(actionDef, null);
 
         assertTrue("Expected an instance of JavaAction", freshAction instanceof JavaAction);
         JavaAction action = (JavaAction) freshAction;
         assertFalse("Actions should not be storable by default.", action.isStorable());
-        action.run(loggingService, exceptionAdapter);
+        action.run();
         assertFalse("isStorabel should not change values after action execution.", action.isStorable());
 
-        Action storableAction = controller.createAction("getString", null);
+        Action storableAction = instanceService.getInstance(actionDef, null);
         action = (JavaAction) storableAction;
         action.setStorable();
         assertTrue("Failed to mark a action as storable.", action.isStorable());
-        action.run(loggingService, exceptionAdapter);
+        action.run();
         assertTrue("Storable action was unmarked during execution", action.isStorable());
     }
 
@@ -420,14 +403,22 @@ public class JavaControllerTest extends AuraImplTestCase {
     @Test
     public void testParamLogging() throws Exception {
         ControllerDef controller = getJavaController("java://org.auraframework.components.test.java.controller.JavaTestController");
-        JavaAction nonLoggableStringAction = (JavaAction) controller.createAction("getString", null);
-        JavaAction nonLoggableIntAction = (JavaAction) controller.createAction("getInt", null);
-        JavaAction loggableStringAction = (JavaAction) controller.createAction("getLoggableString",
+
+        ActionDef getStringActionDef = controller.getSubDefinition("getString");
+        JavaAction nonLoggableStringAction = instanceService.getInstance(getStringActionDef, null);
+
+        ActionDef getIntActionDef = controller.getSubDefinition("getInt");
+        JavaAction nonLoggableIntAction = instanceService.getInstance(getIntActionDef, null);
+
+        ActionDef getLoggableStringActionDef = controller.getSubDefinition("getLoggableString");
+        JavaAction loggableStringAction = instanceService.getInstance(getLoggableStringActionDef,
                 Collections.singletonMap("param", (Object) "bar"));
-        JavaAction loggableIntAction = (JavaAction) controller.createAction("getLoggableString",
+
+        JavaAction loggableIntAction = instanceService.getInstance(getLoggableStringActionDef,
                 Collections.singletonMap("param", (Object) 1));
-        JavaAction loggableNullAction = (JavaAction) controller.createAction("getLoggableString",
+        JavaAction loggableNullAction = instanceService.getInstance(getLoggableStringActionDef,
                 Collections.singletonMap("param", null));
+
         TestLogger testLogger = new TestLogger();
 
         nonLoggableStringAction.logParams(testLogger);
@@ -457,7 +448,8 @@ public class JavaControllerTest extends AuraImplTestCase {
     public void testParamLogging_NoParams() throws Exception {
         ControllerDef controller = getJavaController("java://org.auraframework.components.test.java.controller.TestController");
         Map<String, Object> params = Maps.newHashMap();
-        Action nonLoggableStringAction = controller.createAction("getString", params);
+        ActionDef actionDef = controller.getSubDefinition("getString");
+        Action nonLoggableStringAction = instanceService.getInstance(actionDef, params);
         List<Map<String, Object>> logs = runActionsAndReturnLogs(Lists.newArrayList(nonLoggableStringAction));
         assertEquals(1, logs.size());
         assertTrue(
@@ -475,7 +467,8 @@ public class JavaControllerTest extends AuraImplTestCase {
         Map<String, Object> params = Maps.newHashMap();
         params.put("strparam", "BoogaBoo");
         params.put("intparam", 1);
-        Action selectParamLoggingAction = controller.createAction("getSelectedParamLogging", params);
+        ActionDef actionDef = controller.getSubDefinition("getSelectedParamLogging");
+        Action selectParamLoggingAction = instanceService.getInstance(actionDef, params);
         List<Map<String, Object>> logs = runActionsAndReturnLogs(Lists.newArrayList(selectParamLoggingAction));
         assertEquals(1, logs.size());
         assertTrue(
@@ -493,12 +486,14 @@ public class JavaControllerTest extends AuraImplTestCase {
         Map<String, Object> params1 = Maps.newHashMap();
         params1.put("strparam", "BoogaBoo");
         params1.put("intparam", 1);
-        Action selectParamLoggingAction1 = controller.createAction("getSelectedParamLogging", params1);
+
+        ActionDef actionDef = controller.getSubDefinition("getSelectedParamLogging");
+        Action selectParamLoggingAction1 = instanceService.getInstance(actionDef, params1);
 
         Map<String, Object> params2 = Maps.newHashMap();
         params2.put("strparam", "BoogaBoo");
         params2.put("intparam", 1);
-        Action selectParamLoggingAction2 = controller.createAction("getSelectedParamLogging", params2);
+        Action selectParamLoggingAction2 = instanceService.getInstance(actionDef, params2);
 
         List<Map<String, Object>> logs = runActionsAndReturnLogs(Lists.newArrayList(selectParamLoggingAction1, selectParamLoggingAction2));
         assertEquals(1, logs.size());
@@ -522,7 +517,9 @@ public class JavaControllerTest extends AuraImplTestCase {
         Map<String, Object> params = Maps.newHashMap();
         params.put("we", "we");
         params.put("two", "two");
-        Action selectParamLoggingAction = controller.createAction("getMultiParamLogging", params);
+
+        ActionDef actionDef = controller.getSubDefinition("getMultiParamLogging");
+        Action selectParamLoggingAction = instanceService.getInstance(actionDef, params);
         List<Map<String, Object>> logs = runActionsAndReturnLogs(Lists.newArrayList(selectParamLoggingAction));
         assertEquals(1, logs.size());
         assertTrue(
@@ -538,7 +535,9 @@ public class JavaControllerTest extends AuraImplTestCase {
     public void testParamLogging_NullValuesForParameters() throws Exception {
         ControllerDef controller = getJavaController("java://org.auraframework.components.test.java.controller.JavaTestController");
         Map<String, Object> params = Maps.newHashMap();
-        Action selectParamLoggingAction = controller.createAction("getLoggableString", params);
+
+        ActionDef actionDef = controller.getSubDefinition("getLoggableString");
+        Action selectParamLoggingAction = instanceService.getInstance(actionDef, params);
         List<Map<String, Object>> logs = runActionsAndReturnLogs(Lists.newArrayList(selectParamLoggingAction));
         assertEquals(1, logs.size());
         assertTrue(
@@ -555,7 +554,9 @@ public class JavaControllerTest extends AuraImplTestCase {
         ControllerDef controller = getJavaController("java://org.auraframework.components.test.java.controller.JavaTestController");
         Map<String, Object> params = Maps.newHashMap();
         params.put("param", new CustomParamType());
-        Action selectParamLoggingAction = controller.createAction("getCustomParamLogging", params);
+
+        ActionDef actionDef = controller.getSubDefinition("getCustomParamLogging");
+        Action selectParamLoggingAction = instanceService.getInstance(actionDef, params);
         List<Map<String, Object>> logs = runActionsAndReturnLogs(Lists.newArrayList(selectParamLoggingAction));
         assertEquals(1, logs.size());
         assertTrue(
@@ -576,7 +577,9 @@ public class JavaControllerTest extends AuraImplTestCase {
         params.put(
                 "actions",
                 "{\"actions\":[{\"descriptor\":\"java://org.auraframework.impl.java.controller.ActionChainingController/ACTION$multiply\",\"params\":{\"a\":2}}]}");
-        Action selectParamLoggingAction = controller.createAction("add", params);
+
+        ActionDef actionDef = controller.getSubDefinition("add");
+        Action selectParamLoggingAction = instanceService.getInstance(actionDef, params);
         List<Map<String, Object>> logs = runActionsAndReturnLogs(Lists.newArrayList(selectParamLoggingAction));
         assertEquals(1, logs.size());
         assertTrue(
@@ -602,14 +605,16 @@ public class JavaControllerTest extends AuraImplTestCase {
         params.put(
                 "actions",
                 "{\"actions\":[{\"descriptor\":\"java://org.auraframework.impl.java.controller.ActionChainingController/ACTION$add\",\"params\":{\"a\":2, \"actions\":\"\"}}]}");
-        action = controller.createAction("add", params);
+
+        ActionDef actionDef = controller.getSubDefinition("add");
+        action = instanceService.getInstance(actionDef, params);
         actions.add(action);
 
         params = Maps.newHashMap();
         params.put("a", 1);
         params.put("b", 1);
         params.put("actions", null);
-        action = controller.createAction("add", params);
+        action = instanceService.getInstance(actionDef, params);
         actions.add(action);
 
         List<Map<String, Object>> logs = runActionsAndReturnLogs(actions);

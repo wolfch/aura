@@ -16,13 +16,11 @@
 package org.auraframework.test.mock;
 
 import com.google.common.collect.Lists;
-import org.auraframework.adapter.ExceptionAdapter;
 import org.auraframework.def.ActionDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.instance.AbstractActionImpl;
 import org.auraframework.instance.Action;
 import org.auraframework.instance.BaseComponent;
-import org.auraframework.service.LoggingService;
 import org.auraframework.system.LoggingContext.KeyValueLogger;
 import org.auraframework.throwable.AuraExecutionException;
 import org.auraframework.util.javascript.Literal;
@@ -69,7 +67,7 @@ public class MockAction extends AbstractActionImpl<ActionDef> {
     }
 
     @Override
-    public void run(LoggingService loggingService, ExceptionAdapter exceptionAdapter) throws AuraExecutionException {
+    public void run() throws AuraExecutionException {
     }
 
     @Override

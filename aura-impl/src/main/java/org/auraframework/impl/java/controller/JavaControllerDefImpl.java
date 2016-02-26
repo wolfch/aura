@@ -28,6 +28,7 @@ import org.auraframework.impl.util.AuraUtil;
 import org.auraframework.instance.Action;
 import org.auraframework.system.SubDefDescriptor;
 import org.auraframework.throwable.quickfix.DefinitionNotFoundException;
+import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.json.Json;
 
 import java.io.IOException;
@@ -93,17 +94,6 @@ public class JavaControllerDefImpl extends DefinitionImpl<ControllerDef> impleme
     @Override
     public Map<String, JavaActionDef> getActionDefs() {
         return actionMap;
-    }
-
-    @Override
-    public Action createAction(String actionName, Map<String, Object> paramValues) throws DefinitionNotFoundException {
-        JavaActionDef actionDef = actionMap.get(actionName);
-        if(actionDef == null){
-            DefDescriptor<ActionDef> desc = SubDefDescriptorImpl.getInstance(actionName, getDescriptor(), ActionDef.class);
-            throw new DefinitionNotFoundException(desc);
-        }
-
-        return new JavaAction(getDescriptor(), actionDef, this.controllerInstance, paramValues);
     }
 
     @Override

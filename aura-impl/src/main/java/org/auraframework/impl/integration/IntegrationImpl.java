@@ -18,7 +18,7 @@ package org.auraframework.impl.integration;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.auraframework.adapter.ConfigAdapter;
-import org.auraframework.adapter.ExceptionAdapter;
+import org.auraframework.def.ActionDef;
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.AttributeDef;
 import org.auraframework.def.ComponentDef;
@@ -30,7 +30,7 @@ import org.auraframework.integration.Integration;
 import org.auraframework.integration.UnsupportedUserAgentException;
 import org.auraframework.service.ContextService;
 import org.auraframework.service.DefinitionService;
-import org.auraframework.service.LoggingService;
+import org.auraframework.service.InstanceService;
 import org.auraframework.service.SerializationService;
 import org.auraframework.system.AuraContext;
 import org.auraframework.system.AuraContext.Authentication;
@@ -62,8 +62,7 @@ public class IntegrationImpl implements Integration {
     private final boolean initializeAura;
     private final Client client;
     private final String application;
-    private final LoggingService loggingService;
-    private final ExceptionAdapter exceptionAdapter;
+    private final InstanceService instanceService;
     private final DefinitionService definitionService;
     private final SerializationService serializationService;
     private final ContextService contextService;
@@ -73,8 +72,7 @@ public class IntegrationImpl implements Integration {
     private int contextDepthCount = 0;
 
     public IntegrationImpl(String contextPath, Mode mode, boolean initializeAura, String userAgent,
-                           String application,
-                           LoggingService loggingService, ExceptionAdapter exceptionAdapter,
+                           String application, InstanceService instanceService,
                            DefinitionService definitionService, SerializationService serializationService,
                            ContextService contextService, ConfigAdapter configAdapter) throws QuickFixException {
         this.client = userAgent != null ? new Client(userAgent) : null;
@@ -82,8 +80,7 @@ public class IntegrationImpl implements Integration {
         this.mode = mode;
         this.initializeAura = initializeAura;
         this.application = application != null ? application : DEFAULT_APPLICATION;
-        this.loggingService = loggingService;
-        this.exceptionAdapter = exceptionAdapter;
+        this.instanceService = instanceService;
         this.definitionService = definitionService;
         this.serializationService = serializationService;
         this.contextService = contextService;
@@ -180,20 +177,22 @@ public class IntegrationImpl implements Integration {
                     paramValues.put("name", descriptor.getQualifiedName());
                     paramValues.put("attributes", actionAttributes);
 
-                    Action action = componentControllerDef.createAction("getComponent", paramValues);
+                    ActionDef getComponentActionDef = componentControllerDef.getSubDefinition("getComponent");
+                    Action action = instanceService.getInstance(getComponentActionDef, paramValues);
                     action.setId("ais");
 
                     //
                     // Now build a second action.... to load all of the relevant labels.
                     //
-                    Action labelAction = componentControllerDef.createAction("loadLabels", null);
+                    ActionDef loadLabelsActionDef = componentControllerDef.getSubDefinition("loadLabels");
+                    Action labelAction = instanceService.getInstance(loadLabelsActionDef, null);
                     labelAction.setId("aisLabels");
 
                     Action previous = context.setCurrentAction(action);
                     try {
-                        action.run(loggingService, exceptionAdapter);
+                        action.run();
                         context.setCurrentAction(labelAction);
-                        labelAction.run(loggingService, exceptionAdapter);
+                        labelAction.run();
                     } finally {
                         context.setCurrentAction(previous);
                     }

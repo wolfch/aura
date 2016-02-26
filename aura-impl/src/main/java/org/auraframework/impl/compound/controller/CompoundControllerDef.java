@@ -73,11 +73,6 @@ public class CompoundControllerDef extends DefinitionImpl<ControllerDef> impleme
     }
 
     @Override
-    public Action createAction(String actionName, Map<String, Object> paramValues) {
-        throw new UnsupportedOperationException("Can't create an action from a compound controller");
-    }
-
-    @Override
     public Object getValue(PropertyReference key) {
         return getSubDefinition(key.toString());
     }

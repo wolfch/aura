@@ -178,7 +178,7 @@ public class Manifest extends AuraResourceImpl {
             // Add in any application specific resources
             if (descr != null && descr.getDefType().equals(DefType.APPLICATION)) {
                 ApplicationDef def = (ApplicationDef) descr.getDef();
-                for (String s : def.getAdditionalAppCacheURLs(loggingService, exceptionAdapter)) {
+                for (String s : def.getAdditionalAppCacheURLs()) {
                     if (s != null) {
                         sw.write(s);
                         sw.write('\n');

@@ -169,7 +169,7 @@ public class ServerServiceImpl implements ServerService {
                 // DCHASMAN TODO Look into a common base for Action
                 // implementations that we can move the call to
                 // context.setCurrentAction() into!
-                action.run(loggingService, exceptionAdapter);
+                action.run();
             } catch (AuraExecutionException x) {
                 exceptionAdapter.handleException(x, action);
             } finally {

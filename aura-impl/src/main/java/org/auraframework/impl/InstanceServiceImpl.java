@@ -157,8 +157,7 @@ public class InstanceServiceImpl implements InstanceService {
         contextService.assertEstablished();
 
         Definition d = definitionService.getDefinition(qualifiedName, defTypes);
-        Instance<?> i = this.<Instance<Definition>, Definition> getInstance(d, attributes);
-        return i;
+        return this.<Instance<Definition>, Definition>getInstance(d, attributes);
     }
 
     @Override

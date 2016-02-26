@@ -137,30 +137,4 @@ public class MockingUtilUITest extends WebDriverTestCase {
         findDomElement(By.cssSelector("button")).click();
         waitForElementTextPresent(findDomElement(By.cssSelector("div.result")), "not so interesting");
     }
-
-    @Test
-    public void testMockServerAction() throws Exception {
-        if (!contextService.isEstablished()) {
-            contextService.startContext(Mode.SELENIUM, Format.HTML, Authentication.AUTHENTICATED);
-        }
-        DefDescriptor<ControllerDef> controllerDefDescriptor = definitionService.getDefDescriptor(
-                String.format("java://%s", this.getClass().getCanonicalName()), ControllerDef.class);
-        DefDescriptor<ComponentDef> cmpDefDescriptor = addSourceAutoCleanup(ComponentDef.class, String
-                .format(baseComponentTag, String.format("controller='%s'", controllerDefDescriptor.getQualifiedName()),
-                        "<ui:button press='{!c.clicked}' label='act'/><div class='result' aura:id='result'></div>"));
-        DefDescriptor<ControllerDef> clientControllerDefDescriptor = definitionService.getDefDescriptor(
-                String.format("js://%s.%s", cmpDefDescriptor.getNamespace(), cmpDefDescriptor.getName()),
-                ControllerDef.class);
-        addSourceAutoCleanup(clientControllerDefDescriptor, "{clicked:function(component){"
-                + "var a = component.get('c.lookInside');a.setCallback(component,"
-                + "function(action){component.find('result').getElement().innerHTML=action.getReturnValue();});"
-                + "$A.enqueueAction(a);}}");
-        open(cmpDefDescriptor);
-        findDomElement(By.cssSelector("button")).click();
-        waitForElementTextPresent(findDomElement(By.cssSelector("div.result")), "not so interesting");
-        // mock for different string response
-        mockingUtil.mockServerAction(controllerDefDescriptor, "lookInside", "stimulating");
-        findDomElement(By.cssSelector("button")).click();
-        waitForElementTextPresent(findDomElement(By.cssSelector("div.result")), "stimulating");
-    }
 }

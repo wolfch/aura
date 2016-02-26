@@ -15,6 +15,7 @@
  */
 package org.auraframework.impl.instance;
 
+import org.auraframework.adapter.ExceptionAdapter;
 import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.def.ActionDef;
 import org.auraframework.def.ControllerDef;
@@ -26,6 +27,7 @@ import org.auraframework.instance.Action;
 import org.auraframework.instance.InstanceBuilder;
 import org.auraframework.service.ContextService;
 import org.auraframework.service.DefinitionService;
+import org.auraframework.service.LoggingService;
 import org.auraframework.system.AuraContext;
 import org.auraframework.system.SubDefDescriptor;
 import org.auraframework.throwable.quickfix.QuickFixException;
@@ -46,6 +48,12 @@ public class JavaActionInstanceBuilder implements InstanceBuilder<Action, Action
 
     @Inject
     private DefinitionService definitionService;
+
+    @Inject
+    private ExceptionAdapter exceptionAdapter;
+
+    @Inject
+    private LoggingService loggingService;
 
     private ApplicationContext applicationContext;
 
@@ -73,7 +81,8 @@ public class JavaActionInstanceBuilder implements InstanceBuilder<Action, Action
 
             Object controllerBean = applicationContext.getBean(controllerDef.getJavaType());
 
-            return new JavaAction(controllerDesc, (JavaActionDef) def, controllerBean, attributes);
+            return new JavaAction(controllerDesc, (JavaActionDef) def, controllerBean, attributes,
+                    exceptionAdapter, loggingService);
         } finally {
             context.popCallingDescriptor();
         }

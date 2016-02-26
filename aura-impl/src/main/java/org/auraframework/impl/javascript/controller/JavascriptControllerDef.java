@@ -63,26 +63,6 @@ public class JavascriptControllerDef extends DefinitionImpl<ControllerDef> imple
         return actionMap;
     }
 
-    /**
-     * We cannot sensibly <em>run</em> Javascript actions at the server, but the objects
-     * are sometimes created for bookkeeping.  In particular, if a client-side action execution
-     * fails, the failure is logged via ExceptionAdapter, which likes to have an action object,
-     * including the action instance identifier in case that helps debugging.
-     *
-     * @throws DefinitionNotFoundException
-     *
-     * @returns an Action for the given action name.
-     */
-    @Override
-    public Action createAction(String actionName, Map<String, Object> paramValues) throws DefinitionNotFoundException {
-        JavascriptActionDef actionDef = actionMap.get(actionName);
-        if(actionDef == null){
-            DefDescriptor<ActionDef> desc = SubDefDescriptorImpl.getInstance(actionName, getDescriptor(), ActionDef.class);
-            throw new DefinitionNotFoundException(desc);
-        }
-        return new JavascriptPseudoAction(actionDef);
-    }
-
     @Override
     public Object getValue(PropertyReference key) {
         return getSubDefinition(key.toString());

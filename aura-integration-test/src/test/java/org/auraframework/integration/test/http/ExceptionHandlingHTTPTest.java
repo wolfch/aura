@@ -15,21 +15,12 @@
  */
 package org.auraframework.integration.test.http;
 
-import org.auraframework.adapter.ExceptionAdapter;
-import org.auraframework.service.LoggingService;
 import org.auraframework.test.util.AuraHttpTestCase;
 import org.junit.Test;
 
-import javax.inject.Inject;
 import java.util.Map;
 
 public class ExceptionHandlingHTTPTest extends AuraHttpTestCase {
-
-    @Inject
-    private LoggingService loggingService;
-
-    @Inject
-    private ExceptionAdapter exceptionAdapter;
 
     /**
      * Test to verify row and column numbers in stacktrace on Exceptions.
@@ -41,7 +32,7 @@ public class ExceptionHandlingHTTPTest extends AuraHttpTestCase {
         ServerAction a = new ServerAction(
                 "java://org.auraframework.components.test.java.controller.JavaTestController/ACTION$throwExceptionNoLineNums",
                 null);
-        a.run(loggingService, exceptionAdapter);
+        a.run();
         Map<String, Object> error = (Map<String, Object>) a.getErrors().get(0);
         String message = (String) error.get("message");
         assertFalse("Location should not put out -1,-1 as the line/column", message.contains("-1,-1"));
@@ -50,7 +41,7 @@ public class ExceptionHandlingHTTPTest extends AuraHttpTestCase {
         a = new ServerAction(
                 "java://org.auraframework.components.test.java.controller.JavaTestController/ACTION$throwExceptionWithLineNums",
                 null);
-        a.run(loggingService, exceptionAdapter);
+        a.run();
         error = (Map<String, Object>) a.getErrors().get(0);
         message = (String) error.get("message");
         assertTrue("Location does not have correct line/column numbers", message.contains("4444,55555"));

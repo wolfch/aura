@@ -142,26 +142,4 @@ public class MockingUtil {
         mockDef(providerDef);
         return providerDef;
     }
-
-    /**
-     * Mock a server Action.
-     * 
-     * @param controllerDefDescriptor
-     * @param actionName
-     * @param returnValue
-     * @return the MockAction that will be provided when instantiating the requested Action
-     * @throws DefinitionNotFoundException
-     * @throws Exception
-     */
-    public MockAction mockServerAction(DefDescriptor<ControllerDef> controllerDefDescriptor, String actionName,
-            Object returnValue) throws Exception {
-        final ControllerDef originalControllerDef = definitionService.getDefinition(controllerDefDescriptor);
-        final ControllerDef controllerDef = Mockito.spy(originalControllerDef);
-        final MockAction mockAction = Mockito.spy(new MockAction(originalControllerDef.getSubDefinition(actionName)
-                .getDescriptor(), State.SUCCESS, returnValue));
-        Mockito.doReturn(mockAction).when(controllerDef)
-                .createAction(Mockito.eq(actionName), Mockito.anyMapOf(String.class, Object.class));
-        mockDef(controllerDef);
-        return mockAction;
-    }
 }

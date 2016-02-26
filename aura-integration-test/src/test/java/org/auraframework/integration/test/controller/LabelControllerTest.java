@@ -77,7 +77,7 @@ public class LabelControllerTest extends AuraImplTestCase {
 
         Action instance = instanceService.getInstance(getLabelDesc,
                 ActionDef.class, params);
-        instance.run(loggingService, exceptionAdapter);
+        instance.run();
         assertEquals(expectedStatus, instance.getState());
         assertEquals(expectedLabel, instance.getReturnValue());
 

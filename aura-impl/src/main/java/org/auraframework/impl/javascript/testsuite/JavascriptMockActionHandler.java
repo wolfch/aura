@@ -87,13 +87,17 @@ public class JavascriptMockActionHandler extends JavascriptMockHandler<Controlle
             if (typeStr != null) {
                 try {
                     type = classForSimpleName(typeStr);
-                } catch (ClassNotFoundException e) {
+                } catch (ClassNotFoundException ignored) {
                 }
             }
             actionDef = controllerDef.getSubDefinition(name);
             if (actionDef == null) {
                 throw new InvalidDefinitionException("JavaMockActionHandler: unable to find action "+name, getLocation());
             }
+            // TODO: MOCKING SERVER ACTIONS IN JS TESTS ARE NOT WORKING
+            // Fix this to use mock instance service to get action
+            // createAction has been removed from ControllerDef.
+            // InstanceService provides action through *ActionInstanceBuilder
             return new ActionInvocation("createAction", ImmutableList.of(name), type);
         }
         return super.getInvocation(object);

@@ -86,7 +86,7 @@ public class ActionWithKeyOverrideTest extends UnitTestCase {
         action.setId("test");
         action.getInstanceStack();
 
-        action.run(loggingService, exceptionAdapter);
+        action.run();
         action.add(Collections.<Action>emptyList());
         action.getActions();
         action.getReturnValue();
@@ -114,7 +114,7 @@ public class ActionWithKeyOverrideTest extends UnitTestCase {
         verify(actionToExecute, times(2)).setStorable();
 
         // Delegates to actionToExecute
-        verify(actionToExecute, times(1)).run(any(LoggingService.class), any(ExceptionAdapter.class));
+        verify(actionToExecute, times(1)).run();
         verify(actionToExecute, times(1)).add(anyListOf(Action.class));
         verify(actionToExecute, times(1)).getActions();
         verify(actionToExecute, times(1)).getReturnValue();

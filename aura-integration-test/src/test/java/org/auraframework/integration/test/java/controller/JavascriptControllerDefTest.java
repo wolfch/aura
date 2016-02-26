@@ -121,25 +121,11 @@ public class JavascriptControllerDefTest extends AuraImplTestCase {
         String controllerJs = "({ function1: function(arg) {} })";
         DefDescriptor<ControllerDef> controllerDesc = addSourceAutoCleanup(ControllerDef.class, controllerJs);
         ControllerDef controllerDef = definitionService.getDefinition(controllerDesc);
-
         assertThat(controllerDef, instanceOf(JavascriptControllerDef.class));
-        Action action = controllerDef.createAction("function1", null);
+
+        ActionDef actionDef = controllerDef.getSubDefinition("function1");
+        Action action = instanceService.getInstance(actionDef, null);
 
         assertThat(action, instanceOf(JavascriptPseudoAction.class));
-    }
-
-    @Test
-    public void testCreateActionThrowsExceptionWhenCreatingNonExsitingAction() throws Exception {
-        String controllerJs = "({ function1: function(arg) {} })";
-        DefDescriptor<ControllerDef> controllerDesc = addSourceAutoCleanup(ControllerDef.class, controllerJs);
-        ControllerDef controllerDef = definitionService.getDefinition(controllerDesc);
-
-        try {
-            controllerDef.createAction("nonExistingAction", new HashMap<String, Object>());
-            fail("Should not be able to create an instance of the non-existing client action");
-        } catch (Exception e) {
-            String expectMessage = String.format("No ACTION named %s/ACTION$nonExistingAction found", controllerDesc.getQualifiedName());
-            checkExceptionFull(e, DefinitionNotFoundException.class, expectMessage);
-        }
     }
 }

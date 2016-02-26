@@ -17,7 +17,6 @@ package org.auraframework.integration.test.css;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import org.auraframework.adapter.ExceptionAdapter;
 import org.auraframework.def.ActionDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.StyleDef;
@@ -27,7 +26,6 @@ import org.auraframework.impl.css.StyleTestCase;
 import org.auraframework.instance.Action;
 import org.auraframework.instance.Action.State;
 import org.auraframework.service.InstanceService;
-import org.auraframework.service.LoggingService;
 import org.junit.Test;
 
 import javax.inject.Inject;
@@ -44,12 +42,6 @@ public class DynamicStylingControllerTest extends StyleTestCase {
 
     @Inject
     private InstanceService instanceService;
-
-    @Inject
-    private LoggingService loggingService;
-
-    @Inject
-    private ExceptionAdapter exceptionAdapter;
 
     /** test basic usage */
     @Test
@@ -200,7 +192,7 @@ public class DynamicStylingControllerTest extends StyleTestCase {
         params.put("descriptors", Lists.newArrayList(descriptor));
         params.put("extraStyles", ImmutableList.<String>of());
         Action action = instanceService.getInstance(ACTION, ActionDef.class, params);
-        action.run(loggingService, exceptionAdapter);
+        action.run();
         return action;
     }
 }

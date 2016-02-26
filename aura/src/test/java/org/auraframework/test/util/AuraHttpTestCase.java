@@ -18,7 +18,6 @@ package org.auraframework.test.util;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
@@ -38,7 +37,6 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.auraframework.adapter.ConfigAdapter;
-import org.auraframework.adapter.ExceptionAdapter;
 import org.auraframework.def.ActionDef;
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.BaseComponentDef;
@@ -47,7 +45,6 @@ import org.auraframework.def.DefDescriptor;
 import org.auraframework.http.AuraBaseServlet;
 import org.auraframework.instance.Action;
 import org.auraframework.instance.InstanceStack;
-import org.auraframework.service.LoggingService;
 import org.auraframework.system.AuraContext;
 import org.auraframework.system.AuraContext.EncodingStyle;
 import org.auraframework.system.AuraContext.Format;
@@ -60,7 +57,6 @@ import org.auraframework.util.json.JsonEncoder;
 import org.auraframework.util.json.JsonReader;
 
 import javax.inject.Inject;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
@@ -634,7 +630,7 @@ public abstract class AuraHttpTestCase extends IntegrationTestCase {
 
         @SuppressWarnings("unchecked")
         @Override
-        public void run(LoggingService loggingService, ExceptionAdapter exceptionAdapter) throws AuraExecutionException {
+        public void run() throws AuraExecutionException {
             try {
                 HttpPost post = getPostMethod();
                 HttpResponse response = getHttpClient().execute(post);

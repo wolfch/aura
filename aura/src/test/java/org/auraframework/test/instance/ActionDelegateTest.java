@@ -62,9 +62,6 @@ public class ActionDelegateTest extends UnitTestCase {
         Map<String,Method> methodMap = Maps.newHashMap();
         Map<String,Boolean> calledMap = Maps.newHashMap();
 
-        LoggingService loggingService = mock(LoggingService.class);
-        ExceptionAdapter exceptionAdapter = mock(ExceptionAdapter.class);
-
         DefDescriptor<ComponentDef> componentDescriptor = mock(DefDescriptor.class);
 
         for (Method m : Action.class.getMethods()) {
@@ -78,7 +75,7 @@ public class ActionDelegateTest extends UnitTestCase {
         
         oneCall(methodMap, calledMap, "getId");
         oneCall(methodMap, calledMap, "setId", new String("id"));
-        oneCall(methodMap, calledMap, "run", loggingService, exceptionAdapter);
+        oneCall(methodMap, calledMap, "run");
         oneCall(methodMap, calledMap, "add", (Object)null);
         oneCall(methodMap, calledMap, "getActions");
         oneCall(methodMap, calledMap, "getReturnValue");

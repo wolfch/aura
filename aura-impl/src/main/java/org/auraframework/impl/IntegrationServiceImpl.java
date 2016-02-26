@@ -16,14 +16,13 @@
 package org.auraframework.impl;
 
 import org.auraframework.adapter.ConfigAdapter;
-import org.auraframework.adapter.ExceptionAdapter;
 import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.impl.integration.IntegrationImpl;
 import org.auraframework.integration.Integration;
 import org.auraframework.service.ContextService;
 import org.auraframework.service.DefinitionService;
+import org.auraframework.service.InstanceService;
 import org.auraframework.service.IntegrationService;
-import org.auraframework.service.LoggingService;
 import org.auraframework.service.SerializationService;
 import org.auraframework.system.AuraContext.Mode;
 import org.auraframework.throwable.quickfix.QuickFixException;
@@ -35,8 +34,7 @@ public class IntegrationServiceImpl implements IntegrationService {
     private static final long serialVersionUID = -2650728458106333787L;
 
     // Needed to run action
-    private LoggingService loggingService;
-    private ExceptionAdapter exceptionAdapter;
+    private InstanceService instanceService;
     private DefinitionService definitionService;
     private SerializationService serializationService;
     private ContextService contextService;
@@ -45,17 +43,13 @@ public class IntegrationServiceImpl implements IntegrationService {
     @Override
     public Integration createIntegration(String contextPath, Mode mode, boolean initializeAura, String userAgent,
                                          String application, Object dummy) throws QuickFixException {
-        return new IntegrationImpl(contextPath, mode, initializeAura, userAgent, application, loggingService, exceptionAdapter, definitionService, serializationService, contextService, configAdapter);
+        return new IntegrationImpl(contextPath, mode, initializeAura, userAgent, application, instanceService,
+                definitionService, serializationService, contextService, configAdapter);
     }
 
     @Inject
-    public void setLoggingService(LoggingService loggingService) {
-        this.loggingService = loggingService;
-    }
-
-    @Inject
-    public void setExceptionAdapter(ExceptionAdapter exceptionAdapter) {
-        this.exceptionAdapter = exceptionAdapter;
+    public void setInstanceService(InstanceService instanceService) {
+        this.instanceService = instanceService;
     }
 
     @Inject

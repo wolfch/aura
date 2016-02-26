@@ -39,7 +39,6 @@ import org.auraframework.instance.InstanceStack;
 import org.auraframework.service.ContextService;
 import org.auraframework.service.DefinitionService;
 import org.auraframework.service.InstanceService;
-import org.auraframework.service.LoggingService;
 import org.auraframework.service.SerializationService;
 import org.auraframework.service.ServerService;
 import org.auraframework.system.AuraContext;
@@ -229,7 +228,7 @@ public class ServerServiceImplTest extends AuraImplTestCase {
         }
 
         @Override
-        public void run(LoggingService loggingService, ExceptionAdapter exceptionAdapter) throws AuraExecutionException {
+        public void run() throws AuraExecutionException {
             this.count++;
             if (this.actionDef.sw != null) {
                 this.returnValue = this.actionDef.sw.toString();
@@ -283,13 +282,13 @@ public class ServerServiceImplTest extends AuraImplTestCase {
         }
 
         @Override
-        public void run(LoggingService loggingService, ExceptionAdapter exceptionAdapter) throws AuraExecutionException {
+        public void run() throws AuraExecutionException {
             try {
                 sharedCmp.getAttributes().set(componentAttributes);
             } catch (QuickFixException e) {
                 throw new AuraExecutionException(e.getMessage(), e.getLocation());
             }
-            super.run(loggingService, exceptionAdapter);
+            super.run();
             String whatIsInResponse = (String) super.getReturnValue();
             int startPos = whatIsInResponse.lastIndexOf("shared_component");
             if (startPos >= 0) {

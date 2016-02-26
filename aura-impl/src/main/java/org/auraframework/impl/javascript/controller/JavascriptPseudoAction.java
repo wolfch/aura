@@ -15,14 +15,12 @@
  */
 package org.auraframework.impl.javascript.controller;
 
-import org.auraframework.adapter.ExceptionAdapter;
 import org.auraframework.def.ActionDef;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.impl.controller.ComponentController.AuraClientException;
 import org.auraframework.instance.Action;
 import org.auraframework.instance.InstanceStack;
-import org.auraframework.service.LoggingService;
 import org.auraframework.system.LoggingContext.KeyValueLogger;
 import org.auraframework.throwable.AuraExecutionException;
 import org.auraframework.util.json.Json;
@@ -75,7 +73,7 @@ public class JavascriptPseudoAction implements Action {
     }
 
     @Override
-    public void run(LoggingService loggingService, ExceptionAdapter exceptionAdapter) throws AuraExecutionException {
+    public void run() throws AuraExecutionException {
         throw new UnsupportedOperationException("client-side Javascript actions cannot be run server-side in Java");
     }
 
