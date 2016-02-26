@@ -46,7 +46,6 @@ import org.auraframework.impl.system.CachingDefRegistryImpl;
 import org.auraframework.impl.system.NonCachingDefRegistryImpl;
 import org.auraframework.impl.system.StaticDefRegistryImpl;
 import org.auraframework.impl.type.AuraStaticTypeDefRegistry;
-import org.auraframework.org.auraframework.di.ImplementationProvider;
 import org.auraframework.service.DefinitionService;
 import org.auraframework.system.AuraContext.Authentication;
 import org.auraframework.system.AuraContext.Mode;
@@ -89,8 +88,6 @@ public class AuraRegistryProviderImpl implements RegistryAdapter, SourceListener
 
     @Inject
     private List<ComponentLocationAdapter> locationAdapters;
-
-    private ImplementationProvider implementationProvider;
 
     private static final Logger _log = Logger.getLogger(RegistryAdapter.class);
 
@@ -314,7 +311,7 @@ public class AuraRegistryProviderImpl implements RegistryAdapter, SourceListener
             List<DefRegistry<?>> regBuild = Lists.newArrayList();
 
             regBuild.add(AuraStaticTypeDefRegistry.INSTANCE);
-            regBuild.add(AuraStaticControllerDefRegistry.getInstance(definitionService, implementationProvider));
+            regBuild.add(AuraStaticControllerDefRegistry.getInstance(definitionService));
             for (ComponentLocationAdapter location : markupLocations) {
                 if (location != null) {
                     SourceLocationInfo sli = getSourceLocationInfo(location);
@@ -343,7 +340,7 @@ public class AuraRegistryProviderImpl implements RegistryAdapter, SourceListener
 
             if (javaLoaders.size() > 0) {
                 regBuild.add(AuraRegistryProviderImpl.<ControllerDef>createDefRegistry(
-                        new JavaControllerDefFactory(javaLoaders, definitionService, implementationProvider),
+                        new JavaControllerDefFactory(javaLoaders, definitionService),
                         DefType.CONTROLLER, DefDescriptor.JAVA_PREFIX));
                 regBuild.add(AuraRegistryProviderImpl.<RendererDef>createDefRegistry(
                         new JavaRendererDefFactory(javaLoaders), DefType.RENDERER, DefDescriptor.JAVA_PREFIX));
@@ -411,10 +408,5 @@ public class AuraRegistryProviderImpl implements RegistryAdapter, SourceListener
             }
             registries = null;
         }
-    }
-
-    @Inject
-    public void setImplementationProvider(ImplementationProvider implementationProvider) {
-        this.implementationProvider = implementationProvider;
     }
 }

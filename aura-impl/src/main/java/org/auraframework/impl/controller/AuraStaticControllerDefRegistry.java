@@ -24,7 +24,6 @@ import org.auraframework.def.Definition;
 import org.auraframework.impl.java.controller.JavaControllerDefFactory;
 import org.auraframework.impl.system.DefDescriptorImpl;
 import org.auraframework.impl.system.StaticDefRegistryImpl;
-import org.auraframework.org.auraframework.di.ImplementationProvider;
 import org.auraframework.service.DefinitionService;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
@@ -54,19 +53,21 @@ public class AuraStaticControllerDefRegistry extends StaticDefRegistryImpl<Defin
     private static AuraStaticControllerDefRegistry INSTANCE;
     private static Map<DefDescriptor<? extends Definition>, Definition> allMap;
 
-    public static synchronized AuraStaticControllerDefRegistry getInstance(DefinitionService definitionService,
-                                                                           ImplementationProvider implementationProvider) {
+    protected AuraStaticControllerDefRegistry(DefinitionService definitionService) {
+        super(defTypes, prefixes, null, getDefs(definitionService));
+    }
+
+    public static synchronized AuraStaticControllerDefRegistry getInstance(DefinitionService definitionService) {
         if (INSTANCE == null) {
-            INSTANCE = new AuraStaticControllerDefRegistry(definitionService, implementationProvider);
+            INSTANCE = new AuraStaticControllerDefRegistry(definitionService);
         }
         return INSTANCE;
     }
 
-    private static synchronized Collection<Definition> getDefs(DefinitionService definitionService,
-                                                               ImplementationProvider implementationProvider) {
+    private static synchronized Collection<Definition> getDefs(DefinitionService definitionService) {
         if (allMap == null) {
             try {
-                JavaControllerDefFactory jcdf = new JavaControllerDefFactory(null, definitionService, implementationProvider);
+                JavaControllerDefFactory jcdf = new JavaControllerDefFactory(null, definitionService);
                 ImmutableMap.Builder<DefDescriptor<? extends Definition>, Definition> builder;
                 ControllerDef cd;
                 DefDescriptor<ControllerDef> descriptor;
@@ -96,11 +97,6 @@ public class AuraStaticControllerDefRegistry extends StaticDefRegistryImpl<Defin
 
         return allMap.values();
         }
-
-    protected AuraStaticControllerDefRegistry(DefinitionService definitionService,
-                                              ImplementationProvider implementationProvider) {
-        super(defTypes, prefixes, null, getDefs(definitionService, implementationProvider));
-    }
 
     public Map<DefDescriptor<? extends Definition>, Definition> getAll() {
         return allMap;

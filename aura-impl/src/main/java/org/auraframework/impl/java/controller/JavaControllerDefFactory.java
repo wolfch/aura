@@ -29,7 +29,6 @@ import org.auraframework.impl.java.BaseJavaDefFactory;
 import org.auraframework.impl.java.model.JavaValueDef;
 import org.auraframework.impl.java.type.JavaTypeDef;
 import org.auraframework.impl.system.SubDefDescriptorImpl;
-import org.auraframework.org.auraframework.di.ImplementationProvider;
 import org.auraframework.service.DefinitionService;
 import org.auraframework.system.Annotations.AuraEnabled;
 import org.auraframework.system.Annotations.BackgroundAction;
@@ -56,13 +55,10 @@ import java.util.Map;
 public class JavaControllerDefFactory extends BaseJavaDefFactory<ControllerDef> {
 
     private DefinitionService definitionService;
-    private ImplementationProvider implementationProvider;
 
-    public JavaControllerDefFactory(List<SourceLoader> sourceLoaders, DefinitionService definitionService,
-                                    ImplementationProvider implementationProvider) {
+    public JavaControllerDefFactory(List<SourceLoader> sourceLoaders, DefinitionService definitionService) {
         super(sourceLoaders);
         this.definitionService = definitionService;
-        this.implementationProvider = implementationProvider;
     }
 
     public ControllerDef getDef_DONOTUSE(DefDescriptor<ControllerDef> descriptor, Class<?> clazz)
@@ -85,7 +81,6 @@ public class JavaControllerDefFactory extends BaseJavaDefFactory<ControllerDef> 
         JavaControllerDefImpl.Builder builder = new JavaControllerDefImpl.Builder();
         builder.setDescriptor(descriptor);
         builder.setControllerClass(clazz);
-        builder.setControllerInstance(getInstance(clazz));
         builder.setAccess(new DefinitionAccessImpl(AuraContext.Access.PUBLIC));
         builder.setLocation(clazz.getCanonicalName(), -1);
         if (!Controller.class.isAssignableFrom(clazz)) {
@@ -99,10 +94,6 @@ public class JavaControllerDefFactory extends BaseJavaDefFactory<ControllerDef> 
             builder.setParseError(qfe);
         }
         return builder;
-    }
-
-    private Object getInstance(Class<?> clazz) {
-        return this.implementationProvider.getImplementation(clazz);
     }
 
     private static String formatType(Type t) {

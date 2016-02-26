@@ -29,7 +29,6 @@ import org.auraframework.impl.system.MasterDefRegistryImpl;
 import org.auraframework.impl.util.AuraUtil;
 import org.auraframework.impl.util.json.AuraJsonContext;
 import org.auraframework.instance.GlobalValueProvider;
-import org.auraframework.org.auraframework.di.ImplementationProvider;
 import org.auraframework.service.CachingService;
 import org.auraframework.service.ContextService;
 import org.auraframework.service.DefinitionService;
@@ -77,9 +76,6 @@ public class AuraContextServiceImpl implements ContextService {
 
     @Inject
     private PrefixDefaultsAdapter prefixDefaultsAdapter;
-
-    @Inject
-    private ImplementationProvider implementationProvider;
 
     @Inject
     private JsonSerializerFactory jsonSerializerFactory;
@@ -177,7 +173,7 @@ public class AuraContextServiceImpl implements ContextService {
     }
 
     private MasterDefRegistryImpl getDefRegistry(Mode mode, Authentication access, Set<SourceLoader> loaders) {
-        return new MasterDefRegistryImpl(configAdapter, definitionService, loggingService, cachingService, implementationProvider,
+        return new MasterDefRegistryImpl(configAdapter, definitionService, loggingService, cachingService,
                 getRegistries(mode, access, loaders));
     }
 

@@ -34,7 +34,6 @@ import org.auraframework.def.DescriptorFilter;
 import org.auraframework.def.ParentedDef;
 import org.auraframework.def.RootDefinition;
 import org.auraframework.impl.controller.AuraStaticControllerDefRegistry;
-import org.auraframework.org.auraframework.di.ImplementationProvider;
 import org.auraframework.service.CachingService;
 import org.auraframework.service.DefinitionService;
 import org.auraframework.service.LoggingService;
@@ -122,7 +121,6 @@ public class MasterDefRegistryImpl implements MasterDefRegistry {
 
     private final ConfigAdapter configAdapter;
     private final DefinitionService definitionService;
-    private final ImplementationProvider implementationProvider;
     private final LoggingService loggingService;
     private final Cache<DefDescriptor<?>, Boolean> existsCache;
     private final Cache<DefDescriptor<?>, Optional<? extends Definition>> defsCache;
@@ -164,12 +162,10 @@ public class MasterDefRegistryImpl implements MasterDefRegistry {
 
     private MasterDefRegistryImpl(ConfigAdapter configAdapter, DefinitionService definitionService,
                                   LoggingService loggingService, CachingService cachingService,
-                                  ImplementationProvider implementationProvider,
                                   RegistryTrie delegate, MasterDefRegistryImpl original) {
         this.configAdapter = configAdapter;
         this.definitionService = definitionService;
         this.loggingService = loggingService;
-        this.implementationProvider = implementationProvider;
         this.delegateRegistries = delegate;
         this.original = original;
         this.rLock = cachingService.getReadLock();
@@ -202,8 +198,8 @@ public class MasterDefRegistryImpl implements MasterDefRegistry {
      */
     public MasterDefRegistryImpl(ConfigAdapter configAdapter, DefinitionService definitionService,
                                  LoggingService loggingService, CachingService cachingService,
-                                 ImplementationProvider implementationProvider, @Nonnull MasterDefRegistryImpl original) {
-        this(configAdapter, definitionService, loggingService, cachingService, implementationProvider, original.delegateRegistries, original);
+                                 @Nonnull MasterDefRegistryImpl original) {
+        this(configAdapter, definitionService, loggingService, cachingService, original.delegateRegistries, original);
     }
 
     /**
@@ -215,8 +211,8 @@ public class MasterDefRegistryImpl implements MasterDefRegistry {
      */
     public MasterDefRegistryImpl(ConfigAdapter configAdapter, DefinitionService definitionService,
                                  LoggingService loggingService, CachingService cachingService,
-                                 ImplementationProvider implementationProvider, @Nonnull DefRegistry<?>... registries) {
-        this(configAdapter, definitionService, loggingService, cachingService, implementationProvider, new RegistryTrie(registries), null);
+                                 @Nonnull DefRegistry<?>... registries) {
+        this(configAdapter, definitionService, loggingService, cachingService, new RegistryTrie(registries), null);
     }
 
     private boolean isOkForDependencyCaching(DefDescriptor<?> descriptor) {
@@ -840,7 +836,7 @@ public class MasterDefRegistryImpl implements MasterDefRegistry {
         try {
             List<ClientLibraryDef> clientLibs = Lists.newArrayList();
             CompileContext cc = new CompileContext(loggingService, context, descriptor, clientLibs);
-            cc.addMap(AuraStaticControllerDefRegistry.getInstance(definitionService, implementationProvider).getAll());
+            cc.addMap(AuraStaticControllerDefRegistry.getInstance(definitionService).getAll());
             Definition def = compileDef(descriptor, cc);
             DependencyEntry de;
             String uid;

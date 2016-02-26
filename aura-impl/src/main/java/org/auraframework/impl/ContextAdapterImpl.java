@@ -25,7 +25,6 @@ import org.auraframework.def.DefDescriptor.DefType;
 import org.auraframework.impl.context.AuraContextImpl;
 import org.auraframework.impl.system.MasterDefRegistryImpl;
 import org.auraframework.instance.GlobalValueProvider;
-import org.auraframework.org.auraframework.di.ImplementationProvider;
 import org.auraframework.service.CachingService;
 import org.auraframework.service.DefinitionService;
 import org.auraframework.service.LoggingService;
@@ -60,9 +59,6 @@ public class ContextAdapterImpl implements ContextAdapter {
     @Inject
     private TestContextAdapter testContextAdapter;
 
-    @Inject
-    private ImplementationProvider implementationProvider;
-
     private static ThreadLocal<AuraContext> currentContext = new ThreadLocal<>();
     
     private static ThreadLocal<AuraContext> systemContext = new ThreadLocal<>();
@@ -95,7 +91,7 @@ public class ContextAdapterImpl implements ContextAdapter {
 
     protected AuraContext buildSystemContext(AuraContext original) {
         MasterDefRegistryImpl mdr = new MasterDefRegistryImpl(configAdapter, definitionService, loggingService,
-                cachingService, implementationProvider, (MasterDefRegistryImpl) original.getDefRegistry());
+                cachingService, (MasterDefRegistryImpl) original.getDefRegistry());
         AuraContext context = new AuraContextImpl(original.getMode(), mdr, original.getDefaultPrefixes(), original.getFormat(), original.getAccess(),
                 original.getJsonSerializationContext(), original.getGlobalProviders(), false, configAdapter,
                 definitionService, testContextAdapter);

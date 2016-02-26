@@ -35,7 +35,6 @@ import org.auraframework.def.RendererDef;
 import org.auraframework.def.StyleDef;
 import org.auraframework.impl.AuraImplTestCase;
 import org.auraframework.impl.system.MasterDefRegistryImpl;
-import org.auraframework.org.auraframework.di.ImplementationProvider;
 import org.auraframework.service.CachingService;
 import org.auraframework.service.InstanceService;
 import org.auraframework.service.LoggingService;
@@ -94,9 +93,6 @@ public class MasterDefRegistryImplTest extends AuraImplTestCase {
 
     @Inject
     private InstanceService instanceService;
-
-    @Inject
-    private ImplementationProvider implementationProvider;
     
     @Mock
     Definition globalDef;
@@ -1247,7 +1243,7 @@ public class MasterDefRegistryImplTest extends AuraImplTestCase {
         Mockito.when(mockedRegistry.hasFind()).thenReturn(true);
         Mockito.when(mockedRegistry.exists(dd)).thenReturn(true);
         MasterDefRegistryImpl mdr = new MasterDefRegistryImpl(configAdapter, definitionService, loggingService,
-                cachingService, implementationProvider, mockedRegistry);
+                cachingService, mockedRegistry);
 
         DescriptorFilter df = new DescriptorFilter("aura:mocked", DefType.COMPONENT);
         Set<DefDescriptor<?>> result = mdr.find(df);
@@ -1280,7 +1276,7 @@ public class MasterDefRegistryImplTest extends AuraImplTestCase {
         Mockito.when(mockedRegistry.isCacheable()).thenReturn(true);
 
         MasterDefRegistryImpl mdr = new MasterDefRegistryImpl(configAdapter, definitionService, loggingService,
-                cachingService, implementationProvider, mockedRegistry);
+                cachingService, mockedRegistry);
 
         DescriptorFilter df = new DescriptorFilter("aura:*", DefType.COMPONENT);
         Set<DefDescriptor<?>> result = mdr.find(df);
@@ -1313,7 +1309,7 @@ public class MasterDefRegistryImplTest extends AuraImplTestCase {
         Mockito.when(mockedRegistry.isCacheable()).thenReturn(false);
 
         MasterDefRegistryImpl mdr = new MasterDefRegistryImpl(configAdapter, definitionService, loggingService,
-                cachingService, implementationProvider, mockedRegistry);
+                cachingService, mockedRegistry);
 
         DescriptorFilter df = new DescriptorFilter("aura:*", DefType.COMPONENT);
         Set<DefDescriptor<?>> result = mdr.find(df);
@@ -1346,7 +1342,7 @@ public class MasterDefRegistryImplTest extends AuraImplTestCase {
         Mockito.when(mockedRegistry.isCacheable()).thenReturn(true);
 
         MasterDefRegistryImpl mdr = new MasterDefRegistryImpl(configAdapter, definitionService, loggingService,
-                cachingService, implementationProvider, mockedRegistry);
+                cachingService, mockedRegistry);
 
         DescriptorFilter df = new DescriptorFilter("*:mocked", DefType.COMPONENT);
         Set<DefDescriptor<?>> result = mdr.find(df);
@@ -1849,7 +1845,7 @@ public class MasterDefRegistryImplTest extends AuraImplTestCase {
 
     private class MasterDefRegistryImplOverride extends MasterDefRegistryImpl {
         public MasterDefRegistryImplOverride(@Nonnull DefRegistry<?>... registries) {
-            super(configAdapter, definitionService, loggingService, cachingService, implementationProvider, registries);
+            super(configAdapter, definitionService, loggingService, cachingService, registries);
         }
 
         @Override

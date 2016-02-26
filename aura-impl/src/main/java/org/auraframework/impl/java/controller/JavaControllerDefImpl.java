@@ -15,7 +15,6 @@
  */
 package org.auraframework.impl.java.controller;
 
-import org.auraframework.def.ActionDef;
 import org.auraframework.def.ControllerDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.DefDescriptor.DefType;
@@ -23,12 +22,8 @@ import org.auraframework.def.Definition;
 import org.auraframework.def.JavaControllerDef;
 import org.auraframework.expression.PropertyReference;
 import org.auraframework.impl.system.DefinitionImpl;
-import org.auraframework.impl.system.SubDefDescriptorImpl;
 import org.auraframework.impl.util.AuraUtil;
-import org.auraframework.instance.Action;
 import org.auraframework.system.SubDefDescriptor;
-import org.auraframework.throwable.quickfix.DefinitionNotFoundException;
-import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.json.Json;
 
 import java.io.IOException;
@@ -42,15 +37,11 @@ public class JavaControllerDefImpl extends DefinitionImpl<ControllerDef> impleme
     private static final long serialVersionUID = -8294844909051767366L;
     private final Class<?> controllerClass;
     private final Map<String, JavaActionDef> actionMap;
-    private final Object controllerInstance;
 
     protected JavaControllerDefImpl(Builder builder) {
         super(builder);
         this.controllerClass = builder.controllerClass;
         this.actionMap = AuraUtil.immutableMap(builder.actionMap);
-        this.controllerInstance = builder.controllerInstance;
-        assert this.controllerInstance != null : String.format("Controller instance of %s cannot be null",
-                this.controllerClass.toString());
     }
 
     /**
@@ -109,7 +100,6 @@ public class JavaControllerDefImpl extends DefinitionImpl<ControllerDef> impleme
 
         private Class<?> controllerClass;
         private Map<String, JavaActionDef> actionMap;
-        private Object controllerInstance;
 
         @Override
         public JavaControllerDefImpl build() {
@@ -128,10 +118,6 @@ public class JavaControllerDefImpl extends DefinitionImpl<ControllerDef> impleme
          */
         public void setActionMap(Map<String, JavaActionDef> actionMap) {
             this.actionMap = actionMap;
-        }
-
-        public void setControllerInstance(Object controllerInstance) {
-            this.controllerInstance = controllerInstance;
         }
     }
 
