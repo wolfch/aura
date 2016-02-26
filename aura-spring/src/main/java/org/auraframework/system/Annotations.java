@@ -64,6 +64,11 @@ public interface Annotations {
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.TYPE)
+    @interface Controller {
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.TYPE)
     @interface Model {
     }
 
