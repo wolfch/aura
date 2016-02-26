@@ -15,6 +15,10 @@
  */
 package org.auraframework.integration.test.adapter;
 
+import java.util.*;
+
+import javax.inject.Inject;
+
 import org.auraframework.adapter.ConfigAdapter;
 import org.auraframework.adapter.LocalizationAdapter;
 import org.auraframework.def.ComponentDef;
@@ -30,16 +34,6 @@ import org.auraframework.throwable.quickfix.InvalidExpressionException;
 import org.auraframework.util.test.annotation.UnAdaptableTest;
 import org.junit.Before;
 import org.junit.Test;
-
-import javax.inject.Inject;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
 @UnAdaptableTest
 public class LocaleValueProviderTest extends AuraImplTestCase {
     private enum LocaleProperty {
@@ -80,6 +74,7 @@ public class LocaleValueProviderTest extends AuraImplTestCase {
     @Inject
     DefinitionService definitionService;
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();

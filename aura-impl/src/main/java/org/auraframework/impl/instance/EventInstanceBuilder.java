@@ -15,6 +15,8 @@
  */
 package org.auraframework.impl.instance;
 
+import java.util.Map;
+
 import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.def.EventDef;
 import org.auraframework.impl.root.event.EventDefImpl;
@@ -22,8 +24,6 @@ import org.auraframework.impl.root.event.EventImpl;
 import org.auraframework.instance.Event;
 import org.auraframework.instance.InstanceBuilder;
 import org.auraframework.throwable.quickfix.QuickFixException;
-
-import java.util.Map;
 
 /**
  * Provide an interface for an injectable builder of an instance.
@@ -33,6 +33,7 @@ public class EventInstanceBuilder implements InstanceBuilder<Event, EventDef> {
     /**
      * Get the class that this builder knows how to instantiate.
      */
+    @Override
     public Class<?> getDefinitionClass() {
         return EventDefImpl.class;
     }
@@ -40,6 +41,7 @@ public class EventInstanceBuilder implements InstanceBuilder<Event, EventDef> {
     /**
      * Get an instance of the given def.
      */
+    @Override
     public Event getInstance(EventDef def, Map<String, Object> attributes) throws QuickFixException {
         return new EventImpl(def.getDescriptor(), attributes);
     }

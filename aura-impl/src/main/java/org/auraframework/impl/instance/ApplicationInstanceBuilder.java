@@ -15,6 +15,8 @@
  */
 package org.auraframework.impl.instance;
 
+import java.util.Map;
+
 import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.impl.root.application.ApplicationDefImpl;
@@ -22,8 +24,6 @@ import org.auraframework.impl.root.application.ApplicationImpl;
 import org.auraframework.instance.Application;
 import org.auraframework.instance.InstanceBuilder;
 import org.auraframework.throwable.quickfix.QuickFixException;
-
-import java.util.Map;
 
 /**
  * Provide an interface for an injectable builder of an instance.
@@ -33,6 +33,7 @@ public class ApplicationInstanceBuilder implements InstanceBuilder<Application, 
     /**
      * Get the class that this builder knows how to instantiate.
      */
+    @Override
     public Class<?> getDefinitionClass() {
         return ApplicationDefImpl.class;
     }
@@ -40,6 +41,7 @@ public class ApplicationInstanceBuilder implements InstanceBuilder<Application, 
     /**
      * Get an instance of the given def.
      */
+    @Override
     public Application getInstance(ApplicationDef def, Map<String, Object> attributes) throws QuickFixException {
         return new ApplicationImpl(def, attributes);
     }

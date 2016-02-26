@@ -15,16 +15,13 @@
  */
 package org.auraframework.impl.root.application;
 
+import java.io.IOException;
+import java.util.*;
+
 import org.auraframework.Aura;
 import org.auraframework.adapter.ExceptionAdapter;
 import org.auraframework.builder.ApplicationDefBuilder;
-import org.auraframework.def.ActionDef;
-import org.auraframework.def.ApplicationDef;
-import org.auraframework.def.ControllerDef;
-import org.auraframework.def.DefDescriptor;
-import org.auraframework.def.EventDef;
-import org.auraframework.def.TokenDef;
-import org.auraframework.def.TokensDef;
+import org.auraframework.def.*;
 import org.auraframework.expression.Expression;
 import org.auraframework.expression.PropertyReference;
 import org.auraframework.impl.expression.AuraExpressionBuilder;
@@ -40,12 +37,6 @@ import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.json.Json;
 
 import com.google.common.collect.Maps;
-
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * The definition of an Application. Holds all information about a given type of application. ApplicationDefs are
@@ -196,6 +187,7 @@ public class ApplicationDefImpl extends BaseComponentDefImpl<ApplicationDef> imp
         }
     }
 
+    @Override
     public Map<String, String> getTokens(){
         Map<String,String> tokens=Maps.newHashMap();
         try {
