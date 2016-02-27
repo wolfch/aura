@@ -19,11 +19,16 @@ package org.auraframework.impl.context;
 import com.google.common.cache.CacheStats;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.auraframework.annotations.Annotations.ServiceComponent;
+
+import org.auraframework.adapter.LoggingAdapter;
 import org.auraframework.impl.LoggingAdapterImpl;
 import org.auraframework.system.LoggingContext;
 import org.auraframework.test.adapter.TestLoggingAdapter;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Scope;
 
 import java.util.List;
 import java.util.Map;
@@ -35,10 +40,24 @@ import java.util.Map;
  * 
  * @since 0.0.224
  */
-@Primary
-@ServiceComponent
 public class TestLoggingAdapterImpl extends LoggingAdapterImpl implements TestLoggingAdapter 
 {
+    @Configuration
+    public static class TestConfiguration {
+        private final static TestLoggingAdapter testLoggingAdapter = new TestLoggingAdapterImpl();
+
+        /**
+         * Use a true singleton TestLoggingAdapter for tests, because integration tests may execute outside the server's
+         * ApplicationContext.
+         */
+        @Primary
+        @Bean
+        @Scope(BeanDefinition.SCOPE_SINGLETON)
+        public static LoggingAdapter testLoggingAdapter() {
+            return testLoggingAdapter;
+        }
+    }
+    
     private static ThreadLocal<LoggingContext> currentContext = new ThreadLocal<>();
     private final List<Map<String, Object>> logs = Lists.newLinkedList();
     private boolean isCapturing=false;
