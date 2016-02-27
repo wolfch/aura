@@ -19,17 +19,13 @@ import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.ControllerDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.Definition;
 import org.auraframework.def.StyleDef;
-import org.auraframework.system.AuraContext;
-import org.auraframework.system.AuraContext.Authentication;
-import org.auraframework.system.AuraContext.Format;
-import org.auraframework.system.AuraContext.Mode;
-import org.auraframework.system.Source;
 import org.auraframework.test.controller.TestLoggingAdapterController;
 import org.auraframework.test.util.WebDriverTestCase;
 import org.auraframework.test.util.WebDriverUtil.BrowserType;
@@ -37,6 +33,7 @@ import org.auraframework.util.AuraTextUtil;
 import org.auraframework.util.test.annotation.FreshBrowserInstance;
 import org.auraframework.util.test.annotation.ThreadHostileTest;
 import org.auraframework.util.test.annotation.UnAdaptableTest;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Cookie;
@@ -46,6 +43,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 
 import javax.inject.Inject;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -67,8 +65,33 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
     private final static String COOKIE_NAME = "%s_%s_%s_lm";
     private final static String TOKEN = "@@@TOKEN@@@";
 
-    private static final String AURA = "aura";
+    private final static String AURA = "aura";
 
+    private final static String SRC_COMPONENT =
+    		"<aura:component>"
+	            + "<aura:attribute name='output' type='String'/>"
+	            + "<div class='clickableme' onclick='{!c.cssalert}'>@@@TOKEN@@@</div>"
+	            + "<div class='attroutput'>{!v.output}</div>"
+            + "</aura:component>";
+    private final static String SRC_CONTROLLER =
+    		"{ cssalert:function(c){"
+                    + "function getStyle(elem, style){"
+                    + "var val = '';"
+                    + "if(document.defaultView && document.defaultView.getComputedStyle){"
+                    + "val = document.defaultView.getComputedStyle(elem, '').getPropertyValue(style);"
+                    + "} else if(elem.currentStyle){"
+                    + "style = style.replace(/\\-(\\w)/g, function (s, ch){"
+                    + "return ch.toUpperCase();"
+                    + "});"
+                    + "val = elem.currentStyle[style];"
+                    + "}"
+                    + "return val;"
+                    + "};"
+                    + "var style = getStyle(c.getElement(),'background-image');"
+                    + "c.set('v.output','@@@TOKEN@@@' + style.substring(style.lastIndexOf('?')+1,style.lastIndexOf(')')-1)"
+                    + "+ ($A.test ? $A.test.dummyFunction() : '@@@TOKEN@@@'));"
+                    + "}}";
+    
     private enum Status {
         UNCACHED, IDLE, CHECKING, DOWNLOADING, UPDATEREADY, OBSOLETE;
     }
@@ -76,7 +99,9 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
     private String appName;
     private String namespace;
     private String cmpName;
-
+    private DefDescriptor<ComponentDef> cmpDesc;
+    private DefDescriptor<ControllerDef> controllerDesc;
+    
     @Inject
     private TestLoggingAdapterController testLoggingAdapterController;
 
@@ -93,33 +118,12 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
         appName = "cacheapplication";
         cmpName = "cachecomponent";
 
-        DefDescriptor<ComponentDef> cmpDesc = createDef(ComponentDef.class, String.format("%s:%s", namespace, cmpName),
-                "<aura:component>"
-                        + "<aura:attribute name='output' type='String'/>"
-                        + "<div class='clickableme' onclick='{!c.cssalert}'>@@@TOKEN@@@</div>"
-                        + "<div class='attroutput'>{!v.output}</div>"
-                        + "</aura:component>");
+		cmpDesc = createDef(ComponentDef.class,
+				String.format("%s:%s", namespace, cmpName), SRC_COMPONENT);
 
-        createDef(
-                ControllerDef.class,
-                String.format("%s://%s.%s", DefDescriptor.JAVASCRIPT_PREFIX, namespace, cmpName),
-                "{ cssalert:function(c){"
-                        + "function getStyle(elem, style){"
-                        + "var val = '';"
-                        + "if(document.defaultView && document.defaultView.getComputedStyle){"
-                        + "val = document.defaultView.getComputedStyle(elem, '').getPropertyValue(style);"
-                        + "} else if(elem.currentStyle){"
-                        + "style = style.replace(/\\-(\\w)/g, function (s, ch){"
-                        + "return ch.toUpperCase();"
-                        + "});"
-                        + "val = elem.currentStyle[style];"
-                        + "}"
-                        + "return val;"
-                        + "};"
-                        + "var style = getStyle(c.getElement(),'background-image');"
-                        + "c.set('v.output','@@@TOKEN@@@' + style.substring(style.lastIndexOf('?')+1,style.lastIndexOf(')')-1)"
-                        + "+ ($A.test ? $A.test.dummyFunction() : '@@@TOKEN@@@'));"
-                        + "}}");
+		controllerDesc = createDef(ControllerDef.class, String.format("%s://%s.%s",
+				DefDescriptor.JAVASCRIPT_PREFIX, namespace, cmpName),
+				SRC_CONTROLLER);
 
         createDef(
                 ApplicationDef.class,
@@ -274,12 +278,11 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
     @ThreadHostileTest("NamespaceDef modification affects namespace")
     @TargetBrowsers({ BrowserType.GOOGLECHROME, BrowserType.SAFARI, BrowserType.IPAD, BrowserType.IPHONE })
     @Test
-    // TODO(W-2903378): re-enable when we are able to inject TestLoggingAdapter.
-    // TODO(W-2944620): Adding safeEval.html to manifest causing unnecessary manifest requests
+    @Ignore("W-2944620: Adding safeEval.html to manifest causing unnecessary manifest requests")
     @UnAdaptableTest
-    public void _testComponentCssChange() throws Exception {
-        createDef(StyleDef.class, String.format("%s://%s.%s", DefDescriptor.CSS_PREFIX, namespace, cmpName),
-                ".THIS {background-image: url('/auraFW/resources/qa/images/s.gif?@@@TOKEN@@@');}");
+    public void testComponentCssChange() throws Exception {
+    	String src_style = ".THIS {background-image: url('/auraFW/resources/qa/images/s.gif?@@@TOKEN@@@');}";
+        DefDescriptor<StyleDef> styleDesc = createDef(StyleDef.class, String.format("%s://%s.%s", DefDescriptor.CSS_PREFIX, namespace, cmpName),src_style);
 
         List<Request> logs = loadMonitorAndValidateApp(TOKEN, TOKEN, TOKEN, TOKEN);
         assertRequests(getExpectedInitialRequests(), logs);
@@ -287,8 +290,7 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
 
         // update a component's css file
         String replacement = getName() + System.currentTimeMillis();
-
-        replaceToken(getTargetComponent().getStyleDescriptor(), replacement);
+        updateStringSource(styleDesc, src_style.replace(TOKEN, replacement));
 
         logs = loadMonitorAndValidateApp(TOKEN, TOKEN, replacement, TOKEN);
         assertRequests(getExpectedChangeRequests(), logs);
@@ -305,23 +307,15 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
      */
     @TargetBrowsers({ BrowserType.GOOGLECHROME, BrowserType.SAFARI, BrowserType.IPAD, BrowserType.IPHONE })
     @Test
-    // TODO(W-2903378): re-enable when we are able to inject TestLoggingAdapter.
-    // TODO(W-2944620): Adding safeEval.html to manifest causing unnecessary manifest requests
+    @Ignore("W-2944620: Adding safeEval.html to manifest causing unnecessary manifest requests")
     @UnAdaptableTest
-    public void _testComponentJsChange() throws Exception {
+    public void testComponentJsChange() throws Exception {
         List<Request> logs = loadMonitorAndValidateApp(TOKEN, TOKEN, "", TOKEN);
         assertRequests(getExpectedInitialRequests(), logs);
         assertAppCacheStatus(Status.IDLE);
         // update a component's js controller file
         String replacement = getName() + System.currentTimeMillis();
-        DefDescriptor<?> desc = null;
-        for (DefDescriptor<?> cd : getTargetComponent().getControllerDefDescriptors()) {
-            if ("js".equals(cd.getPrefix())) {
-                desc = cd;
-                break;
-            }
-        }
-        replaceToken(desc, replacement);
+        updateStringSource(controllerDesc, SRC_CONTROLLER.replace(TOKEN, replacement));
         logs = loadMonitorAndValidateApp(TOKEN, replacement, "", TOKEN);
         assertRequests(getExpectedChangeRequests(), logs);
         assertAppCacheStatus(Status.IDLE);
@@ -336,16 +330,15 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
      */
     @TargetBrowsers({ BrowserType.GOOGLECHROME, BrowserType.SAFARI, BrowserType.IPAD, BrowserType.IPHONE })
     @Test
-    // TODO(W-2903378): re-enable when we are able to inject TestLoggingAdapter.
-    // TODO(W-2944620): Adding safeEval.html to manifest causing unnecessary manifest requests
+    @Ignore("W-2944620: Adding safeEval.html to manifest causing unnecessary manifest requests")
     @UnAdaptableTest
-    public void _testComponentMarkupChange() throws Exception {
+    public void testComponentMarkupChange() throws Exception {
         List<Request> logs = loadMonitorAndValidateApp(TOKEN, TOKEN, "", TOKEN);
         assertRequests(getExpectedInitialRequests(), logs);
         assertAppCacheStatus(Status.IDLE);
         // update markup of namespaced component used by app
         String replacement = getName() + System.currentTimeMillis();
-        replaceToken(getTargetComponent().getDescriptor(), replacement);
+        updateStringSource(cmpDesc, SRC_COMPONENT.replace(TOKEN, replacement));
         logs = loadMonitorAndValidateApp(replacement, TOKEN, "", TOKEN);
         assertRequests(getExpectedChangeRequests(), logs);
         assertAppCacheStatus(Status.IDLE);
@@ -363,7 +356,6 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
      */
     @TargetBrowsers({ BrowserType.GOOGLECHROME })
     @Test
-    // TODO(W-2903378): re-enable when we are able to inject TestLoggingAdapter.
     @UnAdaptableTest
     public void testStoragesClearedOnAppcacheUpdate() throws Exception {
         // Override app we load in the test with a custom one that uses a template to setup persistent storage and an
@@ -443,7 +435,7 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
 
         // Update markup of component used by app and reload
         String replacement = getName() + System.currentTimeMillis();
-        replaceToken(getTargetComponent().getDescriptor(), replacement);
+        updateStringSource(cmpDesc, SRC_COMPONENT.replace(TOKEN, replacement));
         loadMonitorAndValidateApp(replacement, TOKEN, "", TOKEN);
 
         // Verify caches cleared
@@ -489,16 +481,6 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
                     }
                 },
                 "applicationCache.status was not " + status.name());
-    }
-
-    // provide a test component with TOKENs for replacement to trigger lastMod updates
-    private ComponentDef getTargetComponent() throws Exception {
-        AuraContext context = contextService.getCurrentContext();
-        if (context == null) {
-            context = contextService.startContext(Mode.SELENIUM, Format.HTML, Authentication.AUTHENTICATED);
-        }
-        return definitionService.getDefinition(
-                String.format("%s:%s", namespace, cmpName), ComponentDef.class);
     }
 
     /**
@@ -663,19 +645,6 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
 
     private String getUrl() {
         return String.format("/%s/%s.app", namespace, appName);
-    }
-
-    // replaces TOKEN found in the source file with the provided replacement
-    private void replaceToken(DefDescriptor<?> descriptor, String replacement) throws Exception {
-        assertNotNull("Missing descriptor for source replacement!", descriptor);
-        AuraContext context = contextService.getCurrentContext();
-        if (context == null) {
-            context = contextService.startContext(Mode.SELENIUM, Format.HTML, Authentication.AUTHENTICATED);
-        }
-        Source<?> source = context.getDefRegistry().getSource(descriptor);
-        String originalContent = source.getContents();
-        assert originalContent.contains(TOKEN);
-        source.addOrUpdate(originalContent.replace(TOKEN, replacement));
     }
 
     private List<Request> endMonitoring() {
