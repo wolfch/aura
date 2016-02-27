@@ -15,31 +15,15 @@
  */
 package org.auraframework.test.util;
 
-import org.auraframework.test.TestContextAdapter;
-import org.auraframework.test.TestContextAdapterImpl;
 import org.auraframework.test.source.StringSourceExternalLoader;
 import org.auraframework.test.source.StringSourceLoader;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.Scope;
 
 /**
  * Overrides for beans that will not work outside of the servlets' ApplicationContext.
  */
 public class IntegrationTestCaseOverrides {
-    private final static TestContextAdapter testContextAdapter = new TestContextAdapterImpl();
-
-    /**
-     * Use a true singleton TestContextAdapter for integration tests.
-     */
-    @Primary
-    @Bean
-    @Scope(BeanDefinition.SCOPE_SINGLETON)
-    public static TestContextAdapter testContextAdapter() {
-        return testContextAdapter;
-    }
-
     @Primary
     @Bean
     public StringSourceLoader remoteStringSourceLoader() {

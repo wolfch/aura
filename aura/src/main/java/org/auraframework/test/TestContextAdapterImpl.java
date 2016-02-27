@@ -17,16 +17,36 @@ package org.auraframework.test;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import org.auraframework.annotations.Annotations.ServiceComponent;
+
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Scope;
 
 import java.util.concurrent.TimeUnit;
 
 /**
  * Keep track of the current test.
  */
-@ServiceComponent
 public class TestContextAdapterImpl implements TestContextAdapter {
 
+    @Configuration
+    public static class TestConfiguration {
+        private final static TestContextAdapter testContextAdapter = new TestContextAdapterImpl();
+
+        /**
+         * Use a true singleton TestContextAdapter for tests, because integration tests may execute outside the server's
+         * ApplicationContext.
+         */
+        @Primary
+        @Bean
+        @Scope(BeanDefinition.SCOPE_SINGLETON)
+        public static TestContextAdapter testContextAdapter() {
+            return testContextAdapter;
+        }
+    }
+    
     Cache<String, TestContext> allContexts = CacheBuilder.newBuilder().concurrencyLevel(8)
             .expireAfterAccess(30, TimeUnit.MINUTES).maximumSize(100).build();
 

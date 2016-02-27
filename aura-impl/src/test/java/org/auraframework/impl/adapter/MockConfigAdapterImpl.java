@@ -38,10 +38,15 @@ import org.auraframework.service.InstanceService;
 import org.auraframework.system.AuraContext;
 import org.auraframework.test.TestContext;
 import org.auraframework.test.TestContextAdapter;
+import org.auraframework.test.TestContextAdapterImpl;
 import org.auraframework.test.adapter.MockConfigAdapter;
 import org.auraframework.test.source.StringSourceLoader;
 import org.auraframework.util.FileMonitor;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Scope;
 
 import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Sets;
@@ -49,10 +54,24 @@ import com.google.common.collect.Sets;
 /**
  * ConfigAdapter for Aura tests.
  */
-@Primary
-@ServiceComponent
 public class MockConfigAdapterImpl extends ConfigAdapterImpl implements MockConfigAdapter {
 
+    @Configuration
+    public static class TestConfiguration {
+        private final static MockConfigAdapter mockConfigAdapter = new MockConfigAdapterImpl();
+
+        /**
+         * Use a true singleton MockConfigAdapter for tests, because integration tests may execute outside the server's
+         * ApplicationContext.
+         */
+        @Primary
+        @Bean
+        @Scope(BeanDefinition.SCOPE_SINGLETON)
+        public static MockConfigAdapter mockConfigAdapter() {
+            return mockConfigAdapter;
+        }
+    }
+    
     @Inject
     StringSourceLoader stringLoader;
 
