@@ -77,8 +77,8 @@ public class ComponentQueryLanguageUITest extends WebDriverTestCase {
         auraUITestingUtil.waitUntil(new ExpectedCondition<Boolean>() {
             @Override
             public Boolean apply(WebDriver d) {
-                Long rowCount = (Long) auraUITestingUtil.getEval(rowQuery);
-                return rowCount.intValue() == 1;
+                Long localRowCount = (Long) auraUITestingUtil.getEval(rowQuery);
+                return localRowCount.intValue() == 1;
             }
         }, "Expecting one rerender query entry after attribute value change.");
 
@@ -93,8 +93,8 @@ public class ComponentQueryLanguageUITest extends WebDriverTestCase {
         auraUITestingUtil.waitUntil(new ExpectedCondition<Boolean>() {
             @Override
             public Boolean apply(WebDriver d) {
-                Long rowCount = (Long) auraUITestingUtil.getEval(rowQuery);
-                return rowCount.intValue() == 2;
+                Long localRowCount = (Long) auraUITestingUtil.getEval(rowQuery);
+                return localRowCount.intValue() == 2;
             }
         }, "Expecting two rerender query entry after attribute value change.");
     }

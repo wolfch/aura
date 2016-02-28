@@ -15,32 +15,22 @@
  */
 package org.auraframework.impl.clientlibrary;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import org.apache.commons.lang3.StringUtils;
-import org.auraframework.annotations.Annotations.ServiceComponent;
-import org.auraframework.cache.Cache;
-import org.auraframework.clientlibrary.ClientLibraryResolver;
-import org.auraframework.clientlibrary.ClientLibraryResolverRegistry;
-import org.auraframework.clientlibrary.ClientLibraryService;
-import org.auraframework.clientlibrary.Combinable;
-import org.auraframework.def.ClientLibraryDef;
-import org.auraframework.def.DefDescriptor;
-import org.auraframework.def.ResourceDef;
-import org.auraframework.service.CachingService;
-import org.auraframework.service.DefinitionService;
-import org.auraframework.service.SerializationService;
-import org.auraframework.system.AuraContext;
-import org.auraframework.throwable.AuraRuntimeException;
-import org.auraframework.throwable.NoContextException;
-import org.auraframework.throwable.quickfix.QuickFixException;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
+import org.auraframework.annotations.Annotations.ServiceComponent;
+import org.auraframework.clientlibrary.ClientLibraryResolver;
+import org.auraframework.clientlibrary.ClientLibraryResolverRegistry;
+import org.auraframework.clientlibrary.ClientLibraryService;
+import org.auraframework.def.ClientLibraryDef;
+import org.auraframework.system.AuraContext;
+import org.auraframework.throwable.NoContextException;
+import org.auraframework.throwable.quickfix.QuickFixException;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 /**
  * Service for including external client libraries (CSS or JS)
@@ -48,15 +38,7 @@ import java.util.Set;
 @ServiceComponent
 public class ClientLibraryServiceImpl implements ClientLibraryService {
 
-    private CachingService cachingService;
-    private DefinitionService definitionService;
-    private SerializationService serializationService;
-
-    private Cache<String, String> outputCache;
-
-    @PostConstruct
-    public void init() {
-        outputCache = cachingService.getClientLibraryOutputCache();
+    public ClientLibraryServiceImpl() {
     }
 
     /**
@@ -70,63 +52,11 @@ public class ClientLibraryServiceImpl implements ClientLibraryService {
             return null;
         }
 
-        String url = clientLibrary.getUrl();
-        if (StringUtils.isBlank(url)) {
-            // Use resolver if url is blank
-            ClientLibraryResolver resolver = getResolver(clientLibrary);
-            if (resolver != null) {
-                url = resolver.getUrl();
-            }
+        ClientLibraryResolver resolver = getResolver(clientLibrary);
+        if (resolver == null) {
+            return null;
         }
-        return url;
-    }
-
-    /**
-     * Checks whether client library can be combined.
-     *
-     * @param clientLibrary client library
-     * @return true if combinable
-     */
-    @Override
-    public boolean canCombine(ClientLibraryDef clientLibrary) throws QuickFixException {
-
-        if (clientLibrary == null) {
-            return false;
-        }
-
-        if (StringUtils.isBlank(clientLibrary.getUrl())) {
-            // Use resolver if url is blank
-            ClientLibraryResolver resolver = getResolver(clientLibrary);
-            if (resolver != null) {
-                return clientLibrary.shouldCombine() && resolver.canCombine();
-            }
-        }
-
-        return clientLibrary.shouldCombine();
-    }
-
-    /**
-     * Write resources.css
-     *
-     * @param output output
-     * @throws IOException
-     * @throws QuickFixException
-     */
-    @Override
-    public void writeCss(AuraContext context, Appendable output) throws IOException, QuickFixException {
-        write(context, ClientLibraryDef.Type.CSS, output);
-    }
-
-    /**
-     * Write resources.js
-     *
-     * @param output output
-     * @throws IOException
-     * @throws QuickFixException
-     */
-    @Override
-    public void writeJs(AuraContext context, Appendable output) throws IOException, QuickFixException {
-        write(context, ClientLibraryDef.Type.JS, output);
+        return resolver.getUrl();
     }
 
     @Override
@@ -158,81 +88,18 @@ public class ClientLibraryServiceImpl implements ClientLibraryService {
 
         List<ClientLibraryDef> clientLibs = getClientLibraries(context, type);
 
-        boolean hasCombines = false;
         String url = null;
 
         for (ClientLibraryDef clientLib : clientLibs) {
 
-            if (canCombine(clientLib)) {
-                hasCombines = true;
-            } else {
-                // add url to list when client library is not combined
-                url = getResolvedUrl(clientLib);
-            }
-
+            // add url to list when client library is not combined
+            url = getResolvedUrl(clientLib);
             if (StringUtils.isNotBlank(url)) {
                 urls.add(url);
             }
 
         }
-
-        if (hasCombines) {
-            // all combinable resources are put into resources.css or resources.js
-            urls.add(getResourcesPath(context, type));
-        }
-
         return urls;
-
-    }
-
-    /**
-     * Writes resources css or js. Gets client libraries that should be combined and is written by their format adapter
-     *
-     * @param type CSS or JS
-     * @param output output
-     * @throws IOException
-     * @throws QuickFixException
-     */
-    private void write(AuraContext context, ClientLibraryDef.Type type, Appendable output) throws IOException, QuickFixException {
-        if (output == null) {
-            throw new AuraRuntimeException("Output cannot be null");
-        }
-
-        if (context == null) {
-            throw new NoContextException();
-        }
-
-        AuraContext.Mode mode = context.getMode();
-        String uid = context.getUid(context.getApplicationDescriptor());
-
-        String key = makeCacheKey(uid, mode, type);
-        String code = outputCache.getIfPresent(key);
-
-        if (code == null) {
-            // no cache yet
-            List<ClientLibraryDef> clientLibs = getClientLibraries(context, type);
-            Set<Combinable> combinables = Sets.newLinkedHashSet();
-            StringBuilder sb = new StringBuilder();
-
-            for (ClientLibraryDef clientLib : clientLibs) {
-                if (canCombine(clientLib)) {
-                    Combinable combinable = getCombinable(clientLib);
-                    if (combinable != null) {
-                        combinables.add(combinable);
-                    }
-                }
-            }
-
-            if (!combinables.isEmpty()) {
-                // ClientLibraryCSSFormatAdapter or ClientLibraryJSFormatAdapter
-                serializationService.writeCollection(combinables, Combinable.class, sb, type.toString());
-            }
-
-            code = sb.toString();
-            outputCache.put(key, code);
-        }
-
-        output.append(code);
     }
 
     /**
@@ -272,85 +139,5 @@ public class ClientLibraryServiceImpl implements ClientLibraryService {
         }
 
         return ret;
-    }
-
-    /**
-     * Calculates resources css or js url ie /l/[context]/resources.css
-     *
-     * @param type CSS or JS
-     * @return
-     * @throws QuickFixException
-     */
-    private static String getResourcesPath(AuraContext context, ClientLibraryDef.Type type) throws QuickFixException {
-        String contextPath = context.getContextPath();
-        StringBuilder path = new StringBuilder(contextPath).append("/l/");
-        path.append(context.getEncodedURL(AuraContext.EncodingStyle.Normal)).append("/resources.").append(type.toString().toLowerCase());
-        return path.toString();
-    }
-
-    /**
-     * Creates cache key using the current uid, mode, and type. Caches uncompressed version for DEV or TEST modes,
-     * compressed otherwise
-     *
-     * @param uid application uid
-     * @param mode current aura mode
-     * @param type CSS or JS
-     * @return cache key
-     */
-    private static String makeCacheKey(String uid, AuraContext.Mode mode, ClientLibraryDef.Type type) {
-        StringBuilder key = new StringBuilder();
-        key.append(uid).append(":").append(type).append(":");
-
-        if (mode.prettyPrint()) {
-            key.append("DEV");
-        } else {
-            key.append("MIN");
-        }
-        return key.toString();
-    }
-
-    /**
-     * Get Combinable to allow getting contents
-     *
-     * @param clientLibrary client library
-     * @return combinable
-     * @throws QuickFixException
-     */
-    private Combinable getCombinable(ClientLibraryDef clientLibrary) throws QuickFixException {
-        String url = clientLibrary.getUrl();
-        Combinable combinable = null;
-        if (StringUtils.isBlank(url)) {
-            ClientLibraryResolver resolver = getResolver(clientLibrary);
-            if (resolver != null && resolver.canCombine()) {
-                // combinable resolver
-                combinable = (Combinable) resolver;
-            }
-        } else if (StringUtils.startsWithIgnoreCase(url, DefDescriptor.CSS_PREFIX + "://") ||
-                StringUtils.startsWithIgnoreCase(url, DefDescriptor.JAVASCRIPT_PREFIX + "://")) {
-            // if url is qualified name of DefDescriptor<ResourceDef>
-            DefDescriptor<ResourceDef> descriptor = definitionService.getDefDescriptor(url, ResourceDef.class);
-            if (descriptor.exists()) {
-                ResourceDef def = descriptor.getDef();
-                if (def != null) {
-                    combinable = (Combinable) def;
-                }
-            }
-        }
-        return combinable;
-    }
-
-    @Inject
-    void setDefinitionService(DefinitionService definitionService) {
-        this.definitionService = definitionService;
-    }
-
-    @Inject
-    void setCachingService(CachingService cachingService) {
-        this.cachingService = cachingService;
-    }
-
-    @Inject
-    void setSerializationService(SerializationService serializationService) {
-        this.serializationService = serializationService;
     }
 }

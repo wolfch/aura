@@ -970,9 +970,9 @@ public class MasterDefRegistryImplTest extends AuraImplTestCase {
 
         libDefs = mdr.getClientLibraries(cntx.getUid(appDesc));
 
-        // 13 from clientLibraryTest:testDependencies and its dependencies + 1 from aura:component
+        // 1 from clientLibraryTest:testDependencies 
         // Update this number when you add new aura:clientLibrary tags to these components
-        assertEquals(13, libDefs.size());
+        assertEquals(3, libDefs.size());
     }
 
     @Test
@@ -1843,7 +1843,7 @@ public class MasterDefRegistryImplTest extends AuraImplTestCase {
 //        }
 //    }
 
-    private class MasterDefRegistryImplOverride extends MasterDefRegistryImpl {
+    public class MasterDefRegistryImplOverride extends MasterDefRegistryImpl {
         public MasterDefRegistryImplOverride(@Nonnull DefRegistry<?>... registries) {
             super(configAdapter, definitionService, loggingService, cachingService, registries);
         }

@@ -19,11 +19,23 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.auraframework.adapter.*;
+import org.auraframework.adapter.ConfigAdapter;
+import org.auraframework.adapter.ExceptionAdapter;
+import org.auraframework.adapter.JsonSerializerAdapter;
+import org.auraframework.adapter.LocalizationAdapter;
+import org.auraframework.adapter.StyleAdapter;
 import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.def.Definition;
 import org.auraframework.instance.Instance;
-import org.auraframework.service.*;
+import org.auraframework.service.BuilderService;
+import org.auraframework.service.CachingService;
+import org.auraframework.service.ContextService;
+import org.auraframework.service.ConverterService;
+import org.auraframework.service.DefinitionService;
+import org.auraframework.service.InstanceService;
+import org.auraframework.service.IntegrationService;
+import org.auraframework.service.LocalizationService;
+import org.auraframework.service.LoggingService;
 import org.auraframework.system.AuraContext;
 import org.auraframework.util.adapter.SourceControlAdapter;
 import org.auraframework.util.json.JsonSerializerFactory;

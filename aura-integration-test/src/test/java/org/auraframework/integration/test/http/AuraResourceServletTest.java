@@ -206,6 +206,7 @@ public class AuraResourceServletTest extends AuraTestCase {
         }
     }
 
+    @UnAdaptableTest("W-2931019 enable this once 3Tier change is in")
     @Test
     public void testRequestFromDifferentBrowserOnSamePage() throws Exception {
         runTestRequestFromDifferentBrowserOnSamePage(UserAgent.IE9.getUserAgentString(), Type.IE9, "");
@@ -219,6 +220,7 @@ public class AuraResourceServletTest extends AuraTestCase {
      * source monitor, but we'll just emulate a source change for the sake of speed and simplicity. Original dev caching
      * story: W-1450222
      */
+    @UnAdaptableTest("W-2931019 enable this once 3Tier change is in")
     @Test
     public void testCssCacheClearedOnSourceChange() throws Exception {
         DefDescriptor<ApplicationDef> appDesc = definitionService.getDefDescriptor("appCache:withpreload", ApplicationDef.class);

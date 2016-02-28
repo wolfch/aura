@@ -23,6 +23,7 @@ import org.auraframework.def.LibraryDef;
 import org.auraframework.impl.root.library.IncludeDefRefImpl;
 import org.auraframework.impl.root.library.IncludeDefRefImpl.Builder;
 import org.auraframework.impl.root.parser.handler.IncludeDefRefHandler;
+import org.auraframework.impl.system.DefDescriptorImpl;
 import org.auraframework.impl.system.SubDefDescriptorImpl;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
 import org.junit.Test;

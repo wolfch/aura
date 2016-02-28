@@ -60,10 +60,10 @@ public class IncludeDefRefImpl extends DefinitionImpl<IncludeDef> implements Inc
         return imports;
     }
 
-	@Override
-	public List<String> getAliases() {
-		return aliases;
-	}
+    @Override
+    public List<String> getAliases() {
+        return aliases;
+    }
 
     @Override
     public String getExport() {
@@ -72,28 +72,28 @@ public class IncludeDefRefImpl extends DefinitionImpl<IncludeDef> implements Inc
 
     @Override
     public void serialize(Json json) throws IOException {
-    	throw new UnsupportedOperationException("IncludeDefRef can't be serialized to JSON");
+        throw new UnsupportedOperationException("IncludeDefRef can't be serialized to JSON");
     }
 
     @Override
     public void validateDefinition() throws QuickFixException {
-    	if (AuraTextUtil.isNullEmptyOrWhitespace(getName())) {
+        if (AuraTextUtil.isNullEmptyOrWhitespace(getName())) {
             throw new InvalidDefinitionException(String.format(
-            		"%s must specify a name", IncludeDefRefHandler.TAG), getLocation());
+                    "%s must specify a name", IncludeDefRefHandler.TAG), getLocation());
         }
-        if (!AuraTextUtil.isValidNCNameIdentifier(getName())) {
-            throw new InvalidDefinitionException(String.format(
-                    "%s 'name' attribute must be a valid NCName identifier", IncludeDefRefHandler.TAG),
-                    getLocation());
-        }
+        // if (!AuraTextUtil.isValidNCNameIdentifier(getName())) {
+        //     throw new InvalidDefinitionException(String.format(
+        //             "%s 'name' attribute must be a valid NCName identifier", IncludeDefRefHandler.TAG),
+        //             getLocation());
+        // }
         if (aliases != null && !aliases.isEmpty()) {
-        	for (String alias : aliases) {
-        		if (!AuraTextUtil.isValidJsIdentifier(alias)) {
-        			throw new InvalidDefinitionException(String.format(
-        					"%s 'alias' attribute must contain only valid javascript identifiers", IncludeDefRefHandler.TAG),
-        					getLocation());
-        		}
-        	}
+            for (String alias : aliases) {
+                if (!AuraTextUtil.isValidJsIdentifier(alias)) {
+                    throw new InvalidDefinitionException(String.format(
+                            "%s 'alias' attribute must contain only valid javascript identifiers", IncludeDefRefHandler.TAG),
+                            getLocation());
+                }
+            }
         }
         if (export != null && !AuraTextUtil.isValidJsIdentifier(export)) {
             throw new InvalidDefinitionException(String.format(
@@ -142,13 +142,13 @@ public class IncludeDefRefImpl extends DefinitionImpl<IncludeDef> implements Inc
 
     public static class Builder extends DefinitionImpl.RefBuilderImpl<IncludeDef, IncludeDefRef> {
 
-		private List<DefDescriptor<IncludeDef>> imports;
+        private List<DefDescriptor<IncludeDef>> imports;
         private List<String> aliases;
         private String export;
 
         public Builder() {
-			super(IncludeDef.class);
-		}
+            super(IncludeDef.class);
+        }
 
         @Override
         public IncludeDefRefImpl build() {
