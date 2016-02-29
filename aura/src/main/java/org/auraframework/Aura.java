@@ -36,6 +36,7 @@ import org.auraframework.service.InstanceService;
 import org.auraframework.service.IntegrationService;
 import org.auraframework.service.LocalizationService;
 import org.auraframework.service.LoggingService;
+import org.auraframework.service.ServerService;
 import org.auraframework.system.AuraContext;
 import org.auraframework.util.adapter.SourceControlAdapter;
 import org.auraframework.util.json.JsonSerializerFactory;
@@ -61,7 +62,8 @@ public class Aura implements AuraDeprecated {
     private static CachingService cachingService;
     private static ExceptionAdapter exceptionAdapter;
     private static LocalizationAdapter localizationAdapter;
-    
+    private static ServerService serverService;
+
     @Inject
     public void setLocalizationAdapter(LocalizationAdapter adapter) {
         localizationAdapter = adapter;
@@ -140,6 +142,11 @@ public class Aura implements AuraDeprecated {
     @Inject
     public void setLocalizationService(LocalizationService service) {
         localizationService = service;
+    }
+
+    @Inject
+    public void setServerService(ServerService service) {
+        serverService = service;
     }
 
     /**
@@ -266,5 +273,14 @@ public class Aura implements AuraDeprecated {
     @Deprecated
     public static LocalizationAdapter getLocalizationAdapter() {
         return localizationAdapter;
+    }
+
+    /**
+     * USE INJECTION INSTEAD
+     * @return
+     */
+    @Deprecated
+    public static ServerService getServerService() {
+        return serverService;
     }
 }
