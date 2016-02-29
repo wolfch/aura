@@ -24,24 +24,25 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicHeader;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.spi.LoggingEvent;
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.ComponentDef;
+import org.auraframework.integration.test.logging.LoggingTestAppender;
 import org.auraframework.system.AuraContext.Format;
 import org.auraframework.system.AuraContext.Mode;
-import org.auraframework.test.controller.TestLoggingAdapterController;
 import org.auraframework.test.util.AuraHttpTestCase;
 import org.auraframework.util.AuraTextUtil;
 import org.auraframework.util.test.annotation.AuraTestLabels;
 import org.auraframework.util.test.annotation.UnAdaptableTest;
 import org.junit.Test;
 
-import javax.inject.Inject;
+
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -56,9 +57,30 @@ import java.util.concurrent.Future;
  * @since 0.0.128
  */
 public class AuraResourceServletHttpTest extends AuraHttpTestCase {
+    
+    private Logger logger;
+    private LoggingTestAppender appender;
+    private Level originalLevel;
+    
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        appender = new LoggingTestAppender();
 
-    @Inject
-    private TestLoggingAdapterController testLoggingAdapterController;
+        logger = Logger.getLogger("LoggingContextImpl");
+        // When we run integration tests, the logging level of logger LoggingContextImpl
+        // is WARN, setting it into INFO here so that we can get the log as we run the app.
+        originalLevel = logger.getLevel();
+        logger.setLevel(Level.INFO);
+        logger.addAppender(appender);
+    }
+    
+    @Override
+    public void tearDown() throws Exception {
+        logger.removeAppender(appender);
+        logger.setLevel(originalLevel);
+        super.tearDown();
+    }
     
     class Request implements Callable<Integer> {
     	private CloseableHttpClient httpClient;
@@ -87,7 +109,6 @@ public class AuraResourceServletHttpTest extends AuraHttpTestCase {
        also since I ask cache to log something when hit miss, this kind of verify W-2105858 as well
      * @throws Exception
      */
-    @UnAdaptableTest("W-2928878, enable this after we have a proper test logging adapter in core")
     @Test
     public void testConcurrentGetRequests() throws Exception {
     	// I tried to use obtainGetMethod(url) then perform(HttpGet) , but 
@@ -102,7 +123,7 @@ public class AuraResourceServletHttpTest extends AuraHttpTestCase {
 			        .setConnectionManager(cm)
 			        .build();
 
-        testLoggingAdapterController.beginCapture();
+        //testLoggingAdapterController.beginCapture();
 
         String modeAndContext = getSimpleContext(Format.JS, false);
          String url = "/l/" + AuraTextUtil.urlencode(modeAndContext) + "/app.js";
@@ -127,7 +148,7 @@ public class AuraResourceServletHttpTest extends AuraHttpTestCase {
          response5.get();
          
          int counter = 0;
-        List<Map<String, Object>> logList = testLoggingAdapterController.endCapture();
+       /* List<Map<String, Object>> logList = testLoggingAdapterController.endCapture();
          for(Map<String, Object> log : logList) {
         	 for(Entry<String, Object> entry : log.entrySet()) {
         		 if(entry.getValue() != null) {
@@ -137,9 +158,25 @@ public class AuraResourceServletHttpTest extends AuraHttpTestCase {
         			 }
         		 }
         	 }
+         }*/
+         String message;
+         List<LoggingEvent> logs = appender.getLog();
+         for(LoggingEvent le : logs) {
+        	 message = le.getMessage().toString();
+        	 System.out.println(message);
+        	 if(message.contains("StringsCache")){
+        		 counter++;
+        		 assertTrue("get unexpected logging message for cache miss:"+message, message.contains("cache miss for key: JS:DEV:"));
+        	 }
          }
          //run this test right after server is up, we get one miss. second time, what we looking for is cached already, no miss.
          assertTrue("we should only have no more than one cache miss, instead we have "+counter, counter <= 1);
+         
+         
+         
+         /*logger.removeAppender(appender);
+         logger.setLevel(originalLevel);
+         Logger.getRootLogger().removeAppender(appender);*/
     }
 
     /**
