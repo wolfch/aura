@@ -15,41 +15,28 @@
  */
 package org.auraframework.http;
 
-import com.google.common.collect.Maps;
-import org.apache.http.HttpHeaders;
-import org.auraframework.adapter.ConfigAdapter;
-import org.auraframework.adapter.ExceptionAdapter;
-import org.auraframework.adapter.ServletUtilAdapter;
-import org.auraframework.def.ApplicationDef;
-import org.auraframework.def.BaseComponentDef;
-import org.auraframework.def.ComponentDef;
-import org.auraframework.def.DefDescriptor;
-import org.auraframework.instance.Action;
-import org.auraframework.service.ContextService;
-import org.auraframework.service.DefinitionService;
-import org.auraframework.service.LoggingService;
-import org.auraframework.service.SerializationService;
-import org.auraframework.service.ServerService;
-import org.auraframework.system.AuraContext;
-import org.auraframework.system.Message;
-import org.auraframework.throwable.AuraRuntimeException;
-import org.auraframework.throwable.ClientOutOfSyncException;
-import org.auraframework.throwable.SystemErrorException;
-import org.auraframework.throwable.quickfix.QuickFixException;
-import org.auraframework.util.json.JsonStreamReader;
+import java.io.*;
+import java.net.URI;
+import java.util.*;
 
 import javax.inject.Inject;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringReader;
-import java.net.URI;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
+
+import org.apache.http.HttpHeaders;
+import org.auraframework.adapter.*;
+import org.auraframework.def.*;
+import org.auraframework.instance.Action;
+import org.auraframework.service.*;
+import org.auraframework.system.AuraContext;
+import org.auraframework.system.Message;
+import org.auraframework.throwable.*;
+import org.auraframework.throwable.quickfix.QuickFixException;
+import org.auraframework.util.json.JsonStreamReader;
+
+import com.google.common.collect.Maps;
 
 /**
  * The servlet for initialization and actions in Aura.
@@ -99,7 +86,7 @@ public class AuraServlet extends AuraBaseServlet {
      * Cache-Control: no-cache.
      * This is the same as ServletUtilAdapterImpl.java
      */
-    private final static String UTF_ENCODING = "UTF-8";
+    public final static String UTF_ENCODING = "UTF-8";
 
     private final static RequestParam.StringParam csrfToken = new RequestParam.StringParam(AURA_PREFIX + "token", 0, true);
     private final static RequestParam.StringParam tag = new RequestParam.StringParam(AURA_PREFIX + "tag", 128, true);

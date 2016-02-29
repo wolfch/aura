@@ -15,20 +15,17 @@
  */
 package org.auraframework.test.instance;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyListOf;
+import static org.mockito.Mockito.*;
+
+import java.util.Collections;
+
 import org.auraframework.instance.Action;
 import org.auraframework.instance.ActionWithKeyOverride;
 import org.auraframework.util.json.JsonEncoder;
 import org.auraframework.util.test.util.UnitTestCase;
 import org.junit.Test;
-
-import java.util.Collections;
-
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyListOf;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 public class ActionWithKeyOverrideTest extends UnitTestCase {
 

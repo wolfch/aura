@@ -15,38 +15,31 @@
  */
 package org.auraframework.impl;
 
-import com.google.common.collect.Sets;
+import java.util.Map;
+import java.util.Set;
+
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+import javax.inject.Inject;
+
 import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.cache.Cache;
-import org.auraframework.def.ActionDef;
-import org.auraframework.def.ControllerDef;
-import org.auraframework.def.DefDescriptor;
+import org.auraframework.def.*;
 import org.auraframework.def.DefDescriptor.DefType;
 import org.auraframework.def.DefDescriptor.DescriptorKey;
-import org.auraframework.def.Definition;
-import org.auraframework.def.DescriptorFilter;
-import org.auraframework.def.TypeDef;
 import org.auraframework.impl.system.DefDescriptorImpl;
 import org.auraframework.impl.system.SubDefDescriptorImpl;
 import org.auraframework.impl.type.AuraStaticTypeDefRegistry;
-import org.auraframework.service.CachingService;
-import org.auraframework.service.ContextService;
-import org.auraframework.service.DefinitionService;
-import org.auraframework.system.AuraContext;
+import org.auraframework.service.*;
+import org.auraframework.system.*;
 import org.auraframework.system.AuraContext.Authentication;
-import org.auraframework.system.MasterDefRegistry;
-import org.auraframework.system.SubDefDescriptor;
 import org.auraframework.throwable.AuraRuntimeException;
 import org.auraframework.throwable.ClientOutOfSyncException;
 import org.auraframework.throwable.quickfix.DefinitionNotFoundException;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.AuraTextUtil;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-import javax.inject.Inject;
-import java.util.Map;
-import java.util.Set;
+import com.google.common.collect.Sets;
 
 /**
  * The public access to definitions inside Aura.
@@ -143,7 +136,7 @@ public class DefinitionServiceImpl implements DefinitionService {
         // TODO: Remove SubDefDescriptor and with it this block of code.
         if (descriptor instanceof SubDefDescriptor) {
             SubDefDescriptor<T, ?> subDefDescriptor = (SubDefDescriptor<T, ?>) descriptor;
-            def = (T) getDefinition(subDefDescriptor.getParentDescriptor()).getSubDefinition(subDefDescriptor);
+            def = getDefinition(subDefDescriptor.getParentDescriptor()).getSubDefinition(subDefDescriptor);
         } else {
             def = context.getDefRegistry().getDef(descriptor);
         }

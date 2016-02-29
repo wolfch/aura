@@ -15,36 +15,24 @@
  */
 package org.auraframework.impl.controller;
 
-import com.google.common.collect.Lists;
+import java.util.*;
+
+import javax.inject.Inject;
+
 import org.auraframework.adapter.ExceptionAdapter;
 import org.auraframework.annotations.Annotations.ServiceComponent;
-import org.auraframework.def.ActionDef;
-import org.auraframework.def.ApplicationDef;
-import org.auraframework.def.BaseComponentDef;
-import org.auraframework.def.ComponentDef;
-import org.auraframework.def.DefDescriptor;
-import org.auraframework.def.Definition;
-import org.auraframework.def.EventDef;
-import org.auraframework.def.RootDefinition;
+import org.auraframework.def.*;
 import org.auraframework.ds.servicecomponent.Controller;
 import org.auraframework.impl.java.controller.JavaAction;
 import org.auraframework.impl.javascript.controller.JavascriptPseudoAction;
-import org.auraframework.instance.Action;
-import org.auraframework.instance.Application;
-import org.auraframework.instance.BaseComponent;
-import org.auraframework.instance.Component;
-import org.auraframework.service.ContextService;
-import org.auraframework.service.DefinitionService;
-import org.auraframework.service.InstanceService;
+import org.auraframework.instance.*;
+import org.auraframework.service.*;
 import org.auraframework.system.Annotations.AuraEnabled;
 import org.auraframework.system.Annotations.Key;
-import org.auraframework.system.AuraContext;
+import org.auraframework.system.*;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
-import javax.inject.Inject;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import com.google.common.collect.Lists;
 
 @ServiceComponent
 public class ComponentController implements Controller {
@@ -103,6 +91,21 @@ public class ComponentController implements Controller {
 
     @AuraEnabled
     public Boolean loadLabels() throws QuickFixException {
+        AuraContext ctx = contextService.getCurrentContext();
+        Map<DefDescriptor<? extends Definition>, Definition> defMap;
+
+        ctx.getDefRegistry().getDef(ctx.getApplicationDescriptor());
+        defMap = ctx.getDefRegistry().filterRegistry(null);
+        for (Map.Entry<DefDescriptor<? extends Definition>, Definition> entry : defMap.entrySet()) {
+            Definition def = entry.getValue();
+            if (def != null) {
+                def.retrieveLabels();
+            }
+        }
+        return Boolean.TRUE;
+    }
+    
+    public static Boolean loadLabels(ContextService contextService) throws QuickFixException {
         AuraContext ctx = contextService.getCurrentContext();
         Map<DefDescriptor<? extends Definition>, Definition> defMap;
 

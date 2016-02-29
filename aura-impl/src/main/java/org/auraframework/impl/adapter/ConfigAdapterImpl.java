@@ -15,17 +15,19 @@
  */
 package org.auraframework.impl.adapter;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.ImmutableSortedSet;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import java.io.*;
+import java.lang.reflect.Type;
+import java.net.MalformedURLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.log4j.Logger;
-import org.auraframework.adapter.ConfigAdapter;
-import org.auraframework.adapter.ContentSecurityPolicy;
-import org.auraframework.adapter.DefaultContentSecurityPolicy;
-import org.auraframework.adapter.LocalizationAdapter;
+import org.auraframework.adapter.*;
 import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.def.BaseComponentDef;
 import org.auraframework.def.DefDescriptor;
@@ -42,38 +44,14 @@ import org.auraframework.system.AuraContext.Mode;
 import org.auraframework.throwable.AuraError;
 import org.auraframework.throwable.AuraRuntimeException;
 import org.auraframework.throwable.quickfix.QuickFixException;
-import org.auraframework.util.AuraLocale;
-import org.auraframework.util.AuraTextUtil;
-import org.auraframework.util.FileMonitor;
-import org.auraframework.util.IOUtil;
+import org.auraframework.util.*;
 import org.auraframework.util.javascript.JavascriptGroup;
-import org.auraframework.util.resource.CompiledGroup;
-import org.auraframework.util.resource.FileGroup;
-import org.auraframework.util.resource.ResourceLoader;
+import org.auraframework.util.resource.*;
 import org.auraframework.util.text.Hash;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.io.StringReader;
-import java.lang.reflect.Type;
-import java.net.MalformedURLException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.EnumSet;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.TimeZone;
+import com.google.common.collect.*;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 @ServiceComponent
 public class ConfigAdapterImpl implements ConfigAdapter {
@@ -122,6 +100,14 @@ public class ConfigAdapterImpl implements ConfigAdapter {
 
     public ConfigAdapterImpl() {
         this.resourceCacheDir = getDefaultCacheDir();
+    }
+
+    /**
+     * For extension only, if you use this to create an instance, your services won't be setup.
+     * @param resourceCacheDir
+     */
+    public ConfigAdapterImpl(final String resourceCacheDir) {
+        this.resourceCacheDir = resourceCacheDir;
     }
 
     private static String getDefaultCacheDir() {
