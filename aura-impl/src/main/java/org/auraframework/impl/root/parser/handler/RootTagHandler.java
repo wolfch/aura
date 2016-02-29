@@ -101,10 +101,10 @@ public abstract class RootTagHandler<T extends RootDefinition> extends Container
 
     protected Map<DefDescriptor<RequiredVersionDef>, RequiredVersionDef> readRequiredVersionDefs(DefDescriptor<?> desc) {
         Map<String, String> requiredVersions = definitionParserAdapter.getRequiredVersions(desc);
-        return createRequiredVersionDefs(requiredVersions);
+        return createRequiredVersionDefs(requiredVersions, this.definitionService);
     }
 
-    public Map<DefDescriptor<RequiredVersionDef>, RequiredVersionDef> createRequiredVersionDefs(Map<String, String> requiredVersions) {
+    public static Map<DefDescriptor<RequiredVersionDef>, RequiredVersionDef> createRequiredVersionDefs(Map<String, String> requiredVersions, DefinitionService definitionService) {
         Map<DefDescriptor<RequiredVersionDef>, RequiredVersionDef> requiredVersionDefs = null;
         if (requiredVersions != null) {
             requiredVersionDefs = Maps.newHashMap();
