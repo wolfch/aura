@@ -16,6 +16,7 @@
 package org.auraframework.http;
 
 import com.google.common.collect.Maps;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpHeaders;
@@ -33,6 +34,7 @@ import org.auraframework.http.RequestParam.StringParam;
 import org.auraframework.service.ContextService;
 import org.auraframework.service.DefinitionService;
 import org.auraframework.service.LoggingService;
+import org.auraframework.service.SerializationService;
 import org.auraframework.system.AuraContext;
 import org.auraframework.system.AuraContext.Authentication;
 import org.auraframework.system.AuraContext.Format;
@@ -51,6 +53,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -88,6 +91,7 @@ public class AuraContextFilter implements Filter {
     private LoggingService loggingService;
     private DefinitionService definitionService;
     private ConfigAdapter configAdapter;
+    protected SerializationService serializationService;
 
     @Inject
     public void setContextService(ContextService service) {
@@ -107,6 +111,11 @@ public class AuraContextFilter implements Filter {
     @Inject
     public void setConfigAdapter(ConfigAdapter adapter) {
         configAdapter = adapter;
+    }
+
+    @Inject
+    public void setSerializationService(SerializationService service) {
+        serializationService = service;
     }
 
     @Override
