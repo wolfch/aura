@@ -47,7 +47,7 @@ public class AuraResourceServlet extends AuraBaseServlet {
     private static final long serialVersionUID = -3642790050433142397L;
 
     public final static String ORIG_REQUEST_URI = "aura.origRequestURI";
-    private final static RequestParam.StringParam csrfToken = new RequestParam.StringParam(AuraBaseServlet.AURA_PREFIX + "token", 0, true);
+    protected final static RequestParam.StringParam csrfToken = new RequestParam.StringParam(AuraBaseServlet.AURA_PREFIX + "token", 0, true);
     private final Map<String,AuraResource> nameToResource = Maps.newHashMap();
 
     private ServletUtilAdapter servletUtilAdapter;
