@@ -81,10 +81,10 @@ public class AuraRegistryProviderImpl implements RegistryAdapter, SourceListener
     private DefinitionService definitionService;
 
     @Inject
-    private ConfigAdapter configAdapter;
+    protected ConfigAdapter configAdapter;
 
     @Inject
-    private ParserFactory parserFactory;
+    protected ParserFactory parserFactory;
 
     @Inject
     private List<ComponentLocationAdapter> locationAdapters;

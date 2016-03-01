@@ -50,7 +50,7 @@ public class AuraResourceServlet extends AuraBaseServlet {
     protected final static RequestParam.StringParam csrfToken = new RequestParam.StringParam(AuraBaseServlet.AURA_PREFIX + "token", 0, true);
     private final Map<String,AuraResource> nameToResource = Maps.newHashMap();
 
-    private ServletUtilAdapter servletUtilAdapter;
+    protected ServletUtilAdapter servletUtilAdapter;
     private ContextService contextService;
     private ConfigAdapter configAdapter;
     
