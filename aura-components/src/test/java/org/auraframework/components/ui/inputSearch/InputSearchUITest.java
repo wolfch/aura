@@ -17,10 +17,10 @@ package org.auraframework.components.ui.inputSearch;
 
 import org.auraframework.test.util.WebDriverTestCase;
 import org.auraframework.test.util.WebDriverUtil.BrowserType;
-import org.junit.Ignore;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 
 /**
  * UI Tests for inputSearch Component
@@ -29,17 +29,14 @@ public class InputSearchUITest extends WebDriverTestCase {
 
     public InputSearchUITest(String name) {
         super(name);
-
     }
 
     // W-1551076: Webdriver not firing search event in Safari, IPAD and IPHONE
-    // W-2943854: disable because it's failing on Jenkins, and Jenkins only
     @ExcludeBrowsers({ BrowserType.ANDROID_PHONE, BrowserType.ANDROID_TABLET, BrowserType.IPAD, BrowserType.IPHONE,
             BrowserType.SAFARI })
-    @Ignore
     public void testSearch() throws Exception {
         String valueExpression = auraUITestingUtil.getValueFromRootExpr("v.searched");
-        String cmpValueExpression = auraUITestingUtil.prepareReturnStatement(auraUITestingUtil
+        final String cmpValueExpression = auraUITestingUtil.prepareReturnStatement(auraUITestingUtil
                 .getValueFromRootExpr("v.value"));
         valueExpression = auraUITestingUtil.prepareReturnStatement(valueExpression);
         open("/uitest/inputSearch_HandlingSearchEvent.cmp");
@@ -49,9 +46,15 @@ public class InputSearchUITest extends WebDriverTestCase {
                 auraUITestingUtil.getBooleanEval(valueExpression));
         assertNull("Component value should not be updated yet", auraUITestingUtil.getEval(cmpValueExpression));
         auraUITestingUtil.pressEnter(input);
-        assertTrue("Search event should have been triggered", auraUITestingUtil.getBooleanEval(valueExpression));
+        waitForCondition(valueExpression);
         // test case for W-1545841
-        assertEquals("Component value should be updated", "search", auraUITestingUtil.getEval(cmpValueExpression));
+        auraUITestingUtil.waitUntil(new ExpectedCondition<Boolean>() {
+            @Override
+            public Boolean apply(WebDriver d) {
+                String ret = (String) auraUITestingUtil.getEval(cmpValueExpression);
+                return ret.equals("search");
+            }
+        }, "Component value should be updated");
     }
 
     // W-1551076: Webdriver not firing search event in Safari
