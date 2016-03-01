@@ -20,20 +20,21 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.spi.LoggingEvent;
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.ControllerDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.Definition;
 import org.auraframework.def.StyleDef;
-import org.auraframework.test.controller.TestLoggingAdapterController;
+import org.auraframework.integration.test.logging.LoggingTestAppender;
 import org.auraframework.test.util.WebDriverTestCase;
 import org.auraframework.test.util.WebDriverUtil.BrowserType;
-import org.auraframework.util.AuraTextUtil;
 import org.auraframework.util.test.annotation.FreshBrowserInstance;
 import org.auraframework.util.test.annotation.ThreadHostileTest;
 import org.auraframework.util.test.annotation.UnAdaptableTest;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Cookie;
@@ -41,8 +42,6 @@ import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
-
-import javax.inject.Inject;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -102,18 +101,28 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
     private DefDescriptor<ComponentDef> cmpDesc;
     private DefDescriptor<ControllerDef> controllerDesc;
     
-    @Inject
-    private TestLoggingAdapterController testLoggingAdapterController;
-
     @Override
     public void perBrowserSetUp() {
         super.perBrowserSetUp();
         auraUITestingUtil.setTimeoutInSecs(60);
     }
+    
+    private Logger logger;
+    private LoggingTestAppender appender;
+    private Level originalLevel;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        appender = new LoggingTestAppender();
+
+        logger = Logger.getLogger("LoggingContextImpl");
+        // When we run integration tests, the logging level of logger LoggingContextImpl
+        // is WARN, setting it into INFO here so that we can get the log as we run the app.
+        originalLevel = logger.getLevel();
+        logger.setLevel(Level.INFO);
+        logger.addAppender(appender);
+        
         namespace = "appCacheResourcesUITest" + getAuraTestingUtil().getNonce();
         appName = "cacheapplication";
         cmpName = "cachecomponent";
@@ -131,6 +140,13 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
                 String.format("<aura:application useAppcache='true' render='client'>"
                         + "<%s:%s/>" + "</aura:application>", namespace, cmpDesc.getName()));
     }
+    
+    @Override
+    public void tearDown() throws Exception {
+        logger.removeAppender(appender);
+        logger.setLevel(originalLevel);
+        super.tearDown();
+    }
 
     /**
      * Opening cached app will only query server for the manifest and the component load.
@@ -143,7 +159,7 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
     // TODO(W-2944620): Adding safeEval.html to manifest causing unnecessary manifest requests
     @UnAdaptableTest
     public void _testNoChanges() throws Exception {
-        List<Request> logs = loadMonitorAndValidateApp(TOKEN, TOKEN, "", TOKEN);
+    	List<Request> logs = loadMonitorAndValidateApp(TOKEN, TOKEN, "", TOKEN);
         assertRequests(getExpectedInitialRequests(), logs);
         assertAppCacheStatus(Status.IDLE);
 
@@ -163,10 +179,8 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
     // TODO(W-2701964): Flapping in autobuilds, needs to be revisited
     @Flapper
     @Test
-    // TODO(W-2903378): re-enable when we are able to inject TestLoggingAdapter.
-    @UnAdaptableTest
     public void testCacheError() throws Exception {
-        List<Request> logs = loadMonitorAndValidateApp(TOKEN, TOKEN, "", TOKEN);
+    	List<Request> logs = loadMonitorAndValidateApp(TOKEN, TOKEN, "", TOKEN);
         assertRequests(getExpectedInitialRequests(), logs);
         assertAppCacheStatus(Status.IDLE);
 
@@ -203,8 +217,6 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
      */
     @TargetBrowsers({ BrowserType.GOOGLECHROME, BrowserType.IPAD, BrowserType.IPHONE })
     @Test
-    // TODO(W-2903378): re-enable when we are able to inject TestLoggingAdapter.
-    @UnAdaptableTest
     public void testCacheErrorWithEmptyCache() throws Exception {
         openNoAura("/aura/application.app"); // just need a domain page to set cookie from
 
@@ -237,13 +249,11 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
      * BrowserType.SAFARI is disabled: W-2367702
      */
     @TargetBrowsers({ BrowserType.GOOGLECHROME, BrowserType.IPAD, BrowserType.IPHONE })
-    // TODO(W-2903378): re-enable when we are able to inject TestLoggingAdapter.
-    @UnAdaptableTest
     // TODO(W-2701964): Flapping in autobuilds, needs to be revisited
     @Flapper
     @Test
     public void testManifestRequestLimitExceeded() throws Exception {
-        List<Request> logs = loadMonitorAndValidateApp(TOKEN, TOKEN, "", TOKEN);
+    	List<Request> logs = loadMonitorAndValidateApp(TOKEN, TOKEN, "", TOKEN);
         assertRequests(getExpectedInitialRequests(), logs);
         assertAppCacheStatus(Status.IDLE);
 
@@ -278,8 +288,6 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
     @ThreadHostileTest("NamespaceDef modification affects namespace")
     @TargetBrowsers({ BrowserType.GOOGLECHROME, BrowserType.SAFARI, BrowserType.IPAD, BrowserType.IPHONE })
     @Test
-    @Ignore("W-2944620: Adding safeEval.html to manifest causing unnecessary manifest requests")
-    @UnAdaptableTest
     public void testComponentCssChange() throws Exception {
     	String src_style = ".THIS {background-image: url('/auraFW/resources/qa/images/s.gif?@@@TOKEN@@@');}";
         DefDescriptor<StyleDef> styleDesc = createDef(StyleDef.class, String.format("%s://%s.%s", DefDescriptor.CSS_PREFIX, namespace, cmpName),src_style);
@@ -307,10 +315,8 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
      */
     @TargetBrowsers({ BrowserType.GOOGLECHROME, BrowserType.SAFARI, BrowserType.IPAD, BrowserType.IPHONE })
     @Test
-    @Ignore("W-2944620: Adding safeEval.html to manifest causing unnecessary manifest requests")
-    @UnAdaptableTest
     public void testComponentJsChange() throws Exception {
-        List<Request> logs = loadMonitorAndValidateApp(TOKEN, TOKEN, "", TOKEN);
+    	List<Request> logs = loadMonitorAndValidateApp(TOKEN, TOKEN, "", TOKEN);
         assertRequests(getExpectedInitialRequests(), logs);
         assertAppCacheStatus(Status.IDLE);
         // update a component's js controller file
@@ -330,10 +336,8 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
      */
     @TargetBrowsers({ BrowserType.GOOGLECHROME, BrowserType.SAFARI, BrowserType.IPAD, BrowserType.IPHONE })
     @Test
-    @Ignore("W-2944620: Adding safeEval.html to manifest causing unnecessary manifest requests")
-    @UnAdaptableTest
     public void testComponentMarkupChange() throws Exception {
-        List<Request> logs = loadMonitorAndValidateApp(TOKEN, TOKEN, "", TOKEN);
+    	List<Request> logs = loadMonitorAndValidateApp(TOKEN, TOKEN, "", TOKEN);
         assertRequests(getExpectedInitialRequests(), logs);
         assertAppCacheStatus(Status.IDLE);
         // update markup of namespaced component used by app
@@ -356,7 +360,6 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
      */
     @TargetBrowsers({ BrowserType.GOOGLECHROME })
     @Test
-    @UnAdaptableTest
     public void testStoragesClearedOnAppcacheUpdate() throws Exception {
         // Override app we load in the test with a custom one that uses a template to setup persistent storage and an
         // inner component to interact with storages.
@@ -563,7 +566,7 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
      */
     private List<Request> loadMonitorAndValidateApp(final String markupToken, String jsToken, String cssToken,
             String fwToken) throws Exception {
-        testLoggingAdapterController.beginCapture();
+        //testLoggingAdapterController.beginCapture();
 
         // Opening a page through WebDriverTestCase adds a nonce to ensure fresh resources. In this case we want to see
         // what's cached, so build our URL and call WebDriver.get() directly.
@@ -616,7 +619,7 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
                         },
                         "fail to load clickableme");
         Thread.sleep(200);
-        List<Request> logs = endMonitoring();
+        List<Request> logs = endMonitoring(appender.getLog());
 
         String output = auraUITestingUtil.waitUntil(
                 new Function<WebDriver, String>() {
@@ -641,37 +644,71 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
         return logs;
     }
 
+    /**
+     * 
+     * @return url of test app, looks like this "/appCacheResourcesUITest1456791509755/cacheapplication.app", 
+     * where 1456791509755 is a nonce
+     */
     private String getUrl() {
         return String.format("/%s/%s.app", namespace, appName);
     }
 
-    private List<Request> endMonitoring() {
+    /**
+     * This is a parser function. 
+     * log we get looks like this:
+     * auraRequestURI: /auraResource;auraRequestQuery: aura.format=css&aura.context={"mode":"SELENIUM","app":"appCacheResourcesUITest1456791509755:cacheapplication","fwuid":"zKeYfSKoRXBpmic1IVMhXA","loaded":{"APPLICATION@markup://appCacheResourcesUITest1456791509755:cacheapplication":"SzdCQENYrJ4SPJGNxpzPLQ"},"styleContext":{"c":"webkit"}}&aura.type=app;cmpCount: 0;defCount: 49;requestMethod: GET;httpStatus: 200;defDescriptorCount: 0;
+     * we parse it into list of Request like this:
+     * @param loggingEvents
+     * @return
+     */
+    private List<Request> endMonitoring(List<LoggingEvent> loggingEvents) {
         List<Request> logs = Lists.newLinkedList();
-        for (Map<String, Object> log : testLoggingAdapterController.endCapture()) {
-            if (!"GET".equals(log.get("requestMethod"))) {
-                if (debug) {
+        
+        String message; 
+        System.out.println("going through loggingEvents.");
+        for(LoggingEvent le : loggingEvents) {
+        	message = le.getMessage().toString();
+        	System.out.println(message);
+        	if(message.contains("requestMethod: GET")) {
+        		Request toAdd;
+        		String auraRequestURI=""; 
+        		String auraRequestQuery=""; 
+        		int httpStatus=-1;
+        		for(String part : message.split(";")) {
+        			//httpStatus: 200
+        			if(part.startsWith("httpStatus")) {
+        				httpStatus = Integer.parseInt( part.substring(part.indexOf(":")+2, part.length()) );
+        				System.out.println("httpStatus:"+httpStatus);
+        			}
+        			//auraRequestURI: /auraResource
+        			if(part.startsWith("auraRequestURI")) {
+        				auraRequestURI = part.substring(part.indexOf(":")+2, part.length());
+        				System.out.println("auraRequestURI:"+auraRequestURI);
+        			}
+        			//auraRequestQuery: aura.format=manifest&aura.context={"mode":"SELENIUM","app":"appCacheResourcesUITest1456791509755:cacheapplication"}&aura.type=app
+        			if(part.startsWith("auraRequestQuery")) {
+        				auraRequestQuery = part.substring(part.indexOf(":")+2, part.length());
+        				System.out.println("auraRequestQuery:"+auraRequestQuery);
+        			}
+        		}
+        		if(auraRequestURI.length() > 0 && auraRequestQuery.length() > 0 && httpStatus != -1) {
+        			toAdd = new Request(auraRequestURI, null, httpStatus);
+        			for(String qpart : auraRequestQuery.split("&")) {
+    					String[] qpartParameters = qpart.split("=", 2);
+    	                String key = qpartParameters[0].substring(AURA.length() + 1);
+    	                String v = qpartParameters[1];
+    	                toAdd.put(key, (v != null && !v.isEmpty()) ? v : null);
+    				}
+        			logs.add(toAdd);
+        		}
+        	} else {
+        		if (debug) {
                     // Log ignored lines so that we can monitor what happens. The line above had nulls as requestMethod,
                     // so this catches randomness.
-                    System.out.println("IGNORED: " + log);
+                    System.out.println("IGNORED: " + message);
                 }
                 continue;
-            }
-            int status = -1;
-
-            if (log.get("httpStatus") != null) {
-                try {
-                    status = Integer.parseInt((String) log.get("httpStatus"));
-                } catch (NumberFormatException nfe) {
-                }
-            }
-            Request toAdd = new Request(log.get("auraRequestURI").toString(), null, status);
-            for (String part : AuraTextUtil.urldecode(log.get("auraRequestQuery").toString()).split("&")) {
-                String[] parts = part.split("=", 2);
-                String key = parts[0].substring(AURA.length() + 1);
-                String v = parts[1];
-                toAdd.put(key, (v != null && !v.isEmpty()) ? v : null);
-            }
-            logs.add(toAdd);
+        	}
         }
         return logs;
     }

@@ -123,10 +123,8 @@ public class AuraResourceServletHttpTest extends AuraHttpTestCase {
 			        .setConnectionManager(cm)
 			        .build();
 
-        //testLoggingAdapterController.beginCapture();
-
         String modeAndContext = getSimpleContext(Format.JS, false);
-         String url = "/l/" + AuraTextUtil.urlencode(modeAndContext) + "/app.js";
+        String url = "/l/" + AuraTextUtil.urlencode(modeAndContext) + "/app.js";
          
          Request request1 = new Request(httpClient, url, "1");
          Request request2 = new Request(httpClient, url, "2");
@@ -148,22 +146,10 @@ public class AuraResourceServletHttpTest extends AuraHttpTestCase {
          response5.get();
          
          int counter = 0;
-       /* List<Map<String, Object>> logList = testLoggingAdapterController.endCapture();
-         for(Map<String, Object> log : logList) {
-        	 for(Entry<String, Object> entry : log.entrySet()) {
-        		 if(entry.getValue() != null) {
-        			 if(entry.getKey().toString().contains("StringsCache")) {
-        				 counter++;
-        				 assertTrue("get unexpected logging message for cache miss:"+entry.getValue().toString(), entry.getValue().toString().contains("cache miss for key: JS:DEV:"));
-        			 }
-        		 }
-        	 }
-         }*/
          String message;
          List<LoggingEvent> logs = appender.getLog();
          for(LoggingEvent le : logs) {
         	 message = le.getMessage().toString();
-        	 System.out.println(message);
         	 if(message.contains("StringsCache")){
         		 counter++;
         		 assertTrue("get unexpected logging message for cache miss:"+message, message.contains("cache miss for key: JS:DEV:"));
@@ -171,12 +157,6 @@ public class AuraResourceServletHttpTest extends AuraHttpTestCase {
          }
          //run this test right after server is up, we get one miss. second time, what we looking for is cached already, no miss.
          assertTrue("we should only have no more than one cache miss, instead we have "+counter, counter <= 1);
-         
-         
-         
-         /*logger.removeAppender(appender);
-         logger.setLevel(originalLevel);
-         Logger.getRootLogger().removeAppender(appender);*/
     }
 
     /**
