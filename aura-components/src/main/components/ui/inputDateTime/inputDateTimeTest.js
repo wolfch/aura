@@ -87,6 +87,7 @@
      * Verify behavior when 'timezone' attribute is assigned a garbage value.
      */
     testInvalidTimeZoneUsingValue:{
+	browsers: ['DESKTOP', '-SAFARI'],
 	attributes : {value:'2004-09-23T16:30:00.000Z', displayDatePicker:'true', timezone: 'dummy'},
 	test: function(cmp){
 	        $A.test.addWaitFor(true, function(){return cmp.find("inputDate").getElement().value.length > 0;},function(){
