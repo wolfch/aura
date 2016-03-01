@@ -712,9 +712,9 @@ public class AuraServletHttpTest extends AuraHttpTestCase {
      * not an AuraUnhandledException.
      */
     @Test
-    //@UnadaptibleTest("UI will be different")
+    @UnAdaptableTest("UI will be different")
     public void testInvalidDefDescriptorFormatExploit() throws Exception {
-        String url = "/aura?aura.tag=one:one%3Csvg%3E%3Cscript%3E0%3C1%3Ealert(document.domain)%3C%2Fscript%3E.app";
+        String url = "/aura?aura.tag=any:thing%3Csvg%3E%3Cscript%3E0%3C1%3Ealert(document.domain)%3C%2Fscript%3E.app";
         HttpGet get = obtainGetMethod(url + "&aura.mode=PROD");
         HttpResponse httpResponse = perform(get);
 
@@ -731,6 +731,7 @@ public class AuraServletHttpTest extends AuraHttpTestCase {
 		get.releaseConnection();
 	}
 
+    @Test
 	public void testInvalidDefDescriptorFormatExploitInDevMode()
 			throws Exception {
 		String url = "/aura?aura.tag=any:thing%3Csvg%3E%3Cscript%3E0%3C1%3Ealert(document.domain)%3C%2Fscript%3E.app";
