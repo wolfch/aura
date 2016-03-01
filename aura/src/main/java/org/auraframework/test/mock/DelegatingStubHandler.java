@@ -15,7 +15,6 @@
  */
 package org.auraframework.test.mock;
 
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.List;
 
@@ -25,12 +24,11 @@ import org.auraframework.test.Resettable;
  * This is a handler for invocations to a Proxy object, that will use provided Stub overrides if available, but default
  * to the provided delegate's default methods otherwise.
  */
-public class DelegatingStubHandler implements InvocationHandler {
-    private final Object delegate;
+public class DelegatingStubHandler extends DelegatingHandler {
     private final List<Stub<?>> stubs;
 
     public DelegatingStubHandler(Object delegate, List<Stub<?>> stubs) {
-        this.delegate = delegate;
+        super(delegate);
         this.stubs = stubs;
     }
 
@@ -58,6 +56,6 @@ public class DelegatingStubHandler implements InvocationHandler {
         }
 
         // else, use the delegate's "default" method
-        return method.invoke(delegate, args);
+        return super.invoke(object, method, args);
     }
 }

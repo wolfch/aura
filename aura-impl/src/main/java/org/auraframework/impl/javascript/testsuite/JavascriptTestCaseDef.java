@@ -43,7 +43,7 @@ public class JavascriptTestCaseDef extends DefinitionImpl<TestCaseDef> implement
                                  List<Object> mocks, Set<String> auraErrorsExpectedDuringInit, String scrumTeam, String owner,
                                  DefinitionAccess access) {
         // FIXME: 3Tier 
-        super(new DefDescriptorImpl<TestCaseDef>(suiteDescriptor.getQualifiedName() + "/" + DefType.TESTCASE + "$" + name,
+        super(new DefDescriptorImpl<>(suiteDescriptor.getQualifiedName() + "/" + DefType.TESTCASE + "$" + name,
                 TestCaseDef.class, null), location, access);
         this.suiteDescriptor = suiteDescriptor;
         this.attributes = attributes == null ? null : AuraUtil.immutableMap(attributes);
