@@ -18,11 +18,16 @@ package org.auraframework.integration.test.java.controller;
 import java.io.StringWriter;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.spi.LoggingEvent;
 import org.auraframework.cache.Cache;
 import org.auraframework.components.test.java.controller.CustomParamType;
 import org.auraframework.def.ActionDef;
@@ -38,6 +43,7 @@ import org.auraframework.impl.java.controller.JavaActionDef;
 import org.auraframework.impl.java.model.JavaValueDef;
 import org.auraframework.instance.Action;
 import org.auraframework.instance.Action.State;
+import org.auraframework.integration.test.logging.LoggingTestAppender;
 import org.auraframework.service.CachingService;
 import org.auraframework.service.ServerService;
 import org.auraframework.system.Location;
@@ -68,10 +74,31 @@ public class JavaControllerTest extends AuraImplTestCase {
 
     @Inject
     private ServerService serverService;
-
-    @Inject
-    private TestLoggingAdapterController testLoggingAdapterController;
     
+    private Logger logger;
+    private LoggingTestAppender appender;
+    private Level originalLevel;
+    
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        appender = new LoggingTestAppender();
+
+        logger = Logger.getLogger("LoggingContextImpl");
+        // When we run integration tests, the logging level of logger LoggingContextImpl
+        // is WARN, setting it into INFO here so that we can get the log as we run the app.
+        originalLevel = logger.getLevel();
+        logger.setLevel(Level.INFO);
+        logger.addAppender(appender);
+    }
+    
+    @Override
+    public void tearDown() throws Exception {
+        logger.removeAppender(appender);
+        logger.setLevel(originalLevel);
+        super.tearDown();
+    }
+
     private ControllerDef getJavaController(String name) throws Exception {
         DefDescriptor<ControllerDef> javaCntrlrDefDesc = definitionService.getDefDescriptor(name, ControllerDef.class);
         return javaCntrlrDefDesc.getDef();
@@ -452,12 +479,11 @@ public class JavaControllerTest extends AuraImplTestCase {
         Map<String, Object> params = Maps.newHashMap();
         ActionDef actionDef = controller.getSubDefinition("getString");
         Action nonLoggableStringAction = instanceService.getInstance(actionDef, params);
-        List<Map<String, Object>> logs = runActionsAndReturnLogs(Lists.newArrayList(nonLoggableStringAction));
-        assertEquals(1, logs.size());
+        Set<String> logsSet = runActionsAndReturnLogs(Lists.newArrayList(nonLoggableStringAction));
+        assertEquals(1, logsSet.size());
         assertTrue(
                 "Failed to log a server action",
-                logs.get(0)
-                .containsKey(
+                logsSet.contains(
                         "action_1$java://org.auraframework.components.test.java.controller.TestController/ACTION$getString"));
     }
 
@@ -471,12 +497,11 @@ public class JavaControllerTest extends AuraImplTestCase {
         params.put("intparam", 1);
         ActionDef actionDef = controller.getSubDefinition("getSelectedParamLogging");
         Action selectParamLoggingAction = instanceService.getInstance(actionDef, params);
-        List<Map<String, Object>> logs = runActionsAndReturnLogs(Lists.newArrayList(selectParamLoggingAction));
-        assertEquals(1, logs.size());
+        Set<String> logsSet = runActionsAndReturnLogs(Lists.newArrayList(selectParamLoggingAction));
+        assertEquals(1, logsSet.size());
         assertTrue(
                 "Failed to log a server action and selected parameter assignment",
-                logs.get(0)
-                .containsKey(
+                logsSet.contains(
                         "action_1$java://org.auraframework.components.test.java.controller.JavaTestController/ACTION$getSelectedParamLogging{strparam,BoogaBoo}"));
     }
 
@@ -497,17 +522,15 @@ public class JavaControllerTest extends AuraImplTestCase {
         params2.put("intparam", 1);
         Action selectParamLoggingAction2 = instanceService.getInstance(actionDef, params2);
 
-        List<Map<String, Object>> logs = runActionsAndReturnLogs(Lists.newArrayList(selectParamLoggingAction1, selectParamLoggingAction2));
-        assertEquals(1, logs.size());
+        Set<String> logsSet = runActionsAndReturnLogs(Lists.newArrayList(selectParamLoggingAction1, selectParamLoggingAction2));
+        assertEquals(2, logsSet.size());
         assertTrue(
                 "Failed to log first server action and selected parameter assignment",
-                logs.get(0)
-                .containsKey(
+                logsSet.contains(
                         "action_1$java://org.auraframework.components.test.java.controller.JavaTestController/ACTION$getSelectedParamLogging{strparam,BoogaBoo}"));
         assertTrue(
                 "Failed to log second server action and selected parameter assignment",
-                logs.get(0)
-                .containsKey(
+                logsSet.contains(
                         "action_2$java://org.auraframework.components.test.java.controller.JavaTestController/ACTION$getSelectedParamLogging{strparam,BoogaBoo}"));
     }
 
@@ -522,12 +545,11 @@ public class JavaControllerTest extends AuraImplTestCase {
 
         ActionDef actionDef = controller.getSubDefinition("getMultiParamLogging");
         Action selectParamLoggingAction = instanceService.getInstance(actionDef, params);
-        List<Map<String, Object>> logs = runActionsAndReturnLogs(Lists.newArrayList(selectParamLoggingAction));
-        assertEquals(1, logs.size());
+        Set<String> logsSet = runActionsAndReturnLogs(Lists.newArrayList(selectParamLoggingAction));
+        assertEquals(1, logsSet.size());
         assertTrue(
                 "Failed to log a server action and multiple params",
-                logs.get(0)
-                .containsKey(
+                logsSet.contains(
                         "action_1$java://org.auraframework.components.test.java.controller.JavaTestController/ACTION$getMultiParamLogging{we,we}{two,two}"));
     }
 
@@ -540,12 +562,11 @@ public class JavaControllerTest extends AuraImplTestCase {
 
         ActionDef actionDef = controller.getSubDefinition("getLoggableString");
         Action selectParamLoggingAction = instanceService.getInstance(actionDef, params);
-        List<Map<String, Object>> logs = runActionsAndReturnLogs(Lists.newArrayList(selectParamLoggingAction));
-        assertEquals(1, logs.size());
+        Set<String> logsSet = runActionsAndReturnLogs(Lists.newArrayList(selectParamLoggingAction));
+        assertEquals(1, logsSet.size());
         assertTrue(
                 "Failed to log a server action and param with null value",
-                logs.get(0)
-                .containsKey(
+                logsSet.contains(
                         "action_1$java://org.auraframework.components.test.java.controller.JavaTestController/ACTION$getLoggableString{param,null}"));
     }
 
@@ -559,12 +580,11 @@ public class JavaControllerTest extends AuraImplTestCase {
 
         ActionDef actionDef = controller.getSubDefinition("getCustomParamLogging");
         Action selectParamLoggingAction = instanceService.getInstance(actionDef, params);
-        List<Map<String, Object>> logs = runActionsAndReturnLogs(Lists.newArrayList(selectParamLoggingAction));
-        assertEquals(1, logs.size());
+        Set<String> logsSet = runActionsAndReturnLogs(Lists.newArrayList(selectParamLoggingAction));
+        assertEquals(1, logsSet.size());
         assertTrue(
                 "Logging custom action param time failed to call toString() of the custom type",
-                logs.get(0)
-                .containsKey(
+                logsSet.contains(
                         "action_1$java://org.auraframework.components.test.java.controller.JavaTestController/ACTION$getCustomParamLogging{param,CustomParamType_toString}"));
     }
 
@@ -582,15 +602,15 @@ public class JavaControllerTest extends AuraImplTestCase {
 
         ActionDef actionDef = controller.getSubDefinition("add");
         Action selectParamLoggingAction = instanceService.getInstance(actionDef, params);
-        List<Map<String, Object>> logs = runActionsAndReturnLogs(Lists.newArrayList(selectParamLoggingAction));
-        assertEquals(1, logs.size());
+        Set<String> logsSet = runActionsAndReturnLogs(Lists.newArrayList(selectParamLoggingAction));
+        assertEquals(2, logsSet.size());
         assertTrue(
                 "Failed to log server action",
-                logs.get(0).containsKey(
+                logsSet.contains(
                         "action_1$java://org.auraframework.impl.java.controller.ActionChainingController/ACTION$add"));
         assertTrue(
                 "Failed to log chained server action",
-                logs.get(0).containsKey(
+                logsSet.contains(
                         "action_2$java://org.auraframework.impl.java.controller.ActionChainingController/ACTION$multiply"));
     }
 
@@ -619,34 +639,61 @@ public class JavaControllerTest extends AuraImplTestCase {
         action = instanceService.getInstance(actionDef, params);
         actions.add(action);
 
-        List<Map<String, Object>> logs = runActionsAndReturnLogs(actions);
-        assertEquals(1, logs.size());
+        Set<String> logsSet = runActionsAndReturnLogs(actions);
+        assertEquals(3, logsSet.size());
         assertTrue(
                 "Failed to log server action",
-                logs.get(0).containsKey(
+                logsSet.contains(
                         "action_1$java://org.auraframework.impl.java.controller.ActionChainingController/ACTION$add"));
         assertTrue(
                 "Failed to log chained server action",
-                logs.get(0).containsKey(
+                logsSet.contains(
                         "action_2$java://org.auraframework.impl.java.controller.ActionChainingController/ACTION$add"));
         assertTrue(
                 "Failed to log chained server action",
-                logs.get(0).containsKey(
+                logsSet.contains(
                         "action_3$java://org.auraframework.impl.java.controller.ActionChainingController/ACTION$add"));
     }
 
-    private List<Map<String, Object>> runActionsAndReturnLogs(List<Action> actions) throws Exception {
-        List<Map<String, Object>> logs;
+    /**
+     * we run the list of actions, collect logs, parse them into a set of strings, return the set.
+     * @param actions
+     * @return
+     * @throws Exception
+     */
+    private Set<String> runActionsAndReturnLogs(List<Action> actions) throws Exception {
+    	boolean debug = false;
+        List<LoggingEvent> logs;
         StringWriter sw = new StringWriter();
-        testLoggingAdapterController.beginCapture();
+        appender.clearLogs();
         try {
             serverService.run(new Message(actions), contextService.getCurrentContext(), sw, null);
         } finally {
             loggingService.flush();
-            logs = testLoggingAdapterController.endCapture();
+            logs = appender.getLog();
             assertNotNull(logs);
         }
-        return logs;
+        Set<String> logsSet = new HashSet<>();
+        for(LoggingEvent le: logs) {
+        	String message = le.getMessage().toString();
+        	//we only care about log contain things like "action_1$java://org.auraframework.impl.java.controller.ActionChainingController/ACTION$bla;"
+        	if(message.contains("action_1")) {
+        		String[] msgList = message.split(";", 20);
+        		for(String msg : msgList) {
+        			if(msg.startsWith("action_")) {
+        				//msg looks like this action_1$java://org.auraframework.impl.java.controller.ActionChainingController/ACTION$functionName{some parameter}: 4
+        				//but we don't want the ': 4' at the end
+        				logsSet.add(msg.substring(0, msg.lastIndexOf(':')));
+            			if(debug) { System.out.println("add sub-msg:"+msg.substring(0, msg.lastIndexOf(':'))); }
+        			} else {
+        				if(debug) { System.out.println("ignore sub-msg:"+msg); }
+        			}
+        		}
+        	} else {
+        		if(debug) { System.out.println("ignore msg: "+message); }
+        	}
+        }
+        return logsSet;
     }
 
     private static class TestLogger implements KeyValueLogger {
