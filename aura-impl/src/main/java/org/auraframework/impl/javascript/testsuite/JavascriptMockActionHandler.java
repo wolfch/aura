@@ -28,6 +28,7 @@ import org.auraframework.def.JavaControllerDef;
 import org.auraframework.instance.Action;
 import org.auraframework.instance.InstanceBuilder;
 import org.auraframework.instance.Action.State;
+import org.auraframework.system.SubDefDescriptor;
 import org.auraframework.test.Resettable;
 import org.auraframework.test.mock.Answer;
 import org.auraframework.test.mock.DelegatingHandler;
@@ -68,7 +69,8 @@ public class JavascriptMockActionHandler extends JavascriptMockHandler<Controlle
     private static class MockActionInstanceBuilder implements InstanceBuilder<Action, ActionDef> {
         @Override
         public Class<?> getDefinitionClass() {
-            return Proxy.getProxyClass(JavascriptMockActionHandler.class.getClassLoader(), new Class<?>[] { ActionDef.class });
+            return Proxy.getProxyClass(JavascriptMockActionHandler.class.getClassLoader(),
+                    new Class<?>[] { ActionDef.class });
         }
 
         @Override
@@ -103,7 +105,13 @@ public class JavascriptMockActionHandler extends JavascriptMockHandler<Controlle
 
             Object res = super.invoke(proxy, method, args);
             if ("getSubDefinition".equals(methodName) && args.length == 1) {
-                String name = ((DefDescriptor<?>) args[0]).getName();
+                Class<?> paramType = method.getParameterTypes()[0];
+                String name;
+                if (SubDefDescriptor.class.equals(paramType)) {
+                    name = ((SubDefDescriptor<?, ?>) args[0]).getName();
+                } else {
+                    name = args[0].toString();
+                }
                 for (Stub<?> stub : stubs) {
                     if (stub.getInvocation().getMethodName().equals(name)) {
                         return Proxy.newProxyInstance(JavascriptMockActionHandler.class.getClassLoader(),
