@@ -5,7 +5,6 @@
     // Test modifies/deletes the persistent database
     labels : [ "threadHostile" ],
 
-
     testComponentDefsPersisted: {
         test: [
             function loadIframe(cmp) {
@@ -13,35 +12,48 @@
                 cmp.helper.lib.iframeTest.loadIframe(cmp, iframeSrc, "iframeContainer");
             },
             function clearStorages(cmp) {
-                cmp.helper.lib.iframeTest.clearCachesAndLogAndWait();
+                cmp.helper.lib.iframeTest.getIframeRootCmp().clearActionAndDefStorage();
+                cmp.helper.lib.iframeTest.waitForStatus("Clearing Action and Def Storage", "Done Clearing Action and Def Storage");
             },
             function reloadPage(cmp) {
                 // Need to reload the page here to clear any items that may have been restored on initial load and are
                 // now in memory
-                cmp.helper.lib.iframeTest.reloadIframe(cmp, false);
+                cmp.helper.lib.iframeTest.reloadIframe(cmp);
             },
             function fetchComponentFromServer(cmp) {
-                cmp.helper.lib.iframeTest.fetchCmpAndWait("ui:scroller");
+                cmp.helper.lib.iframeTest.getIframeRootCmp().fetchCmp();
+                cmp.helper.lib.iframeTest.waitForStatus("Fetching", "Done Fetching");
             },
             function createComponentOnClient(cmp) {
-                cmp.helper.lib.iframeTest.createCmpDeprecatedAndWait("ui:scroller");
+                cmp.helper.lib.iframeTest.getIframeRootCmp().createComponentDeprecated();
+                cmp.helper.lib.iframeTest.waitForStatus("Creating Component", "Done Creating Component - Success!");
             },
             function waitForAllDefsStored(cmp) {
-                cmp.helper.lib.iframeTest.verifyDefStorage("ui:scroller", true);
-                cmp.helper.lib.iframeTest.verifyDefStorage("ui:resizeObserver", true);
-                cmp.helper.lib.iframeTest.verifyDefStorage("ui:scrollerLib", true);
-                cmp.helper.lib.iframeTest.verifyDefStorage("ui:scopedScroll", true);
+                var iframeCmp = cmp.helper.lib.iframeTest.getIframeRootCmp();
+                $A.test.addWaitFor(true, function() {
+                    // ui:scroller has 4 items that go into the ComponentDefStorage: scroller, resizeObserver, and
+                    // 2 libraries
+                    var defStorageContents = iframeCmp.get("v.defStorageContents");
+                    return defStorageContents.length >= 4 && defStorageContents.indexOf("markup://ui:scroller") > -1;
+                });
             },
             function reloadIframe(cmp) {
-                cmp.helper.lib.iframeTest.reloadIframe(cmp, true)
+                cmp.helper.lib.iframeTest.reloadIframe(cmp)
+            },
+            function waitForDefRestore(cmp) {
+                cmp.helper.lib.iframeTest.getIframeRootCmp().verifyDefsRestored();
+                cmp.helper.lib.iframeTest.waitForStatus("Verifying Defs Restored", "Done Verifying Defs Restored");
             },
             function createOriginalComponentAndVerify(cmp) {
-                // use $A.newComponentDeprecated to force local creation. if the def isn't
-                // restored then it'll create a force:placeholder
-                cmp.helper.lib.iframeTest.createCmpDeprecatedAndWait("ui:scroller");
-            },
-            function cleanup(cmp) {
-                cmp.helper.lib.iframeTest.clearCachesAndLogAndWait();
+                var iframeCmp = cmp.helper.lib.iframeTest.getIframeRootCmp();
+                iframeCmp.createComponentDeprecated();
+                $A.test.addWaitFor(true, function() {
+                    return $A.util.getText(iframeCmp.find("status").getElement()) === "Done Creating Component - Success!";
+                }, function() {
+                    var outputCmp = iframeCmp.get("v.output");
+                    $A.test.assertEquals("markup://ui:scroller", outputCmp.getDef().getDescriptor().getQualifiedName(),
+                            "Did not properly recreate ui:scroller from component def cache after page reload");
+                });
             }
         ]
     },
@@ -52,44 +64,66 @@
                 cmp.helper.lib.iframeTest.loadIframe(cmp, "/auraStorageTest/componentDefStorage.app?overrideStorage=true", "iframeContainer");
             },
             function clearStorages(cmp) {
-                cmp.helper.lib.iframeTest.clearCachesAndLogAndWait();
+                cmp.helper.lib.iframeTest.getIframeRootCmp().clearActionAndDefStorage();
+                cmp.helper.lib.iframeTest.waitForStatus("Clearing Action and Def Storage", "Done Clearing Action and Def Storage");
             },
             function reloadPage(cmp) {
                 // Need to reload the page here to clear any items that may have been restored on initial load and are
                 // now in memory
-                cmp.helper.lib.iframeTest.reloadIframe(cmp, false);
+                cmp.helper.lib.iframeTest.reloadIframe(cmp);
             },
             function fetchComponentFromServer(cmp) {
-                cmp.helper.lib.iframeTest.fetchCmpAndWait("ui:scroller");
+                var iframeCmp = cmp.helper.lib.iframeTest.getIframeRootCmp();
+                iframeCmp.set("v.load", "ui:scroller");
+                iframeCmp.fetchCmp();
+                cmp.helper.lib.iframeTest.waitForStatus("Fetching", "Done Fetching");
             },
             function createComponentOnClient(cmp) {
-                cmp.helper.lib.iframeTest.createCmpDeprecatedAndWait("ui:scroller");
+                var iframeCmp = cmp.helper.lib.iframeTest.getIframeRootCmp();
+                iframeCmp.createComponentDeprecated();
+                cmp.helper.lib.iframeTest.waitForStatus("Creating Component", "Done Creating Component - Success!");
             },
             function verifyFirstCmpStored(cmp) {
-                cmp.helper.lib.iframeTest.verifyDefStorage("ui:scroller", true);
+                var iframeCmp = cmp.helper.lib.iframeTest.getIframeRootCmp();
+                $A.test.addWaitForWithFailureMessage(true, function(){
+                    var defStorageContents = iframeCmp.get("v.defStorageContents");
+                    return defStorageContents.indexOf("markup://ui:scroller") > -1;
+                }, "First component fetched from server (ui:scroller) was not saved to component def storage");
             },
             function fetchDifferentComponentFromServer(cmp) {
-                cmp.helper.lib.iframeTest.fetchCmpAndWait("ui:block");
+                var iframeCmp = cmp.helper.lib.iframeTest.getIframeRootCmp();
+                iframeCmp.set("v.load", "ui:block");
+                iframeCmp.fetchCmp();
+                cmp.helper.lib.iframeTest.waitForStatus("Fetching", "Done Fetching");
             },
             function fetchCmpFromServerToEvictFirstCmp(cmp) {
-                cmp.helper.lib.iframeTest.fetchCmpAndWait("ui:menu");
+                var iframeCmp = cmp.helper.lib.iframeTest.getIframeRootCmp();
+                iframeCmp.set("v.load", "ui:menu");
+                iframeCmp.fetchCmp();
+                cmp.helper.lib.iframeTest.waitForStatus("Fetching", "Done Fetching");
             },
             function verifyOriginalFetchedCmpEvicted(cmp) {
-                cmp.helper.lib.iframeTest.verifyDefStorage("ui:scroller", false, "First component fetched from server (ui:scroller) never evicted from component def storage");
+                var iframeCmp = cmp.helper.lib.iframeTest.getIframeRootCmp();
+                $A.test.addWaitForWithFailureMessage(true, function(){
+                    var defStorageContents = iframeCmp.get("v.defStorageContents");
+                    return defStorageContents.indexOf("markup://ui:scroller") === -1;
+                }, "First component fetched from server (ui:scroller) never evicted from component def storage");
             },
             function reloadPage(cmp) {
                 // Reload page to clear anything saved in javascript memory
-                cmp.helper.lib.iframeTest.reloadIframe(cmp, true);
+                cmp.helper.lib.iframeTest.reloadIframe(cmp);
             },
             function fetchOriginalComponentAgain(cmp) {
-                cmp.helper.lib.iframeTest.fetchCmpAndWait("ui:scroller");
+                var iframeCmp = cmp.helper.lib.iframeTest.getIframeRootCmp();
+                iframeCmp.set("v.load", "ui:scroller");
+                iframeCmp.fetchCmp();
+                cmp.helper.lib.iframeTest.waitForStatus("Fetching", "Done Fetching");
             },
             function createOriginalComponentOnClient(cmp) {
-                cmp.helper.lib.iframeTest.createCmpDeprecatedAndWait("ui:scroller");
+                var iframeCmp = cmp.helper.lib.iframeTest.getIframeRootCmp();
+                iframeCmp.createComponentDeprecated();
+                cmp.helper.lib.iframeTest.waitForStatus("Creating Component", "Done Creating Component - Success!");
             },
-            function cleanup(cmp) {
-                cmp.helper.lib.iframeTest.clearCachesAndLogAndWait();
-            }
         ]
     }
 })

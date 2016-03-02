@@ -691,8 +691,8 @@ public class ClientOutOfSyncUITest extends WebDriverTestCase {
      * After every server action response we persist in storage what apps/cmps have been loaded from the server
      * that weren't included in the initial load. When we start a new context on the client, we load this info
      * from storage so the server can know on the next request if the client is out of sync or not.
-     *
-     * This test verifies that behavior by retrieving a component from the server, modifying its source on the server,
+     * 
+     * This test verifies that behavior by retrieving a component from the server, modifying it's source on the server,
      * reloading the page, then requesting the same component from the server, asserting that the new source is returned.
      * Without persisting the context on the client, the server would never know the client's version of the component
      * we're loading is out of date and after a page reload the old component would be displayed.
@@ -735,7 +735,6 @@ public class ClientOutOfSyncUITest extends WebDriverTestCase {
                 "var storage = $A.storageService.getStorage('actions');" +
                 "storage.get('$AuraContext$').then(function(item) { callback(item ? item.value : null) })" +
                 "} else { callback(null);}";
-
         getDriver().manage().timeouts().setScriptTimeout(auraUITestingUtil.getTimeout(), TimeUnit.SECONDS);
         final Object initialLoaded = ((JavascriptExecutor) getDriver()).executeAsyncScript(getPersistedContextScript);
 
