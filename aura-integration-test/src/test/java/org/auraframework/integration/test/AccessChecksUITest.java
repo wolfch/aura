@@ -26,6 +26,13 @@ import org.openqa.selenium.WebElement;
 @ThreadHostileTest("Tests modify what namespaces are privileged or not")
 public class AccessChecksUITest extends WebDriverTestCase {
 
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        // TODO: remove when $A.createComponent is exposed in the locker
+        getMockConfigAdapter().setLockerServiceEnabled(false);
+    }
+    
     @Test
     public void testGlobalComponentAccessibleFromUnprivilegedNamespace() throws Exception {
         getMockConfigAdapter().setUnprivilegedNamespace("componentTest");
