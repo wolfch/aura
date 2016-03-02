@@ -1,95 +1,77 @@
 ({
-    init: function(cmp, evt, helper) {
-        helper.restoreLog(cmp);
-    },
-
-    fetchCmp: function(cmp, evt, helper) {
-        var load = cmp.get("v.load");
-        helper.setStatus(cmp, "Fetching: " + load);
+    fetchCmp: function(cmp) {
+        cmp.set("v.status", "Fetching");
         var action = $A.get("c.aura://ComponentController.getComponent");
-        action.setParams({name: load});
+        action.setParams({
+            name: cmp.get('v.load')
+        });
         action.setStorable();
 
         action.setCallback(this, function (action) {
             if (action.getState() === "SUCCESS") {
-                helper.setStatus(cmp, "Fetched: " + load);
-                helper.log(cmp, "Action.isFromStorage() = " + action.isFromStorage());
-                helper.logDefs(cmp);
+                cmp.set("v.status", "Done Fetching");
             } else {
-                helper.setStatus(cmp, "Error: " + action.getError().toString());
+                cmp.set("v.status", "Error: " + action.getError().toString());
             }
         });
 
         $A.enqueueAction(action);
     },
 
-    newCmpDeprecated: function(cmp, evt, helper) {
+    createComponentDeprecated: function(cmp) {
+        cmp.set("v.status", "Creating Component");
         var load = cmp.get("v.load");
-        helper.setStatus(cmp, "Creating: " + load);
         try {
             var newCmp = $A.newCmpDeprecated(load);
             if (newCmp) {
-                var created = load;
+                var type = " - Success!";
                 if (newCmp.getDef().getDescriptor().getQualifiedName().indexOf("placeholder") !== -1) {
-                    created = "aura:placeholder (not " + load + ")";
+                    type = " - Placeholder";
                 }
-
-                helper.setStatus(cmp, "Created: " + created);
+                cmp.set("v.status", "Done Creating Component" + type);
+                cmp.set("v.output", newCmp);
             }
         } catch (e) {
-            helper.setStatus("Error: " + e);
+            cmp.set("v.status", "Error: " + e);
         }
     },
 
-    clearActionAndDefStorage: function(cmp, evt, helper) {
-        helper.setStatus(cmp, "Clearing Action and Def Storage");
-        helper.clearActionAndDefStorage(cmp)
-            .then(function() {
-                helper.setStatus(cmp, "Cleared Action and Def Storage");
-            })
-            ["catch"](function(e) {
-                helper.setStatus(cmp, "Error: " + e);
-            })
+    clearActionAndDefStorage: function(cmp) {
+        cmp.set("v.status", "Clearing Action and Def Storage");
+        $A.storageService.getStorage('ComponentDefStorage').clear()
+        .then(function() {
+            return $A.storageService.getStorage('actions').clear();
+        })
+        .then(function() {
+            cmp.set("v.status", "Done Clearing Action and Def Storage");
+        })
+        ['catch'](function(error) { cmp.set("v.status", "Error: " + error); });
     },
-
-    clearCachesAndLog: function(cmp, evt, helper) {
-        helper.setStatus(cmp, "Clearing Caches and Logs");
-        helper.reset(cmp)
-            .then(function() {
-                helper.setStatus(cmp, "Cleared Caches and Logs");
-            })
-            ["catch"](function(e) {
-                helper.setStatus(cmp, "Error: " + e);
-            })
-    },
-
-    saveLog: function(cmp, evt, helper) {
-        helper.saveLog(cmp);
-    },
-
-    verifyDefsRestored: function(cmp, evt, helper) {
-        helper.setStatus(cmp, "Verifying Defs Restored");
+    
+    verifyDefsRestored: function(cmp) {
+        cmp.set("v.status", "Verifying Defs Restored");
         $A.storageService.getStorage('ComponentDefStorage').getAll()
         .then(function(items) {
             if (items.length > 0) {
-                helper.setStatus(cmp, "Verified Defs Restored");
+                cmp.set("v.status", "Done Verifying Defs Restored");
             } else {
-                helper.setStatus(cmp, "Defs Not Restored");
+                cmp.set("v.status", "Defs Not Restored");
             }
         })
-        ["catch"](function(error) {
-            helper.setStatus(cmp, "Error: " + error.toString());
+        ['catch'](function(error) { cmp.set("v.status", "Error: " + error.toString()); });
+    },
+
+    /**
+     * Update attribute on component with contents of the component def storage whenever it's modified.
+     */
+    storageModified: function(cmp) {
+        $A.storageService.getStorage("ComponentDefStorage").getAll()
+        .then(function(items) {
+            var storageContents  = [];
+            for (var i = 0; i < items.length; i++) {
+                storageContents.push(items[i]["key"]);
+            }
+            cmp.set("v.defStorageContents", storageContents);
         });
-    },
-
-    /** Handle auraStorage:modified */
-    storageModified: function(cmp, evt, helper) {
-        helper.logComponentDefStorage(cmp)
-    },
-
-    /** Handle aura:initialized */
-    initialized: function(cmp, evt, helper) {
-        helper.setStatus(cmp, "Aura Initialized");
-        helper.logDefs(cmp);
     }
 })

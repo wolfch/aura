@@ -595,11 +595,10 @@ AuraInstance.prototype.initPriv = function(config, token, container, doNotInitia
             $A.addDefaultErrorHandler(app);
             // Restore component definitions from AuraStorage into memory (if persistent)
             $A.componentService.restoreDefsFromStorage().then(function () {
-                $A.getContext().pruneLoaded();
                 $A.finishInit(doNotInitializeServices);
             });
         }
-
+        
     }
 };
 
@@ -724,7 +723,7 @@ AuraInstance.prototype.handleError = function(message, e) {
 
 /**
  * Report error to the server after handling it.
- * Note that the method should only be used if try-catch mechanism
+ * Note that the method should only be used if try-catch mechanism 
  * of error handling is not desired or not functional (ex: in nested promises)
  * @public
  * @platform
