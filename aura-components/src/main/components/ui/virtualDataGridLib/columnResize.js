@@ -44,11 +44,17 @@ function lib(w){ //eslint-disable-line no-unused-vars
     
     ColumnResizer.prototype = {
 
-    	_setDividerHeight: function(indicator) {
-    		var viewportHeight = window.innerHeight;
+		_setDividerHeight: function(indicator) {
     		var divider = indicator.querySelector('.' + COLUMN_DIVIDER_CLASS);
-    		var indicatorLoc = indicator.parentNode.getBoundingClientRect().top;
-    		divider.style.height = (viewportHeight - indicatorLoc)  + 'px';
+    		
+    		if (this.config.indicatorContainer) {
+    			var height = this.config.indicatorContainer.clientHeight;
+    			divider.style.height = height + 'px';
+    		} else {
+    			var viewportHeight = window.innerHeight;
+    			var indicatorLoc = indicator.parentNode.getBoundingClientRect().top;
+        		divider.style.height = (viewportHeight - indicatorLoc)  + 'px';
+    		}
     	},
     		
     	/**
@@ -63,6 +69,7 @@ function lib(w){ //eslint-disable-line no-unused-vars
 	    	
 	    	this.config = {
 	    			container : config.container,
+	    			indicatorContainer : config.indicatorContainer,
 	    			initialWidths : config.initialWidths,
 	    			
 	    			step : config.step || DEFAULT_CONFIG.step,
