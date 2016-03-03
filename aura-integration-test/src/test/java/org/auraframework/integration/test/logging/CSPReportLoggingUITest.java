@@ -308,12 +308,18 @@ public class CSPReportLoggingUITest extends WebDriverTestCase {
                 "{post:function(c,e,h){h.request(" + urlString + ");}}");
         //'http://www.example.com' \"http://www.example.com\"
 
-
+        appender.clearLogs();
         open(cmpDesc);
         auraUITestingUtil.findDomElement(By.cssSelector(".button")).click();
 
-        //getCspReportLogs(appender, 0);
-        assert(appender.getLog().size() == 0);
+        List<String> cspLogs = getCspReportLogs(appender, 0);
+        if(cspLogs.size() != 0) {
+        	System.out.println("get these logs:");
+        	for(LoggingEvent le : appender.getLog()) {
+        		System.out.println(le.getMessage().toString());
+        	}
+        }
+        assertEquals("we shouldn't get any csp report, but we get "+cspLogs, 0, cspLogs.size());
 
     }
   
@@ -326,25 +332,38 @@ public class CSPReportLoggingUITest extends WebDriverTestCase {
      */
     private List<String> getCspReportLogs(LoggingTestAppender appender, int expectedLogsSize) throws InterruptedException {
     	List<String> cspRecords = new ArrayList<>();
-        auraUITestingUtil.waitUntil(new ExpectedCondition<Boolean>() {
-            @Override
-            public Boolean apply(WebDriver d) {
-                List<LoggingEvent> logs = appender.getLog();
-                	synchronized(logs) {
-                        while (!logs.isEmpty()) {
-                            LoggingEvent log = logs.remove(0);
-                            if (log.getMessage().toString().contains(CSPReporterServlet.JSON_NAME)) {
-                                cspRecords.add(log.getMessage().toString());
-                                return cspRecords.size() == expectedLogsSize;
-                            }
+        if(expectedLogsSize == 0 ) {
+        	List<LoggingEvent> logs = appender.getLog();
+        	synchronized(logs) {
+                while (!logs.isEmpty()) {
+                    LoggingEvent log = logs.remove(0);
+                    if (log.getMessage().toString().contains(CSPReporterServlet.JSON_NAME)) {
+                        cspRecords.add(log.getMessage().toString());
                     }
-                	return false;
                 }
             }
-        },
-        10,
-        "Did not find expected number of log lines (expected " + expectedLogsSize + ", found " + cspRecords.size() + ").");
-
+        } else {
+        	auraUITestingUtil.waitUntil(new ExpectedCondition<Boolean>() {
+                @Override
+                public Boolean apply(WebDriver d) {
+                    List<LoggingEvent> logs = appender.getLog();
+                    	synchronized(logs) {
+                            while (!logs.isEmpty()) {
+                                LoggingEvent log = logs.remove(0);
+                                if (log.getMessage().toString().contains(CSPReporterServlet.JSON_NAME)) {
+                                    cspRecords.add(log.getMessage().toString());
+                                    return cspRecords.size() == expectedLogsSize;
+                                }
+                        }
+                    	return false;
+                    }
+                }
+            },
+            10,
+            "Did not find expected number of log lines (expected " + expectedLogsSize + ", found " + cspRecords.size() + ").");
+        }
+    	
         return cspRecords;
     }
+    
 }
