@@ -21,8 +21,10 @@ import org.auraframework.annotations.Annotations.ServiceComponentModelFactory;
 import org.auraframework.ds.servicecomponent.ModelFactory;
 import org.auraframework.ds.servicecomponent.ModelInitializationException;
 import org.auraframework.service.DefinitionService;
+import org.springframework.stereotype.Component;
 
 @ServiceComponentModelFactory
+@Component("org.auraframework.docs.TopicsModelFactory")
 public class TopicsModelFactory implements ModelFactory<TopicsModel> {
 
     @Inject

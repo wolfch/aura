@@ -19,6 +19,7 @@ import com.ibm.icu.text.DateFormat;
 import com.ibm.icu.text.DecimalFormat;
 import com.ibm.icu.text.NumberFormat;
 import com.ibm.icu.util.Currency;
+
 import org.auraframework.adapter.LocalizationAdapter;
 import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.service.LocalizationService;
@@ -26,8 +27,10 @@ import org.auraframework.util.AuraLocale;
 import org.auraframework.util.date.DateService;
 import org.auraframework.util.date.DateServiceImpl;
 import org.auraframework.util.number.AuraNumberFormat;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.time.format.DateTimeParseException;
@@ -40,6 +43,7 @@ import java.util.TimeZone;
  * Default implementation for the Localization Service
  */
 @ServiceComponent
+@Component("org.auraframework.impl.LocalizationServiceImpl")
 public class LocalizationServiceImpl implements LocalizationService {
 
     private LocalizationAdapter localizationAdapter;

@@ -34,6 +34,7 @@ import org.auraframework.throwable.quickfix.QuickFixException;
 
 import com.google.common.collect.Lists;
 
+@org.springframework.stereotype.Component("org.auraframework.impl.controller.ComponentController")
 @ServiceComponent
 public class ComponentController implements Controller {
 
