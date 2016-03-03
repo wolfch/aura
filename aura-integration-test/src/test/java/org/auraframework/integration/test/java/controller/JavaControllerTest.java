@@ -49,7 +49,6 @@ import org.auraframework.service.ServerService;
 import org.auraframework.system.Location;
 import org.auraframework.system.LoggingContext.KeyValueLogger;
 import org.auraframework.system.Message;
-import org.auraframework.test.controller.TestLoggingAdapterController;
 import org.auraframework.test.source.StringSourceLoader;
 import org.auraframework.throwable.AuraUnhandledException;
 import org.auraframework.throwable.NoAccessException;
