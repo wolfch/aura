@@ -38,6 +38,7 @@ import org.auraframework.util.json.JsonSerializable;
 import org.auraframework.util.json.JsonSerializer;
 import org.auraframework.util.json.JsonSerializers.NoneSerializer;
 import org.auraframework.util.json.JsonSerializers;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.Maps;
 
@@ -60,7 +61,7 @@ public class JsonSerializerAdapterImpl implements JsonSerializerAdapter {
     @Inject
     private ContextService contextService;
 
-    @Inject
+    @Autowired(required=false)
     private TestContextAdapter testContextAdapter;
 
     @Override

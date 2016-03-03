@@ -36,8 +36,10 @@ import org.auraframework.system.MasterDefRegistry;
 import org.auraframework.test.TestContextAdapter;
 import org.auraframework.throwable.AuraRuntimeException;
 import org.auraframework.util.json.JsonSerializationContext;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.inject.Inject;
+
 import java.util.Map;
 
 /**
@@ -56,7 +58,7 @@ public class ContextAdapterImpl implements ContextAdapter {
     @Inject
     private LoggingService loggingService;
 
-    @Inject
+    @Autowired(required=false)
     private TestContextAdapter testContextAdapter;
 
     private static ThreadLocal<AuraContext> currentContext = new ThreadLocal<>();
