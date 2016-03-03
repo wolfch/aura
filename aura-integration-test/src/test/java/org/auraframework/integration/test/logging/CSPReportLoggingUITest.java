@@ -18,6 +18,7 @@ package org.auraframework.integration.test.logging;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
+import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.ControllerDef;
 import org.auraframework.def.DefDescriptor;
@@ -89,14 +90,16 @@ public class CSPReportLoggingUITest extends WebDriverTestCase {
         assertThat("Could not find expected violated directive", cspReport, containsString(exptectedViolatedDirective));
     }
 
-    //Timed out after 60 seconds: Initialization error: Perhaps the initial GET failed.
     public void testReportCSPViolationForServerRenderedCSS() throws Exception {
-        DefDescriptor<ComponentDef> cmpDesc = addSourceAutoCleanup(ComponentDef.class,
-                String.format(baseComponentTag, "",
-                "<link href='http://www2.sfdcstatic.com/common/assets/css/min/standard-rwd-min.css' rel='stylesheet' type='text/css'/>"));
-        String uri = String.format("/%s/%s.cmp", cmpDesc.getNamespace(), cmpDesc.getName());
+        DefDescriptor<ApplicationDef> appDesc = addSourceAutoCleanup(ApplicationDef.class,
+                String.format(baseApplicationTag, "render='server'",
+                "<link href='http://www2.sfdcstatic.com/common/assets/css/min/standard-rwd-min.css' rel='stylesheet' type='text/css'/>"
+                		+
+                "<script src='/auraFW/resources/codemirror/js/codemirror.js'></script>"));
+        String uri = String.format("/%s/%s.app", appDesc.getNamespace(), appDesc.getName());
 
-        open(uri);
+        openNoAura(uri);
+        waitForCondition("return !!CodeMirror", 10);
         List<String> logs = getCspReportLogs(appender, 1);
         String cspReport = logs.get(0);
 
