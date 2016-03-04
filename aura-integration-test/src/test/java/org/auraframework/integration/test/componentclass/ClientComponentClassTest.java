@@ -16,7 +16,6 @@
 package org.auraframework.integration.test.componentclass;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -26,172 +25,112 @@ import org.auraframework.def.ComponentDef;
 import org.auraframework.def.ControllerDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.HelperDef;
-import org.auraframework.def.LibraryDefRef;
 import org.auraframework.def.LibraryDef;
+import org.auraframework.def.LibraryDefRef;
 import org.auraframework.def.ProviderDef;
 import org.auraframework.def.RendererDef;
 import org.auraframework.impl.AuraImplTestCase;
-import org.auraframework.impl.root.component.ClientComponentClass;
-import org.auraframework.impl.system.DefDescriptorImpl;
+import org.auraframework.impl.root.component.ComponentDefImpl.Builder;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 
 public class ClientComponentClassTest extends AuraImplTestCase {
+
+	private Builder builder;
 
     public ClientComponentClassTest(String name) {
         super(name);
     }
-
+    
     @Mock
-    private DefDescriptor<ComponentDef> mockCmpDescriptor;
+    private DefDescriptor<ComponentDef> descriptor;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
 
-        when(mockCmpDescriptor.getNamespace()).thenReturn("test");
-        when(mockCmpDescriptor.getName()).thenReturn("testComponent");
-        when(mockCmpDescriptor.getQualifiedName()).thenReturn("markup://test:testComponent");
+        Mockito.doReturn("test").when(descriptor).getNamespace();
+        Mockito.doReturn("testComponent").when(descriptor).getName();
+        Mockito.doReturn("markup://test:testComponent").when(descriptor).getQualifiedName();
+
+    	builder = new Builder();
+        builder.setDescriptor(descriptor);
     }
 
     public void testwriteClassForPlainComponent() throws Exception {
-        DefDescriptor<ComponentDef> cmpDescriptor =
-                addSourceAutoCleanup(ComponentDef.class, "<aura:component></aura:component>");
-
-        // Since addSourceAutoCleanup randomly assign component's name, mock cmp's descriptor
-        // to make sure the gold file contents are consistent.
-        ComponentDef spyCmpDef =spy(definitionService.getDefinition(cmpDescriptor));
-        when(spyCmpDef.getDescriptor()).thenReturn(mockCmpDescriptor);
-
-        StringBuilder sb = new StringBuilder();
-        ClientComponentClass componentClass = new ClientComponentClass(spyCmpDef);
-
-        componentClass.writeClass(sb);
-
-        this.goldFileText(sb.toString());
+    	builder.build();
+    	this.goldFileText(builder.jsCode);
     }
 
     public void testwriteClassForComponentWithClientController() throws Exception {
-        DefDescriptor<ComponentDef> cmpDescriptor =
-                addSourceAutoCleanup(ComponentDef.class, "<aura:component></aura:component>");
-        DefDescriptor<ControllerDef> controllerDescriptor =
-                DefDescriptorImpl.getAssociateDescriptor(cmpDescriptor, ControllerDef.class, DefDescriptor.JAVASCRIPT_PREFIX);
-        String controllerJs =
+        String controllerCode =
                 "({\n" +
                 "    funtion1: function(cmp, event, helper) {\n" +
                 "        cmp.get('bla');\n" +
                 "    }\n" +
                 "})\n";
-        addSourceAutoCleanup(controllerDescriptor, controllerJs);
+        DefDescriptor<ControllerDef> controllerDescriptor = addSourceAutoCleanup(ControllerDef.class, controllerCode);
 
-        ComponentDef spyCmpDef =spy(definitionService.getDefinition(cmpDescriptor));
-        when(spyCmpDef.getDescriptor()).thenReturn(mockCmpDescriptor);
-
-        StringBuilder sb = new StringBuilder();
-        ClientComponentClass componentClass = new ClientComponentClass(spyCmpDef);
-
-        componentClass.writeClass(sb);
-
-        this.goldFileText(sb.toString());
+        builder.addControllerDef(controllerDescriptor.getDef());
+        builder.build();
+    	this.goldFileText(builder.jsCode);
     }
 
     public void testwriteClassForComponentWithHelper() throws Exception {
-        DefDescriptor<ComponentDef> cmpDescriptor =
-                addSourceAutoCleanup(ComponentDef.class, "<aura:component></aura:component>");
-        DefDescriptor<HelperDef> helperDescriptor =
-                DefDescriptorImpl.getAssociateDescriptor(cmpDescriptor, HelperDef.class, DefDescriptor.JAVASCRIPT_PREFIX);
-        String helperJs =
+        String helperCode =
                 "({" +
                 "    funtion1:function() {\n" +
                 "        var a = 1;\n" +
                 "    }\n" +
                 "})\n";
-        addSourceAutoCleanup(helperDescriptor, helperJs);
+        DefDescriptor<HelperDef> helperDescriptor = addSourceAutoCleanup(HelperDef.class, helperCode);
 
-        ComponentDef spyCmpDef =spy(definitionService.getDefinition(cmpDescriptor));
-        when(spyCmpDef.getDescriptor()).thenReturn(mockCmpDescriptor);
-
-        StringBuilder sb = new StringBuilder();
-        ClientComponentClass componentClass = new ClientComponentClass(spyCmpDef);
-
-        componentClass.writeClass(sb);
-
-        this.goldFileText(sb.toString());
+        builder.addHelper(helperDescriptor.getQualifiedName());
+    	builder.build();
+    	this.goldFileText(builder.jsCode);
     }
 
     public void testwriteClassForComponentWithClientProvider() throws Exception {
-        DefDescriptor<ComponentDef> cmpDescriptor =
-                getAuraTestingUtil().createStringSourceDescriptor(null, ComponentDef.class, null);
-        DefDescriptor<?> providerDesc =
-                definitionService.getDefDescriptor(cmpDescriptor, DefDescriptor.JAVASCRIPT_PREFIX, ProviderDef.class);
-        String providerAttribute = String.format("provider='%s'", providerDesc.getQualifiedName());
-        String cmpMarkup = String.format(baseComponentTag, providerAttribute, "");
-        String providerJs =
+        
+        String providerCode =
                 "({\n" +
                 "    provide: function(cmp) {\n" +
                 "        return 'foo';\n" +
                 "    }\n" +
                 "})\n";
-        addSourceAutoCleanup(providerDesc, providerJs);
-        addSourceAutoCleanup(cmpDescriptor, cmpMarkup);
-
-        ComponentDef spyCmpDef = spy(definitionService.getDefinition(cmpDescriptor));
-        when(spyCmpDef.getDescriptor()).thenReturn(mockCmpDescriptor);
-
-        StringBuilder sb = new StringBuilder();
-        ClientComponentClass componentClass = new ClientComponentClass(spyCmpDef);
-
-        componentClass.writeClass(sb);
-
-        this.goldFileText(sb.toString());
+        DefDescriptor<ProviderDef> providerDescriptor = addSourceAutoCleanup(ProviderDef.class, providerCode);
+        
+    	builder.addProvider(providerDescriptor.getQualifiedName());
+    	builder.build();
+    	this.goldFileText(builder.jsCode);
     }
 
     public void testwriteClassForComponentWithClientRenderer() throws Exception {
-        DefDescriptor<ComponentDef> cmpDescriptor =
-                addSourceAutoCleanup(ComponentDef.class, "<aura:component></aura:component>");
-        DefDescriptor<RendererDef> rendererDescriptor =
-                DefDescriptorImpl.getAssociateDescriptor(cmpDescriptor, RendererDef.class, DefDescriptor.JAVASCRIPT_PREFIX);
-        String rendererJs =
+        String rendererCode =
                 "({\n" +
                 "    render: function(cmp) {\n" +
                 "        return this.superRender();\n" +
                 "    }\n" +
                 "})\n";
-        addSourceAutoCleanup(rendererDescriptor, rendererJs);
+        DefDescriptor<RendererDef> rendererDescriptor = addSourceAutoCleanup(RendererDef.class, rendererCode);
 
-        ComponentDef spyCmpDef =spy(definitionService.getDefinition(cmpDescriptor));
-        when(spyCmpDef.getDescriptor()).thenReturn(mockCmpDescriptor);
-
-        StringBuilder sb = new StringBuilder();
-        ClientComponentClass componentClass = new ClientComponentClass(spyCmpDef);
-
-        componentClass.writeClass(sb);
-
-        this.goldFileText(sb.toString());
+        builder.addRendererDef(rendererDescriptor.getDef());
+    	builder.build();
+    	this.goldFileText(builder.jsCode);
     }
 
     public void testwriteClassForComponentWithClientEmptyRenderer() throws Exception {
-        DefDescriptor<ComponentDef> cmpDescriptor =
-                addSourceAutoCleanup(ComponentDef.class, "<aura:component></aura:component>");
-        DefDescriptor<RendererDef> rendererDescriptor =
-                DefDescriptorImpl.getAssociateDescriptor(cmpDescriptor, RendererDef.class, DefDescriptor.JAVASCRIPT_PREFIX);
-        String rendererJs = "({ })";
-        addSourceAutoCleanup(rendererDescriptor, rendererJs);
+        String rendererCode = "({ })";
+        DefDescriptor<RendererDef> rendererDescriptor = addSourceAutoCleanup(RendererDef.class, rendererCode);
 
-        ComponentDef spyCmpDef = spy(definitionService.getDefinition(cmpDescriptor));
-        when(spyCmpDef.getDescriptor()).thenReturn(mockCmpDescriptor);
-
-        StringBuilder sb = new StringBuilder();
-        ClientComponentClass componentClass = new ClientComponentClass(spyCmpDef);
-
-        componentClass.writeClass(sb);
-
-        this.goldFileText(sb.toString());
+        builder.addRendererDef(rendererDescriptor.getDef());
+    	builder.build();
+    	this.goldFileText(builder.jsCode);
     }
 
     @SuppressWarnings("unchecked")
     public void testwriteClassForComponentImportsLib() throws Exception {
-        DefDescriptor<ComponentDef> cmpDescriptor =
-                addSourceAutoCleanup(ComponentDef.class, "<aura:component></aura:component>");
+
         DefDescriptor<LibraryDef> libraryDescriptor = mock(DefDescriptor.class);
         when(libraryDescriptor.getDescriptorName()).thenReturn("test:testLibrary");
 
@@ -207,36 +146,20 @@ public class ClientComponentClassTest extends AuraImplTestCase {
         when(mockImportDef2.getReferenceDescriptor()).thenReturn(libraryDescriptor);
         importDefs.add(mockImportDef2);
 
-        ComponentDef spyCmpDef =spy(definitionService.getDefinition(cmpDescriptor));
-        when(spyCmpDef.getDescriptor()).thenReturn(mockCmpDescriptor);
-        when(spyCmpDef.getImports()).thenReturn(importDefs);
-
-        StringBuilder sb = new StringBuilder();
-        ClientComponentClass componentClass = new ClientComponentClass(spyCmpDef);
-
-        componentClass.writeClass(sb);
-
-        this.goldFileText(sb.toString());
+        builder.imports = importDefs;
+    	builder.build();
+    	this.goldFileText(builder.jsCode);
     }
 
     @SuppressWarnings("unchecked")
     public void testwriteClassForComponentExtendingOtherComponent() throws Exception {
-        DefDescriptor<ComponentDef> cmpDescriptor =
-                addSourceAutoCleanup(ComponentDef.class, "<aura:component></aura:component>");
 
-        DefDescriptor<ComponentDef> mockSuperCmpDescriptor= mock(DefDescriptor.class);
+        DefDescriptor<ComponentDef> mockSuperCmpDescriptor = mock(DefDescriptor.class);
         // mock testing component's super component def descriptor
         when(mockSuperCmpDescriptor.getQualifiedName()).thenReturn("markup://test:superComponent");
 
-        ComponentDef spyCmpDef = spy(definitionService.getDefinition(cmpDescriptor));
-        when(spyCmpDef.getDescriptor()).thenReturn(mockCmpDescriptor);
-        when(spyCmpDef.getExtendsDescriptor()).thenReturn(mockSuperCmpDescriptor);
-
-        StringBuilder sb = new StringBuilder();
-        ClientComponentClass componentClass = new ClientComponentClass(spyCmpDef);
-
-        componentClass.writeClass(sb);
-
-        this.goldFileText(sb.toString());
+        builder.extendsDescriptor = mockSuperCmpDescriptor;
+    	builder.build();
+    	this.goldFileText(builder.jsCode);
     }
 }

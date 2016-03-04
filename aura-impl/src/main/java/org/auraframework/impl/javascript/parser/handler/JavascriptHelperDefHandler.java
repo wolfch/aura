@@ -15,16 +15,15 @@
  */
 package org.auraframework.impl.javascript.parser.handler;
 
+import java.io.IOException;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.HelperDef;
-import org.auraframework.expression.PropertyReference;
 import org.auraframework.impl.javascript.helper.JavascriptHelperDef.Builder;
+import org.auraframework.impl.util.JavascriptTokenizer;
 import org.auraframework.system.Source;
-import org.auraframework.util.json.JsFunction;
+import org.auraframework.throwable.quickfix.QuickFixException;
 
 /**
  * This is a basic handler for a javascript helper def.
@@ -40,21 +39,13 @@ public class JavascriptHelperDefHandler extends JavascriptHandler<HelperDef, Hel
     }
 
     @Override
-    protected HelperDef createDefinition(Map<String, Object> map) {
+    protected HelperDef createDefinition(String code) throws QuickFixException, IOException {
         setDefBuilderFields(builder);
-        for (Entry<String, Object> entry : map.entrySet()) {
-            Object value = entry.getValue();
-            if (value != null && value instanceof JsFunction) {
-                ((JsFunction) value).setName(entry.getKey());
-            }
-        }
-        builder.addFunctions(map);
+        new JavascriptTokenizer(getParentDescriptor(), code, getLocation()).process(builder);
+        Map<String, Object> map = codeToMap(code);
+        String jsCode = mapToCode(map);
+        builder.setJsCode(jsCode);
         return builder.build();
-    }
-
-    @Override
-    public void addExpressionReferences(Set<PropertyReference> propRefs) {
-        builder.expressionRefs.addAll(propRefs);
     }
 
     @Override
@@ -63,5 +54,4 @@ public class JavascriptHelperDefHandler extends JavascriptHandler<HelperDef, Hel
         builder.setParseError(error);
         return builder.build();
     }
-
 }
