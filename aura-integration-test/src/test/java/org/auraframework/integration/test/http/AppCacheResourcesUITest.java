@@ -15,40 +15,23 @@
  */
 package org.auraframework.integration.test.http;
 
-import com.google.common.base.Function;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
-import org.auraframework.def.ApplicationDef;
-import org.auraframework.def.ComponentDef;
-import org.auraframework.def.ControllerDef;
-import org.auraframework.def.DefDescriptor;
-import org.auraframework.def.Definition;
-import org.auraframework.def.StyleDef;
+import org.auraframework.def.*;
 import org.auraframework.integration.test.logging.LoggingTestAppender;
 import org.auraframework.test.util.WebDriverTestCase;
 import org.auraframework.test.util.WebDriverUtil.BrowserType;
-import org.auraframework.util.test.annotation.FreshBrowserInstance;
-import org.auraframework.util.test.annotation.ThreadHostileTest;
-import org.auraframework.util.test.annotation.UnAdaptableTest;
+import org.auraframework.util.test.annotation.*;
 import org.junit.Test;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Cookie;
-import org.openqa.selenium.StaleElementReferenceException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
+import com.google.common.base.Function;
+import com.google.common.collect.*;
 
 /**
  * Tests for AppCache functionality by watching the requests received at the server and verifying that the updated
@@ -64,7 +47,7 @@ public class AppCacheResourcesUITest extends WebDriverTestCase {
     private final static String COOKIE_NAME = "%s_%s_%s_lm";
     private final static String TOKEN = "@@@TOKEN@@@";
 
-    private final static String AURA = "aura";
+    //private final static String AURA = "aura";
 
     private final static String SRC_COMPONENT =
     		"<aura:component>"

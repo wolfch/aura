@@ -15,22 +15,23 @@
  */
 package org.auraframework.integration.test.css;
 
-import org.auraframework.def.DefDescriptor;
-import org.auraframework.def.TokenDescriptorProvider;
-import org.auraframework.def.TokensDef;
+import javax.inject.Inject;
+
+import org.auraframework.Aura;
+import org.auraframework.annotations.Annotations.ServiceComponentProvider;
+import org.auraframework.def.*;
 import org.auraframework.impl.css.StyleTestCase;
 import org.auraframework.impl.java.provider.TestTokenDescriptorProvider;
 import org.auraframework.service.DefinitionService;
+import org.auraframework.service.InstanceService;
 import org.auraframework.system.Annotations.Provider;
-import org.auraframework.annotations.Annotations.ServiceComponentProvider;
-import org.auraframework.throwable.quickfix.DefinitionNotFoundException;
-import org.auraframework.throwable.quickfix.InvalidDefinitionException;
-import org.auraframework.throwable.quickfix.QuickFixException;
+import org.auraframework.throwable.quickfix.*;
 import org.junit.Test;
 
-import javax.inject.Inject;
-
 public class JavaTokenProviderDefTest extends StyleTestCase {
+    
+    @Inject
+    InstanceService instanceService;
 
     @Test
     public void testProviderBasic() throws Exception {
@@ -42,23 +43,17 @@ public class JavaTokenProviderDefTest extends StyleTestCase {
 
     @ServiceComponentProvider
     public static final class P1 implements TokenDescriptorProvider {
-        @Inject
-        DefinitionService definitionService;
-
         @Override
         public DefDescriptor<TokensDef> provide() throws QuickFixException {
-            return definitionService.getDefDescriptor("tokenProviderTest:javaProviderTest2", TokensDef.class);
+            return Aura.getDefinitionService().getDefDescriptor("tokenProviderTest:javaProviderTest2", TokensDef.class);
         }
     }
 
     @ServiceComponentProvider
     public static final class P2 implements TokenDescriptorProvider {
-        @Inject
-        DefinitionService definitionService;
-
         @Override
         public DefDescriptor<TokensDef> provide() throws QuickFixException {
-            return definitionService.getDefDescriptor("tokenProviderTest:javaProviderTest3", TokensDef.class);
+            return Aura.getDefinitionService().getDefDescriptor("tokenProviderTest:javaProviderTest3", TokensDef.class);
         }
     }
 
@@ -69,7 +64,7 @@ public class JavaTokenProviderDefTest extends StyleTestCase {
 
         DefDescriptor<TokensDef> expected = definitionService.getDefDescriptor("tokenProviderTest:javaProviderTest3",
                 TokensDef.class);
-
+        
         DefDescriptor<TokensDef> concrete = definitionService.getDefinition(initial).getConcreteDescriptor();
 
         assertEquals(expected, concrete);
@@ -162,12 +157,10 @@ public class JavaTokenProviderDefTest extends StyleTestCase {
 
     @ServiceComponentProvider
     public static final class ProviderNonexistent implements TokenDescriptorProvider {
-        @Inject
-        DefinitionService definitionService;
 
         @Override
         public DefDescriptor<TokensDef> provide() throws QuickFixException {
-            return definitionService.getDefDescriptor("s:s", TokensDef.class);
+            return Aura.getDefinitionService().getDefDescriptor("s:s", TokensDef.class);
         }
     }
 
