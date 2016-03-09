@@ -98,21 +98,30 @@ public interface Annotations {
      */
     @Target({ElementType.TYPE})
     @Retention(RetentionPolicy.RUNTIME)
-    @ServiceComponent
+    @Documented
+    @Component
+    @Lazy
+    @Scope(BeanDefinition.SCOPE_SINGLETON)
     @interface ServiceComponentModelFactory {
     }
 
     @Target({ElementType.TYPE})
     @Retention(RetentionPolicy.RUNTIME)
     @Provider
-    @ServiceComponent
+    @Documented
+    @Component
+    @Lazy
+    @Scope(BeanDefinition.SCOPE_SINGLETON)
     @interface ServiceComponentProvider {
     }
 
 
     @Target({ElementType.TYPE})
     @Retention(RetentionPolicy.RUNTIME)
-    @ServiceComponent
+    @Documented
+    @Component
+    @Lazy
+    @Scope(BeanDefinition.SCOPE_SINGLETON)
     @interface ServiceComponentRenderer {
     }
 }
