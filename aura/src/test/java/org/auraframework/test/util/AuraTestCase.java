@@ -59,9 +59,6 @@ public abstract class AuraTestCase extends UnitTestCase {
     protected TestContextAdapter testContextAdapter;
 
     @Inject
-    protected DefinitionService definitionService;
-
-    @Inject
     protected ContextService contextService;
 
     @Inject
@@ -71,15 +68,10 @@ public abstract class AuraTestCase extends UnitTestCase {
     protected ExceptionAdapter exceptionAdapter;
 
     @Inject
-    private StringSourceLoader stringSourceLoader;
-
-    @Inject
     protected ConfigAdapter configAdapter;
 
     @Inject
     protected FileMonitor fileMonitor;
-
-    private AuraTestingUtil auraTestingUtil;
 
     private AuraTestingMarkupUtil auraTesingMarkupUtil;
 
@@ -106,9 +98,7 @@ public abstract class AuraTestCase extends UnitTestCase {
         if (testContextAdapter != null) {
             testContextAdapter.release();
         }
-        if (auraTestingUtil != null) {
-            auraTestingUtil.tearDown();
-        }
+       
         super.tearDown();
     }
 
@@ -127,7 +117,7 @@ public abstract class AuraTestCase extends UnitTestCase {
         return getClass().getCanonicalName() + "." + getName();
     }
 
-    protected <T extends Definition> DefDescriptor<T> addSourceAutoCleanup(Class<T> defClass, String contents,
+    /*protected <T extends Definition> DefDescriptor<T> addSourceAutoCleanup(Class<T> defClass, String contents,
             String namePrefix) {
         return getAuraTestingUtil().addSourceAutoCleanup(defClass, contents, namePrefix);
     }
@@ -146,7 +136,7 @@ public abstract class AuraTestCase extends UnitTestCase {
 
     protected <T extends Definition> Source<T> getSource(DefDescriptor<T> descriptor) {
         return getAuraTestingUtil().getSource(descriptor);
-    }
+    }*/
 
     /**
      * Useful for restoring a context in case a test needs to temporarily switch contexts.
@@ -307,12 +297,12 @@ public abstract class AuraTestCase extends UnitTestCase {
                 .getMessage().contains(message));
     }
 
-    public AuraTestingUtil getAuraTestingUtil() {
+    /*public AuraTestingUtil getAuraTestingUtil() {
         if (auraTestingUtil == null) {
             auraTestingUtil = new AuraTestingUtil(fileMonitor, stringSourceLoader, definitionService, configAdapter, contextService);
         }
         return auraTestingUtil;
-    }
+    }*/
 
     protected AuraTestingMarkupUtil getAuraTestingMarkupUtil() {
         if (auraTesingMarkupUtil == null) {

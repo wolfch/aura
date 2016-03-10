@@ -15,9 +15,9 @@
  */
 package org.auraframework.integration.test.coql;
 
+import org.auraframework.integration.test.util.WebDriverTestCase;
 import org.auraframework.system.AuraContext.Mode;
 import org.auraframework.test.adapter.MockConfigAdapter;
-import org.auraframework.test.util.WebDriverTestCase;
 import org.auraframework.util.test.annotation.ThreadHostileTest;
 import org.auraframework.util.test.annotation.UnAdaptableTest;
 import org.junit.Test;

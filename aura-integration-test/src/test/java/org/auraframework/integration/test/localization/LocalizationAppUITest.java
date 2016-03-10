@@ -15,8 +15,8 @@
  */
 package org.auraframework.integration.test.localization;
 
-import org.auraframework.test.util.WebDriverTestCase;
-import org.auraframework.test.util.WebDriverTestCase.CheckAccessibility;
+import org.auraframework.integration.test.util.WebDriverTestCase;
+import org.auraframework.integration.test.util.WebDriverTestCase.CheckAccessibility;
 import org.auraframework.test.util.WebDriverUtil.BrowserType;
 import org.junit.Ignore;
 import org.junit.Test;

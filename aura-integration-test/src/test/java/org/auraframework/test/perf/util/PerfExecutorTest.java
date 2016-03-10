@@ -25,11 +25,12 @@ import java.util.logging.Logger;
 
 import org.auraframework.def.*;
 import org.auraframework.def.DefDescriptor.DefType;
+import org.auraframework.integration.test.util.WebDriverTestCase;
+import org.auraframework.integration.test.util.WebDriverTestCase.TargetBrowsers;
 import org.auraframework.system.AuraContext;
 import org.auraframework.system.AuraContext.Mode;
 import org.auraframework.test.perf.PerfWebDriverUtil;
 import org.auraframework.test.util.*;
-import org.auraframework.test.util.WebDriverTestCase.TargetBrowsers;
 import org.auraframework.test.util.WebDriverUtil.BrowserType;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.AuraFiles;

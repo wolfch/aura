@@ -15,8 +15,8 @@
  */
 package org.auraframework.integration.test.root.event.locationchange;
 
-import org.auraframework.test.util.WebDriverTestCase;
-import org.auraframework.test.util.WebDriverTestCase.ExcludeBrowsers;
+import org.auraframework.integration.test.util.WebDriverTestCase;
+import org.auraframework.integration.test.util.WebDriverTestCase.ExcludeBrowsers;
 import org.auraframework.test.util.WebDriverUtil.BrowserType;
 import org.junit.Ignore;
 import org.junit.Test;

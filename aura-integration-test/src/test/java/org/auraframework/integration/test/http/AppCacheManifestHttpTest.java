@@ -17,6 +17,7 @@ package org.auraframework.integration.test.http;
 
 import com.google.common.collect.Lists;
 import com.google.common.io.LineReader;
+
 import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
@@ -26,16 +27,17 @@ import org.apache.http.protocol.HttpContext;
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.http.AuraBaseServlet;
+import org.auraframework.integration.test.util.AuraHttpTestCase;
 import org.auraframework.system.AuraContext.Mode;
 import org.auraframework.test.adapter.MockConfigAdapter;
 import org.auraframework.test.client.UserAgent;
-import org.auraframework.test.util.AuraHttpTestCase;
 import org.auraframework.util.test.annotation.ThreadHostileTest;
 import org.auraframework.util.test.annotation.UnAdaptableTest;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.inject.Inject;
+
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Arrays;

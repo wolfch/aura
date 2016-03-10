@@ -30,14 +30,13 @@ import org.apache.log4j.spi.LoggingEvent;
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.integration.test.logging.LoggingTestAppender;
+import org.auraframework.integration.test.util.AuraHttpTestCase;
 import org.auraframework.system.AuraContext.Format;
 import org.auraframework.system.AuraContext.Mode;
-import org.auraframework.test.util.AuraHttpTestCase;
 import org.auraframework.util.AuraTextUtil;
 import org.auraframework.util.test.annotation.AuraTestLabels;
 import org.auraframework.util.test.annotation.UnAdaptableTest;
 import org.junit.Test;
-
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;

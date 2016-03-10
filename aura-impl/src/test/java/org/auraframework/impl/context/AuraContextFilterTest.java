@@ -56,6 +56,7 @@ public class AuraContextFilterTest extends AuraTestCase {
 
     @Test
     public void testStartContextContextPath() throws Exception {
+    	System.out.println(definitionService.hashCode());
         AuraContextFilter filter = new AuraContextFilter();
         filter.setContextService(contextService);
         filter.setLoggingService(loggingService);

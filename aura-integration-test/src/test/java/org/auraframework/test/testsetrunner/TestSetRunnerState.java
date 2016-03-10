@@ -16,10 +16,12 @@
 package org.auraframework.test.testsetrunner;
 
 import com.google.common.collect.Maps;
+
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
+import org.auraframework.integration.test.ComponentJSTestSuite.ComponentTestCase;
 import org.auraframework.system.AuraContext;
-import org.auraframework.test.ComponentJSTestSuite.ComponentTestCase;
 import org.auraframework.test.perf.util.PerfExecutorTest;
 import org.auraframework.util.ServiceLocator;
 import org.auraframework.util.test.util.TestInventory;
@@ -27,6 +29,7 @@ import org.auraframework.util.test.util.TestInventory.Type;
 
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;

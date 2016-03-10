@@ -15,7 +15,7 @@
  */
 package org.auraframework.integration.test.components.ui.inputPercent;
 
-import org.auraframework.test.util.WebDriverTestCase;
+import org.auraframework.integration.test.util.WebDriverTestCase;
 
 public class InputPercentUITest_DISABLED extends WebDriverTestCase {
 

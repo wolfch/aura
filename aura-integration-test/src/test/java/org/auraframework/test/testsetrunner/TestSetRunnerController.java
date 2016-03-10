@@ -17,13 +17,14 @@ package org.auraframework.test.testsetrunner;
 
 import junit.framework.TestFailure;
 import junit.framework.TestResult;
+
 import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.ds.servicecomponent.Controller;
+import org.auraframework.integration.test.util.TestExecutor;
+import org.auraframework.integration.test.util.TestExecutor.TestRun;
 import org.auraframework.system.Annotations.AuraEnabled;
 import org.auraframework.system.Annotations.Key;
 import org.auraframework.test.perf.util.PerfExecutorTest;
-import org.auraframework.test.util.TestExecutor;
-import org.auraframework.test.util.TestExecutor.TestRun;
 
 import java.util.Enumeration;
 import java.util.HashMap;

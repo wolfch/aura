@@ -15,7 +15,7 @@
  */
 package org.auraframework.integration.test.http;
 
-import org.auraframework.test.util.AuraHttpTestCase;
+import org.auraframework.integration.test.util.AuraHttpTestCase;
 import org.junit.Test;
 
 import java.util.Map;

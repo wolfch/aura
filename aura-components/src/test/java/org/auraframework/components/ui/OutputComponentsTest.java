@@ -17,6 +17,7 @@ package org.auraframework.components.ui;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+
 import org.auraframework.def.AttributeDef;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
@@ -24,6 +25,7 @@ import org.auraframework.def.DefDescriptor.DefType;
 import org.auraframework.def.DescriptorFilter;
 import org.auraframework.def.EventType;
 import org.auraframework.def.RegisterEventDef;
+import org.auraframework.service.DefinitionService;
 import org.auraframework.system.AuraContext.Authentication;
 import org.auraframework.system.AuraContext.Format;
 import org.auraframework.system.AuraContext.Mode;
@@ -38,10 +40,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.inject.Inject;
+
 /**
  * Common tests for ui:output components
  */
 public class OutputComponentsTest extends AuraTestCase {
+	
+	@Inject
+	private DefinitionService definitionService;
     /**
      * Verify that all ui:output* components have a required "value" attribute.
      */

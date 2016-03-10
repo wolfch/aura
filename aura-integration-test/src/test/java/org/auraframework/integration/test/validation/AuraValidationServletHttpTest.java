@@ -16,10 +16,11 @@
 package org.auraframework.integration.test.validation;
 
 import com.google.common.base.Charsets;
+
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.auraframework.test.util.AuraHttpTestCase;
+import org.auraframework.integration.test.util.AuraHttpTestCase;
 import org.auraframework.util.AuraFiles;
 import org.auraframework.util.json.JsonEncoder;
 import org.auraframework.util.test.annotation.UnAdaptableTest;
@@ -28,6 +29,7 @@ import org.auraframework.util.validation.ValidationTestUtil;
 import org.junit.Test;
 
 import javax.servlet.http.HttpServletResponse;
+
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;

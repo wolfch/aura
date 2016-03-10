@@ -16,10 +16,11 @@
 package org.auraframework.integration.test.archetype;
 
 import com.google.common.collect.ImmutableList;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpGet;
-import org.auraframework.test.util.AuraHttpTestCase;
+import org.auraframework.integration.test.util.AuraHttpTestCase;
 import org.auraframework.util.IOUtil;
 import org.auraframework.util.test.annotation.UnAdaptableTest;
 import org.junit.Test;
