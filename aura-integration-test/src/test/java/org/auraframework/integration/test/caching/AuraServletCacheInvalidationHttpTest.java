@@ -23,11 +23,11 @@ import org.auraframework.def.BaseComponentDef;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.http.AuraBaseServlet;
+import org.auraframework.integration.test.util.AuraHttpTestCase;
 import org.auraframework.system.AuraContext;
 import org.auraframework.system.AuraContext.Authentication;
 import org.auraframework.system.AuraContext.Format;
 import org.auraframework.system.AuraContext.Mode;
-import org.auraframework.test.util.AuraHttpTestCase;
 import org.auraframework.util.json.JsonEncoder;
 import org.auraframework.util.json.JsonReader;
 import org.auraframework.util.test.annotation.AuraTestLabels;
@@ -35,6 +35,7 @@ import org.auraframework.util.test.annotation.ThreadHostileTest;
 import org.junit.Test;
 
 import javax.inject.Inject;
+
 import java.util.HashMap;
 import java.util.Map;
 

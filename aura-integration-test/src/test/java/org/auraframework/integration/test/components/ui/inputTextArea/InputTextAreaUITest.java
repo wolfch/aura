@@ -15,7 +15,7 @@
  */
 package org.auraframework.integration.test.components.ui.inputTextArea;
 
-import org.auraframework.test.util.WebDriverTestCase;
+import org.auraframework.integration.test.util.WebDriverTestCase;
 import org.auraframework.test.util.WebDriverUtil.BrowserType;
 import org.auraframework.util.test.annotation.UnAdaptableTest;
 import org.openqa.selenium.By;

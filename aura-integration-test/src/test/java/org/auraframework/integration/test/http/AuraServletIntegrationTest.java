@@ -19,10 +19,10 @@ import org.auraframework.adapter.ConfigAdapter;
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.http.ManifestUtil;
+import org.auraframework.integration.test.util.IntegrationTestCase;
 import org.auraframework.system.AuraContext.Authentication;
 import org.auraframework.system.AuraContext.Format;
 import org.auraframework.system.AuraContext.Mode;
-import org.auraframework.test.util.IntegrationTestCase;
 import org.auraframework.util.test.annotation.ThreadHostileTest;
 import org.junit.Test;
 

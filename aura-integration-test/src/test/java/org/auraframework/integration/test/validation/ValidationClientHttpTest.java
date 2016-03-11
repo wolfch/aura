@@ -16,7 +16,8 @@
 package org.auraframework.integration.test.validation;
 
 import com.google.common.collect.Lists;
-import org.auraframework.test.util.AuraHttpTestCase;
+
+import org.auraframework.integration.test.util.AuraHttpTestCase;
 import org.auraframework.util.AuraFiles;
 import org.auraframework.util.test.annotation.UnAdaptableTest;
 import org.auraframework.util.validation.ValidationClient;

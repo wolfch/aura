@@ -101,7 +101,12 @@ public class AuraTestingUtil {
         // and better be using StringSourceLoader
         AuraContext context = contextService.getCurrentContext();
         if (context != null) {
-            return context.getDefRegistry().getSource(descriptor);
+        	Source<T> res = context.getDefRegistry().getSource(descriptor);
+            if(res != null) {
+            	return context.getDefRegistry().getSource(descriptor);
+            } else {
+            	 return stringSourceLoader.getSource(descriptor);
+            }
         } else {
             return stringSourceLoader.getSource(descriptor);
         }

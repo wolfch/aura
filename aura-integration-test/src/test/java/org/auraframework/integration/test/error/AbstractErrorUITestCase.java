@@ -16,7 +16,7 @@
 
 package org.auraframework.integration.test.error;
 
-import org.auraframework.test.util.WebDriverTestCase;
+import org.auraframework.integration.test.util.WebDriverTestCase;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 

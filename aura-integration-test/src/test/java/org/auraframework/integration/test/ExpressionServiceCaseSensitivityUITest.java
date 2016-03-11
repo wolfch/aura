@@ -15,8 +15,8 @@
  */
 package org.auraframework.integration.test;
 
+import org.auraframework.integration.test.util.WebDriverTestCase;
 import org.auraframework.system.AuraContext.Mode;
-import org.auraframework.test.util.WebDriverTestCase;
 import org.junit.Assert;
 import org.junit.Test;
 

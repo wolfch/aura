@@ -15,7 +15,7 @@
  */
 package org.auraframework.integration.test;
 
-import org.auraframework.test.util.WebDriverTestCase;
+import org.auraframework.integration.test.util.WebDriverTestCase;
 import org.auraframework.util.test.annotation.ThreadHostileTest;
 import org.junit.Test;
 import org.openqa.selenium.By;

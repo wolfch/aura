@@ -15,7 +15,7 @@
  */
 package org.auraframework.integration.test.components.ui.pillContainerAutoComplete;
 
-import org.auraframework.test.util.WebDriverTestCase;
+import org.auraframework.integration.test.util.WebDriverTestCase;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;

@@ -16,8 +16,8 @@
 package org.auraframework.integration.test;
 
 import junit.framework.TestSuite;
+
 import org.auraframework.AuraConfiguration;
-import org.auraframework.test.ComponentJSTestSuite;
 import org.junit.runner.RunWith;
 import org.junit.runners.AllTests;
 import org.springframework.test.context.ContextConfiguration;

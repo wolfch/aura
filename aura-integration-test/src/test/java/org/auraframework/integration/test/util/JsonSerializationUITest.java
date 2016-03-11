@@ -18,7 +18,7 @@ package org.auraframework.integration.test.util;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.HelperDef;
-import org.auraframework.test.util.WebDriverTestCase;
+import org.auraframework.integration.test.util.WebDriverTestCase;
 import org.junit.Ignore;
 import org.junit.Test;
 

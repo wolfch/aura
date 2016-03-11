@@ -16,6 +16,7 @@
 package org.auraframework.integration.test;
 
 import com.google.common.base.Function;
+
 import org.apache.commons.lang3.StringUtils;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.ControllerDef;
@@ -29,7 +30,7 @@ import org.auraframework.def.ProviderDef;
 import org.auraframework.def.RendererDef;
 import org.auraframework.def.StyleDef;
 import org.auraframework.def.TokensDef;
-import org.auraframework.test.util.WebDriverTestCase;
+import org.auraframework.integration.test.util.WebDriverTestCase;
 import org.auraframework.util.test.annotation.ThreadHostileTest;
 import org.junit.Ignore;
 import org.junit.Test;

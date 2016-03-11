@@ -26,17 +26,22 @@ import javax.xml.stream.XMLStreamWriter;
 import org.auraframework.adapter.LocalizationAdapter;
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.DefDescriptor;
+import org.auraframework.def.Definition;
 import org.auraframework.def.ModelDef;
 import org.auraframework.impl.java.model.JavaModelDefImpl;
 import org.auraframework.impl.test.util.AuraImplUnitTestingUtil;
 import org.auraframework.instance.BaseComponent;
 import org.auraframework.instance.Model;
+import org.auraframework.service.DefinitionService;
 import org.auraframework.service.InstanceService;
 import org.auraframework.service.RenderingService;
+import org.auraframework.system.Source;
 import org.auraframework.system.AuraContext.Authentication;
 import org.auraframework.system.AuraContext.Format;
 import org.auraframework.system.AuraContext.Mode;
+import org.auraframework.test.source.StringSourceLoader;
 import org.auraframework.test.util.AuraTestCase;
+import org.auraframework.test.util.AuraTestingUtil;
 import org.auraframework.util.json.JsonSerializationContext;
 
 /**
@@ -47,6 +52,9 @@ public abstract class AuraImplTestCase extends AuraTestCase {
     private final XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newInstance();
 
     @Inject
+    protected DefinitionService definitionService;
+    
+    @Inject
     RenderingService renderingService;
 
     @Inject
@@ -54,6 +62,11 @@ public abstract class AuraImplTestCase extends AuraTestCase {
     
     @Inject
     LocalizationAdapter localizationAdapter;
+    
+    @Inject
+    protected StringSourceLoader stringSourceLoader;
+    
+    protected AuraTestingUtil auraTestingUtil;
 
     protected AuraImplUnitTestingUtil vendor;
 
@@ -87,7 +100,38 @@ public abstract class AuraImplTestCase extends AuraTestCase {
         if (contextService.isEstablished()) {
             contextService.endContext();
         }
+        if (auraTestingUtil != null) {
+            auraTestingUtil.tearDown();
+        }
         super.tearDown();
+    }
+    
+    public AuraTestingUtil getAuraTestingUtil() {
+        if (auraTestingUtil == null) {
+            auraTestingUtil = new AuraTestingUtil(fileMonitor, stringSourceLoader, definitionService, configAdapter, contextService);
+        }
+        return auraTestingUtil;
+    }
+    
+    protected <T extends Definition> DefDescriptor<T> addSourceAutoCleanup(Class<T> defClass, String contents,
+            String namePrefix) {
+        return getAuraTestingUtil().addSourceAutoCleanup(defClass, contents, namePrefix);
+    }
+
+    protected <T extends Definition> DefDescriptor<T> addSourceAutoCleanup(Class<T> defClass, String contents) {
+        return getAuraTestingUtil().addSourceAutoCleanup(defClass, contents);
+    }
+
+    protected void updateStringSource(DefDescriptor<?> desc, String content) {
+        getAuraTestingUtil().updateSource(desc, content);
+    }
+
+    protected <T extends Definition> DefDescriptor<T> addSourceAutoCleanup(DefDescriptor<T> descriptor, String contents) {
+        return getAuraTestingUtil().addSourceAutoCleanup(descriptor, contents);
+    }
+
+    protected <T extends Definition> Source<T> getSource(DefDescriptor<T> descriptor) {
+        return getAuraTestingUtil().getSource(descriptor);
     }
 
     protected FakeRegistry createFakeRegistry() {

@@ -16,7 +16,8 @@
 package org.auraframework.integration.test.root.component.rendering;
 
 import com.google.common.base.Function;
-import org.auraframework.test.util.WebDriverTestCase;
+
+import org.auraframework.integration.test.util.WebDriverTestCase;
 import org.auraframework.util.test.annotation.AuraTestLabels;
 import org.junit.Test;
 import org.openqa.selenium.By;

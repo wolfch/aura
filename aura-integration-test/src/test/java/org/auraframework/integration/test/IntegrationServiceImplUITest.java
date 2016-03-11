@@ -18,6 +18,7 @@ package org.auraframework.integration.test;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.ControllerDef;
 import org.auraframework.def.DefDescriptor;
@@ -25,8 +26,8 @@ import org.auraframework.def.HelperDef;
 import org.auraframework.def.ProviderDef;
 import org.auraframework.def.StyleDef;
 import org.auraframework.impl.AuraImplTestCase;
+import org.auraframework.integration.test.util.WebDriverTestCase;
 import org.auraframework.test.util.AuraTestingMarkupUtil;
-import org.auraframework.test.util.WebDriverTestCase;
 import org.auraframework.test.util.WebDriverUtil.BrowserType;
 import org.auraframework.util.AuraTextUtil;
 import org.auraframework.util.json.JsonEncoder;

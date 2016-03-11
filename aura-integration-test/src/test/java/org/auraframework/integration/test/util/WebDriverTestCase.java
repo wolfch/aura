@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.auraframework.test.util;
+package org.auraframework.integration.test.util;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+
 import junit.framework.AssertionFailedError;
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpGet;
@@ -32,6 +34,10 @@ import org.auraframework.test.perf.PerfResultsUtil;
 import org.auraframework.test.perf.PerfWebDriverUtil;
 import org.auraframework.test.perf.metrics.PerfMetricsCollector;
 import org.auraframework.test.perf.util.PerfExecutorTest;
+import org.auraframework.test.util.AuraUITestingUtil;
+import org.auraframework.test.util.SauceUtil;
+import org.auraframework.test.util.WebDriverProvider;
+import org.auraframework.test.util.WebDriverUtil;
 import org.auraframework.test.util.WebDriverUtil.BrowserType;
 import org.auraframework.throwable.AuraExceptionUtil;
 import org.auraframework.util.AuraUtil;

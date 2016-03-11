@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.auraframework.test.util;
+package org.auraframework.integration.test.util;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
@@ -57,6 +58,7 @@ import org.auraframework.util.json.JsonEncoder;
 import org.auraframework.util.json.JsonReader;
 
 import javax.inject.Inject;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
@@ -118,9 +120,9 @@ public abstract class AuraHttpTestCase extends IntegrationTestCase {
                 AuraContext context = contextService.getCurrentContext();
                 boolean testMode = context != null && context.isTestMode();
                 if (testMode || allowInline) {
-                    assertEquals("script-src is wrong", "'self' chrome-extension: 'unsafe-inline' 'unsafe-eval'",
+                    assertEquals("script-src is wrong", "'self' chrome-extension: 'unsafe-inline' 'unsafe-eval' 'nonce-LockerServiceTemporaryNonce'",
                             csp.get("script-src"));
-                    assertEquals("style-src is wrong", "'self' chrome-extension: 'unsafe-inline'",
+                    assertEquals("style-src is wrong", "'self' chrome-extension: 'unsafe-inline' 'nonce-LockerServiceTemporaryNonce'",
                             csp.get("style-src"));
                 } else {
                     assertEquals("script-src is wrong",

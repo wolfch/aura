@@ -18,6 +18,7 @@ package org.auraframework.components.ui;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.EventType;
 import org.auraframework.def.RegisterEventDef;
+import org.auraframework.service.DefinitionService;
 import org.auraframework.system.AuraContext.Authentication;
 import org.auraframework.system.AuraContext.Format;
 import org.auraframework.system.AuraContext.Mode;
@@ -26,6 +27,8 @@ import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.inject.Inject;
 
 /**
  * Automation for ui:input component.
@@ -44,6 +47,9 @@ public class InputComponentsTest extends AuraTestCase {
         super.setUp();
         contextService.startContext(Mode.UTEST, Format.JSON, Authentication.AUTHENTICATED);
     }
+    
+    @Inject
+    private DefinitionService definitionService;
 
     /**
      * Verify that ui:input is registered to throw all the expected events. Also

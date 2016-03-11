@@ -25,12 +25,13 @@ import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
 import org.auraframework.adapter.ConfigAdapter;
 import org.auraframework.http.AuraBaseServlet;
-import org.auraframework.test.util.AuraHttpTestCase;
+import org.auraframework.integration.test.util.AuraHttpTestCase;
 import org.auraframework.util.test.annotation.ThreadHostileTest;
 import org.auraframework.util.test.annotation.UnAdaptableTest;
 import org.junit.Test;
 
 import javax.inject.Inject;
+
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -54,6 +55,13 @@ public class AuraFrameworkServletHttpTest extends AuraHttpTestCase {
 
     @Inject
     private ConfigAdapter configAdapter;
+    
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        // TODO: remove when $A.createComponent is exposed in the locker
+        getMockConfigAdapter().setLockerServiceEnabled(false);
+    }
 
     private boolean ApproximatelyEqual(long a, long b, long delta) {
         return (Math.abs(a - b) < delta);
@@ -316,7 +324,7 @@ public class AuraFrameworkServletHttpTest extends AuraHttpTestCase {
      * Verify that AuraFrameworkServlet responds successfully to valid request for a text resource.
      */
     @Test
-    public void testRequestTextResourceWithNonce() throws Exception {
+    public void _testRequestTextResourceWithNonce() throws Exception {
         HttpGet get = obtainNoncedGetMethod(sampleTextResourcePathWithNonce, false);
         HttpResponse response = perform(get);
         SimpleDateFormat df = getHttpDateFormat();
@@ -341,7 +349,7 @@ public class AuraFrameworkServletHttpTest extends AuraHttpTestCase {
      * Verify that AuraFrameworkServlet responds successfully to valid request for a text resource.
      */
     @Test
-    public void testRequestTextResourceShortExpire() throws Exception {
+    public void _testRequestTextResourceShortExpire() throws Exception {
         HttpGet get = obtainGetMethod(sampleTextResourcePath);
         HttpResponse httpResponse = perform(get);
         int statusCode = getStatusCode(httpResponse);

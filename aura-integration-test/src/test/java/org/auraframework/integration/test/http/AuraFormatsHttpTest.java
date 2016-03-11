@@ -22,13 +22,14 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.auraframework.adapter.ConfigAdapter;
 import org.auraframework.http.AuraBaseServlet;
+import org.auraframework.integration.test.util.AuraHttpTestCase;
 import org.auraframework.system.AuraContext.Format;
-import org.auraframework.test.util.AuraHttpTestCase;
 import org.auraframework.util.AuraTextUtil;
 import org.auraframework.util.json.JsonEncoder;
 import org.junit.Test;
 
 import javax.inject.Inject;
+
 import java.util.HashMap;
 import java.util.Map;
 

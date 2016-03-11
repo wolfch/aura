@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.auraframework.test.util;
+package org.auraframework.integration.test.util;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -33,10 +33,14 @@ import org.auraframework.def.BaseComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.DefDescriptor.DefType;
 import org.auraframework.http.CSP;
+import org.auraframework.impl.AuraImplTestCase;
+import org.auraframework.service.DefinitionService;
 import org.auraframework.system.AuraContext;
 import org.auraframework.system.AuraContext.Authentication;
 import org.auraframework.system.AuraContext.Format;
 import org.auraframework.system.AuraContext.Mode;
+import org.auraframework.test.util.AuraTestCase;
+import org.auraframework.test.util.IntegrationTestCaseOverrides;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.test.annotation.IntegrationTest;
 import org.auraframework.util.test.configuration.TestServletConfig;
@@ -48,6 +52,7 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 import javax.inject.Inject;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -64,7 +69,7 @@ import java.nio.charset.Charset;
         @ContextConfiguration(name = "parent", classes = {AuraConfiguration.class}),
         @ContextConfiguration(name = "child", classes = {IntegrationTestCaseOverrides.class})
 })
-public abstract class IntegrationTestCase extends AuraTestCase {
+public abstract class IntegrationTestCase extends AuraImplTestCase {
 
     @Inject
     protected TestServletConfig testServletConfig;

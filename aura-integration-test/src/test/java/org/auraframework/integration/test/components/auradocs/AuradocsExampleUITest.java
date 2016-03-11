@@ -15,8 +15,8 @@
  */
 package org.auraframework.integration.test.components.auradocs;
 
+import org.auraframework.integration.test.util.WebDriverTestCase;
 import org.auraframework.system.AuraContext.Mode;
-import org.auraframework.test.util.WebDriverTestCase;
 import org.auraframework.util.test.annotation.UnAdaptableTest;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;

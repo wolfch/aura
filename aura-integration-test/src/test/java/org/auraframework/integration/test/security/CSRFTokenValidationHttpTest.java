@@ -21,7 +21,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.util.EntityUtils;
 import org.auraframework.adapter.ConfigAdapter;
 import org.auraframework.http.AuraBaseServlet;
-import org.auraframework.test.util.AuraHttpTestCase;
+import org.auraframework.integration.test.util.AuraHttpTestCase;
 import org.auraframework.util.json.JsFunction;
 import org.auraframework.util.json.Json;
 import org.auraframework.util.json.JsonEncoder;
@@ -31,6 +31,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.inject.Inject;
+
 import java.util.HashMap;
 import java.util.Map;
 

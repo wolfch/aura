@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.auraframework.test;
+package org.auraframework.integration.test;
 
 import com.google.common.collect.Sets;
+
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
 import org.auraframework.AuraConfiguration;
 import org.auraframework.AuraDeprecated;
 import org.auraframework.def.DefDescriptor;
@@ -25,12 +27,12 @@ import org.auraframework.def.DefDescriptor.DefType;
 import org.auraframework.def.DescriptorFilter;
 import org.auraframework.def.TestCaseDef;
 import org.auraframework.def.TestSuiteDef;
+import org.auraframework.integration.test.util.WebDriverTestCase;
 import org.auraframework.service.ContextService;
 import org.auraframework.service.DefinitionService;
 import org.auraframework.system.AuraContext.Authentication;
 import org.auraframework.system.AuraContext.Format;
 import org.auraframework.system.AuraContext.Mode;
-import org.auraframework.test.util.WebDriverTestCase;
 import org.auraframework.test.util.WebDriverUtil;
 import org.auraframework.test.util.WebDriverUtil.BrowserType;
 import org.auraframework.util.test.annotation.JSTest;
@@ -44,6 +46,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
