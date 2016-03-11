@@ -21,8 +21,10 @@ import org.auraframework.impl.util.AuraLocaleImpl;
 import org.auraframework.service.ContextService;
 import org.auraframework.system.AuraContext;
 import org.auraframework.util.AuraLocale;
+import org.springframework.context.annotation.Profile;
 
 import javax.inject.Inject;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -30,6 +32,7 @@ import java.util.Map;
 import java.util.TimeZone;
 
 @ServiceComponent
+@Profile("!auraTest")
 public class LocalizationAdapterImpl implements LocalizationAdapter {
 
     @Inject

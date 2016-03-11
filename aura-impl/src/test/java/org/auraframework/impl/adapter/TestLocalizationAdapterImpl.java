@@ -22,7 +22,6 @@ import org.springframework.context.annotation.Profile;
 import java.util.HashMap;
 import java.util.Map;
 
-
 @ServiceComponent
 @Profile("auraTest")
 public class TestLocalizationAdapterImpl extends LocalizationAdapterImpl {
