@@ -36,6 +36,7 @@ import org.junit.runners.BlockJUnit4ClassRunner;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.context.ApplicationContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestContextManager;
 import org.springframework.test.context.TestExecutionListeners;
@@ -62,6 +63,7 @@ import java.util.logging.Logger;
 @RunWith(BlockJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {AuraConfiguration.class})
 @TestExecutionListeners(listeners = {DependencyInjectionTestExecutionListener.class})
+@ActiveProfiles("auraTest")
 public abstract class UnitTestCase extends TestCase {
     @Inject
     private ApplicationContext applicationContext;

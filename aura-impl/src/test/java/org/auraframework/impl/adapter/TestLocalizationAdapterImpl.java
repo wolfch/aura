@@ -17,13 +17,14 @@ package org.auraframework.impl.adapter;
 
 import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.impl.context.LocalizationAdapterImpl;
-import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@Primary
+
 @ServiceComponent
+@Profile("auraTest")
 public class TestLocalizationAdapterImpl extends LocalizationAdapterImpl {
     private static final String DEFAULT_SECTION = "AuraTestLabelSection";
 
