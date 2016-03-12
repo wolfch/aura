@@ -15,6 +15,8 @@
  */
 package org.auraframework.impl.root.application;
 
+import java.io.IOException;
+
 import com.google.common.collect.Maps;
 import org.auraframework.Aura;
 import org.auraframework.builder.ApplicationDefBuilder;
@@ -38,7 +40,6 @@ import org.auraframework.throwable.quickfix.InvalidDefinitionException;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.json.Json;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;

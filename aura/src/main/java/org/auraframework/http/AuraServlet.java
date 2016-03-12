@@ -15,28 +15,46 @@
  */
 package org.auraframework.http;
 
-import java.io.*;
-import java.net.URI;
-import java.util.*;
+import com.google.common.collect.Maps;
+import org.apache.http.HttpHeaders;
+import org.auraframework.adapter.ConfigAdapter;
+import org.auraframework.adapter.ExceptionAdapter;
+import org.auraframework.adapter.ServletUtilAdapter;
+import org.auraframework.def.ApplicationDef;
+import org.auraframework.def.BaseComponentDef;
+import org.auraframework.def.ComponentDef;
+import org.auraframework.def.DefDescriptor;
+import org.auraframework.def.DefDescriptor.DefType;
+import org.auraframework.instance.Action;
+import org.auraframework.service.ContextService;
+import org.auraframework.service.DefinitionService;
+import org.auraframework.service.LoggingService;
+import org.auraframework.service.SerializationService;
+import org.auraframework.service.ServerService;
+import org.auraframework.system.AuraContext;
+import org.auraframework.system.Message;
+import org.auraframework.throwable.AuraRuntimeException;
+import org.auraframework.throwable.ClientOutOfSyncException;
+import org.auraframework.throwable.SystemErrorException;
+import org.auraframework.throwable.quickfix.QuickFixException;
+import org.auraframework.util.json.JsonStreamReader;
+import org.auraframework.http.RequestParam.StringParam;
+import org.auraframework.http.RequestParam.EnumParam;
+import org.auraframework.http.RequestParam.InvalidParamException;
+import org.auraframework.http.RequestParam.MissingParamException;
 
 import javax.inject.Inject;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.http.HttpHeaders;
-import org.auraframework.adapter.*;
-import org.auraframework.def.*;
-import org.auraframework.instance.Action;
-import org.auraframework.service.*;
-import org.auraframework.system.AuraContext;
-import org.auraframework.system.Message;
-import org.auraframework.throwable.*;
-import org.auraframework.throwable.quickfix.QuickFixException;
-import org.auraframework.util.json.JsonStreamReader;
-
-import com.google.common.collect.Maps;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringReader;
+import java.net.URI;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The servlet for initialization and actions in Aura.
@@ -88,12 +106,14 @@ public class AuraServlet extends AuraBaseServlet {
      */
     public final static String UTF_ENCODING = "UTF-8";
 
-    private final static RequestParam.StringParam csrfToken = new RequestParam.StringParam(AURA_PREFIX + "token", 0, true);
-    private final static RequestParam.StringParam tag = new RequestParam.StringParam(AURA_PREFIX + "tag", 128, true);
-    private final static RequestParam.EnumParam<DefDescriptor.DefType> defTypeParam = new RequestParam.EnumParam<>(AURA_PREFIX + "deftype", false, DefDescriptor.DefType.class);
-    private final static RequestParam.StringParam formatAdapterParam = new RequestParam.StringParam(AURA_PREFIX + "formatAdapter", 0, false);
-    private final static RequestParam.StringParam messageParam = new RequestParam.StringParam("message", 0, false);
-    private final static RequestParam.StringParam nocacheParam = new RequestParam.StringParam("nocache", 0, false);
+    public final static StringParam tag = new StringParam(AURA_PREFIX + "tag", 128, true);
+    public final static EnumParam<DefType> defTypeParam = new EnumParam<>(AURA_PREFIX + "deftype", false,
+            DefType.class);
+
+    private final static StringParam csrfToken = new StringParam(AURA_PREFIX + "token", 0, true);
+    private final static StringParam formatAdapterParam = new StringParam(AURA_PREFIX + "formatAdapter", 0, false);
+    private final static StringParam messageParam = new StringParam("message", 0, false);
+    private final static StringParam nocacheParam = new StringParam("nocache", 0, false);
 
     private ExceptionAdapter exceptionAdapter;
     private ServletUtilAdapter servletUtilAdapter;
@@ -177,7 +197,7 @@ public class AuraServlet extends AuraBaseServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         AuraContext context;
         String tagName;
-        DefDescriptor.DefType defType;
+        DefType defType;
         ServletContext servletContext = getServletContext();
 
         //
@@ -220,7 +240,7 @@ public class AuraServlet extends AuraBaseServlet {
         //
         try {
             tagName = tag.get(request);
-            defType = defTypeParam.get(request, DefDescriptor.DefType.COMPONENT);
+            defType = defTypeParam.get(request, DefType.COMPONENT);
             if (tagName == null || tagName.isEmpty()) {
                 throw new AuraRuntimeException("Invalid request, tag must not be empty");
             }
@@ -231,12 +251,12 @@ public class AuraServlet extends AuraBaseServlet {
                 return;
             }
 
-            Class<? extends BaseComponentDef> defClass = defType == DefDescriptor.DefType.APPLICATION ? ApplicationDef.class : ComponentDef.class;
+            Class<? extends BaseComponentDef> defClass = defType == DefType.APPLICATION ? ApplicationDef.class : ComponentDef.class;
             defDescriptor = definitionService.getDefDescriptor(tagName, defClass);
-        } catch (RequestParam.InvalidParamException ipe) {
+        } catch (InvalidParamException ipe) {
             servletUtilAdapter.handleServletException(new SystemErrorException(ipe), false, context, request, response, false);
             return;
-        } catch (RequestParam.MissingParamException mpe) {
+        } catch (MissingParamException mpe) {
             servletUtilAdapter.handleServletException(new SystemErrorException(mpe), false, context, request, response, false);
             return;
         } catch (Throwable t) {
@@ -251,7 +271,7 @@ public class AuraServlet extends AuraBaseServlet {
         AuraContext context = contextService.getCurrentContext();
         try {
             DefDescriptor<? extends BaseComponentDef> appDefDesc = context.getLoadingApplicationDescriptor();
-            if (appDefDesc != null && appDefDesc.getDefType().equals(DefDescriptor.DefType.APPLICATION)) {
+            if (appDefDesc != null && appDefDesc.getDefType().equals(DefType.APPLICATION)) {
                 Boolean isOnePageApp = ((ApplicationDef) appDefDesc.getDef()).isOnePageApp();
                 if (isOnePageApp != null) {
                     return isOnePageApp.booleanValue();
@@ -334,7 +354,7 @@ public class AuraServlet extends AuraBaseServlet {
         while (attributeNames.hasMoreElements()) {
             String name = attributeNames.nextElement();
             if (!name.startsWith(AURA_PREFIX)) {
-                Object value = new RequestParam.StringParam(name, 0, false).get(request);
+                Object value = new StringParam(name, 0, false).get(request);
 
                 attributes.put(name, value);
             }
@@ -457,10 +477,10 @@ public class AuraServlet extends AuraBaseServlet {
             written = true;
             out.write(CSRF_PROTECT);
             serverService.run(message, context, out, attributes);
-        } catch (RequestParam.InvalidParamException ipe) {
+        } catch (InvalidParamException ipe) {
             servletUtilAdapter.handleServletException(new SystemErrorException(ipe), false, context, request, response, false);
             return;
-        } catch (RequestParam.MissingParamException mpe) {
+        } catch (MissingParamException mpe) {
             servletUtilAdapter.handleServletException(new SystemErrorException(mpe), false, context, request, response, false);
             return;
         } catch (JsonStreamReader.JsonParseException jpe) {

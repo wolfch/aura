@@ -34,7 +34,7 @@ public class AppCss extends AuraResourceImpl {
     private ServerService serverService;
 
     public AppCss() {
-        super("app.css", Format.CSS, false);
+        super("app.css", Format.CSS);
     }
 
     @Override

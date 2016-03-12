@@ -22,8 +22,8 @@ var SecureElement = (function() {
 
 	// Standard Element interface represents an object of a Document.
 	// https://developer.mozilla.org/en-US/docs/Web/API/Element#Properties
-	var ElementSecureProperties = ['attributes', 'childElementCount', 'classList', 'className', 'id', 'tagName'];
-	// Note: ignoring 'children', 'firstElementChild', 'innerHTML', 'lastElementChild', 'namespaceURI',
+	var ElementSecureProperties = ['childElementCount', 'classList', 'className', 'id', 'tagName'];
+	// Note: ignoring 'attributes', 'children', 'firstElementChild', 'innerHTML', 'lastElementChild', 'namespaceURI',
 	//      'nextElementSibling' and 'previousElementSibling' from the list above.
 
 	// Standard HTMLElement interface represents any HTML element
@@ -32,14 +32,6 @@ var SecureElement = (function() {
 			'contextMenu', 'dataset', 'dir', 'draggable', 'dropzone', 'hidden', 'lang', 'spellcheck',
 			'style', 'tabIndex', 'title'];
 	// Note: ignoring 'offsetParent' from the list above.
-
-	function getElement(se) {
-		return se._get("el", $A.lockerService.masterKey);
-	}
-
-	function getKey(se) {
-		return $A.lockerService.util._getKey(se, $A.lockerService.masterKey);
-	}
 
 	function SecureElement(el, key) {
 		// A secure element can have multiple forms, this block allows us to apply
@@ -50,17 +42,16 @@ var SecureElement = (function() {
 		}
 
 		// SecureElement is it then!
-		SecureThing.call(this, key, "el");
-		$A.lockerService.util.applyKey(el, key);
-		this._set("el", el, $A.lockerService.masterKey);
+		setLockerSecret(this, "key", key);
+	    setLockerSecret(this, "ref", el);
 		SecureElement.enableSecureProperties(this);
 		Object.freeze(this);
 	}
 
-	SecureElement.prototype = Object.create(SecureThing.prototype, {
+	SecureElement.prototype = Object.create(null, {
 		toString : {
 			value : function() {
-				return "SecureElement: " + getElement(this) + "{ key: " + JSON.stringify(getKey(this)) + " }";
+				return "SecureElement: " + getLockerSecret(this, "ref") + "{ key: " + JSON.stringify(getLockerSecret(this, "key")) + " }";
 			}
 		},
 
@@ -69,10 +60,11 @@ var SecureElement = (function() {
 				$A.lockerService.util.verifyAccess(this, child);
 
 				if (child.$run) {
+					// special case for SecureScriptElement to execute without insertion.
+					// TODO: improve
 					child.$run();
 				} else {
-					var childEl = child.unwrap($A.lockerService.masterKey);
-					getElement(this).appendChild(childEl);
+					getLockerSecret(this, "ref").appendChild(getLockerSecret(child, "ref"));
 				}
 			}
 		},
@@ -82,16 +74,18 @@ var SecureElement = (function() {
 				if (!callback) {
 					return; // by spec, missing callback argument does not throw, just ignores it.
 				}
-				var key = getKey(this);
+				var key = getLockerSecret(this, "key");
 				var sCallback = function(e) {
 					var se = new SecureDOMEvent(e, key);
 					// Wrap the source event in "this" in a secure element
-					var secureEventContext = SecureDocument.wrap(this);
+					// TODO: we might need to check if we have access to context object
+					var secureEventContext = new SecureElement(this, key);
 					callback.call(secureEventContext, se);
 				};
-				getElement(this).addEventListener(event, sCallback, useCapture);
+				getLockerSecret(this, "ref").addEventListener(event, sCallback, useCapture);
 			}
 		},
+		
 		removeEventListener : SecureThing.createPassThroughMethod("removeEventListener"),
 		dispatchEvent : SecureThing.createPassThroughMethod("dispatchEvent"),
 
@@ -101,8 +95,6 @@ var SecureElement = (function() {
 		getAttribute: SecureThing.createPassThroughMethod("getAttribute"),
 		setAttribute: SecureThing.createPassThroughMethod("setAttribute"),
 
-		innerText: SecureThing.createPassThroughProperty("innerText"),
-
 		ownerDocument : SecureThing.createFilteredProperty("ownerDocument"),
 		parentNode : SecureThing.createFilteredProperty("parentNode"),
 
@@ -110,19 +102,7 @@ var SecureElement = (function() {
 		// https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement#Methods
 		blur: SecureThing.createPassThroughMethod("blur"),
 		click: SecureThing.createPassThroughMethod("click"),
-		focus: SecureThing.createPassThroughMethod("focus"),
-
-		// Internal master key protected API
-
-		unwrap : {
-			value : function(mk) {
-				if (mk !== $A.lockerService.masterKey) {
-					throw new Error("Access denied");
-				}
-
-				return getElement(this);
-			}
-		}
+		focus: SecureThing.createPassThroughMethod("focus")
 	});
 
 	SecureElement.prototype.constructor = SecureElement;

@@ -32,8 +32,7 @@ public class TestControllerWithParameters implements Controller {
     public Integer sumValues(@Key("a") Integer a, @Key("b") Integer b) {
         return Integer.valueOf(a.intValue() + b.intValue());
     }
-    
-    
+
     @AuraEnabled
     public String customParam(@Key("a") CustomParam a) {
         return "Anything";
@@ -41,5 +40,4 @@ public class TestControllerWithParameters implements Controller {
 
     public class CustomParam {
     }
-
 }

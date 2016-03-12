@@ -1358,11 +1358,18 @@ Component.prototype.getEvent = function(name) {
         return null;
     }
     if (!$A.clientService.allowAccess(eventDef,this)) {
-        // #if {"excludeModes" : ["PRODUCTION"]}
-        $A.error("Access Check Failed! Component.getEvent():'" + name + "' of component '" + this + "' is not visible to '" + $A.getContext().getCurrentAccess() + "'.");
-        // #end
-
-        return null;
+        var context=$A.getContext();
+        var message="Access Check Failed! Component.getEvent():'" + name + "' of component '" + this + "' is not visible to '" + context.getCurrentAccess() + "'.";
+        if(context.enableAccessChecks) {
+            if(context.logAccessFailures){
+                $A.error(message);
+            }
+            return null;
+        }else{
+            if(context.logAccessFailures){
+                $A.warning(message);
+            }
+        }
     }
     return new Aura.Event.Event({
         "name" : name,
@@ -1574,9 +1581,14 @@ Component.prototype.render = function() {
     if(render){
         var context = $A.getContext();
         context.setCurrentAccess(this);
-
-        var result = render($A.lockerService.wrapComponent(this), this["helper"]);
-
+        var secureThis = $A.lockerService.wrapComponent(this);
+        var result = render(secureThis, this["helper"]);
+        // Locker: anytime framework receive DOM elements from a locked down component
+        // it should unwrap them before using them. For regular components, this is
+        // a non-opt:
+        if (secureThis !== this) {
+            result = $A.lockerService.unwrap(result);
+        }
         context.releaseCurrentAccess();
 
         return result;
@@ -1613,7 +1625,14 @@ Component.prototype.rerender = function() {
     if(rerender){
         var context=$A.getContext();
         context.setCurrentAccess(this);
-        var result = rerender($A.lockerService.wrapComponent(this), this["helper"]);
+        var secureThis = $A.lockerService.wrapComponent(this);
+        var result = rerender(secureThis, this["helper"]);
+        // Locker: anytime framework receive DOM elements from a locked down component
+        // it should unwrap them before using them. For regular components, this is
+        // a non-opt:
+        if (secureThis !== this) {
+            result = $A.lockerService.unwrap(result);
+        }
         context.releaseCurrentAccess();
         return result;
      } else {
@@ -1764,7 +1783,7 @@ Component.prototype.setupComponentDef = function(config) {
         this.replaceComponentClass(componentDef.getDescriptor().getQualifiedName());
     }
 
-    var key = $A.lockerService.util._getKey(this.componentDef, $A.lockerService.masterKey);
+    var key = getLockerSecret(this.componentDef, "key");
 	if (key) {
     	$A.lockerService.util.applyKey(this, key);
 	}
@@ -1842,10 +1861,18 @@ Component.prototype.setupSuper = function(configAttributes) {
                 for (var i = 0; i < facets.length; i++) {
                     var facetDef = AttributeSet.getDef(facets[i]["descriptor"], this.componentDef);
                     if (!$A.clientService.allowAccess(facetDef[0], facetDef[1])) {
-                        // #if {"excludeModes" : ["PRODUCTION"]}
-                        $A.error("Access Check Failed! Component.setupSuper():'" + facets[i]["descriptor"] + "' of component '" + this + "' is not visible to '" + $A.getContext().getCurrentAccess() + "'.");
-                        // #end
-                        continue;
+                        var context=$A.getContext();
+                        var message="Access Check Failed! Component.setupSuper():'" + facets[i]["descriptor"] + "' of component '" + this + "' is not visible to '" + context.getCurrentAccess() + "'.";
+                        if(context.enableAccessChecks) {
+                            if(context.logAccessFailures){
+                                $A.error(message);
+                            }
+                            continue;
+                        }else{
+                            if(context.logAccessFailures){
+                                $A.warning(message);
+                            }
+                        }
                     }
                     superAttributes["values"][facets[i]["descriptor"]] = facets[i]["value"];
                 }
@@ -1933,11 +1960,18 @@ Component.prototype.setupAttributes = function(cmp, config, localCreation) {
         if (!setByDefault[attribute]){
             var def=AttributeSet.getDef(attribute,cmp.getDef());
             if(!$A.clientService.allowAccess(def[0],def[1])) {
-                // #if {"excludeModes" : ["PRODUCTION"]}
-                $A.error("Access Check Failed! Component.setupAttributes():'" + attribute + "' of component '" + cmp + "' is not visible to '" + $A.getContext().getCurrentAccess() + "'.");
-                // #end
-
-                continue;
+                var context=$A.getContext();
+                var message="Access Check Failed! Component.setupAttributes():'" + attribute + "' of component '" + cmp + "' is not visible to '" + context.getCurrentAccess() + "'.";
+                if(context.enableAccessChecks){
+                    if(context.logAccessFailures){
+                        $A.error(message);
+                    }
+                    continue;
+                }else{
+                    if(context.logAccessFailures){
+                        $A.warning(message);
+                    }
+                }
             }
         }
 

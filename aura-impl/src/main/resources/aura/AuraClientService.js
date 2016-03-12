@@ -75,6 +75,7 @@ Aura.Services.AuraClientService$AuraActionCollector = function AuraActionCollect
     // collected server actions to send.
     this.actionsToCollect = 0;
     this.collected = [];
+    this.collecting = [];
 
     // collected server actions to complete (stored)
     this.actionsToComplete = [];
@@ -118,6 +119,14 @@ Aura.Services.AuraClientService$AuraActionCollector = function AuraActionCollect
  *  * execute client actions with setTimeout(0) to allow server actions to complete.
  *  * As server actions come back from storage, queue up for execution, and queue refresh actions to refresh.
  *  * After all actions collect, check for further actions in the queue, restart loop if there are some.
+ *  * Once we have finished processing all actions, check for actions to be put in an XHR.
+ *    + All foreground actions go in a single XHR, and are de-duped on send.
+ *    + background actions are sent one per XHR, with a de-dupe step during the queue walk.
+ *    + deferred actions are sent if we are idle, with a de-dupe step durning the queue walk.
+ *
+ * Queues:
+ *  * actionsQueued - queue of actions that have yet to be processed.
+ *  * actionsDeferred - actions that have been processed through storage, but need to go to the server.
  *
  * @constructor
  */
@@ -208,6 +217,37 @@ AuraClientService.prototype.setQueueSize = function(queueSize) {
     }
 };
 
+/**
+ * Mark all currently queued (but not sent) actions as 'deferred'.
+ *
+ * This is intended for use when componenes are kept 'alive' after they are no longer on the screen for better
+ * performance going back and forth between various displays.
+ */
+AuraClientService.prototype.deferPendingActions = function() {
+    var i;
+    var action;
+
+    for (i = 0; i < this.actionsQueued.length; i++) {
+        action = this.actionsQueued[i];
+        if (action) {
+            action.setDeferred();
+        }
+    }
+    for (i = 0; i < this.actionsDeferred.length; i++) {
+        action = this.actionsDeferred[i];
+        if (action) {
+            action.setDeferred();
+        }
+    }
+    if (this.collector) {
+        for (i = 0; i < this.collector.collecting.length; i++) {
+            action = this.collector.collecting[i];
+            if (action) {
+                action.setDeferred();
+            }
+        }
+    }
+};
 
 /**
  * Take a json (hopefully) response and decode it. If the input is invalid JSON, we try to handle it gracefully.
@@ -492,7 +532,9 @@ AuraClientService.prototype.singleAction = function(action, actionResponse, key,
                     if (errorHandler && $A.util.isFunction(errorHandler)) {
                         errorHandler(e);
                     } else {
-                        $A.logger.auraErrorHelper(e, action);
+                        var errorWrapper = new $A.auraError(null, e);
+                        errorWrapper.action = action;
+                        $A.logger.reportError(errorWrapper);
                     }
                     return;
                 }
@@ -517,8 +559,13 @@ AuraClientService.prototype.singleAction = function(action, actionResponse, key,
             }
         }
     } catch (e) {
-        $A.logger.auraErrorHelper(e, action);
-        throw e;
+        if (e instanceof $A.auraError) {
+            throw e;
+        } else {
+            var wrapper = new $A.auraError(null, e);
+            wrapper.action = action;
+            throw wrapper;
+        }
     }
 };
 
@@ -645,41 +692,41 @@ AuraClientService.prototype.isDevMode = function() {
     return !$A.util.isUndefined(context) && context.getMode() === "DEV";
 };
 
+
+/**
+ * Clears actions and ComponentDefStorage stores then reloads the page.
+ */
+AuraClientService.prototype.dumpCachesAndReload = function() {
+    // reload even if storage clear fails
+    var actionStorage = Action.getStorage();
+    var actionClear = actionStorage && actionStorage.isPersistent() ? actionStorage.clear() : Promise["resolve"]([]);
+
+    actionClear.then(
+        undefined, // noop on success
+        function(e) {
+            $A.log("Failed to clear persistent actions cache", e);
+            // do not rethrow to return to resolve state
+        }
+    ).then(
+        function() {
+            return $A.componentService.clearDefsFromStorage();
+        }
+    ).then(
+        undefined, // noop on success
+        function(e) {
+            $A.log("Failed to clear persistent component def storage", e);
+            // do not rethrow to return to resolve state
+        }
+    ).then(
+        function() {
+            window.location.reload(true);
+        }
+    );
+};
+
 AuraClientService.prototype.handleAppCache = function() {
 
     var acs = this;
-
-
-    /**
-     * Clears actions and ComponentDefStorage stores then reloads the page.
-     */
-    function dumpCachesAndReload() {
-        // reload even if storage clear fails
-        var actionStorage = Action.getStorage();
-        var actionClear = actionStorage && actionStorage.isPersistent() ? actionStorage.clear() : Promise["resolve"]([]);
-
-        actionClear.then(
-            undefined, // noop on success
-            function() {
-                $A.log("Failed to clear persistent actions cache");
-                // do not rethrow to return to resolve state
-            }
-        ).then(
-            function() {
-                return $A.componentService.clearDefsFromStorage();
-            }
-        ).then(
-            undefined, // noop on success
-            function() {
-                $A.log("Failed to clear persistent component def storage");
-                // do not rethrow to return to resolve state
-            }
-        ).then(
-            function() {
-                window.location.reload(true);
-            }
-        );
-    }
 
     function showProgress(progress) {
         var progressContEl = document.getElementById("auraAppcacheProgress");
@@ -709,7 +756,7 @@ AuraClientService.prototype.handleAppCache = function() {
                 // protect against InvalidStateError with swapCache even when UPDATEREADY (weird)
             }
         }
-        dumpCachesAndReload();
+        acs.dumpCachesAndReload();
     }
 
     function handleAppcacheError(e) {
@@ -741,7 +788,7 @@ AuraClientService.prototype.handleAppCache = function() {
         if (acs.appcacheDownloadingEventFired && acs.isOutdated) {
             // Hard reload if we error out trying to download new appcache
             $A.log("Outdated.");
-            dumpCachesAndReload();
+            acs.dumpCachesAndReload();
         }
     }
 
@@ -800,7 +847,7 @@ AuraClientService.prototype.setOutdated = function() {
     this.isOutdated = true;
     var appCache = window.applicationCache;
     if (!appCache || (appCache && (appCache.status === appCache.UNCACHED || appCache.status === appCache.OBSOLETE))) {
-        window.location.reload(true);
+        this.dumpCachesAndReload();
     } else if (appCache.status === appCache.IDLE || appCache.status > appCache.DOWNLOADING) {
         // call update when there is a cache ie IDLE (status = 1) or cache is not being checked (status = 2) or downloaded (status = 3)
         appCache.update();
@@ -1314,6 +1361,7 @@ AuraClientService.prototype.continueProcessing = function() {
                 this.collector.actionsToCollect += 1;
                 var storage = action.getStorage();
                 this.collector.collected[index] = undefined;
+                this.collector.collecting[index] = action;
                 if (!action.isRefreshAction() && action.isStorable() && storage) {
                     this.getStoredResult(action, storage, index);
                 } else {
@@ -1324,7 +1372,9 @@ AuraClientService.prototype.continueProcessing = function() {
                 this.collector.clientActions.push(action);
             }
         } catch (e) {
-            $A.logger.auraErrorHelper(e, action);
+            var errorWrapper = new $A.auraError(null, e);
+            errorWrapper.action = action;
+            $A.logger.reportError(errorWrapper);
         }
     }
     this.collector.actionsToCollect -= 1;
@@ -1408,7 +1458,9 @@ AuraClientService.prototype.executeStoredAction = function(action, response, col
             }
         }
     } catch (e) {
-        $A.logger.auraErrorHelper(e, action);
+        var errorWrapper = new $A.auraError(null, e);
+        errorWrapper.action = action;
+        $A.logger.reportError(errorWrapper);
     } finally {
         this.clearInCollection();
     }
@@ -1531,19 +1583,16 @@ AuraClientService.prototype.shouldSendOutForegroundActions = function( foregroun
 
 /**
  * Send actions.
- *
  */
 AuraClientService.prototype.sendActionXHRs = function() {
     var processing;
     var foreground = [];
     var background = [];
+    var deferred = [];
     var action, auraXHR;
     var caboose = 0;
     var i;
 
-    //
-    // FIXME: Second cut. No division of actions, but we can have multiple forground actions.
-    //
     processing = this.actionsDeferred;
     this.actionsDeferred = [];
     for (i = 0; i < processing.length; i++) {
@@ -1551,7 +1600,9 @@ AuraClientService.prototype.sendActionXHRs = function() {
         if (action.abortIfComponentInvalid(true)) {
             continue;
         }
-        if (action.isBackground()) {
+        if (action.isDeferred()) {
+            deferred.push(action);
+        } else if (action.isBackground()) {
             background.push(action);
         } else {
             foreground.push(action);
@@ -1577,21 +1628,64 @@ AuraClientService.prototype.sendActionXHRs = function() {
     }
 
     if (background.length) {
-        for (i = 0; i < background.length; i++) {
-            action = background[i];
+        this.sendAsSingle(background, background.length);
+    }
+    
+    if (deferred.length) {
+        if (this.idle()) {
+            this.sendAsSingle(deferred, 1);
+        } else {
+            this.actionsDeferred = this.actionsDeferred.concat(deferred);
+        }
+    }
+};
+
+/**
+ * Send a group of actions as single action XHRs or re-enqueue them.
+ *
+ * All actions in the group will either be sent, marked as dupes, or put back in
+ * the deferred queue.
+ *
+ * @private
+ * @param {Array} actions the set of actions to send.
+ * @param {int} count the number of actions to send.
+ */
+AuraClientService.prototype.sendAsSingle = function(actions, count) {
+    var i;
+    var sent = 0;
+    var auraXHR;
+    var action;
+
+    for (i = 0; i < actions.length; i++) {
+        action = actions[i];
+        // We use 'deDupe' here with sending === false to ensure that we don't put an action
+        // in the set of duplicate actions that does not get sent.
+        if (this.deDupe(action, false)) {
+            continue;
+        }
+        auraXHR = undefined;
+        if (sent < count) {
+            sent += 1;
             auraXHR = this.getAvailableXHR(true);
             if (auraXHR) {
                 if (!this.send(auraXHR, [ action ], "POST")) {
                     this.releaseXHR(auraXHR);
                 }
-            } else {
-                this.actionsDeferred.push(action);
             }
+        }
+        if (!auraXHR) {
+            this.actionsDeferred.push(action);
         }
     }
 };
 
 
+/**
+ * Continue with completions, running all action callbacks.
+ *
+ * This is used when the actions are stored, and we wish to run them after the XHRs
+ * might have been sent.
+ */
 AuraClientService.prototype.continueCompletions = function() {
     var that = this;
 
@@ -1615,13 +1709,16 @@ AuraClientService.prototype.continueCompletions = function() {
     }
 };
 
+/**
+ * finish up processing, force a rerender.
+ */
 AuraClientService.prototype.finishProcessing = function() {
     this.setInCollection();
     try {
         $A.renderingService.rerenderDirty();
-        } catch (e) {
+    } catch (e) {
         throw e;
-        } finally {
+    } finally {
         this.clearInCollection();
         if (this.actionsQueued.length > 0) {
             this.continueProcessing();
@@ -1631,7 +1728,14 @@ AuraClientService.prototype.finishProcessing = function() {
     }
 };
 
-AuraClientService.prototype.deDupe = function(action) {
+/**
+ * Check, and then dedup actions that are duplicates.
+ *
+ * @param {Action} action the action to dedupe.
+ * @param {Boolean} sending true if we are sending and should create an entry.
+ * @return true if the action has been deduped.
+ */
+AuraClientService.prototype.deDupe = function(action, sending) {
     var key, entry, dupes;
 
     if (!action.isStorable()) {
@@ -1649,6 +1753,14 @@ AuraClientService.prototype.deDupe = function(action) {
         entry = undefined;
     }
     if (!entry) {
+        //
+        // If we are not sending the action now, just abort here, it was not a
+        // dupe. This allows deDupe to be used on actions that are in a queue instead
+        // of being sent.
+        //
+        if (!sending) {
+            return false;
+        }
         entry = {};
         entry.action = action;
         if (dupes) {
@@ -1711,7 +1823,7 @@ AuraClientService.prototype.send = function(auraXHR, actions, method, options) {
             action.finishAction(context);
             continue;
         }
-        if (this.deDupe(action)) {
+        if (this.deDupe(action, true)) {
             continue;
         }
         auraXHR.addAction(action);
@@ -1921,7 +2033,7 @@ AuraClientService.prototype.receive = function(auraXHR, timedOut) {
     var responseMessage;
     this.auraStack.push("AuraClientService$receive");
     try {
-        responseMessage = this.decode(auraXHR.request, undefined, timedOut);
+        responseMessage = this.decode(auraXHR.request, false, timedOut);
 
         if (responseMessage["status"] === "SUCCESS") {
             this.processResponses(auraXHR, responseMessage["message"]);
@@ -1971,7 +2083,7 @@ AuraClientService.prototype.processResponses = function(auraXHR, responseMessage
         try {
             this.saveTokenToStorage();
         } catch (e) {
-            $A.logger.auraErrorHelper(e);
+            $A.logger.reportError(e);
         }
     }
     var context=$A.getContext();
@@ -1982,7 +2094,7 @@ AuraClientService.prototype.processResponses = function(auraXHR, responseMessage
         }
         context['merge'](responseMessage["context"]);
     } catch (e) {
-        $A.logger.auraErrorHelper(e);
+        $A.logger.reportError(e);
     }finally{
         if(!priorAccess){
             context.releaseCurrentAccess();
@@ -1996,7 +2108,7 @@ AuraClientService.prototype.processResponses = function(auraXHR, responseMessage
             try {
                 this.parseAndFireEvent(events[en]);
             } catch (e) {
-                $A.logger.auraErrorHelper(e);
+                $A.logger.reportError(e);
             }
         }
     }
@@ -2036,8 +2148,13 @@ AuraClientService.prototype.processResponses = function(auraXHR, responseMessage
                 }
             }
         } catch (e) {
-            $A.logger.auraErrorHelper(e, action);
-            throw (e instanceof $A.auraError) ? e : new $A.auraError("Error processing action response", e);
+            if (e instanceof $A.auraError) {
+                throw e;
+            } else {
+                var errorWrapper = new $A.auraError("Error processing action response", e);
+                errorWrapper.action = action;
+                throw errorWrapper;
+            }
         }
     }
 };
@@ -2189,7 +2306,7 @@ AuraClientService.prototype.injectComponent = function(rawConfig, locatorDomId, 
             }
 
 	        var element = $A.util.getElement(locatorDomId);
-	
+
 	        // Check for bogus locatorDomId
 	        var errors;
 	        if (!element) {
@@ -2203,7 +2320,7 @@ AuraClientService.prototype.injectComponent = function(rawConfig, locatorDomId, 
 	        } else {
 	            errors = a.getState() === "SUCCESS" ? undefined : action.getError();
 	        }
-	
+
 	        var componentConfig;
 	        if (!errors) {
 	            componentConfig = a.getReturnValue();
@@ -2217,29 +2334,29 @@ AuraClientService.prototype.injectComponent = function(rawConfig, locatorDomId, 
 	            //
 	            componentConfig = self.createIntegrationErrorConfig(errors);
 	        }
-		
+
 	        $A.util.apply(componentConfig, {
 	            "localId" : localId,
 	            "attributes" : {
 	                "valueProvider" : root
 	            }
 	        }, null, true);
-	
+
 	        var c = $A.componentService.createComponentPriv(componentConfig);
-	
+
 	        if (!errors) {
 	            // Wire up event handlers
 	            self.addComponentHandlers(c, config["actionEventHandlers"]);
 	        }
-	
+
 	        var body = root.get("v.body");
 	        body.push(c);
-	
+
 	        // Do not let Aura consider this initial setting into the surrogate app as a candiadate for rerendering
 	        root.set("v.body", body, true);
-	
+
 	        $A.render(c, element);
-	
+
 	        $A.afterRender(c);
         } finally {
         	if (!priorAccess) {
@@ -2339,19 +2456,19 @@ AuraClientService.prototype.injectComponentAsync = function(config, locator, eve
     if (!priorAccess) {
     	context.setCurrentAccess(root);
     }
-    
+
     $A.componentService.newComponentAsync(undefined, function(component) {
         if (callback) {
             callback(component);
         }
 
         acs.renderInjection(component, locator, eventHandlers);
-        
+
         if (!priorAccess) {
         	context.releaseCurrentAccess();
         }
     }, config, root, false, false, true);
-    
+
     // Now we go ahead and stick a label load on the request.
     var labelAction = $A.get("c.aura://ComponentController.loadLabels");
     labelAction.setCallback(this, function() {});
@@ -2607,7 +2724,7 @@ AuraClientService.prototype.allowAccess = function(definition, component) {
                 return (definition.isInstanceOf && definition.isInstanceOf("aura:application")) ||
                 // #if {"excludeModes" : ["PRODUCTION","PRODUCTIONDEBUG"]}
                 // This check allows components to be loaded directly in the browser in DEV/TEST
-                 !(context&&context.getCurrentAccess()) ||
+                (!$A.getRoot() || !$A.getRoot().isInstanceOf('aura:application')) && !(context&&context.getCurrentAccess()) ||
                 // #end
                 false;
         }

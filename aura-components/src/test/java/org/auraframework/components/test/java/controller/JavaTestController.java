@@ -107,7 +107,12 @@ public class JavaTestController implements Controller {
         return "Anything";
     }
 
-
+    public static class CustomParamType {
+        @Override
+        public String toString() {
+            return "CustomParamType_toString";
+        }
+    }
 
     /**
      * Note: these cases are pretty specific to js://test.testActionExceptions

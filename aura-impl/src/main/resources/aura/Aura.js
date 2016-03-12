@@ -203,6 +203,26 @@ function AuraInstance () {
     this.auraFriendlyError    = Aura.Errors.AuraFriendlyError;
 
     /**
+     * Error severity for categorizing errors
+     * 
+     * ALERT [default error severity level if error thrower doesn’t explicitly specify a severity level] - 
+     * the current page has issues and we need to alert the user that an error has occurred.  The error(s) could potentially be corrected by a page reload
+     *
+     * FATAL - the user’s session is now completely broken and cannot continue being used. 
+     * The user should logout and contact Salesforce support or their administrator.
+     *
+     * QUIET - An error has occurred but it won’t affect the user/page. 
+     * This is likely something unexpected that a lower level component can just quietly log for later diagnostics by Salesforce (e.g. a perf issue or something else).
+     *
+     * @public
+     */
+    this.severity = Object.freeze({
+        "ALERT": "ALERT",
+        "FATAL": "FATAL",
+        "QUIET": "QUIET"
+    });
+
+    /**
      * Instance of the AuraLocalizationService which provides utility methods for localizing data or getting formatters for numbers, currencies, dates, etc.<br/>
      * See the documentation for <a href="#reference?topic=api:AuraLocalizationService">AuraLocalizationService</a> for the members.
      *
@@ -361,6 +381,7 @@ function AuraInstance () {
 
     this.enqueueAction             = this.clientService.enqueueAction.bind(this.clientService);
     this.deferAction               = this.clientService.deferAction.bind(this.clientService);
+    this.deferPendingActions       = this.clientService.deferPendingActions.bind(this.clientService);
 
     this.render                    = this.renderingService.render.bind(this.renderingService);
     this.rerender                  = this.renderingService.rerender.bind(this.renderingService);
@@ -449,6 +470,7 @@ function AuraInstance () {
     this["services"] = this.services;
     this["enqueueAction"] = this.enqueueAction;
     this["deferAction"] = this.deferAction;
+    this["deferPendingActions"] = this.deferPendingActions;
     this["render"] = this.render;
     this["rerender"] = this.rerender;
     this["unrender"] = this.unrender;
@@ -477,6 +499,7 @@ function AuraInstance () {
 
     this["auraError"] = this.auraError;
     this["auraFriendlyError"] = this.auraFriendlyError;
+    this["severity"] = this.severity;
     this["hasDefinition"] = this.hasDefinition;
     this["getDefinition"] = this.getDefinition;
     this["getDefinitions"] = this.getDefinitions;
@@ -550,6 +573,8 @@ AuraInstance.prototype.getCurrentTransactionId = function() { return undefined; 
  * @public
  */
 AuraInstance.prototype.initAsync = function(config) {
+    var regexpDetectURLProcotolSegment = /^(.*?:)?\/\//;
+
     function createAuraContext() {
         // Context is created async because of the GVPs go though async storage checks
         $A.context = new Aura.Context.AuraContext(config["context"], function(context) {
@@ -566,7 +591,6 @@ AuraInstance.prototype.initAsync = function(config) {
         });
     }
 
-    var regexpDetectURLProcotolSegment = /^(.*?:)?\/\//;
     if (!window['$$safe-eval$$'] && !regexpDetectURLProcotolSegment.test(config["host"])) {
         // safe eval worker is an iframe that enables the page to run arbitrary evaluation,
         // if this iframe is still loading, we should wait for it before continue with
@@ -657,9 +681,10 @@ AuraInstance.prototype.initPriv = function(config, token, container, doNotInitia
             $A.initialized = true;
             $A.addDefaultErrorHandler(app);
             // Restore component definitions from AuraStorage into memory (if persistent)
-            $A.componentService.restoreDefsFromStorage().then(function () {
+            $A.componentService.restoreDefsFromStorage().then($A.getCallback(function () {
+                $A.getContext().pruneLoaded();
                 $A.finishInit(doNotInitializeServices);
-            });
+            }));
         }
 
     }
@@ -758,15 +783,18 @@ AuraInstance.prototype.handleError = function(message, e) {
         }
 
         if (e["name"] === "AuraError") {
-            var format = "Something has gone wrong. {0}.\nPlease try again.\n{1}";
+            var format = "Something has gone wrong. {0}.\nPlease try again.\n";
             var displayMessage = e.message || e.name;
+            e.severity = e.severity || this.severity["ALERT"];
+
             //#if {"excludeModes" : ["PRODUCTION", "PRODUCTIONDEBUG"]}
             displayMessage += "\n" + e.stackTrace;
             //#end
-            dispMsg = $A.util.format(format, displayMessage, e.errorCode+"");
+            dispMsg = $A.util.format(format, displayMessage);
         }
 
         if (e["name"] === "AuraFriendlyError") {
+            e.severity = e.severity || this.severity["QUIET"];
             evtArgs = {"message":e["message"],"error":e["name"],"auraError":e};
         }
         else {
@@ -794,7 +822,9 @@ AuraInstance.prototype.handleError = function(message, e) {
 AuraInstance.prototype.reportError = function(message, error) {
     $A.handleError(message, error);
     if ($A.initialized) {
-        $A.logger.reportError(error || new Error("[NoErrorObjectAvailable] " + message));
+        $A.getCallback(function() {
+            $A.logger.reportError(error || new Error("[NoErrorObjectAvailable] " + message));
+        })();
         $A.services.client.postProcess();
     }
 };
@@ -845,25 +875,50 @@ AuraInstance.prototype.getCallback = function(callback) {
     $A.assert($A.util.isFunction(callback),"$A.getCallback(): 'callback' must be a valid Function");
     var context=$A.getContext().getCurrentAccess();
     return function(){
-        var nested = $A.clientService.inAuraLoop();
         $A.getContext().setCurrentAccess(context);
         $A.clientService.pushStack(name);
         try {
             return callback.apply(this,Array.prototype.slice.call(arguments));
         } catch (e) {
-            // Should we even allow 'nested'?
-            // no need to wrap AFE with auraError as customers who throw AFE would want to handle it with their
-            // own custom experience.
-            if (nested || e instanceof $A.auraFriendlyError) {
+            // no need to wrap AFE with auraError as 
+            // customers who throw AFE would want to handle it with their own custom experience.
+            if (e instanceof $A.auraFriendlyError || e instanceof $A.auraError) {
+                if (context && context.getDef) {
+                    e.component = context.getDef().getDescriptor().toString();
+                }
+
                 throw e;
             } else {
-                throw new $A.auraError("Uncaught error in "+name, e);
+                var errorWrapper = new $A.auraError("Uncaught error in "+name, e);
+                if (context && context.getDef) {
+                    errorWrapper.component = context.getDef().getDescriptor().toString();
+                }
+
+                throw errorWrapper;
             }
         } finally {
             $A.clientService.popStack(name);
             $A.getContext().releaseCurrentAccess();
         }
     };
+};
+
+/**
+ * Returns the application token referenced by name.
+ * @function
+ * @param {String} token The name of the application configuration token to retrieve, for example, <code>$A.getToken("section.configuration")</code>.
+ * @public
+ * @platform
+ */
+AuraInstance.prototype.getToken = function(token){
+    var context=$A.getContext();
+    var tokens=context&&context.getTokens();
+    if(tokens){
+        if(tokens.hasOwnProperty(token)){
+            return tokens[token];
+        }
+        throw new Error("Unknown token: '"+token+"'. Are you missing a tokens file or declaration?");
+    }
 };
 
 /**

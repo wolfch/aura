@@ -15,8 +15,12 @@
  */
 package org.auraframework.integration.test.logging;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.assertThat;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.log4j.spi.LoggingEvent;
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.ComponentDef;
@@ -25,49 +29,15 @@ import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.HelperDef;
 import org.auraframework.def.StyleDef;
 import org.auraframework.http.CSPReporterServlet;
-import org.auraframework.integration.test.util.WebDriverTestCase;
 import org.auraframework.integration.test.util.WebDriverTestCase.TargetBrowsers;
 import org.auraframework.test.util.WebDriverUtil.BrowserType;
-import org.auraframework.util.test.annotation.ThreadHostileTest;
+import org.auraframework.util.test.annotation.UnAdaptableTest;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.assertThat;
-
 @TargetBrowsers(BrowserType.GOOGLECHROME)
-@ThreadHostileTest
-public class CSPReportLoggingUITest extends WebDriverTestCase {
-
-    private Logger logger;
-    private LoggingTestAppender appender;
-    private Level originalLevel;
-
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        appender = new LoggingTestAppender();
-
-        logger = Logger.getLogger("LoggingContextImpl");
-        // When we run integration tests, the logging level of logger LoggingContextImpl
-        // is WARN, setting it into INFO here so that we can get the log as we run the app.
-        originalLevel = logger.getLevel();
-        logger.setLevel(Level.INFO);
-        logger.addAppender(appender);
-        Logger.getRootLogger().addAppender(appender);
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        logger.removeAppender(appender);
-        logger.setLevel(originalLevel);
-        Logger.getRootLogger().removeAppender(appender);
-        super.tearDown();
-    }
+public class CSPReportLoggingUITest extends AbstractLoggingUITest {
 
     public void testReportCSPViolationForClientRenderedCSS() throws Exception {
         DefDescriptor<ComponentDef> cmpDesc = addSourceAutoCleanup(
@@ -77,7 +47,6 @@ public class CSPReportLoggingUITest extends WebDriverTestCase {
         String uri = String.format("/%s/%s.cmp", cmpDesc.getNamespace(), cmpDesc.getName());
 
         open(uri);
-        //open(uri, Mode.SELENIUMDEBUG, true);
         List<String> logs = getCspReportLogs(appender, 1);
         String cspReport = logs.get(0);
 
@@ -94,12 +63,11 @@ public class CSPReportLoggingUITest extends WebDriverTestCase {
         DefDescriptor<ApplicationDef> appDesc = addSourceAutoCleanup(ApplicationDef.class,
                 String.format(baseApplicationTag, "render='server'",
                 "<link href='http://www2.sfdcstatic.com/common/assets/css/min/standard-rwd-min.css' rel='stylesheet' type='text/css'/>"
-                		+
+                        +
                 "<script src='/auraFW/resources/codemirror/js/codemirror.js'></script>"));
         String uri = String.format("/%s/%s.app", appDesc.getNamespace(), appDesc.getName());
 
         openNoAura(uri);
-        waitForCondition("return !!CodeMirror", 10);
         List<String> logs = getCspReportLogs(appender, 1);
         String cspReport = logs.get(0);
 
@@ -112,6 +80,7 @@ public class CSPReportLoggingUITest extends WebDriverTestCase {
         assertThat("Could not find expected violated directive", cspReport, containsString(exptectedViolatedDirective));
     }
 
+    @UnAdaptableTest("The CSP filter on SFDC handles iframes differently than standalone Aura")
     public void testReportCSPViolationForClientRenderedIframe() throws Exception {
         DefDescriptor<ComponentDef> cmpDesc = addSourceAutoCleanup(
                 ComponentDef.class,
@@ -132,6 +101,7 @@ public class CSPReportLoggingUITest extends WebDriverTestCase {
         assertThat("Could not find expected violated directive", cspReport, containsString(exptectedViolatedDirective));
     }
 
+    @UnAdaptableTest("The CSP filter on SFDC handles iframes differently than standalone Aura")
     public void testReportServerRenderedIframe() throws Exception {
         DefDescriptor<ComponentDef> cmpDesc = addSourceAutoCleanup(
                 ComponentDef.class,
@@ -156,6 +126,7 @@ public class CSPReportLoggingUITest extends WebDriverTestCase {
      * trigger an intentional report after load and we will check that. If there is any report during load should
      * have been received before it.
      */
+    @UnAdaptableTest("The font policy on Aura OSS is different with on SFDC")
     public void testAllowFontSrc() throws Exception {
         DefDescriptor<ComponentDef> cmpDesc = addSourceAutoCleanup(ComponentDef.class,
                 String.format(baseComponentTag, "", ""));
@@ -183,6 +154,8 @@ public class CSPReportLoggingUITest extends WebDriverTestCase {
         assertThat("Could not find expected violated directive, perhaps fonts wasn't allowed", cspReport, containsString(exptectedViolatedDirective));
     }
 
+    // TODO(W-2903378): re-enable when we are able to inject TestLoggingAdapter.
+    @UnAdaptableTest
     public void testReportJavaScript() throws Exception {
         // This test loads script via its template, since <script> is not allowed in component markup
         DefDescriptor<ComponentDef> templateDesc = addSourceAutoCleanup(
@@ -217,6 +190,7 @@ public class CSPReportLoggingUITest extends WebDriverTestCase {
      * Automation for the connect-src CSP policy. With connect-src set to 'self' and http://invalid.salesforce.com,
      * a report should be generated when an XHR is sent to invalid origin.
      */
+    @UnAdaptableTest
     public void testReportXHRConnect() throws Exception {
         String externalUri = "http://www.example.com";
         String externalUriString = String.format("'%s'",externalUri);
@@ -258,7 +232,8 @@ public class CSPReportLoggingUITest extends WebDriverTestCase {
         String exptectedEffectiveDirective = String.format("%s=%s", CSPReporterServlet.EFFECTIVE_DIRECTIVE, "connect-src");
         assertThat("Could not find expected violated directive", cspReport, containsString(exptectedEffectiveDirective));
     }
-    
+
+
     /**
      * This is a positive test (and the only positive test in this file).
      * Automation for the connect-src CSP policy.
@@ -314,17 +289,16 @@ public class CSPReportLoggingUITest extends WebDriverTestCase {
 
         List<String> cspLogs = getCspReportLogs(appender, 0);
         if(cspLogs.size() != 0) {
-        	System.out.println("get these logs:");
-        	for(LoggingEvent le : appender.getLog()) {
-        		System.out.println(le.getMessage().toString());
-        	}
+            System.out.println("get these logs:");
+            for(LoggingEvent le : appender.getLog()) {
+                System.out.println(le.getMessage().toString());
+            }
         }
         assertEquals("we shouldn't get any csp report, but we get "+cspLogs, 0, cspLogs.size());
-
     }
-  
+
     /**
-     * check if we get the number of logs we are expecting. 
+     * check if we get the number of logs we are expecting.
      * @param appender
      * @param expectedLogsSize : needs to be bigger than 0
      * @return
@@ -333,8 +307,8 @@ public class CSPReportLoggingUITest extends WebDriverTestCase {
     private List<String> getCspReportLogs(LoggingTestAppender appender, int expectedLogsSize) throws InterruptedException {
     	List<String> cspRecords = new ArrayList<>();
         if(expectedLogsSize == 0 ) {
-        	List<LoggingEvent> logs = appender.getLog();
-        	synchronized(logs) {
+            List<LoggingEvent> logs = appender.getLog();
+            synchronized(logs) {
                 while (!logs.isEmpty()) {
                     LoggingEvent log = logs.remove(0);
                     if (log.getMessage().toString().contains(CSPReporterServlet.JSON_NAME)) {
@@ -343,11 +317,11 @@ public class CSPReportLoggingUITest extends WebDriverTestCase {
                 }
             }
         } else {
-        	auraUITestingUtil.waitUntil(new ExpectedCondition<Boolean>() {
+            auraUITestingUtil.waitUntil(new ExpectedCondition<Boolean>() {
                 @Override
                 public Boolean apply(WebDriver d) {
                     List<LoggingEvent> logs = appender.getLog();
-                    	synchronized(logs) {
+                        synchronized(logs) {
                             while (!logs.isEmpty()) {
                                 LoggingEvent log = logs.remove(0);
                                 if (log.getMessage().toString().contains(CSPReporterServlet.JSON_NAME)) {
@@ -355,7 +329,7 @@ public class CSPReportLoggingUITest extends WebDriverTestCase {
                                     return cspRecords.size() == expectedLogsSize;
                                 }
                         }
-                    	return false;
+                        return false;
                     }
                 }
             },
@@ -367,3 +341,4 @@ public class CSPReportLoggingUITest extends WebDriverTestCase {
     }
     
 }
+

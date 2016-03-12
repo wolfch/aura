@@ -178,7 +178,6 @@ AuraComponentService.prototype.newComponentArray = function(config, attributeVal
  *
  * @public
  * @platform
- * @function
  * @export
  */
 AuraComponentService.prototype.createComponent = function(type, attributes, callback) {
@@ -193,7 +192,7 @@ AuraComponentService.prototype.createComponent = function(type, attributes, call
         "flavor"       : (attributes && attributes["aura:flavor"])
     };
 
-    return this.createComponentPrivAsync(config, callback);
+    this.createComponentPrivAsync(config, callback);
 };
 
 
@@ -395,12 +394,21 @@ AuraComponentService.prototype.newComponentDeprecated = function(config, attribu
         // var currentAccess = $A.getContext().getCurrentAccess();
         // Server should handle the case of an unknown def fetched "lazily"
         if(!$A.clientService.allowAccess(def) /* && currentAccess  */) {
-            // #if {"excludeModes" : ["PRODUCTION"]}
-            $A.error("Access Check Failed! AuraComponentService.newComponentDeprecated(): '" +
-                (def&&def.getDescriptor().getQualifiedName()) + "' is not visible to '" +
-                $A.getContext().getCurrentAccess() + "'.");
-            // #end
-            return null;
+            var context=$A.getContext();
+            var message="Access Check Failed! AuraComponentService.newComponentDeprecated(): '" +
+                    (def && def.getDescriptor().getQualifiedName()) + "' is not visible to '" +
+                    context.getCurrentAccess() + "'.";
+            if(context.enableAccessChecks) {
+                if(context.logAccessFailures){
+                    $A.error(message);
+                }
+                return null;
+            }else{
+                if(context.logAccessFailures){
+                    $A.warning(message);
+                }
+                // Intentional fallthrough
+            }
         }
     }
 
@@ -595,10 +603,19 @@ AuraComponentService.prototype.newComponentAsync = function(callbackScope, callb
                 if($A.clientService.allowAccess(def)) {
                     collectComponent(this["newComponentDeprecated"](configItem, attributeValueProvider, localCreation, doForce),"SUCCESS","",i);
                 }else{
-                    // #if {"excludeModes" : ["PRODUCTION"]}
-                    $A.error("Access Check Failed! AuraComponentService.newComponentAsync(): '"+def.getDescriptor().getQualifiedName()+"' is not visible to '"+$A.getContext().getCurrentAccess()+"'.");
-                    // #end
-                    collectComponent(null,"ERROR","Unknown component '"+desc+"'.",i);
+                    var context=$A.getContext();
+                    var message="Access Check Failed! AuraComponentService.newComponentAsync(): '" + def.getDescriptor().getQualifiedName() + "' is not visible to '" + context.getCurrentAccess() + "'.";
+                    if(context.enableAccessChecks) {
+                        if(context.logAccessFailures){
+                            $A.error(message);
+                        }
+                        collectComponent(null, "ERROR", "Unknown component '" + desc + "'.", i);
+                    }else{
+                        if(context.logAccessFailures){
+                            $A.warning(message);
+                        }
+                        collectComponent(this["newComponentDeprecated"](configItem, attributeValueProvider, localCreation, doForce),"SUCCESS","",i);
+                    }
                 }
             }
         }
@@ -812,11 +829,20 @@ AuraComponentService.prototype.getDefinition = function(descriptor, callback) {
 
     if (def) {
         if(!$A.clientService.allowAccess(def)) {
-            // #if {"excludeModes" : ["PRODUCTION"]}
-            $A.error("Access Check Failed! ComponentService.getDef():'" + def.getDescriptor().toString() + "' is not visible to '" + ($A.getContext()&&$A.getContext().getCurrentAccess()) + "'.");
-            // #end
-            callback(null);
-            return;
+            var context=$A.getContext();
+            var message="Access Check Failed! ComponentService.getDef():'" + def.getDescriptor().toString() + "' is not visible to '" + (context&&context.getCurrentAccess()) + "'.";
+            if(context.enableAccessChecks) {
+                if(context.logAccessFailures){
+                    $A.error(message);
+                }
+                callback(null);
+                return;
+            }else{
+                if(context.logAccessFailures){
+                    $A.warning(message);
+                }
+                //Intentional fallthrough
+            }
         }
         callback(def);
         return;
@@ -876,11 +902,19 @@ AuraComponentService.prototype.getDef = function(descriptor) {
     var def = this.getComponentDef(this.createDescriptorConfig(descriptor));
 
     if (def && !$A.clientService.allowAccess(def)) {
-        // #if {"excludeModes" : ["PRODUCTION"]}
-        $A.error("Access Check Failed! ComponentService.getDef():'" + def.getDescriptor().toString() + "' is not visible to '" + ($A.getContext()&&$A.getContext().getCurrentAccess()) + "'.");
-        // #end
-
-        return null;
+        var context=$A.getContext();
+        var message="Access Check Failed! ComponentService.getDef():'" + def.getDescriptor().toString() + "' is not visible to '" + (context&&context.getCurrentAccess()) + "'.";
+        if(context.enableAccessChecks){
+            if(context.logAccessFailures){
+                $A.error(message);
+            }
+            return null;
+        }else{
+            if(context.logAccessFailures){
+                $A.warning(message);
+            }
+            // Intentional fallthrough
+        }
     }
     return def;
 };
@@ -1401,9 +1435,16 @@ AuraComponentService.prototype.findDependencies = function (key, defConfig, stor
  * - dependencies: array of action/def descriptors this item depends on.
  */
 AuraComponentService.prototype.buildDependencyGraph = function() {
-    // list of actions to never evict
-    var actionsBlackList = ["globalValueProviders",
-                            "aura://ComponentController/ACTION$getApplication"];
+    // NOTE: this is really, really important to get right. if we ever evict
+    // data required by aura framework, especially data for it to boot, then regardless
+    // of what userland actions you have, the framework won't boot. so never evict these!
+    //
+    // NOTE: AuraClientService.js' "$AuraClientService.token$" goes directly to the adapter, bypassing
+    // the isolation key, so will never be returned by storage.getAll().
+    var actionsBlackList = ["globalValueProviders",                                 /* GlobalValueProviders.js */
+                            "aura://ComponentController/ACTION$getApplication",     /* AuraClientService.js */
+                            "$AuraContext$"];                                       /* AuraContext.js */
+
 
     var promises = [];
     var actionStorage = Action.getStorage();

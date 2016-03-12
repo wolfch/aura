@@ -15,24 +15,36 @@
  */
 package org.auraframework.impl.controller;
 
-import java.util.*;
-
-import javax.inject.Inject;
-
+import com.google.common.collect.Lists;
 import org.auraframework.adapter.ExceptionAdapter;
 import org.auraframework.annotations.Annotations.ServiceComponent;
-import org.auraframework.def.*;
+import org.auraframework.def.ActionDef;
+import org.auraframework.def.ApplicationDef;
+import org.auraframework.def.BaseComponentDef;
+import org.auraframework.def.ComponentDef;
+import org.auraframework.def.DefDescriptor;
+import org.auraframework.def.Definition;
+import org.auraframework.def.EventDef;
+import org.auraframework.def.RootDefinition;
 import org.auraframework.ds.servicecomponent.Controller;
 import org.auraframework.impl.java.controller.JavaAction;
 import org.auraframework.impl.javascript.controller.JavascriptPseudoAction;
-import org.auraframework.instance.*;
-import org.auraframework.service.*;
+import org.auraframework.instance.Action;
+import org.auraframework.instance.Application;
+import org.auraframework.instance.BaseComponent;
+import org.auraframework.instance.Component;
+import org.auraframework.service.ContextService;
+import org.auraframework.service.DefinitionService;
+import org.auraframework.service.InstanceService;
 import org.auraframework.system.Annotations.AuraEnabled;
 import org.auraframework.system.Annotations.Key;
-import org.auraframework.system.*;
+import org.auraframework.system.AuraContext;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
-import com.google.common.collect.Lists;
+import javax.inject.Inject;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 @org.springframework.stereotype.Component("org.auraframework.impl.controller.ComponentController")
 @ServiceComponent
@@ -54,26 +66,33 @@ public class ComponentController implements Controller {
 
         private final Action action;
         private final String jsStack;
+        private String causeDescriptor;
+        private String errorId;
 
         public AuraClientException(String desc, String id, String message, String jsStack,
                                    InstanceService instanceService, ExceptionAdapter exceptionAdapter) {
             super(message);
             Action action = null;
-            if (desc != null && id != null) {
+            this.causeDescriptor = null;
+            this.errorId = id;
+            if (desc != null) {
                 try {
                     action = instanceService.getInstance(desc, ActionDef.class);
-                } catch (QuickFixException e) {
-                    // Uh... okay, we fell over running an action we now can't even define.
+                    if (action instanceof JavascriptPseudoAction) {
+                        JavascriptPseudoAction jpa = (JavascriptPseudoAction) action;
+                        jpa.addError(this);
+                    } else if (action instanceof JavaAction) {
+                        JavaAction ja = (JavaAction) action;
+                        ja.addException(this, Action.State.ERROR, false, false, exceptionAdapter);
+                    }
+                } catch (Exception e) {
+                    this.causeDescriptor = desc;
                 }
-                if (action instanceof JavascriptPseudoAction) {
-                    JavascriptPseudoAction jpa = (JavascriptPseudoAction)action;
-                    jpa.setId(id);
-                    jpa.addError(this);
-                } else if (action instanceof JavaAction) {
-                    JavaAction ja = (JavaAction)action;
-                    ja.setId(id);
-                    ja.addException(this, Action.State.ERROR, false, false, exceptionAdapter);
-                }
+            }
+
+            // use cause to track failing component markup if action is not sent.
+            if (this.causeDescriptor == null && desc != null && desc.startsWith("markup://")) {
+                this.causeDescriptor = desc;
             }
 
             this.action = action;
@@ -88,6 +107,13 @@ public class ComponentController implements Controller {
             return jsStack;
         }
 
+        public String getCauseDescriptor() {
+            return causeDescriptor;
+        }
+
+        public String getClientErrorId() {
+            return errorId;
+        }
     }
 
     @AuraEnabled
@@ -105,25 +131,10 @@ public class ComponentController implements Controller {
         }
         return Boolean.TRUE;
     }
-    
-    public static Boolean loadLabels(ContextService contextService) throws QuickFixException {
-        AuraContext ctx = contextService.getCurrentContext();
-        Map<DefDescriptor<? extends Definition>, Definition> defMap;
 
-        ctx.getDefRegistry().getDef(ctx.getApplicationDescriptor());
-        defMap = ctx.getDefRegistry().filterRegistry(null);
-        for (Map.Entry<DefDescriptor<? extends Definition>, Definition> entry : defMap.entrySet()) {
-            Definition def = entry.getValue();
-            if (def != null) {
-                def.retrieveLabels();
-            }
-        }
-        return Boolean.TRUE;
-    }
-
-    private <D extends BaseComponentDef, T extends BaseComponent<D, T>>
-        T getBaseComponent(Class<T> type, Class<D> defType, String name,
-                Map<String, Object> attributes, Boolean loadLabels) throws QuickFixException {
+    public <D extends BaseComponentDef, T extends BaseComponent<D, T>>
+    T getBaseComponent(Class<T> type, Class<D> defType, String name,
+                       Map<String, Object> attributes, Boolean loadLabels) throws QuickFixException {
 
         DefDescriptor<D> desc = definitionService.getDefDescriptor(name, defType);
         definitionService.updateLoaded(desc);
@@ -158,7 +169,7 @@ public class ComponentController implements Controller {
      * record of the code error.
      *
      * @param desc The name of the client action failing
-     * @param id The id of the client action failing
+     * @param id The id of the client error
      * @param error The javascript error message of the failure
      * @param stack Not always available (it's browser dependent), but if present, a browser-dependent
      *      string describing the Javascript stack for the error.  Some frames may be obfuscated,
@@ -185,11 +196,11 @@ public class ComponentController implements Controller {
         }
         List<RootDefinition> returnDefs = Lists.newArrayListWithCapacity(names.size());
         for(String name : names) {
-        	if(name.contains("e.")) {
-        		returnDefs.add(getEventDef(name));
-        	} else {
-        		returnDefs.add(getComponentDef(name));
-        	}
+            if(name.contains("e.")) {
+                returnDefs.add(getEventDef(name));
+            } else {
+                returnDefs.add(getComponentDef(name));
+            }
         }
         return returnDefs;
     }

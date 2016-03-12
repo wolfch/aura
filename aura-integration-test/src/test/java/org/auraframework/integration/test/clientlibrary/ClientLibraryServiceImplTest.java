@@ -200,6 +200,7 @@ public class ClientLibraryServiceImplTest extends AuraImplTestCase {
         assertTrue(jsUrls.contains(url));
     }
 
+    @Test
     @Ignore("Need test only injection of random1 & random2")
     public void testGetUrlsForAppWithDependenciesInPTESTMode() throws Exception {
         DefDescriptor<ApplicationDef> appDesc = definitionService.getDefDescriptor(

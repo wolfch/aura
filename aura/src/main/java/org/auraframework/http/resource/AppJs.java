@@ -34,7 +34,7 @@ public class AppJs extends AuraResourceImpl {
     private ServerService serverService;
 
     public AppJs() {
-        super("app.js", Format.JS, false);
+        super("app.js", Format.JS);
     }
 
     @Override

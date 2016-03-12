@@ -16,21 +16,17 @@ package org.auraframework.test.perf.util;
  * limitations under the License.
  */
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.auraframework.def.*;
+import com.google.common.collect.ImmutableMap;
+import com.google.gson.Gson;
+import org.auraframework.def.BaseComponentDef;
+import org.auraframework.def.ComponentDef;
+import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.DefDescriptor.DefType;
 import org.auraframework.integration.test.util.WebDriverTestCase;
 import org.auraframework.integration.test.util.WebDriverTestCase.TargetBrowsers;
 import org.auraframework.system.AuraContext;
 import org.auraframework.system.AuraContext.Mode;
 import org.auraframework.test.perf.PerfWebDriverUtil;
-import org.auraframework.test.util.*;
 import org.auraframework.test.util.WebDriverUtil.BrowserType;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.AuraFiles;
@@ -45,8 +41,20 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.gson.Gson;
+import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @PerfCmpTest
 @TargetBrowsers({ BrowserType.GOOGLECHROME })
@@ -62,7 +70,7 @@ public abstract class PerfExecutorTest extends WebDriverTestCase {
     private static String DEFAULT_DB_URI = "mongodb://byao-wsl5:27017";
     private static String RUNNER_BASE_URL = "/performance/runner.app?";
     private static int DEFAULT_TIMEOUT = 60; // Webdriver timeout of 60 secs
-    
+
     public PerfExecutorTest(DefDescriptor<BaseComponentDef> def, PerfConfig config, String db) {
         this.setName("perf_" + def.getDescriptorName());
         this.def = def;
@@ -70,14 +78,14 @@ public abstract class PerfExecutorTest extends WebDriverTestCase {
         this.setDB(db);
         init();
     }
-   
+
     @Override
     protected void superRunTest() throws Throwable {
         try {
             int numberOfRuns = config.getNumberOfRuns();
             String customTimeout = config.getOptions().get("timeout");
             if(customTimeout!=null){
-            	DEFAULT_TIMEOUT = Integer.valueOf(customTimeout);
+                DEFAULT_TIMEOUT = Integer.valueOf(customTimeout);
             }
             while(numberOfRuns-- > 0)
                 runWithPerfApp(def, config);
@@ -85,19 +93,19 @@ public abstract class PerfExecutorTest extends WebDriverTestCase {
             e.printStackTrace();
         }
     }
-    
+
     private void init(){
         perfMetricsUtil = new PerfMetricsUtil(this, this.dbURI, config);
         this.testName = this.getComponentDef().getName();
     }
-    
+
     private void setDB(String dbURI){
         this.dbURI = dbURI;
         if (dbURI == null) {
             this.dbURI = DEFAULT_DB_URI;
         }
     }
-    
+
     /**
      * Required to get component directory in SFDC
      * @param def
@@ -124,9 +132,9 @@ public abstract class PerfExecutorTest extends WebDriverTestCase {
         }
         return componentsDir;
     }
-    
+
     private void loadComponent(String url, DefDescriptor<BaseComponentDef> descriptor) throws MalformedURLException,
-    URISyntaxException {
+            URISyntaxException {
 
         openTotallyRaw(url);
 
@@ -176,17 +184,17 @@ public abstract class PerfExecutorTest extends WebDriverTestCase {
         }
 
         // If descriptor is component type, then attach cmp def to url
-        StringBuilder relativeUrl = new StringBuilder(RUNNER_BASE_URL);               
+        StringBuilder relativeUrl = new StringBuilder(RUNNER_BASE_URL);
         relativeUrl.append("aura.mode=").append(mode).append(customUrl);
         Map<String, String> hash = ImmutableMap.of("componentDef", descriptor.getQualifiedName());
-        relativeUrl.append("#").append(URLEncoder.encode(JsonEncoder.serialize(hash), "UTF-8"));        
+        relativeUrl.append("#").append(URLEncoder.encode(JsonEncoder.serialize(hash), "UTF-8"));
         String url = getAbsoluteURI(relativeUrl.toString()).toString();
         return url;
     }
 
     public List<String> generateUrl(){
-    	Collection<String> customUrls = getCustomUrls().values();    	 
-    	List<String> urls = new ArrayList<>();
+        Collection<String> customUrls = getCustomUrls().values();
+        List<String> urls = new ArrayList<>();
         try {
             if (customUrls.size() == 0) {
                 String url = generateUrl(def, Mode.STATS, "");
@@ -231,45 +239,45 @@ public abstract class PerfExecutorTest extends WebDriverTestCase {
             quitDriver();
         }
     }
-    
+
     private Map<String, String> getCustomUrls() {
-    	List<Map<String, Map<String, Object>>> options = config.getCustomOptions();
-    	Map<String, String> testUrlMap = new HashMap<>();
-    	
+        List<Map<String, Map<String, Object>>> options = config.getCustomOptions();
+        Map<String, String> testUrlMap = new HashMap<>();
+
         if(options!=null) {
-        	//For each custom option, generate a unique url
-        	for(Map<String, Map<String, Object>> map: options) {
-        		StringBuilder customUrl = new StringBuilder();
-        		for(Entry<String, Map<String, Object>> entry: map.entrySet()) {        			
-        			for(Entry<String, Object> item: entry.getValue().entrySet())
-        				customUrl.append("&").append(item.getKey()).append("=").append(item.getValue());
-        			testUrlMap.put(entry.getKey(), customUrl.toString());
-        		}
-        	}
+            //For each custom option, generate a unique url
+            for(Map<String, Map<String, Object>> map: options) {
+                StringBuilder customUrl = new StringBuilder();
+                for(Entry<String, Map<String, Object>> entry: map.entrySet()) {
+                    for(Entry<String, Object> item: entry.getValue().entrySet())
+                        customUrl.append("&").append(item.getKey()).append("=").append(item.getValue());
+                    testUrlMap.put(entry.getKey(), customUrl.toString());
+                }
+            }
         }
         return testUrlMap;
     }
-    
+
     private void runWithUrl(DefDescriptor<BaseComponentDef> descriptor, String testName, String custUrl) throws Exception{
-    	runsCollector = new PerfRunsCollector();
-    	String url = generateUrl(descriptor, Mode.STATS, custUrl);
-		doRun(url, descriptor);
-		perfMetricsUtil.evaluateResults(testName);
-		// Destroy the collector object after all runs are done.
+        runsCollector = new PerfRunsCollector();
+        String url = generateUrl(descriptor, Mode.STATS, custUrl);
+        doRun(url, descriptor);
+        perfMetricsUtil.evaluateResults(testName);
+        // Destroy the collector object after all runs are done.
         runsCollector = null;
     }
-    
-    private void runWithPerfApp(DefDescriptor<BaseComponentDef> descriptor, PerfConfig config) throws Exception {           
+
+    private void runWithPerfApp(DefDescriptor<BaseComponentDef> descriptor, PerfConfig config) throws Exception {
         List<Map<String, Map<String, Object>>> options = config.getCustomOptions();
-        
+
         if(options!=null) {
-        	Map<String, String> testUrlMap = getCustomUrls();
-        	for(Entry<String, String> testUrl: testUrlMap.entrySet()){
-        		runWithUrl(descriptor, this.getComponentDef().getName()+"."+testUrl.getKey(), testUrl.getValue());
-        	}
-	        return;
+            Map<String, String> testUrlMap = getCustomUrls();
+            for(Entry<String, String> testUrl: testUrlMap.entrySet()){
+                runWithUrl(descriptor, this.getComponentDef().getName()+"."+testUrl.getKey(), testUrl.getValue());
+            }
+            return;
         }
-        
+
         runWithUrl(descriptor, this.getComponentDef().getName(), "");
     }
 
@@ -284,14 +292,14 @@ public abstract class PerfExecutorTest extends WebDriverTestCase {
 
     @Override
     public String getName(){
-    	return testName;
+        return testName;
     }
-    
+
     @Override
     public void setName(String name){
-    	this.testName = name;
+        this.testName = name;
     }
-    
+
     public DefDescriptor<BaseComponentDef> getComponentDef(){
         return def;
     }

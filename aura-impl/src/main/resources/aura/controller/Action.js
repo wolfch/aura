@@ -58,6 +58,7 @@ function Action(def, suffix, method, paramDefs, background, cmp, caboose) {
     this.caboose = caboose;
     this.allAboardCallback = undefined;
     this.abortable = false;
+    this.deferred = false;
 
     this.returnValue = undefined;
     this.returnValueUnmodified = undefined;
@@ -165,6 +166,28 @@ Action.prototype.forceCreationPath = function(path) {
     var pathEntry = { relPath: "~FORCED~", absPath:newAbsPath, idx: undefined, startIdx: undefined };
     this.pathStack.push(pathEntry);
     return newAbsPath;
+};
+
+/**
+ * Mark an action as deferred if it is abortable.
+ *
+ * This is used to side-track actions that are queued when the primary display is refreshed. Since it
+ * is a heuristic, it has a few problems in that it may defer actions that should really not be.
+ *
+ * @private
+ */
+Action.prototype.setDeferred = function() {
+    this.deferred = this.abortable;
+};
+
+/**
+ * Check to see if an action has been deferred.
+ *
+ * @private
+ * @returns {Boolean} true if the action was marked deferred.
+ */
+Action.prototype.isDeferred = function() {
+    return this.deferred;
 };
 
 /**
@@ -587,7 +610,9 @@ Action.prototype.runDeprecated = function(evt) {
     this.state = "RUNNING";
     $A.getContext().setCurrentAccess(this.cmp);
     try {
-        this.returnValue = this.meth.call(this, $A.lockerService.wrapComponent(this.cmp), evt, this.cmp['helper']);
+        var secureCmp = $A.lockerService.wrapComponent(this.cmp);
+        var secureEvt = $A.lockerService.wrapComponentEvent(secureCmp, evt);
+        this.returnValue = this.meth.call(undefined, secureCmp, secureEvt, this.cmp['helper']);
         this.state = "SUCCESS";
     } catch (e) {
         this.markException(e);
@@ -1132,10 +1157,15 @@ Action.prototype.toJSON = function() {
  * @param e the exception with which we want to mark the action.
  */
 Action.prototype.markException = function(e) {
+    // if the error doesn't have id, we wrap it with auraError so that when displaying UI, it will have an id
+    if (!e.id) {
+        e = new $A.auraError(null, e);
+    }
+
     this.state = "ERROR";
     this.error = e;
     $A.warning("Action failed: " + (this.def?this.def.toString():"") , e);
-    $A.logger.reportError(e, this.getDef().getDescriptor(), this.getId());
+    $A.logger.reportError(e, this.getDef().getDescriptor());
     if ($A.clientService.inAuraLoop()) {
         throw e;
     }

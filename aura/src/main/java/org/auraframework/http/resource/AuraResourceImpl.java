@@ -18,6 +18,7 @@ package org.auraframework.http.resource;
 
 import org.auraframework.adapter.ServletUtilAdapter;
 import org.auraframework.annotations.Annotations.ServiceComponent;
+import org.auraframework.service.DefinitionService;
 import org.auraframework.system.AuraContext;
 import org.auraframework.system.AuraContext.Format;
 import org.auraframework.system.AuraResource;
@@ -31,14 +32,18 @@ import java.io.IOException;
 public abstract class AuraResourceImpl implements AuraResource {
     private final String name;
     private final Format format;
-    private final boolean CSRFProtect;
 
+    protected DefinitionService definitionService;
     protected ServletUtilAdapter servletUtilAdapter;
+
+    public AuraResourceImpl(String name, Format format) {
+        this(name, format, false);
+    }
     
+    @Deprecated
     public AuraResourceImpl(String name, Format format, boolean CSRFProtect) {
         this.name = name;
         this.format = format;
-        this.CSRFProtect = CSRFProtect;
     }
 
     @Override
@@ -59,14 +64,20 @@ public abstract class AuraResourceImpl implements AuraResource {
         return format;
     }
 
-    @Override
-    public boolean isCSRFProtect() {
-        return CSRFProtect;
+    @Inject
+    public void setDefinitionService(DefinitionService definitionService) {
+        this.definitionService = definitionService;
     }
 
     @Inject
     public void setServletUtilAdapter(ServletUtilAdapter servletUtilAdapter) {
         this.servletUtilAdapter = servletUtilAdapter;
     }
+
+    @Deprecated
+	@Override
+	public boolean isCSRFProtect() {
+		return false;
+	}
 };
 

@@ -61,7 +61,7 @@ public class Manifest extends AuraResourceImpl {
     private ContextService contextService;
 
     public Manifest() {
-        super("app.manifest", Format.MANIFEST, false);
+        super("app.manifest", Format.MANIFEST);
     }
 
     @PostConstruct

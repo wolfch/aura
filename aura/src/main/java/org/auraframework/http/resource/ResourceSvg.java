@@ -40,7 +40,7 @@ public class ResourceSvg extends AuraResourceImpl {
     private ServerService serverService;
 
     public ResourceSvg() {
-        super("resources.svg", Format.SVG, false);
+        super("resources.svg", Format.SVG);
     }
 
     @Override

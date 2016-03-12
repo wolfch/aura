@@ -15,6 +15,29 @@
  */
 package org.auraframework.http;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import org.apache.commons.logging.Log;
@@ -34,6 +57,7 @@ import org.auraframework.def.Definition;
 import org.auraframework.def.TestCaseDef;
 import org.auraframework.def.TestSuiteDef;
 import org.auraframework.http.RequestParam.BooleanParam;
+import org.auraframework.http.RequestParam.IntegerParam;
 import org.auraframework.http.RequestParam.StringParam;
 import org.auraframework.service.ContextService;
 import org.auraframework.service.DefinitionService;
@@ -53,38 +77,17 @@ import org.auraframework.util.json.JsonReader;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import javax.inject.Inject;
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Supports test framework functionality, primarily for jstest mocks.
  */
 public class AuraTestFilter implements Filter {
-    @Inject
-    private TestContextAdapter testContextAdapter;
-
     private static final Log LOG = LogFactory.getLog(AuraTestFilter.class);
 
-    private static final String GET_URI = "/aura?aura.tag=%s:%s&aura.format=HTML&aura.deftype=%s&aura.mode=%s&aura.access=%s";
+    private static final int DEFAULT_JSTEST_TIMEOUT = 30;
+    private static final String BASE_URI = "/aura";
+    private static final String GET_URI = BASE_URI
+            + "?aura.tag=%s:%s&aura.format=HTML&aura.deftype=%s&aura.mode=%s&aura.access=%s";
 
     private static final StringParam contextConfig = new StringParam(AuraServlet.AURA_PREFIX + "context", 0, false);
 
@@ -102,6 +105,9 @@ public class AuraTestFilter implements Filter {
     // request of a test to clean up in case a prior test did not clean up.
     private static final BooleanParam testReset = new BooleanParam(AuraServlet.AURA_PREFIX + "testReset", false);
 
+    // "testTimeout" sets the timeout for a test
+    private static final IntegerParam testTimeout = new IntegerParam(AuraServlet.AURA_PREFIX + "testTimeout", false);
+
     private static final Pattern bodyEndTagPattern = Pattern.compile("(?is).*(</body\\s*>).*");
     private static final Pattern htmlEndTagPattern = Pattern.compile("(?is).*(</html\\s*>).*");
     // private static final Pattern headTagPattern = Pattern.compile("(?is).*(<\\s*head[^>]*>).*");
@@ -111,6 +117,9 @@ public class AuraTestFilter implements Filter {
 
     // TODO: DELETE this once all existing tests have been updated to have attributes.
     private boolean ENABLE_FREEFORM_TESTS = Boolean.parseBoolean(System.getProperty("aura.jstest.free"));
+
+    @Inject
+    private TestContextAdapter testContextAdapter;
 
     @Inject
     private ContextService contextService;
@@ -123,16 +132,6 @@ public class AuraTestFilter implements Filter {
 
     @Inject
     private ExceptionAdapter exceptionAdapter;
-    
-    @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-        servletContext = filterConfig.getServletContext();
-        SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this, servletContext);
-    }
-
-    @Override
-    public void destroy() {
-    }
 
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws ServletException,
@@ -157,23 +156,8 @@ public class AuraTestFilter implements Filter {
 
         // Check for requests to execute a JSTest, i.e. initial component GETs with particular parameters.
         if ("GET".equals(request.getMethod())) {
-            String contextPath = request.getContextPath();
-            String uri = request.getRequestURI();
-            String path;
-            if (uri.startsWith(contextPath)) {
-                path = uri.substring(contextPath.length());
-            } else {
-                path = uri;
-            }
-            Matcher matcher = AuraRewriteFilter.DESCRIPTOR_PATTERN.matcher(path);
-            if (matcher.matches()) {
-                // Extract the target component since AuraContext usually does not have the app descriptor set yet.
-                DefType type = "app".equals(matcher.group(3)) ? DefType.APPLICATION : DefType.COMPONENT;
-                String namespace = matcher.group(1);
-                String name = matcher.group(2);
-                DefDescriptor<?> targetDescriptor = definitionService.getDefDescriptor(
-                        String.format("%s:%s", namespace, name), type.getPrimaryInterface());
-
+            DefDescriptor<?> targetDescriptor = getTargetDescriptor(request);
+            if (targetDescriptor != null) {
                 // Check if a single jstest is being requested.
                 String testToRun = jstestToRun.get(request);
                 if (testToRun != null && !testToRun.isEmpty()) {
@@ -219,7 +203,8 @@ public class AuraTestFilter implements Filter {
                         }
                     case JS:
                         res.setCharacterEncoding(AuraBaseServlet.UTF_ENCODING);
-                        writeJsTestScript(res.getWriter(), targetDescriptor, testToRun);
+                        int timeout = testTimeout.get(request, DEFAULT_JSTEST_TIMEOUT);
+                        writeJsTestScript(res.getWriter(), targetDescriptor, testToRun, timeout);
                         return;
                     default:
                         // Pass it on.
@@ -239,7 +224,8 @@ public class AuraTestFilter implements Filter {
 
                     mode = mode.toString().endsWith("DEBUG") ? Mode.AUTOJSTESTDEBUG : Mode.AUTOJSTEST;
 
-                    String qs = String.format("descriptor=%s:%s&defType=%s", namespace, name, type.name());
+                    String qs = String.format("descriptor=%s&defType=%s", targetDescriptor.getDescriptorName(),
+                            targetDescriptor.getDefType().name());
                     String testName = null;
                     if (jstestAppRequest != null && !jstestAppRequest.isEmpty()) {
                         testName = jstestAppRequest;
@@ -277,6 +263,16 @@ public class AuraTestFilter implements Filter {
             loadTestMocks(context, doResetTest, testContext.getLocalDefs());
         }
         chain.doFilter(req, res);
+    }
+
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+        servletContext = filterConfig.getServletContext();
+        SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this, servletContext);
+    }
+
+    @Override
+    public void destroy() {
     }
 
     @SuppressWarnings("unchecked")
@@ -488,7 +484,7 @@ public class AuraTestFilter implements Filter {
         out.append(originalResponse.substring(insertionPoint));
     }
 
-    private void writeJsTestScript(PrintWriter out, DefDescriptor<?> targetDescriptor, String testName)
+    private void writeJsTestScript(PrintWriter out, DefDescriptor<?> targetDescriptor, String testName, int testTimeout)
             throws IOException {
         TestSuiteDef suiteDef;
         TestCaseDef testDef;
@@ -502,10 +498,49 @@ public class AuraTestFilter implements Filter {
         }
 
         // TODO: Inject test framework here, before the test suite code, separately from framework code.
-        final int testTimeout = 90; // TODO: support TestCaseDef override for timeout
         out.append(String.format("(function(suite){$A.test.run('%s',suite,%s);})(", testName,
                 testTimeout));
         out.append(suiteDef.getCode());
         out.append("\n);"); // handle trailing single-line comments with newline
+    }
+
+    private DefDescriptor<?> getTargetDescriptor(HttpServletRequest request) {
+        String namespace = null;
+        String name = null;
+        DefType type = null;
+
+        try {
+            String contextPath = request.getContextPath();
+            String uri = request.getRequestURI();
+            String path;
+            if (uri.startsWith(contextPath)) {
+                path = uri.substring(contextPath.length());
+            } else {
+                path = uri;
+            }
+
+            if (BASE_URI.equals(path)) {
+                String[] tagName = AuraServlet.tag.get(request).split(":", 2);
+                type = AuraServlet.defTypeParam.get(request, DefType.COMPONENT);
+                namespace = tagName[0];
+                name = tagName[1];
+            }
+            if (name == null) {
+                Matcher matcher = AuraRewriteFilter.DESCRIPTOR_PATTERN.matcher(path);
+                if (matcher.matches()) {
+                    type = "app".equals(matcher.group(3)) ? DefType.APPLICATION : DefType.COMPONENT;
+                    namespace = matcher.group(1);
+                    name = matcher.group(2);
+                }
+            }
+
+            if (name != null) {
+                return definitionService.getDefDescriptor(
+                        String.format("%s:%s", namespace, name), type.getPrimaryInterface());
+            }
+        } catch (Throwable t) {
+            // Ignore. Pass request onto core servlets.
+        }
+        return null;
     }
 }

@@ -22,6 +22,7 @@
  */
 TestInstance = function() {
     this.waits = [];
+    this.currentWait = undefined;
     this.cleanups = [];
     this.completed = {}; // A map of action name to boolean for 'named' actions that have been queued
     this.inProgress = -1; // -1:uninitialized, 0:complete, 1:tearing down, 2:running, 3+:waiting
@@ -30,7 +31,9 @@ TestInstance = function() {
     this.expectedErrors = [];
     this.expectedWarnings = [];
     this.failOnWarning = false;
+    this.initTime = new Date().getTime();
     this.timeoutTime = 0;
+    this.elapsedTime = 0;
     this.suite = undefined;
     this.stages = undefined;
     this.cmp = undefined;
@@ -580,7 +583,7 @@ TestInstance.prototype.auraError = function(level, msg/* , error */) {
  * Warning- use this function with care. Tell the test that we expect an $A.auraError that occurs in a separate thread
  * than the main test thread. Any errors occurring in the main test thread should be caught and verified in the test
  * itself.
- * 
+ *
  * Test will fail if expected error is not received.
  *
  * @param {string}
@@ -1713,7 +1716,7 @@ TestInstance.prototype.sendOverride = function(config, auraXHR, actions, method,
  * @private
  * @function Test#decodeOverride
  */
-TestInstance.prototype.decodeOverride = function(config, response, noStrip) {
+TestInstance.prototype.decodeOverride = function(config, response, noStrip, timeOut) {
     if (this.disconnected) {
         return { "status": "INCOMPLETE" };
     }
@@ -1740,7 +1743,7 @@ TestInstance.prototype.decodeOverride = function(config, response, noStrip) {
 
     }
     //now feed decode() with our copy of response
-    var res = config["fn"].call(config["scope"], oldResponse, noStrip);
+    var res = config["fn"].call(config["scope"], oldResponse, noStrip, timeOut);
     for (i = 0; i < post_callbacks.length; i++) {
         post_callbacks[i].postDecodeCallback(res);
     }
@@ -1989,7 +1992,7 @@ TestInstance.prototype.run = function(name, code, timeoutOverride, quickFixExcep
     if (!timeoutOverride) {
         timeoutOverride = 10;
     }
-    this.timeoutTime = new Date().getTime() + 1000 * timeoutOverride;
+    this.timeoutTime = this.initTime + 1000 * timeoutOverride;
 
     if (typeof code === "string") {
         this.suite = aura.util.json.decode(code);
