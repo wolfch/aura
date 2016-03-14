@@ -70,7 +70,8 @@
         }
     },
 
-    testLogWarningWithDomException: {
+    /* W-2959973 : disable because the override console doesn't support formatting %s */
+    _testLogWarningWithDomException: {
         auraWarningsExpectedDuringInit: ["Expected warning from auraWarningTestController init"],
         test: function(cmp) {
             var warningMsg = "Expected warning from test",
