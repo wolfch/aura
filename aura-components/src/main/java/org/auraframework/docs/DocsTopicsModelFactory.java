@@ -15,15 +15,25 @@
  */
 package org.auraframework.docs;
 
+import javax.inject.Inject;
+
 import org.auraframework.annotations.Annotations.ServiceComponentModelFactory;
 import org.auraframework.ds.servicecomponent.ModelFactory;
 import org.auraframework.ds.servicecomponent.ModelInitializationException;
+import org.auraframework.service.DefinitionService;
 
 @ServiceComponentModelFactory
-public class MenuTestModelFactory  implements ModelFactory<MenuTestModel> {
-	
-	@Override
-	public MenuTestModel modelInstance() throws ModelInitializationException {
-		return new MenuTestModel();
-	}
+public class DocsTopicsModelFactory implements ModelFactory<DocsTopicsModel> {
+
+    @Inject
+    private DefinitionService definitionService;
+
+    @Override
+    public DocsTopicsModel modelInstance() throws ModelInitializationException {
+        try {
+            return new DocsTopicsModel(definitionService);
+        } catch (Exception x) {
+            throw new ModelInitializationException("Error creating model instance", x);
+        }
+    }
 }

@@ -27,7 +27,7 @@ import org.auraframework.system.Annotations.AuraEnabled;
  * Model for auradocs:demoMenu to demo aura:menu
  */
 @ServiceComponentModelInstance
-public class MenuTestModel implements ModelInstance {
+public class DocsMenuTestModel implements ModelInstance {
 
     @AuraEnabled
     public List<MenuItem> getData() {

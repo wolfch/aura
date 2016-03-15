@@ -39,7 +39,7 @@ import com.google.common.collect.Maps;
 /**
  */
 @ServiceComponentModelInstance
-public class TopicsModel implements ModelInstance {
+public class DocsTopicsModel implements ModelInstance {
 
     private DefinitionService definitionService;
 
@@ -50,7 +50,7 @@ public class TopicsModel implements ModelInstance {
     private final List<Node> librariesList;
     private final List<Node> tests;
 
-    public TopicsModel(DefinitionService definitionService) throws QuickFixException {
+    public DocsTopicsModel(DefinitionService definitionService) throws QuickFixException {
         this.definitionService = definitionService;
         applications = makeNodes("markup", DefType.APPLICATION);
         components = makeNodes("markup", DefType.COMPONENT);
