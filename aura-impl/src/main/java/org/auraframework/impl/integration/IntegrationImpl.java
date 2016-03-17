@@ -36,7 +36,6 @@ import org.auraframework.system.AuraContext.Authentication;
 import org.auraframework.system.AuraContext.Format;
 import org.auraframework.system.AuraContext.Mode;
 import org.auraframework.system.Client;
-import org.auraframework.system.Client.Type;
 import org.auraframework.system.Message;
 import org.auraframework.throwable.AuraRuntimeException;
 import org.auraframework.throwable.ClientOutOfSyncException;
@@ -72,13 +71,7 @@ public class IntegrationImpl implements Integration {
 
     @Override
     public void injectComponent(String tag, Map<String, Object> attributes, String localId, String locatorDomId,
-                                Appendable out, boolean useAsync)
-            throws UnsupportedUserAgentException, IOException, QuickFixException {
-
-        if (!isSupportedClient(client)) {
-            throw new UnsupportedUserAgentException(client.getUserAgent());
-        }
-
+                                Appendable out, boolean useAsync) throws IOException, QuickFixException {
         if (initializeAura && !hasApplicationBeenWritten) {
             // load aura resources
             // specifies async so component configs are not printed to HTML
@@ -256,28 +249,22 @@ public class IntegrationImpl implements Integration {
     }
 
     private void writeApplication(Appendable out) throws IOException, AuraRuntimeException, QuickFixException {
-        if (isSupportedClient(client)) {
-            // ensure that we have a context.
-            AuraContext context = getContext(null);
-            try {
-                ApplicationDef appDef = getApplicationDescriptor(application).getDef();
+        // ensure that we have a context.
+        AuraContext context = getContext(null);
+        try {
+            ApplicationDef appDef = getApplicationDescriptor(application).getDef();
 
-                if (observer != null) {
-                    observer.beforeApplicationWritten(this, context, appDef);
-                }
-
-                Aura.getSerializationService().write(appDef, null,
-                        ApplicationDef.class, out, "EMBEDDED_HTML");
-            } catch (QuickFixException e) {
-                throw new AuraRuntimeException(e);
-            } finally {
-                releaseContext();
+            if (observer != null) {
+                observer.beforeApplicationWritten(this, context, appDef);
             }
-        }
-    }
 
-    private static boolean isSupportedClient(Client client) {
-        return client == null || (client.getType() != Type.IE6 && client.getType() != Type.OTHER);
+            Aura.getSerializationService().write(appDef, null,
+                    ApplicationDef.class, out, "EMBEDDED_HTML");
+        } catch (QuickFixException e) {
+            throw new AuraRuntimeException(e);
+        } finally {
+            releaseContext();
+        }
     }
 
     private DefDescriptor<ApplicationDef> getApplicationDescriptor(String application) {
