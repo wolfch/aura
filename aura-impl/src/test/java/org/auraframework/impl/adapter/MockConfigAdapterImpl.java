@@ -299,7 +299,7 @@ public class MockConfigAdapterImpl extends ConfigAdapterImpl implements MockConf
 
     @Override
     public Set<String> getInternalNamespaces() {
-        Set<String> namespaces = super.getInternalNamespaces();
+        Set<String> namespaces = Sets.newHashSet(super.getInternalNamespaces());
         namespaces.removeAll(nonInternalNamespaces);
         return namespaces;
     }

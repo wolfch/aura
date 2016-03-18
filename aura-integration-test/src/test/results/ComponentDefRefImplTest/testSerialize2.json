@@ -2,6 +2,7 @@
   "componentDef":{
     "s":1,
     "v":{
+      "xs":"I",
       "descriptor":"markup://test:text",
       "superDef":{
         "s":2,
@@ -33,7 +34,8 @@
           "s":4,
           "v":{
             "name":"value",
-            "type":"aura://String"
+            "type":"aura://String",
+            "xs":"I"
           }
         }
       ],
@@ -60,7 +62,8 @@
                       "s":7,
                       "v":{
                         "name":"truncate",
-                        "type":"aura://Integer"
+                        "type":"aura://Integer",
+                        "xs":"I"
                       }
                     },
                     {
@@ -68,6 +71,7 @@
                       "v":{
                         "name":"truncateByWord",
                         "type":"aura://Boolean",
+                        "xs":"I",
                         "default":false
                       }
                     },
@@ -76,6 +80,7 @@
                       "v":{
                         "name":"ellipsis",
                         "type":"aura://Boolean",
+                        "xs":"I",
                         "default":true
                       }
                     }
@@ -99,6 +104,7 @@
               "componentDef":{
                 "s":10,
                 "v":{
+                  "xs":"I",
                   "descriptor":"markup://test:parent",
                   "styleDef":{
                     "s":11,
@@ -124,6 +130,7 @@
                           "componentDef":{
                             "s":12,
                             "v":{
+                              "xs":"I",
                               "descriptor":"markup://test:child1",
                               "modelDef":{
                                 "s":13,
@@ -165,7 +172,8 @@
                                   "s":17,
                                   "v":{
                                     "name":"attr",
-                                    "type":"aura://String"
+                                    "type":"aura://String",
+                                    "xs":"I"
                                   }
                                 }
                               ],
@@ -208,6 +216,7 @@
                                       "componentDef":{
                                         "s":20,
                                         "v":{
+                                          "xs":"I",
                                           "descriptor":"markup://test:child2",
                                           "superDef":{
                                             "r":2

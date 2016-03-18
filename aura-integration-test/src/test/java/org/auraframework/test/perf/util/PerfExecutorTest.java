@@ -58,7 +58,7 @@ import java.util.logging.Logger;
 
 @PerfCmpTest
 @TargetBrowsers({ BrowserType.GOOGLECHROME })
-public class PerfExecutorTest extends WebDriverTestCase {
+public abstract class PerfExecutorTest extends WebDriverTestCase {
 
     private static final Logger logger = Logger.getLogger(PerfExecutorTest.class.getSimpleName());
     private DefDescriptor<BaseComponentDef> def;
