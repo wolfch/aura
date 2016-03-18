@@ -42,10 +42,10 @@ public class DescriptionDefHandler<P> extends ParentedTagHandler<DescriptionDefI
     private final DescriptionDefImpl.Builder builder = new DescriptionDefImpl.Builder();
 
     public DescriptionDefHandler(RootTagHandler<DocumentationDef> parentHandler, XMLStreamReader xmlReader, Source<?> source,
-                                 boolean isInPrivilegedNamespace, DefinitionService definitionService,
+                                 boolean isInInternalNamespace, DefinitionService definitionService,
                                  ConfigAdapter configAdapter, DefinitionParserAdapter definitionParserAdapter) {
-        super(parentHandler, xmlReader, source, isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter);
-        builder.setAccess(getAccess(isInPrivilegedNamespace));
+        super(parentHandler, xmlReader, source, isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter);
+        builder.setAccess(getAccess(isInInternalNamespace));
     }
 
     @Override

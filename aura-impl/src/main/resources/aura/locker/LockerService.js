@@ -34,7 +34,7 @@ function LockerService() {
 	// TODO: grow this list...
 	var whitelist = [
 			'undefined', 'NaN', 'Date', 'Number', 'Boolean', 'alert', 'confirm',
-			'Intl', 'Error', 'console',
+			'Intl', 'Error', 'console', 'Object',
 			'clearTimeout', 'clearInterval'
 		];
 
@@ -153,7 +153,7 @@ function LockerService() {
 			}
 
 			var def = component.getDef();
-			if ($A.clientService.isPrivilegedNamespace(def.getDescriptor().getNamespace()) && !def.isInstanceOf("aura:requireLocker")) {
+			if ($A.clientService.isInternalNamespace(def.getDescriptor().getNamespace()) && !def.isInstanceOf("aura:requireLocker")) {
 				return component;
 			}
 

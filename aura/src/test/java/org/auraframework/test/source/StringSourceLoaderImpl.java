@@ -163,14 +163,14 @@ public class StringSourceLoaderImpl implements StringSourceLoader {
      * @param defClass              the definition class that this source will represent
      * @param contents              the source contents
      * @param namePrefix            if non-null, then generate some name with the given prefix for the descriptor.
-     * @param isPrivilegedNamespace if true, namespace is privileged
+     * @param isInternalNamespace   if true, namespace is internal
      * @return the created {@link StringSource}
      * @throws IllegalStateException when loading a definition that already exists with the same descriptor.
      */
     @Override
     public final <D extends Definition> StringSource<D> addSource(Class<D> defClass, String contents,
-                                                                  @Nullable String namePrefix, boolean isPrivilegedNamespace) {
-        return putSource(defClass, contents, namePrefix, false, isPrivilegedNamespace);
+                                                                  @Nullable String namePrefix, boolean isInternalNamespace) {
+        return putSource(defClass, contents, namePrefix, false, isInternalNamespace);
     }
 
     /**
@@ -180,13 +180,13 @@ public class StringSourceLoaderImpl implements StringSourceLoader {
      * @param contents              the source contents
      * @param namePrefix            if non-null, then generate some name with the given prefix for the descriptor.
      * @param overwrite             if true, overwrite any previously loaded definition
-     * @param isPrivilegedNamespace if true, namespace is privileged
+     * @param isInternalNamespace   if true, namespace is internal
      * @return the created {@link StringSource}
      */
     @Override
     public final <D extends Definition> StringSource<D> putSource(Class<D> defClass, String contents,
-                                                                  @Nullable String namePrefix, boolean overwrite, boolean isPrivilegedNamespace) {
-        return putSource(defClass, contents, namePrefix, overwrite, isPrivilegedNamespace, null);
+                                                                  @Nullable String namePrefix, boolean overwrite, boolean isInternalNamespace) {
+        return putSource(defClass, contents, namePrefix, overwrite, isInternalNamespace, null);
     }
 
     /**
@@ -196,14 +196,15 @@ public class StringSourceLoaderImpl implements StringSourceLoader {
      * @param contents              the source contents
      * @param namePrefix            if non-null, then generate some name with the given prefix for the descriptor.
      * @param overwrite             if true, overwrite any previously loaded definition
-     * @param isPrivilegedNamespace if true, namespace is privileged
+     * @param isInternalNamespace   if true, namespace is internal
      * @return the created {@link StringSource}
      */
     @Override
     public final <D extends Definition, B extends Definition> StringSource<D> putSource(Class<D> defClass, String contents,
-                                                                                        @Nullable String namePrefix, boolean overwrite, boolean isPrivilegedNamespace, @Nullable DefDescriptor<B> bundle) {
+                                                                                        @Nullable String namePrefix, boolean overwrite, boolean isInternalNamespace, 
+																						@Nullable DefDescriptor<B> bundle) {
         DefDescriptor<D> descriptor = createStringSourceDescriptor(namePrefix, defClass, bundle);
-        return putSource(descriptor, contents, overwrite, isPrivilegedNamespace);
+        return putSource(descriptor, contents, overwrite, isInternalNamespace);
     }
 
     /**
@@ -226,19 +227,19 @@ public class StringSourceLoaderImpl implements StringSourceLoader {
      * @param descriptor            the DefDescriptor key for the loaded definition
      * @param contents              the source contents
      * @param overwrite             if true, overwrite any previously loaded definition
-     * @param isPrivilegedNamespace if true, namespace is privileged
+     * @param isInternalNamespace   if true, namespace is internal
      * @return the created {@link StringSource}
      */
     @Override
     public final <D extends Definition> StringSource<D> putSource(DefDescriptor<D> descriptor, String contents,
-                                                                  boolean overwrite, boolean isPrivilegedNamespace) {
+                                                                  boolean overwrite, boolean isInternalNamespace) {
         Format format = DescriptorInfo.get(descriptor.getDefType().getPrimaryInterface()).getFormat();
         StringSource<D> source = new StringSource<>(fileMonitor, descriptor, contents, descriptor.getQualifiedName(), format);
-        return putSource(descriptor, source, overwrite, isPrivilegedNamespace);
+        return putSource(descriptor, source, overwrite, isInternalNamespace);
     }
 
-    private final <D extends Definition> StringSource<D> putSource(DefDescriptor<D> descriptor,
-                                                                   StringSource<D> source, boolean overwrite, boolean isPrivilegedNamespace) {
+    private <D extends Definition> StringSource<D> putSource(DefDescriptor<D> descriptor,
+                                                                   StringSource<D> source, boolean overwrite, boolean isInternalNamespace) {
         SourceMonitorEvent event = SourceMonitorEvent.CREATED;
 
         nsLock.lock();
@@ -246,7 +247,7 @@ public class StringSourceLoaderImpl implements StringSourceLoader {
             String namespace = descriptor.getNamespace();
             Map<DefDescriptor<? extends Definition>, StringSource<? extends Definition>> sourceMap;
 
-            if (isPrivilegedNamespace) {
+            if (isInternalNamespace) {
                 sourceMap = namespaces.get(namespace);
             } else {
                 sourceMap = customNamespaces.get(namespace);
@@ -254,7 +255,7 @@ public class StringSourceLoaderImpl implements StringSourceLoader {
 
             if (sourceMap == null) {
                 sourceMap = Maps.newHashMap();
-                if (isPrivilegedNamespace) {
+                if (isInternalNamespace) {
                     namespaces.put(namespace, sourceMap);
                 } else {
                     customNamespaces.put(namespace, sourceMap);
@@ -409,7 +410,7 @@ public class StringSourceLoaderImpl implements StringSourceLoader {
         return null;
     }
 
-    static enum DescriptorInfo {
+    enum DescriptorInfo {
         APPLICATION(ApplicationDef.class, Format.XML, DefDescriptor.MARKUP_PREFIX, ":"),
         COMPONENT(ComponentDef.class, Format.XML, DefDescriptor.MARKUP_PREFIX, ":"),
         EVENT(EventDef.class, Format.XML, DefDescriptor.MARKUP_PREFIX, ":"),
@@ -475,7 +476,7 @@ public class StringSourceLoaderImpl implements StringSourceLoader {
     }
 
     @Override
-    public boolean isPrivilegedNamespace(String namespace) {
+    public boolean isInternalNamespace(String namespace) {
         return namespace != null && namespaces.containsKey(namespace);
     }
 }

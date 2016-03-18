@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.auraframework.system;
-
-
-/**
- */
-public interface PrivilegedNamespaceSourceLoader {
-    boolean isPrivilegedNamespace(String namespace);    
-}
+({
+	init: function(application) {	
+		application.getConcreteComponent()._aisScopedCallback = $A.getCallback(function(callback) {
+			callback();
+		});
+	}
+}) // eslint-disable-line semi

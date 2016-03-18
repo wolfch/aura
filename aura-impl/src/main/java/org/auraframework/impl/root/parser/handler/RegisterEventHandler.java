@@ -55,9 +55,9 @@ public class RegisterEventHandler<P extends RootDefinition> extends ParentedTagH
     }
 
     public RegisterEventHandler(RootTagHandler<P> parentHandler, XMLStreamReader xmlReader, Source<?> source,
-                                boolean isInPrivilegedNamespace, DefinitionService definitionService,
+                                boolean isInInternalNamespace, DefinitionService definitionService,
                                 ConfigAdapter configAdapter, DefinitionParserAdapter definitionParserAdapter) {
-        super(parentHandler, xmlReader, source, isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter);
+        super(parentHandler, xmlReader, source, isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter);
         if (source != null) {
             builder.setOwnHash(source.getHash());
         }

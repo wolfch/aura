@@ -51,7 +51,7 @@ implements ExpressionContainerHandler {
     protected Location startLocation;
     protected WhitespaceBehavior whitespaceBehavior = BaseComponentDef.DefaultWhitespaceBehavior;
     protected DefDescriptor<T> defDescriptor;
-    protected final boolean isInPrivilegedNamespace;
+    protected final boolean isInInternalNamespace;
     public static final String SCRIPT_TAG = "script";
     public static final String ATTRIBUTE_ACCESS = "access";
 
@@ -61,29 +61,29 @@ implements ExpressionContainerHandler {
     public ContainerTagHandler() {
         super();
         this.defDescriptor = null;
-        this.isInPrivilegedNamespace = true;
+        this.isInInternalNamespace = true;
         this.configAdapter = null;
         this.definitionParserAdapter = null;
     }
 
-    public ContainerTagHandler(XMLStreamReader xmlReader, Source<?> source, boolean isInPrivilegedNamespace,
+    public ContainerTagHandler(XMLStreamReader xmlReader, Source<?> source, boolean isInInternalNamespace,
                                DefinitionService definitionService, ConfigAdapter configAdapter,
                                DefinitionParserAdapter definitionParserAdapter) {
-        this(null, xmlReader, source, isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter);
+        this(null, xmlReader, source, isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter);
     }
 
     public ContainerTagHandler(DefDescriptor<T> defDescriptor, XMLStreamReader xmlReader, Source<?> source,
-                               boolean isInPrivilegedNamespace, DefinitionService definitionService,
+                               boolean isInInternalNamespace, DefinitionService definitionService,
                                ConfigAdapter configAdapter, DefinitionParserAdapter definitionParserAdapter) {
         super(xmlReader, source, definitionService);
         this.defDescriptor = defDescriptor;
-        this.isInPrivilegedNamespace = isInPrivilegedNamespace;
+        this.isInInternalNamespace = isInInternalNamespace;
         this.configAdapter = configAdapter;
         this.definitionParserAdapter = definitionParserAdapter;
     }
 
-    public boolean isInPrivilegedNamespace() {
-        return isInPrivilegedNamespace;
+    public boolean isInInternalNamespace() {
+        return isInInternalNamespace;
     }
 
     protected DefDescriptor<T> getDefDescriptor() {
@@ -196,7 +196,7 @@ implements ExpressionContainerHandler {
             }
         }
         else {
-            defaultAccess = new DefinitionAccessImpl(this.isInPrivilegedNamespace ? AuraContext.Access.INTERNAL : AuraContext.Access.PUBLIC);
+            defaultAccess = new DefinitionAccessImpl(this.isInInternalNamespace ? AuraContext.Access.INTERNAL : AuraContext.Access.PUBLIC);
         }
 
         return defaultAccess;
@@ -240,7 +240,7 @@ implements ExpressionContainerHandler {
             if (!parentHandler.getAllowsScript() && SCRIPT_TAG.equals(tag.toLowerCase())) {
                 throw new AuraRuntimeException("script tags only allowed in templates", getLocation());
             }
-            return new HTMLComponentDefRefHandler<>(parentHandler, tag, xmlReader, source, isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter);
+            return new HTMLComponentDefRefHandler<>(parentHandler, tag, xmlReader, source, isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter);
         } else {
             String loadString = getSystemAttributeValue("load");
             if (loadString != null) {
@@ -252,11 +252,11 @@ implements ExpressionContainerHandler {
                             "Invalid value '%s' specified for 'aura:load' attribute", loadString), getLocation());
                 }
                 if (load == Load.LAZY || load == Load.EXCLUSIVE) {
-                    return new LazyComponentDefRefHandler<>(parentHandler, tag, xmlReader, source, isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter);
+                    return new LazyComponentDefRefHandler<>(parentHandler, tag, xmlReader, source, isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter);
                 }
             }
 
-            return new ComponentDefRefHandler<>(parentHandler, xmlReader, source, isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter);
+            return new ComponentDefRefHandler<>(parentHandler, xmlReader, source, isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter);
         }
     }
 
@@ -285,10 +285,10 @@ implements ExpressionContainerHandler {
     /**
      * Returns DefinitionAccess based on privileged namespace
      *
-     * @param isInPrivilegedNamespace privileged namespace
+     * @param isInInternalNamespace privileged namespace
      * @return INTERNAL access for privileged namespace or PUBLIC for any other
      */
-    protected DefinitionAccess getAccess(boolean isInPrivilegedNamespace) {
-        return new DefinitionAccessImpl(isInPrivilegedNamespace ? AuraContext.Access.INTERNAL : AuraContext.Access.PUBLIC);
+    protected DefinitionAccess getAccess(boolean isInInternalNamespace) {
+        return new DefinitionAccessImpl(isInInternalNamespace ? AuraContext.Access.INTERNAL : AuraContext.Access.PUBLIC);
     }
 }

@@ -86,7 +86,7 @@ public abstract class XMLParser<D extends RootDefinition> implements Parser<D> {
     }
 
     protected abstract RootTagHandler<D> getHandler(DefDescriptor<D>defDescriptor, Source<D> source,
-                                                    XMLStreamReader xmlReader, boolean isInPrivilegedNamespace,
+                                                    XMLStreamReader xmlReader, boolean isInInternalNamespace,
                                                     DefinitionService definitionService,
                                                     ConfigAdapter configAdapter,
                                                     DefinitionParserAdapter definitionParserAdapter) throws QuickFixException;
@@ -105,7 +105,7 @@ public abstract class XMLParser<D extends RootDefinition> implements Parser<D> {
 
                 xmlReader = xmlInputFactory.createXMLStreamReader(reader);
             }
-            handler = getHandler(descriptor, source, xmlReader, isInPrivilegedNamespace(descriptor),
+            handler = getHandler(descriptor, source, xmlReader, isInInternalNamespace(descriptor),
                     definitionService, configAdapter, definitionParserAdapter);
             if (xmlReader != null) {
                 // need to skip junk above the start that is ok
@@ -235,8 +235,8 @@ public abstract class XMLParser<D extends RootDefinition> implements Parser<D> {
         return xmlInputFactory.createXMLStreamReader(reader);
     }
 
-    protected boolean isInPrivilegedNamespace(DefDescriptor<?> descriptor) {
-        return configAdapter.isPrivilegedNamespace(descriptor.getNamespace());
+    protected boolean isInInternalNamespace(DefDescriptor<?> descriptor) {
+        return configAdapter.isInternalNamespace(descriptor.getNamespace());
     }
 
 }

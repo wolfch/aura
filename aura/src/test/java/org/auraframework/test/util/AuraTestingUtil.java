@@ -186,13 +186,13 @@ public class AuraTestingUtil {
      * @param defClass interface of the definition represented by this source
      * @param contents source contents
      * @param namePrefix package name prefix
-     * @param isPrivilegedNamespace if true, namespace is privileged
+     * @param isInternalNamespace if true, namespace is internal
      * @return the {@link DefDescriptor} for the created definition
      */
     public <T extends Definition> DefDescriptor<T> addSourceAutoCleanup(Class<T> defClass, String contents,
-            String namePrefix, boolean isPrivilegedNamespace) {
+            String namePrefix, boolean isInternalNamespace) {
         DefDescriptor<T> descriptor = stringSourceLoader.addSource(defClass, contents, namePrefix,
-                isPrivilegedNamespace).getDescriptor();
+                isInternalNamespace).getDescriptor();
         markForCleanup(descriptor);
         return descriptor;
     }
@@ -216,8 +216,8 @@ public class AuraTestingUtil {
      * @return the {@link DefDescriptor} for the created definition
      */
     public <T extends Definition> DefDescriptor<T> addSourceAutoCleanup(DefDescriptor<T> descriptor, String contents,
-            boolean isPrivilegedNamespace) {
-        stringSourceLoader.putSource(descriptor, contents, false, isPrivilegedNamespace);
+            boolean isInternalNamespace) {
+        stringSourceLoader.putSource(descriptor, contents, false, isInternalNamespace);
         markForCleanup(descriptor);
         return descriptor;
     }

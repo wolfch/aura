@@ -44,9 +44,9 @@ public class FlavorsXMLParser extends XMLParser<FlavorsDef> {
     @Override
     protected FlavorsDefHandler getHandler(DefDescriptor<FlavorsDef> descriptor,
                                            Source<FlavorsDef> source, XMLStreamReader xmlReader,
-                                           boolean isInPrivilegedNamespace, DefinitionService definitionService,
+                                           boolean isInInternalNamespace, DefinitionService definitionService,
                                            ConfigAdapter configAdapter, DefinitionParserAdapter definitionParserAdapter) throws QuickFixException {
-        return new FlavorsDefHandler(descriptor, source, xmlReader, isInPrivilegedNamespace, definitionService,
+        return new FlavorsDefHandler(descriptor, source, xmlReader, isInInternalNamespace, definitionService,
                 configAdapter, definitionParserAdapter);
     }
 }

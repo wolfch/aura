@@ -15,6 +15,7 @@
  */
 package org.auraframework.impl.root.parser.handler;
 
+
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
@@ -44,6 +45,12 @@ public abstract class BaseAccessAttributeTest extends AuraImplTestCase {
 
     @Inject
     private ParserFactory parserFactory;
+
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        configAdapter.addPrivilegedNamespace(privilegedNamespace);
+    }
 
     @Test
     public void testDefaultAccess() throws Exception {
@@ -183,6 +190,41 @@ public abstract class BaseAccessAttributeTest extends AuraImplTestCase {
     public void testAccessAuthenticationInSystemNamespace() throws Exception {
         verifyAccessAuthentication(TestNamespace.System);
     }
+	
+	@Test
+    public void testSimpleAccessInPrivilegedNamespace() throws Exception {
+        verifySimpleAccess(TestNamespace.Privileged, false);
+    }
+	
+	@Test
+    public void testSimpleAccessDynamicInPrivilegedNamespace() throws Exception {
+        verifySimpleAccess(TestNamespace.Privileged, true);
+    }
+	
+	@Test
+    public void testCombinationAccessInPrivilegedNamespace() throws Exception {
+        verifyCombinationAccess(TestNamespace.Privileged);
+    }
+
+	@Test
+    public void testSimpleAuthenticationInPrivilegedNamespace() throws Exception {
+        verifySimpleAuthentication(TestNamespace.Privileged, false);
+    }
+
+	@Test
+    public void testSimpleAuthenticationDynamicInPrivilegedNamespace() throws Exception {
+        verifySimpleAuthentication(TestNamespace.Privileged, true);
+    }
+	
+	@Test
+    public void testCombinationAuthenticationInPrivilegedNamespace() throws Exception {
+        verifyCombinationAuthentication(TestNamespace.Privileged);
+    }
+	
+	@Test
+    public void testAccessAuthenticationInPrivilegedNamespace() throws Exception {
+        verifyAccessAuthentication(TestNamespace.Privileged);
+    }
 
     @Test
     public void testSimpleAccessInCustomNamespace() throws Exception {
@@ -267,7 +309,7 @@ public abstract class BaseAccessAttributeTest extends AuraImplTestCase {
                     }
                 }
                 else{
-                    failures.add("TestCase not found for Access: " + accessValues[i].toString() + " , " + accessValues[j].toString());
+                    failures.add("TestCase not found for Access: " + accessValues[i].toString() + "," + accessValues[j].toString());
                 }
             }
         }
@@ -360,7 +402,7 @@ public abstract class BaseAccessAttributeTest extends AuraImplTestCase {
             @SuppressWarnings("unchecked")
             DefDescriptor<D> descriptor = (DefDescriptor<D>)getAuraTestingUtil().addSourceAutoCleanup(getDefClass(),
                     getResourceSource(), getDefDescriptorName(),
-                    (testNamespace == TestNamespace.System? true: false));
+                    (testNamespace == TestNamespace.System ? true: false));
             Source<D> source = stringSourceLoader.getSource(descriptor);
             Parser<D> parser = parserFactory.getParser(Format.XML, descriptor);
             Definition def = parser.parse(descriptor, source);
@@ -369,15 +411,15 @@ public abstract class BaseAccessAttributeTest extends AuraImplTestCase {
             //descriptor.getDef();
 
             if (!isValidTestCase()) {
-                fail("Should have thrown Exception for access: " + getAccess());
+                fail("Should have thrown Exception for access: " + getAccess()+", resource: "+testResource.name());
             }
         } catch (InvalidAccessValueException e) {
             if(isValidTestCase()){
-                fail("Should not have thrown Exception for access: " + getAccess());
+                fail("Invalid Access Should not have thrown Exception for access: " + getAccess()+", resource: "+testResource.name());
             }
         } catch (InvalidDefinitionException e) {
             if(isValidTestCase()){
-                fail("Should not have thrown Exception for access: " + getAccess());
+                fail("Invalid Definition should not have thrown Exception for access: " + getAccess()+", resource: "+testResource.name());
             }
         }
     }
@@ -388,6 +430,10 @@ public abstract class BaseAccessAttributeTest extends AuraImplTestCase {
 
         if(testNamespace == TestNamespace.Custom){
             namespace = StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE;
+        }
+
+        if(testNamespace == TestNamespace.Privileged){
+            namespace=privilegedNamespace;
         }
 
         switch(testResource){
@@ -552,6 +598,15 @@ public abstract class BaseAccessAttributeTest extends AuraImplTestCase {
             }
         }
 
+        if(testCase.toString().contains("PRIVILEGED")){
+            if(!isDynamic){
+                access.append("PRIVILEGED,");
+            }
+            else{
+                return "org.auraframework.impl.test.util.TestAccessMethods.allowPrivileged";
+            }
+        }
+
         if(testCase.toString().contains("INTERNAL")){
             if(!isDynamic){
                 access.append("INTERNAL,");
@@ -606,6 +661,9 @@ public abstract class BaseAccessAttributeTest extends AuraImplTestCase {
         String[] accessValues;
 
         if(access.startsWith("org.auraframework.impl.test.util.TestAccessMethods.")){
+            if(testNamespace == TestNamespace.Privileged){
+                return false;
+            }
             String[] vals =  access.split("\\.");
             String val = vals[vals.length-1];
 
@@ -618,8 +676,11 @@ public abstract class BaseAccessAttributeTest extends AuraImplTestCase {
         for(int i = 0; i < accessValues.length; i++){
             switch (testResource) {
             case Application:
-                if(testNamespace == TestNamespace.System){
+                if(testNamespace == TestNamespace.System || testNamespace == TestNamespace.Privileged){
                     if(accessValues[i].contains("PRIVATE") || accessValues[i].contains("BLAH")){
+                        return false;
+                    }
+                    if(testNamespace == TestNamespace.Privileged && (accessValues[i].contains("AUTHENTICATED") || accessValues[i].contains("INTERNAL"))){
                         return false;
                     }
                 }
@@ -632,8 +693,11 @@ public abstract class BaseAccessAttributeTest extends AuraImplTestCase {
 
             case Component:
             case Interface:
-                if(testNamespace == TestNamespace.System){
+                if(testNamespace == TestNamespace.System || testNamespace == TestNamespace.Privileged){
                     if(accessValues[i].contains("PRIVATE") || accessValues[i].contains("AUTHENTICATED") || accessValues[i].contains("BLAH")){
+                        return false;
+                    }
+                    if(testNamespace == TestNamespace.Privileged && accessValues[i].contains("INTERNAL")){
                         return false;
                     }
                 }
@@ -645,8 +709,11 @@ public abstract class BaseAccessAttributeTest extends AuraImplTestCase {
                 break;
 
             default:
-                if(testNamespace == TestNamespace.System){
+                if(testNamespace == TestNamespace.System || testNamespace == TestNamespace.Privileged){
                     if(accessValues[i].contains("AUTHENTICATED") || accessValues[i].contains("BLAH")){
+                        return false;
+                    }
+                    if(testNamespace == TestNamespace.Privileged && accessValues[i].contains("INTERNAL")){
                         return false;
                     }
                 }
@@ -660,18 +727,22 @@ public abstract class BaseAccessAttributeTest extends AuraImplTestCase {
 
         if(accessValues.length == 2){
             if(access.contains("GLOBAL")){
-                if(access.contains("PUBLIC") || access.contains("PRIVATE") || access.contains("INTERNAL")){
+                if(access.contains("PUBLIC") || access.contains("PRIVATE") || access.contains("INTERNAL") || access.contains("PRIVILEGED")){
                     return false;
                 }
             }
 
             if(access.contains("PUBLIC")){
-                if(access.contains("PRIVATE") || access.contains("INTERNAL")){
+                if(access.contains("PRIVATE") || access.contains("INTERNAL") || access.contains("PRIVILEGED")){
                     return false;
                 }
             }
 
-            if(access.contains("PRIVATE") && access.contains("INTERNAL")){
+            if(access.contains("INTERNAL") && (access.contains("PRIVATE") || access.contains("PRIVILEGED"))){
+                return false;
+            }
+
+            if(access.contains("PRIVATE") && access.contains("PRIVILEGED")){
                 return false;
             }
 
@@ -755,22 +826,24 @@ public abstract class BaseAccessAttributeTest extends AuraImplTestCase {
     protected TestCase testCase;
     protected TestResource testResource;
     protected TestNamespace testNamespace;
+    private final String privilegedNamespace="privilegedNS";
 
     protected enum TestResource {Application, Component, Interface, Attribute, Event, Tokens, RegisterEvent, Module};
 
-    protected enum TestNamespace {System, Custom};
+    protected enum TestNamespace {System, Custom, Privileged};
 
-    private enum TestCase {EMPTY, DEFAULT, INVALID, GLOBAL, PUBLIC, PRIVATE, INTERNAL, AUTHENTICATED, UNAUTHENTICATED,
-                             INVALID_DYNAMIC, GLOBAL_DYNAMIC, PUBLIC_DYNAMIC, PRIVATE_DYNAMIC, INTERNAL_DYNAMIC, AUTHENTICATED_DYNAMIC, UNAUTHENTICATED_DYNAMIC,
+    private enum TestCase {EMPTY, DEFAULT, INVALID, GLOBAL, PUBLIC, PRIVATE, PRIVILEGED, INTERNAL, AUTHENTICATED, UNAUTHENTICATED,
+                             INVALID_DYNAMIC, GLOBAL_DYNAMIC, PUBLIC_DYNAMIC, PRIVATE_DYNAMIC, PRIVILEGED_DYNAMIC, INTERNAL_DYNAMIC, AUTHENTICATED_DYNAMIC, UNAUTHENTICATED_DYNAMIC,
                              GLOBAL_AUTHENTICATED, GLOBAL_UNAUTHENTICATED,
                              PUBLIC_AUTHENTICATED, PUBLIC_UNAUTHENTICATED,
                              PRIVATE_AUTHENTICATED, PRIVATE_UNAUTHENTICATED,
-                             INTERNAL_AUTHENTICATED, INTERNAL_UNAUTHENTICATED,
-                             GLOBAL_PUBLIC, GLOBAL_PRIVATE, GLOBAL_INTERNAL,
-                             PUBLIC_PRIVATE, PUBLIC_INTERNAL,
-                             PRIVATE_INTERNAL,
+                             PRIVILEGED_AUTHENTICATED, PRIVILEGED_UNAUTHENTICATED,
+                             INTERNAL_AUTHENTICATED, INTERNAL_UNAUTHENTICATED, INTERNAL_PRIVILEGED,
+                             GLOBAL_PUBLIC, GLOBAL_PRIVATE, GLOBAL_PRIVILEGED, GLOBAL_INTERNAL,
+                             PUBLIC_PRIVATE, PUBLIC_INTERNAL, PUBLIC_PRIVILEGED,
+                             PRIVATE_INTERNAL, PRIVATE_PRIVILEGED,
                              AUTHENTICATED_UNAUTHENTICATED,
                              VALUE_METHOD, METHOD_AUTHENTICATION,
-                             INVALID_GLOBAL, INVALID_PUBLIC, INVALID_PRIVATE, INVALID_INTERNAL, INVALID_AUTHENTICATED, INVALID_UNAUTHENTICATED};
+                             INVALID_GLOBAL, INVALID_PUBLIC, INVALID_PRIVATE, INVALID_PRIVILEGED, INVALID_INTERNAL, INVALID_AUTHENTICATED, INVALID_UNAUTHENTICATED};
 
 }

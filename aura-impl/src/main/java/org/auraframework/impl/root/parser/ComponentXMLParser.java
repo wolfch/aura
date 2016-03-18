@@ -47,10 +47,10 @@ public class ComponentXMLParser extends XMLParser<ComponentDef> {
 
     @Override
     protected ComponentDefHandler getHandler(DefDescriptor<ComponentDef> descriptor, Source<ComponentDef> source,
-                                             XMLStreamReader xmlReader, boolean isInPrivilegedNamespace,
+                                             XMLStreamReader xmlReader, boolean isInInternalNamespace,
                                              DefinitionService definitionService,
                                              ConfigAdapter configAdapter, DefinitionParserAdapter definitionParserAdapter) {
-        return new ComponentDefHandler(descriptor, source, xmlReader, isInPrivilegedNamespace, definitionService,
+        return new ComponentDefHandler(descriptor, source, xmlReader, isInInternalNamespace, definitionService,
                 contextService, configAdapter, definitionParserAdapter);
     }
 }

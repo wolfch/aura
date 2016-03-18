@@ -46,10 +46,10 @@ public class RequiredVersionDefHandler<P extends RootDefinition> extends Parente
     private final RequiredVersionDefImpl.Builder builder = new RequiredVersionDefImpl.Builder();
 
     public RequiredVersionDefHandler(RootTagHandler<P> parentHandler, XMLStreamReader xmlReader, Source<?> source,
-                                     boolean isInPrivilegedNamespace, DefinitionService definitionService,
+                                     boolean isInInternalNamespace, DefinitionService definitionService,
                                      ConfigAdapter configAdapter, DefinitionParserAdapter definitionParserAdapter) {
-        super(parentHandler, xmlReader, source, isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter);
-        builder.setAccess(getAccess(isInPrivilegedNamespace));
+        super(parentHandler, xmlReader, source, isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter);
+        builder.setAccess(getAccess(isInInternalNamespace));
     }
 
     @Override

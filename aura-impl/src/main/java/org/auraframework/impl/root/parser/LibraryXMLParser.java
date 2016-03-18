@@ -42,9 +42,9 @@ public class LibraryXMLParser extends XMLParser<LibraryDef> {
 
     @Override
     protected LibraryDefHandler getHandler(DefDescriptor<LibraryDef> descriptor, Source<LibraryDef> source,
-                                           XMLStreamReader xmlReader, boolean isInPrivilegedNamespace,
+                                           XMLStreamReader xmlReader, boolean isInInternalNamespace,
                                            DefinitionService definitionService,
                                            ConfigAdapter configAdapter, DefinitionParserAdapter definitionParserAdapter) {
-        return new LibraryDefHandler(descriptor, source, xmlReader, isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter);
+        return new LibraryDefHandler(descriptor, source, xmlReader, isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter);
     }
 }

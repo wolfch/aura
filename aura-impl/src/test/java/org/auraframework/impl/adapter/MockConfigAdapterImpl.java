@@ -190,6 +190,7 @@ public class MockConfigAdapterImpl extends ConfigAdapterImpl implements MockConf
     private Boolean validateCss = null;
     private ContentSecurityPolicy csp;
     private String csrfToken = null;
+    private final Set<String> nonInternalNamespaces = new HashSet<>();
     private final Set<String> unprivilegedNamespaces = new HashSet<>();
     private Boolean lockerServiceEnabled = null;
 
@@ -209,6 +210,7 @@ public class MockConfigAdapterImpl extends ConfigAdapterImpl implements MockConf
         validateCss = null;
         csrfToken = null;
         unprivilegedNamespaces.clear();
+        nonInternalNamespaces.clear();
         lockerServiceEnabled = null;
     }
 
@@ -267,7 +269,7 @@ public class MockConfigAdapterImpl extends ConfigAdapterImpl implements MockConf
     }
 
     @Override
-    public void setUnprivilegedNamespace(String namespace) {
+    public void setUnPrivilegedNamespace(String namespace) {
         unprivilegedNamespaces.add(namespace);
     }
 
@@ -284,12 +286,36 @@ public class MockConfigAdapterImpl extends ConfigAdapterImpl implements MockConf
             return false;
         }
 
-        if (stringLoader.isPrivilegedNamespace(namespace)
-                || SYSTEM_TEST_NAMESPACES.contains(namespace) || super.isPrivilegedNamespace(namespace)) {
+        if (super.isPrivilegedNamespace(namespace)) {
             return true;
         }
 
-        // Check for any local defs with this namespace and consider that as an indicator that we have a privileged
+        return false;
+    }
+    @Override
+    public void setNonInternalNamespace(String namespace) {
+        nonInternalNamespaces.add(namespace);
+    }
+
+    @Override
+    public Set<String> getInternalNamespaces() {
+        Set<String> namespaces = super.getInternalNamespaces();
+        namespaces.removeAll(nonInternalNamespaces);
+        return namespaces;
+    }
+
+    @Override
+    public boolean isInternalNamespace(String namespace) {
+        if (nonInternalNamespaces.contains(namespace)) {
+            return false;
+        }
+
+        if (stringLoader.isInternalNamespace(namespace)
+                || SYSTEM_TEST_NAMESPACES.contains(namespace) || super.isInternalNamespace(namespace)) {
+            return true;
+        }
+
+        // Check for any local defs with this namespace and consider that as an indicator that we have an internal
         // namespace
         if (namespace != null) {
             if (testContextAdapter != null) {

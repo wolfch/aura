@@ -44,10 +44,10 @@ public class FlavorsDefHandler extends RootTagHandler<FlavorsDef> {
     }
 
     public FlavorsDefHandler(DefDescriptor<FlavorsDef> defDescriptor, Source<FlavorsDef> source,
-                             XMLStreamReader xmlReader, boolean isInPrivilegedNamespace,
+                             XMLStreamReader xmlReader, boolean isInInternalNamespace,
                              DefinitionService definitionService,
                              ConfigAdapter configAdapter, DefinitionParserAdapter definitionParserAdapter) throws QuickFixException {
-        super(defDescriptor, source, xmlReader, isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter);
+        super(defDescriptor, source, xmlReader, isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter);
 
         builder.setDescriptor(getDefDescriptor());
         builder.setLocation(getLocation());
@@ -55,11 +55,11 @@ public class FlavorsDefHandler extends RootTagHandler<FlavorsDef> {
             builder.setOwnHash(source.getHash());
         }
 
-        if (!isInPrivilegedNamespace()) {
+        if (!isInInternalNamespace()) {
             throw new DefinitionNotFoundException(defDescriptor);
         }
 
-        builder.setAccess(getAccess(isInPrivilegedNamespace));
+        builder.setAccess(getAccess(isInInternalNamespace));
     }
 
     @Override
@@ -82,12 +82,12 @@ public class FlavorsDefHandler extends RootTagHandler<FlavorsDef> {
         String tag = getTagName();
 
         if (FlavorIncludeDefHandler.TAG.equalsIgnoreCase(tag)) {
-            FlavorIncludeDef def = new FlavorIncludeDefHandler<>(this, xmlReader, source, isInPrivilegedNamespace,
+            FlavorIncludeDef def = new FlavorIncludeDefHandler<>(this, xmlReader, source, isInInternalNamespace,
                     definitionService, configAdapter, definitionParserAdapter).getElement();
             builder.addFlavorIncludeDef(def);
         }
         else if (FlavorDefaultDefHandler.TAG.equalsIgnoreCase(tag)) {
-            FlavorDefaultDef def = new FlavorDefaultDefHandler<>(this, xmlReader, source, isInPrivilegedNamespace,
+            FlavorDefaultDef def = new FlavorDefaultDefHandler<>(this, xmlReader, source, isInInternalNamespace,
                     definitionService, configAdapter, definitionParserAdapter).getElement();
             builder.addFlavorDefaultDef(def);
         } else {

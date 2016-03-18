@@ -63,14 +63,14 @@ public class CarouselUITest extends WebDriverTestCase {
         WebElement navElement = getNavigationItemSelected(carousel);
         navElement.click();
         assertEquals("Navigation bar element should be in focus.",
-                navElement.getAttribute(AURA_RENDERED_BY_ID), auraUITestingUtil.getUniqueIdOfFocusedElement());
+                navElement.getAttribute(AURA_RENDERED_BY_ID), getAuraUITestingUtil().getUniqueIdOfFocusedElement());
         waitForCarouselPageSelected(page);
 
         // tab into carousel page
-        auraUITestingUtil.pressTab(navElement);
+        getAuraUITestingUtil().pressTab(navElement);
         WebElement element1 = getMDMPageElement(page, 1);
         assertEquals("Should be focused on the first element on the carousel page.",
-                element1.getAttribute(AURA_RENDERED_BY_ID), auraUITestingUtil.getUniqueIdOfFocusedElement());
+                element1.getAttribute(AURA_RENDERED_BY_ID), getAuraUITestingUtil().getUniqueIdOfFocusedElement());
     }
 
     /**
@@ -88,14 +88,14 @@ public class CarouselUITest extends WebDriverTestCase {
         element1.click();
 
         // tab to next element
-        auraUITestingUtil.pressTab(element1);
+        getAuraUITestingUtil().pressTab(element1);
         assertEquals("Should be focused on the second element on the carousel page.",
-                element2.getAttribute(AURA_RENDERED_BY_ID), auraUITestingUtil.getUniqueIdOfFocusedElement());
+                element2.getAttribute(AURA_RENDERED_BY_ID), getAuraUITestingUtil().getUniqueIdOfFocusedElement());
 
         // tab to previous element
         shiftTab().perform();
         assertEquals("Shift+Tab to previous element. Should be focused on the first element on the carousel page.",
-                element1.getAttribute(AURA_RENDERED_BY_ID), auraUITestingUtil.getUniqueIdOfFocusedElement());
+                element1.getAttribute(AURA_RENDERED_BY_ID), getAuraUITestingUtil().getUniqueIdOfFocusedElement());
     }
 
     /**
@@ -115,7 +115,7 @@ public class CarouselUITest extends WebDriverTestCase {
         // tab back to navigation bar
         shiftTab().perform();
         assertEquals("Shift+Tab to navigation bar. Should be focused on the navigation bar item.",
-                navElement.getAttribute(AURA_RENDERED_BY_ID), auraUITestingUtil.getUniqueIdOfFocusedElement());
+                navElement.getAttribute(AURA_RENDERED_BY_ID), getAuraUITestingUtil().getUniqueIdOfFocusedElement());
     }
 
     /**
@@ -136,9 +136,9 @@ public class CarouselUITest extends WebDriverTestCase {
         // actually tab out. Tabbing once, focus will go on nav bar of
         // the next carousel.
         navItem.click();
-        auraUITestingUtil.pressTab(navItem);
+        getAuraUITestingUtil().pressTab(navItem);
         assertEquals("Should be focused on the next carousel page.",
-                expectedFocus.getAttribute(AURA_RENDERED_BY_ID), auraUITestingUtil.getUniqueIdOfFocusedElement());
+                expectedFocus.getAttribute(AURA_RENDERED_BY_ID), getAuraUITestingUtil().getUniqueIdOfFocusedElement());
 
     }
 
@@ -161,7 +161,7 @@ public class CarouselUITest extends WebDriverTestCase {
         navItem.click();
         shiftTab().perform();
         assertEquals("Should be focused on the previous carousel",
-                expectedFocus.getAttribute(AURA_RENDERED_BY_ID), auraUITestingUtil.getUniqueIdOfFocusedElement());
+                expectedFocus.getAttribute(AURA_RENDERED_BY_ID), getAuraUITestingUtil().getUniqueIdOfFocusedElement());
     }
 
     /**
@@ -270,7 +270,7 @@ public class CarouselUITest extends WebDriverTestCase {
                     "arguments[0].dispatchEvent(evObj);" +
                     "} else if(document.createEventObject) {" +
                     "arguments[0].fireEvent('onmouseover');}";
-            auraUITestingUtil.getEval(mouseOverScript, c);
+            getAuraUITestingUtil().getEval(mouseOverScript, c);
             result = true;
         }
 
@@ -312,7 +312,7 @@ public class CarouselUITest extends WebDriverTestCase {
     }
 
     public void waitForCarouselPageSelected(final WebElement page) {
-        auraUITestingUtil.waitUntil(new ExpectedCondition<Boolean>() {
+        getAuraUITestingUtil().waitUntil(new ExpectedCondition<Boolean>() {
             @Override
             public Boolean apply(WebDriver d) {
                 String cssClass = page.getAttribute("class");

@@ -47,12 +47,12 @@ public class ExampleDefHandler<P extends RootDefinition> extends ParentedTagHand
     private final ExampleDefImpl.Builder builder = new ExampleDefImpl.Builder();
 
     public ExampleDefHandler(RootTagHandler<P> parentHandler, XMLStreamReader xmlReader, Source<?> source,
-                             boolean isInPrivilegedNamespace, DefinitionService definitionService,
+                             boolean isInInternalNamespace, DefinitionService definitionService,
                              ConfigAdapter configAdapter, DefinitionParserAdapter definitionParserAdapter) {
-        super(parentHandler, xmlReader, source, isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter);
+        super(parentHandler, xmlReader, source, isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter);
 
         builder.setLocation(getLocation());
-        builder.setAccess(getAccess(isInPrivilegedNamespace));
+        builder.setAccess(getAccess(isInInternalNamespace));
         if (source != null) {
             builder.setOwnHash(source.getHash());
         }

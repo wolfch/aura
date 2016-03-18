@@ -47,28 +47,25 @@ public class ClientLibraryDefHandler<P extends RootDefinition> extends ParentedT
 
     private static final String ATTRIBUTE_NAME = "name";
     private static final String ATTRIBUTE_TYPE = "type";
-    private static final String ATTRIBUTE_URL = "url";
     private static final String ATTRIBUTE_MODES = "modes";
-    private static final String ATTRIBUTE_COMBINE = "combine";
 
-    private final static Set<String> ALLOWED_ATTRIBUTES = ImmutableSet.of(ATTRIBUTE_NAME, ATTRIBUTE_TYPE, ATTRIBUTE_URL,
-            ATTRIBUTE_MODES, ATTRIBUTE_COMBINE);
+    private final static Set<String> ALLOWED_ATTRIBUTES = ImmutableSet.of(ATTRIBUTE_NAME, ATTRIBUTE_TYPE, ATTRIBUTE_MODES);
 
     private ClientLibraryDefImpl.Builder builder;
 
     public ClientLibraryDefHandler(RootTagHandler<P> parentHandler, XMLStreamReader xmlReader, Source<?> source,
-                                   boolean isInPrivilegedNamespace, DefinitionService definitionService,
+                                   boolean isInInternalNamespace, DefinitionService definitionService,
                                    ConfigAdapter configAdapter, DefinitionParserAdapter definitionParserAdapter) throws DefinitionNotFoundException {
-        super(parentHandler, xmlReader, source, isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter);
-        
-        if (!isInPrivilegedNamespace()) {
+        super(parentHandler, xmlReader, source, isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter);
+
+        if (!isInInternalNamespace()) {
             throw new DefinitionNotFoundException(definitionService.getDefDescriptor(TAG, ComponentDef.class));
         }
-        
+
         this.builder = new ClientLibraryDefImpl.Builder();
         this.builder.setLocation(getLocation());
         this.builder.setParentDescriptor(parentHandler.getDefDescriptor());
-        builder.setAccess(getAccess(isInPrivilegedNamespace));
+        builder.setAccess(getAccess(isInInternalNamespace));
     }
 
     @Override

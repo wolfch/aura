@@ -33,7 +33,7 @@ public class DefinitionParserAdapterImpl implements DefinitionParserAdapter {
 
     @Override
     public DefinitionAccess parseAccess(String namespace, String access) throws InvalidAccessValueException {
-        return new DefinitionAccessImpl(namespace, access, this.configAdapter.isPrivilegedNamespace(namespace));
+        return new DefinitionAccessImpl(namespace, access, configAdapter.isInternalNamespace(namespace));
     }
 
     @Override

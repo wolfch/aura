@@ -48,9 +48,9 @@ public class InterfaceXMLParser extends XMLParser<InterfaceDef> {
     @Override
     protected InterfaceDefHandler getHandler(DefDescriptor<InterfaceDef> descriptor,
                                              Source<InterfaceDef> source, XMLStreamReader xmlReader,
-                                             boolean isInPrivilegedNamespace, DefinitionService definitionService,
+                                             boolean isInInternalNamespace, DefinitionService definitionService,
                                              ConfigAdapter configAdapter, DefinitionParserAdapter definitionParserAdapter) {
-        return new InterfaceDefHandler(descriptor, source, xmlReader, isInPrivilegedNamespace, definitionService,
+        return new InterfaceDefHandler(descriptor, source, xmlReader, isInInternalNamespace, definitionService,
                 contextService, configAdapter, definitionParserAdapter);
     }
 }

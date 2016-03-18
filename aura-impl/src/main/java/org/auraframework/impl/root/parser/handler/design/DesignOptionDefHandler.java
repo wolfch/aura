@@ -46,9 +46,9 @@ public class DesignOptionDefHandler extends ParentedTagHandler<DesignOptionDef, 
     }
 
     public DesignOptionDefHandler(ContainerTagHandler<DesignDef> parentHandler, XMLStreamReader xmlReader, Source<?> source,
-                                  boolean isInPrivilegedNamespace, DefinitionService definitionService,
+                                  boolean isInInternalNamespace, DefinitionService definitionService,
                                   ConfigAdapter configAdapter, DefinitionParserAdapter definitionParserAdapter) {
-        super(parentHandler, xmlReader, source, isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter);
+        super(parentHandler, xmlReader, source, isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter);
         builder.setDescriptor(DefDescriptorImpl.getAssociateDescriptor(getParentDefDescriptor(), DesignOptionDef.class,
                 TAG));
     }

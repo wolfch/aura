@@ -49,15 +49,15 @@ public class DocumentationDefHandler extends RootTagHandler<DocumentationDef> {
     }
 
     public DocumentationDefHandler(DefDescriptor<DocumentationDef> defDescriptor, Source<DocumentationDef> source,
-                                   XMLStreamReader xmlReader, boolean isInPrivilegedNamespace, DefinitionService definitionService,
+                                   XMLStreamReader xmlReader, boolean isInInternalNamespace, DefinitionService definitionService,
                                    ConfigAdapter configAdapter, DefinitionParserAdapter definitionParserAdapter) {
-        super(defDescriptor, source, xmlReader, isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter);
+        super(defDescriptor, source, xmlReader, isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter);
         builder.setDescriptor(getDefDescriptor());
         builder.setLocation(getLocation());
         if (source != null) {
             builder.setOwnHash(source.getHash());
         }
-        builder.setAccess(getAccess(isInPrivilegedNamespace));
+        builder.setAccess(getAccess(isInInternalNamespace));
     }
 
     @Override
@@ -80,12 +80,14 @@ public class DocumentationDefHandler extends RootTagHandler<DocumentationDef> {
         String tag = getTagName();
 
         if (DescriptionDefHandler.TAG.equalsIgnoreCase(tag)) {
-            DescriptionDef desc = new DescriptionDefHandler<DocumentationDef>(this, xmlReader, source, isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter).getElement();
+            DescriptionDef desc = new DescriptionDefHandler<DocumentationDef>(this, xmlReader, source,
+                    isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter).getElement();
             String name = desc.getName();
             builder.addDescription(name, desc);
 
         } else if (ExampleDefHandler.TAG.equalsIgnoreCase(tag)) {
-            ExampleDef ex = new ExampleDefHandler<>(this, xmlReader, source, isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter).getElement();
+            ExampleDef ex = new ExampleDefHandler<>(this, xmlReader, source, isInInternalNamespace, definitionService,
+                    configAdapter, definitionParserAdapter).getElement();
             String name = ex.getName();
             builder.addExample(name, ex);
 

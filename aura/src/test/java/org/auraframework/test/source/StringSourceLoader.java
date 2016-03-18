@@ -17,7 +17,7 @@ package org.auraframework.test.source;
 
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.Definition;
-import org.auraframework.system.PrivilegedNamespaceSourceLoader;
+import org.auraframework.system.InternalNamespaceSourceLoader;
 import org.auraframework.system.SourceLoader;
 
 import javax.annotation.Nullable;
@@ -34,12 +34,12 @@ import javax.annotation.Nullable;
  * represented. This could be fixed by providing a fixed view into the namespaces provided.
  *
  */
-public interface StringSourceLoader extends SourceLoader, PrivilegedNamespaceSourceLoader {
-    public static final String DEFAULT_NAMESPACE = "string";
-    public static final String OTHER_NAMESPACE = "string1";
-    public static final String DEFAULT_CUSTOM_NAMESPACE = "cstring";
-    public static final String OTHER_CUSTOM_NAMESPACE = "cstring1";
-    public static final String ANOTHER_CUSTOM_NAMESPACE = "cstring2";
+public interface StringSourceLoader extends SourceLoader, InternalNamespaceSourceLoader {
+    String DEFAULT_NAMESPACE = "string";
+    String OTHER_NAMESPACE = "string1";
+    String DEFAULT_CUSTOM_NAMESPACE = "cstring";
+    String OTHER_CUSTOM_NAMESPACE = "cstring1";
+    String ANOTHER_CUSTOM_NAMESPACE = "cstring2";
 
     /**
      * Generate a {@link DefDescriptor} with a unique name. If namePrefix does not contain a namespace, the descriptor
@@ -59,12 +59,12 @@ public interface StringSourceLoader extends SourceLoader, PrivilegedNamespaceSou
      * @param defClass the definition class that this source will represent
      * @param contents the source contents
      * @param namePrefix if non-null, then generate some name with the given prefix for the descriptor.
-     * @param isPrivilegedNamespace if true, namespace is privileged
+     * @param isInternalNamespace if true, namespace is internal
      * @return the created {@link StringSource}
      * @throws IllegalStateException when loading a definition that already exists with the same descriptor.
      */
     <D extends Definition> StringSource<D> addSource(Class<D> defClass, String contents,
-                                                     @Nullable String namePrefix, boolean isPrivilegedNamespace);
+                                                     @Nullable String namePrefix, boolean isInternalNamespace);
 
     /**
      * Load a definition.
@@ -73,11 +73,11 @@ public interface StringSourceLoader extends SourceLoader, PrivilegedNamespaceSou
      * @param contents the source contents
      * @param namePrefix if non-null, then generate some name with the given prefix for the descriptor.
      * @param overwrite if true, overwrite any previously loaded definition
-     * @param isPrivilegedNamespace if true, namespace is privileged
+     * @param isInternalNamespace if true, namespace is internal
      * @return the created {@link StringSource}
      */
     <D extends Definition> StringSource<D> putSource(Class<D> defClass, String contents,
-                                                     @Nullable String namePrefix, boolean overwrite, boolean isPrivilegedNamespace);
+                                                     @Nullable String namePrefix, boolean overwrite, boolean isInternalNamespace);
 
     /**
      * Load a definition.
@@ -86,11 +86,11 @@ public interface StringSourceLoader extends SourceLoader, PrivilegedNamespaceSou
      * @param contents the source contents
      * @param namePrefix if non-null, then generate some name with the given prefix for the descriptor.
      * @param overwrite if true, overwrite any previously loaded definition
-     * @param isPrivilegedNamespace if true, namespace is privileged
+     * @param isInternalNamespace if true, namespace is internal
      * @return the created {@link StringSource}
      */
     <D extends Definition, B extends Definition> StringSource<D> putSource(Class<D> defClass, String contents,
-                                                                           @Nullable String namePrefix, boolean overwrite, boolean isPrivilegedNamespace, @Nullable DefDescriptor<B> bundle);
+                                                                           @Nullable String namePrefix, boolean overwrite, boolean isInternalNamespace, @Nullable DefDescriptor<B> bundle);
 
     /**
      * Load a definition.
@@ -108,12 +108,11 @@ public interface StringSourceLoader extends SourceLoader, PrivilegedNamespaceSou
      * @param descriptor the DefDescriptor key for the loaded definition
      * @param contents the source contents
      * @param overwrite if true, overwrite any previously loaded definition
-     * @param isPrivilegedNamespace if true, namespace is privileged
+     * @param isInternalNamespace if true, namespace is internal
      * @return the created {@link StringSource}
      */
     <D extends Definition> StringSource<D> putSource(DefDescriptor<D> descriptor, String contents,
-                                                     boolean overwrite, boolean isPrivilegedNamespace);
-
+                                                     boolean overwrite, boolean isInternalNamespace);
     /**
      * Remove a definition from the source loader.
      * 

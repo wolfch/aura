@@ -6,9 +6,7 @@
       "fakeAttribute":{
         "s":2,
         "v":{
-          "name":"fakeAttribute",
-          "type":"java://fakeAttribute",
-          "xs":"p"
+          "name":"Fake Attribute"
         }
       }
     },

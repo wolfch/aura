@@ -224,7 +224,7 @@ public class ComponentJSTestSuite extends TestSuite {
 
             // Actions run on servers need special handling because their call back methods are called asynchronously.
             // This check is to make sure all such calls were complete.
-            auraUITestingUtil.waitForAuraTestComplete(auraUITestingUtil.getTimeout());
+            getAuraUITestingUtil().waitForAuraTestComplete(getAuraUITestingUtil().getTimeout());
         }
 
         @Override

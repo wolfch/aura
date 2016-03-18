@@ -49,12 +49,12 @@ public class DesignLayoutComponentDefHandler extends ParentedTagHandler<DesignLa
     }
 
     public DesignLayoutComponentDefHandler(ContainerTagHandler<DesignDef> parentHandler, XMLStreamReader xmlReader, Source<?> source,
-                                           boolean isInPrivilegedNamespace, DefinitionService definitionService,
+                                           boolean isInInternalNamespace, DefinitionService definitionService,
                                            ConfigAdapter configAdapter, DefinitionParserAdapter definitionParserAdapter) {
-        super(parentHandler, xmlReader, source, isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter);
+        super(parentHandler, xmlReader, source, isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter);
         builder.setDescriptor(DefDescriptorImpl.getAssociateDescriptor(getParentDefDescriptor(), DesignLayoutComponentDef.class,
                 TAG));
-        builder.setAccess(getAccess(isInPrivilegedNamespace));
+        builder.setAccess(getAccess(isInInternalNamespace));
     }
 
     @Override

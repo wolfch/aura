@@ -27,6 +27,7 @@ import org.auraframework.def.TokensDef;
 import org.auraframework.def.TokensImportDef;
 import org.auraframework.expression.PropertyReference;
 import org.auraframework.impl.css.token.TokensDefImpl;
+import org.auraframework.impl.system.DefDescriptorImpl;
 import org.auraframework.service.DefinitionService;
 import org.auraframework.system.Source;
 import org.auraframework.throwable.quickfix.InvalidAccessValueException;
@@ -52,10 +53,10 @@ public final class TokensDefHandler extends RootTagHandler<TokensDef> {
             .addAll(RootTagHandler.ALLOWED_ATTRIBUTES)
             .build();
 
-    private final static Set<String> PRIVILEGED_ALLOWED_ATTRIBUTES = new ImmutableSet.Builder<String>()
+    private final static Set<String> INTERNAL_ALLOWED_ATTRIBUTES = new ImmutableSet.Builder<String>()
             .add(ATTRIBUTE_PROVIDER, ATTRIBUTE_MAP_PROVIDER)
             .addAll(ALLOWED_ATTRIBUTES)
-            .addAll(RootTagHandler.PRIVILEGED_ALLOWED_ATTRIBUTES)
+            .addAll(RootTagHandler.INTERNAL_ALLOWED_ATTRIBUTES)
             .build();
 
     private final TokensDefImpl.Builder builder = new TokensDefImpl.Builder();
@@ -65,10 +66,10 @@ public final class TokensDefHandler extends RootTagHandler<TokensDef> {
     }
 
     public TokensDefHandler(DefDescriptor<TokensDef> defDescriptor, Source<TokensDef> source, XMLStreamReader xmlReader,
-                            boolean isInPrivilegedNamespace, DefinitionService definitionService,
+                            boolean isInInternalNamespace, DefinitionService definitionService,
                             ConfigAdapter configAdapter, DefinitionParserAdapter definitionParserAdapter)
             throws QuickFixException {
-        super(defDescriptor, source, xmlReader, isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter);
+        super(defDescriptor, source, xmlReader, isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter);
         builder.setOwnHash(source.getHash());
     }
 
@@ -79,7 +80,7 @@ public final class TokensDefHandler extends RootTagHandler<TokensDef> {
 
     @Override
     public Set<String> getAllowedAttributes() {
-        return isInPrivilegedNamespace() ? PRIVILEGED_ALLOWED_ATTRIBUTES : ALLOWED_ATTRIBUTES;
+        return isInInternalNamespace() ? INTERNAL_ALLOWED_ATTRIBUTES : ALLOWED_ATTRIBUTES;
     }
 
     @Override
@@ -128,21 +129,21 @@ public final class TokensDefHandler extends RootTagHandler<TokensDef> {
         String tag = getTagName();
 
         if (TokenDefHandler.TAG.equalsIgnoreCase(tag)) {
-            TokenDef def = new TokenDefHandler<>(this, xmlReader, source, isInPrivilegedNamespace, definitionService,
+            TokenDef def = new TokenDefHandler<>(this, xmlReader, source, isInInternalNamespace, definitionService,
                     configAdapter, definitionParserAdapter).getElement();
             if (builder.tokens().containsKey(def.getName())) {
                 error("Duplicate token %s", def.getName());
             }
             builder.addTokenDef(def);
 
-        } else if (isInPrivilegedNamespace && TokensImportDefHandler.TAG.equalsIgnoreCase(tag)) {
+        } else if (isInInternalNamespace && TokensImportDefHandler.TAG.equalsIgnoreCase(tag)) {
             // imports must come before tokens. This is mainly for simplifying the token lookup implementation,
             // while still matching the most common expected usages of imports vs. declared tokens.
             if (!builder.tokens().isEmpty()) {
                 error("tag %s must come before all declared tokens", TokensImportDefHandler.TAG);
             }
 
-            TokensImportDef def = new TokensImportDefHandler<>(this, xmlReader, source, isInPrivilegedNamespace,
+            TokensImportDef def = new TokensImportDefHandler<>(this, xmlReader, source, isInInternalNamespace,
                     definitionService, configAdapter, definitionParserAdapter).getElement();
             if (builder.imports().contains(def.getImportDescriptor())) {
                 error("Duplicate import %s", def.getName());

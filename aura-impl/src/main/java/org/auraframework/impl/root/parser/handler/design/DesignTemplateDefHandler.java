@@ -46,10 +46,10 @@ public class DesignTemplateDefHandler extends ParentedTagHandler<DesignTemplateD
     }
 
     public DesignTemplateDefHandler(RootTagHandler<DesignDef> parentHandler, XMLStreamReader xmlReader,
-                                    Source<?> source, boolean isInPrivilegedNamespace, DefinitionService definitionService,
+                                    Source<?> source, boolean isInInternalNamespace, DefinitionService definitionService,
                                     ConfigAdapter configAdapter, DefinitionParserAdapter definitionParserAdapter) {
-        super(parentHandler, xmlReader, source, isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter);
-        builder.setAccess(getAccess(isInPrivilegedNamespace));
+        super(parentHandler, xmlReader, source, isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter);
+        builder.setAccess(getAccess(isInInternalNamespace));
     }
 
     @Override
@@ -68,7 +68,7 @@ public class DesignTemplateDefHandler extends ParentedTagHandler<DesignTemplateD
         String tag = getTagName();
         if (DesignTemplateRegionDefHandler.TAG.equalsIgnoreCase(tag)) {
             DesignTemplateRegionDef templateRegion = new DesignTemplateRegionDefHandler(getParentHandler(), xmlReader,
-                    source, isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter).getElement();
+                    source, isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter).getElement();
             builder.addDesignTemplateRegion(
                     definitionService.getDefDescriptor(templateRegion.getName(), DesignTemplateRegionDef.class),
                     templateRegion);

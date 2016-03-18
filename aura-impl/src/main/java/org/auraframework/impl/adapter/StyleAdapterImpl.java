@@ -76,8 +76,8 @@ public class StyleAdapterImpl implements StyleAdapter {
 
     @Override
     public boolean tokenPropertyValidation(DefDescriptor<? extends BaseStyleDef> style) {
-        // validate all non-privileged namespaces. later can change this to include privileged as well.
-        return !configAdapter.isPrivilegedNamespace(style.getNamespace());
+        // validate all non-internal namespaces. later can change this to include internal as well.
+        return !configAdapter.isInternalNamespace(style.getNamespace());
     }
 
     @Override

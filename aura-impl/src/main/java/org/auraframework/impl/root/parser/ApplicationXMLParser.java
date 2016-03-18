@@ -48,9 +48,9 @@ public class ApplicationXMLParser extends XMLParser<ApplicationDef> {
     @Override
     protected ApplicationDefHandler getHandler(DefDescriptor<ApplicationDef> descriptor,
                                                Source<ApplicationDef> source, XMLStreamReader xmlReader,
-                                               boolean isInPrivilegedNamespace, DefinitionService definitionService,
+                                               boolean isInInternalNamespace, DefinitionService definitionService,
                                                ConfigAdapter configAdapter, DefinitionParserAdapter definitionParserAdapter) {
-        return new ApplicationDefHandler(descriptor, source, xmlReader, isInPrivilegedNamespace, definitionService,
+        return new ApplicationDefHandler(descriptor, source, xmlReader, isInInternalNamespace, definitionService,
                 contextService, configAdapter, definitionParserAdapter);
     }
 }

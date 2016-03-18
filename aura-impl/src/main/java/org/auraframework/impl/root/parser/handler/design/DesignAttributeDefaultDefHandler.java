@@ -41,11 +41,11 @@ public class DesignAttributeDefaultDefHandler extends ParentedTagHandler<DesignA
 
 
     public DesignAttributeDefaultDefHandler(RootTagHandler<DesignDef> parentHandler, XMLStreamReader xmlReader,
-                                            Source<?> source, boolean isInPrivilegedNamespace,
+                                            Source<?> source, boolean isInInternalNamespace,
                                             DefinitionService definitionService,
                                             ConfigAdapter configAdapter, DefinitionParserAdapter definitionParserAdapter) {
-        super(parentHandler, xmlReader, source, isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter);
-        builder.setAccess(getAccess(isInPrivilegedNamespace));
+        super(parentHandler, xmlReader, source, isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter);
+        builder.setAccess(getAccess(isInInternalNamespace));
     }
 
     @Override

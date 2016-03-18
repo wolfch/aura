@@ -58,10 +58,11 @@ public class ApplicationDefHandlerTest extends AuraImplTestCase {
 
     private class ApplicationDefHandlerOverride extends ApplicationDefHandler {
         public ApplicationDefHandlerOverride(DefDescriptor<ApplicationDef> applicationDefDescriptor,
-                                             Source<ApplicationDef> source, XMLStreamReader xmlReader, boolean isInPrivilegedNamespace, DefinitionService definitionService,
+                                             Source<ApplicationDef> source, XMLStreamReader xmlReader,
+                                             boolean isInInternalNamespace, DefinitionService definitionService,
                                              ContextService contextService,
                                              ConfigAdapter configAdapter, DefinitionParserAdapter definitionParserAdapter) {
-            super(applicationDefDescriptor, source, xmlReader, isInPrivilegedNamespace, definitionService, contextService, configAdapter, definitionParserAdapter);
+            super(applicationDefDescriptor, source, xmlReader, isInInternalNamespace, definitionService, contextService, configAdapter, definitionParserAdapter);
         }
 
         @Override

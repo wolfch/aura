@@ -37,12 +37,12 @@ public class LazyComponentDefRefHandler<P extends RootDefinition> extends Compon
     protected LazyComponentDefRef.Builder lazyBuilder = new LazyComponentDefRef.Builder();
 
     protected LazyComponentDefRefHandler(RootTagHandler<P> parentHandler, String tag, XMLStreamReader xmlReader,
-                                         Source<?> source, boolean isInPrivilegedNamespace, DefinitionService definitionService,
+                                         Source<?> source, boolean isInInternalNamespace, DefinitionService definitionService,
                                          ConfigAdapter configAdapter, DefinitionParserAdapter definitionParserAdapter) {
-        super(parentHandler, xmlReader, source, isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter);
+        super(parentHandler, xmlReader, source, isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter);
         builder = lazyBuilder;
         builder.setLocation(getLocation());
-        builder.setAccess(getAccess(isInPrivilegedNamespace));
+        builder.setAccess(getAccess(isInInternalNamespace));
         lazyBuilder.setRefDescriptor(definitionService.getDefDescriptor(tag.trim(), ComponentDef.class));
 
         String loadString = getSystemAttributeValue("load");

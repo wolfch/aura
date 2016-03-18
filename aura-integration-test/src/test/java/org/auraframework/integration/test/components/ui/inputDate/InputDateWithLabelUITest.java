@@ -86,7 +86,7 @@ public class InputDateWithLabelUITest extends WebDriverTestCase {
 
         openDatePicker();
 
-        String classOfActiveElem = "" + auraUITestingUtil.getEval(CLASSNAME);
+        String classOfActiveElem = "" + getAuraUITestingUtil().getEval(CLASSNAME);
         element = findDomElement(By.cssSelector("a[class*='" + classOfActiveElem + "']"));
 
         element = loopThroughKeys(element, driver, keyString, iterCondition, ARIA_SELECTED_SEL, "Shift+Page Up/Down");
@@ -138,7 +138,7 @@ public class InputDateWithLabelUITest extends WebDriverTestCase {
     }
 
     public void gotToNextElem(WebDriver driver, String shftTab) {
-        String classOfActiveElem = "a[class*='" + auraUITestingUtil.getEval(CLASSNAME) + "']";
+        String classOfActiveElem = "a[class*='" + getAuraUITestingUtil().getEval(CLASSNAME) + "']";
         findDomElement(By.cssSelector(classOfActiveElem)).sendKeys(shftTab);
 
     }
@@ -264,9 +264,9 @@ public class InputDateWithLabelUITest extends WebDriverTestCase {
         WebElement element = findDomElement(By.cssSelector(DATE_INPUT_BOX_SEL));
 
         // Tabbing to the next item and getting what is in focus
-        auraUITestingUtil.pressTab(element);
+        getAuraUITestingUtil().pressTab(element);
 
-        String classOfActiveElem = "" + auraUITestingUtil.getEval(CLASSNAME);
+        String classOfActiveElem = "" + getAuraUITestingUtil().getEval(CLASSNAME);
         element = findDomElement(By.cssSelector("a[class*='" + classOfActiveElem + "']"));
         String elementClass = element.getAttribute("class");
         assertTrue("Tabbing did not take us to the date picker icon",
@@ -277,7 +277,7 @@ public class InputDateWithLabelUITest extends WebDriverTestCase {
 
         // Todays date should be on focus, Grabbing that element. Pressing tab with WebDriver after clicking on the icon
         // will move to the move month to the left
-        classOfActiveElem = "" + auraUITestingUtil.getEval(CLASSNAME);
+        classOfActiveElem = "" + getAuraUITestingUtil().getEval(CLASSNAME);
         element = findDomElement(By.cssSelector("a[class*='" + classOfActiveElem + "']"));
         elementClass = element.getAttribute("class");
         assertTrue("Tabbing did not take us to today's date",
@@ -294,7 +294,7 @@ public class InputDateWithLabelUITest extends WebDriverTestCase {
         WebElement element = findDomElement(By.cssSelector(DATE_INPUT_BOX_SEL));
 
         // Tabbing to the next item and getting what is in focus
-        auraUITestingUtil.pressTab(element);
+        getAuraUITestingUtil().pressTab(element);
 
         element = findDomElement(By.cssSelector(OUTPUT_ST));
         // tab out does not fire value change event
@@ -304,7 +304,7 @@ public class InputDateWithLabelUITest extends WebDriverTestCase {
 
         // Todays date should be on focus, Grabbing that element. Pressing tab with WebDriver after clicking on the icon
         // will move to the move month to the left
-        String classOfActiveElem = "" + auraUITestingUtil.getEval(CLASSNAME);
+        String classOfActiveElem = "" + getAuraUITestingUtil().getEval(CLASSNAME);
         element = findDomElement(By.cssSelector("a[class*='" + classOfActiveElem + "']"));
 
         // Moving from the on focus element to the today link
@@ -333,9 +333,9 @@ public class InputDateWithLabelUITest extends WebDriverTestCase {
         WebElement element = findDomElement(By.cssSelector(DATE_INPUT_BOX_SEL));
         element.click();
         element.sendKeys("20151111");
-        auraUITestingUtil.pressTab(element);
+        getAuraUITestingUtil().pressTab(element);
 
-        String classOfActiveElem = "a[class*='" + auraUITestingUtil.getEval(CLASSNAME) + "']";
+        String classOfActiveElem = "a[class*='" + getAuraUITestingUtil().getEval(CLASSNAME) + "']";
         element = findDomElement(By.cssSelector(classOfActiveElem));
         String elementClass = element.getAttribute("class");
         assertTrue("Tabbing did not take us to the date picker icon",
@@ -343,12 +343,12 @@ public class InputDateWithLabelUITest extends WebDriverTestCase {
         element.click();
 
         // Focused on Today's date
-        classOfActiveElem = "a[class*='" + auraUITestingUtil.getEval(CLASSNAME) + "']";
+        classOfActiveElem = "a[class*='" + getAuraUITestingUtil().getEval(CLASSNAME) + "']";
         element = findDomElement(By.cssSelector(classOfActiveElem));
         elementClass = element.getAttribute("class");
         assertTrue("Tabbing did not take us to the selected date",
                 elementClass.indexOf("selectedDate") >= 0);
-        auraUITestingUtil.pressTab(element);
+        getAuraUITestingUtil().pressTab(element);
 
         String shftTab = Keys.SHIFT + "" + Keys.TAB;
 
@@ -371,7 +371,7 @@ public class InputDateWithLabelUITest extends WebDriverTestCase {
         gotToNextElem(driver, shftTab);
 
         // Getting the input textbox in focus and getting the value, which should not have changed
-        classOfActiveElem = "input[class*='" + auraUITestingUtil.getEval(CLASSNAME) + "']";
+        classOfActiveElem = "input[class*='" + getAuraUITestingUtil().getEval(CLASSNAME) + "']";
         element = findDomElement(By.cssSelector(classOfActiveElem));
 
         assertEquals("Shift Tabbing did not get us to the input textbox", "2015-11-11", element.getAttribute("value"));
@@ -427,7 +427,7 @@ public class InputDateWithLabelUITest extends WebDriverTestCase {
             inputDate.sendKeys(Keys.TAB);
 
             //active element should now be the calendar icon - hit enter to open datePicker
-            WebElement activeElement = (WebElement)auraUITestingUtil.getEval(getActiveElem);
+            WebElement activeElement = (WebElement)getAuraUITestingUtil().getEval(getActiveElem);
             activeElement.sendKeys(Keys.ENTER);
 
             //datePicker should be open
@@ -441,7 +441,7 @@ public class InputDateWithLabelUITest extends WebDriverTestCase {
             waitForElementDisappear("datePicker should not be present, but it is", By.cssSelector(".uiDatePicker.visible"));
 
             //check if active element is the inputDate
-            activeElement = (WebElement)auraUITestingUtil.getEval(getActiveElem);
+            activeElement = (WebElement)getAuraUITestingUtil().getEval(getActiveElem);
             assertEquals("Focus not on the right element", activeElement, inputDate);
 
         }
@@ -463,7 +463,7 @@ public class InputDateWithLabelUITest extends WebDriverTestCase {
 
         openDatePicker();
 
-        String classOfActiveElem = "" + auraUITestingUtil.getEval(CLASSNAME);
+        String classOfActiveElem = "" + getAuraUITestingUtil().getEval(CLASSNAME);
 
         element = findDomElement(By.cssSelector("a[class*='" + classOfActiveElem + "']"));
 
@@ -491,7 +491,7 @@ public class InputDateWithLabelUITest extends WebDriverTestCase {
         openDatePicker();
 
         // Find todays date, which should be focused
-        By activeElmLoc = By.cssSelector("a[class*='" + auraUITestingUtil.getEval(CLASSNAME) + "']");
+        By activeElmLoc = By.cssSelector("a[class*='" + getAuraUITestingUtil().getEval(CLASSNAME) + "']");
         element = findDomElement(activeElmLoc);
 
         // Move from todays date, to the todays date +41
@@ -524,7 +524,7 @@ public class InputDateWithLabelUITest extends WebDriverTestCase {
         openDatePicker();
 
         // Find todays date, which should be focused
-        String classOfActiveElem = "" + auraUITestingUtil.getEval(CLASSNAME);
+        String classOfActiveElem = "" + getAuraUITestingUtil().getEval(CLASSNAME);
         element = findDomElement(By.cssSelector("a[class*='" + classOfActiveElem + "']"));
 
         // Move 4 months up

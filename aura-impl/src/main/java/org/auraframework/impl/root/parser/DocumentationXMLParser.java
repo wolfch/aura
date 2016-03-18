@@ -43,9 +43,9 @@ public class DocumentationXMLParser extends XMLParser<DocumentationDef> {
     @Override
     protected DocumentationDefHandler getHandler(DefDescriptor<DocumentationDef> descriptor,
                                                  Source<DocumentationDef> source, XMLStreamReader xmlReader,
-                                                 boolean isInPrivilegedNamespace, DefinitionService definitionService,
+                                                 boolean isInInternalNamespace, DefinitionService definitionService,
                                                  ConfigAdapter configAdapter, DefinitionParserAdapter definitionParserAdapter) {
-        return new DocumentationDefHandler(descriptor, source, xmlReader, isInPrivilegedNamespace, definitionService,
+        return new DocumentationDefHandler(descriptor, source, xmlReader, isInInternalNamespace, definitionService,
                 configAdapter, definitionParserAdapter);
     }
 }

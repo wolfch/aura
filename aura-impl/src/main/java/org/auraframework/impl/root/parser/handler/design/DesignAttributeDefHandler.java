@@ -57,7 +57,7 @@ public class DesignAttributeDefHandler extends ParentedTagHandler<DesignAttribut
             ATTRIBUTE_TYPE, ATTRIBUTE_REQUIRED, ATTRIBUTE_READONLY, ATTRIBUTE_DEPENDENCY, ATTRIBUTE_DATASOURCE,
             ATTRIBUTE_MIN, ATTRIBUTE_MAX, ATTRIBUTE_PLACEHOLDER, ATTRIBUTE_DESCRIPTION, ATTRIBUTE_DEFAULT );
 
-    private final static Set<String> PRIVILEGED_ATTRIBUTES = ImmutableSet.of(ATTRIBUTE_NAME, ATTRIBUTE_LABEL,
+    private final static Set<String> INTERNAL_ATTRIBUTES = ImmutableSet.of(ATTRIBUTE_NAME, ATTRIBUTE_LABEL,
             ATTRIBUTE_TYPE, ATTRIBUTE_REQUIRED, ATTRIBUTE_READONLY, ATTRIBUTE_DEPENDENCY, ATTRIBUTE_DATASOURCE,
             ATTRIBUTE_MIN, ATTRIBUTE_MAX, ATTRIBUTE_PLACEHOLDER, ATTRIBUTE_DESCRIPTION, ATTRIBUTE_DEFAULT,
             ATTRIBUTE_MAX_API, ATTRIBUTE_MIN_API, ATTRIBUTE_TRANSLATABLE );
@@ -70,10 +70,10 @@ public class DesignAttributeDefHandler extends ParentedTagHandler<DesignAttribut
 
     // TODO implement tool specific properties
     public DesignAttributeDefHandler(RootTagHandler<DesignDef> parentHandler, XMLStreamReader xmlReader,
-                                     Source<?> source, boolean isInPrivilegedNamespace, DefinitionService definitionService,
+                                     Source<?> source, boolean isInInternalNamespace, DefinitionService definitionService,
                                      ConfigAdapter configAdapter, DefinitionParserAdapter definitionParserAdapter) {
-        super(parentHandler, xmlReader, source, isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter);
-        builder.setAccess(getAccess(isInPrivilegedNamespace));
+        super(parentHandler, xmlReader, source, isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter);
+        builder.setAccess(getAccess(isInInternalNamespace));
     }
 
     @Override
@@ -119,16 +119,16 @@ public class DesignAttributeDefHandler extends ParentedTagHandler<DesignAttribut
         builder.setMaxApi(maxApi);
         builder.setTranslatable(translatable);
         builder.setParentDescriptor(getParentDefDescriptor());
-        builder.setIsPriviledgedNamespace(isInPrivilegedNamespace());
+        builder.setIsInternalNamespace(isInInternalNamespace());
         builder.setAccess(readAccessAttribute());
     }
 
     @Override
     protected void handleChildTag() throws XMLStreamException, QuickFixException {
         String tag = getTagName();
-        if (isInPrivilegedNamespace() && DesignAttributeDefaultDefHandler.TAG.equalsIgnoreCase(tag)) {
+        if (isInInternalNamespace() && DesignAttributeDefaultDefHandler.TAG.equalsIgnoreCase(tag)) {
             DesignAttributeDefaultDef def = new DesignAttributeDefaultDefHandler(getParentHandler(), xmlReader, source,
-                    isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter).getElement();
+                    isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter).getElement();
             builder.setDefault(def);
         } else {
             error("Found unexpected tag %s", getTagName());
@@ -144,7 +144,7 @@ public class DesignAttributeDefHandler extends ParentedTagHandler<DesignAttribut
 
     @Override
     public Set<String> getAllowedAttributes() {
-        return isInPrivilegedNamespace() ? PRIVILEGED_ATTRIBUTES : ALLOWED_ATTRIBUTES;
+        return isInInternalNamespace() ? INTERNAL_ATTRIBUTES : ALLOWED_ATTRIBUTES;
     }
 
     @Override

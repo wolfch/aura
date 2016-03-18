@@ -15,19 +15,35 @@
  */
 package org.auraframework.impl.adapter;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.io.StringReader;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.EnumSet;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.TimeZone;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
-import org.auraframework.adapter.*;
+import org.auraframework.adapter.ConfigAdapter;
+import org.auraframework.adapter.ContentSecurityPolicy;
+import org.auraframework.adapter.DefaultContentSecurityPolicy;
+import org.auraframework.adapter.LocalizationAdapter;
 import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.def.BaseComponentDef;
 import org.auraframework.def.DefDescriptor;
@@ -44,12 +60,20 @@ import org.auraframework.system.AuraContext.Mode;
 import org.auraframework.throwable.AuraError;
 import org.auraframework.throwable.AuraRuntimeException;
 import org.auraframework.throwable.quickfix.QuickFixException;
-import org.auraframework.util.*;
+import org.auraframework.util.AuraLocale;
+import org.auraframework.util.AuraTextUtil;
+import org.auraframework.util.FileMonitor;
+import org.auraframework.util.IOUtil;
 import org.auraframework.util.javascript.JavascriptGroup;
-import org.auraframework.util.resource.*;
+import org.auraframework.util.resource.CompiledGroup;
+import org.auraframework.util.resource.FileGroup;
+import org.auraframework.util.resource.ResourceLoader;
 import org.auraframework.util.text.Hash;
 
-import com.google.common.collect.*;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSortedSet;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -63,7 +87,10 @@ public class ConfigAdapterImpl implements ConfigAdapter {
 
     private final Set<String> SYSTEM_NAMESPACES = Sets.newHashSet();
     private final Set<String> CANONICAL_NAMESPACES = Sets.newTreeSet();
+    private final Set<String> PRIVILEGED_NAMESPACES = Sets.newTreeSet();
+
     private volatile Set<String> CANONICAL_RETURN = Sets.newTreeSet();
+    private volatile Set<String> PRIVILEGED_RETURN = Sets.newTreeSet();
 
     private final Set<String> UNSECURED_PREFIXES = new ImmutableSortedSet.Builder<>(String.CASE_INSENSITIVE_ORDER).add("aura", "layout").build();
 
@@ -216,13 +243,23 @@ public class ConfigAdapterImpl implements ConfigAdapter {
     }
 
     @Override
-    public synchronized boolean isPrivilegedNamespace(String namespace) {
+    public synchronized boolean isInternalNamespace(String namespace) {
         return namespace != null && SYSTEM_NAMESPACES.contains(namespace.toLowerCase());
     }
 
     @Override
-    public Set<String> getPrivilegedNamespaces(){
+    public Set<String> getInternalNamespaces(){
         return CANONICAL_RETURN;
+    }
+
+    @Override
+    public synchronized boolean isPrivilegedNamespace(String namespace) {
+        return namespace != null && PRIVILEGED_NAMESPACES.contains(namespace);
+    }
+
+    @Override
+    public Set<String> getPrivilegedNamespaces(){
+        return PRIVILEGED_RETURN;
     }
 
     @Override
@@ -466,10 +503,10 @@ public class ConfigAdapterImpl implements ConfigAdapter {
         return !Boolean.parseBoolean(System.getProperty("aura.noappcache"));
     }
 
-//    @Override
-//    public boolean isSysAdmin() {
-//        return false;
-//    }
+    @Override
+    public boolean isSysAdmin() {
+        return false;
+    }
 
     private static final FileFilter JS_ONLY = new FileFilter() {
         @Override
@@ -618,7 +655,7 @@ public class ConfigAdapterImpl implements ConfigAdapter {
     }
 
     @Override
-    public synchronized void addPrivilegedNamespace(String namespace) {
+    public synchronized void addInternalNamespace(String namespace) {
         if(namespace != null && !namespace.isEmpty()){
             SYSTEM_NAMESPACES.add(namespace.toLowerCase());
             CANONICAL_NAMESPACES.add(namespace);
@@ -627,10 +664,24 @@ public class ConfigAdapterImpl implements ConfigAdapter {
     }
 
     @Override
-    public synchronized void removePrivilegedNamespace(String namespace) {
+    public synchronized void removeInternalNamespace(String namespace) {
         SYSTEM_NAMESPACES.remove(namespace.toLowerCase());
         CANONICAL_NAMESPACES.remove(namespace);
         CANONICAL_RETURN = new ImmutableSet.Builder<String>().addAll(CANONICAL_NAMESPACES).build();
+    }
+
+    @Override
+    public synchronized void addPrivilegedNamespace(String namespace) {
+        if(namespace != null && !namespace.isEmpty()){
+            PRIVILEGED_NAMESPACES.add(namespace);
+            PRIVILEGED_RETURN = new ImmutableSet.Builder<String>().addAll(PRIVILEGED_NAMESPACES).build();
+        }
+    }
+
+    @Override
+    public synchronized void removePrivilegedNamespace(String namespace) {
+        PRIVILEGED_NAMESPACES.remove(namespace);
+        PRIVILEGED_RETURN = new ImmutableSet.Builder<String>().addAll(PRIVILEGED_NAMESPACES).build();
     }
 
     @Override
@@ -677,13 +728,12 @@ public class ConfigAdapterImpl implements ConfigAdapter {
         this.fileMonitor = fileMonitor;
     }
 
-
     @Override
     public boolean isLockerServiceEnabled() {
         return true;
     }
 
-	protected boolean isSafeEvalWorkerURI(String uri) {
+    protected boolean isSafeEvalWorkerURI(String uri) {
         return uri.endsWith("/lockerservice/safeEval.html");
-	}
+    }
 }

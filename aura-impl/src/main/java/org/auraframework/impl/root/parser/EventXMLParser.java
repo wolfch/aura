@@ -43,9 +43,9 @@ public class EventXMLParser extends XMLParser<EventDef> {
     @Override
     protected EventDefHandler getHandler(DefDescriptor<EventDef> descriptor,
                                          Source<EventDef> source, XMLStreamReader xmlReader,
-                                         boolean isInPrivilegedNamespace, DefinitionService definitionService,
+                                         boolean isInInternalNamespace, DefinitionService definitionService,
                                          ConfigAdapter configAdapter, DefinitionParserAdapter definitionParserAdapter) {
-        return new EventDefHandler(descriptor, source, xmlReader, isInPrivilegedNamespace, definitionService,
+        return new EventDefHandler(descriptor, source, xmlReader, isInInternalNamespace, definitionService,
                 configAdapter, definitionParserAdapter);
     }
 }

@@ -44,11 +44,11 @@ public class TokensImportDefHandler<P extends RootDefinition> extends ParentedTa
     }
 
     public TokensImportDefHandler(RootTagHandler<P> parentHandler, XMLStreamReader xmlReader, Source<?> source,
-                                  boolean isInPrivilegedNamespace, DefinitionService definitionService,
+                                  boolean isInInternalNamespace, DefinitionService definitionService,
                                   ConfigAdapter configAdapter, DefinitionParserAdapter definitionParserAdapter) {
-        super(parentHandler, xmlReader, source, isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter);
+        super(parentHandler, xmlReader, source, isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter);
         this.builder.setLocation(getLocation());
-        this.builder.setAccess(getAccess(isInPrivilegedNamespace));
+        this.builder.setAccess(getAccess(isInInternalNamespace));
     }
 
     @Override

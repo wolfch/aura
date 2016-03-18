@@ -38,7 +38,7 @@ public class InterfaceDefHandlerTest extends AuraImplTestCase {
 
     /**
      * sanity test.
-     * check we can pass support/description to aura:interface (support only works for privilege namespace)
+     * check we can pass support/description to aura:interface (support only works for internal namespace)
      * also in the markup, we can have aura:attribute
      *
      * @throws Exception
@@ -114,25 +114,25 @@ public class InterfaceDefHandlerTest extends AuraImplTestCase {
     }
 
     /**
-     * verify support is not allowed with non-privileged namespace
-     *
+     * verify support is not allowed with non-internal namespace
      * @throws QuickFixException
      */
-    @Test
-    public void testSupportNotAllowedWithNonPrivilegeNamespace() throws QuickFixException {
+	@Test
+    public void testSupportNotAllowedWithNonInternalNamespace() throws QuickFixException {
         String namespace = "fakeNamespace";
         DefDescriptor<InterfaceDef> descriptor = definitionService.getDefDescriptor(namespace + ":fakeparser", InterfaceDef.class);
         StringSource<InterfaceDef> source = new StringSource<>(
                 fileMonitor,
                 descriptor,
-                "<aura:interface support='PROTO'></aura:interface>", "myID", Format.XML);
-        InterfaceDef def = interfaceXMLParser.parse(descriptor, source);
-        try {
-            def.validateDefinition();
-            fail("we don't allow 'support' with non-privileged namespace");
-        } catch (InvalidDefinitionException e) {
-            checkExceptionContains(e, InvalidDefinitionException.class,
-                    "Invalid attribute \"support\"");
+                "<aura:interface support='PROTO'></aura:interface>",
+                "myID", Format.XML);
+    	InterfaceDef def = interfaceXMLParser.parse(descriptor, source);
+    	try {
+    		def.validateDefinition(); 
+    		fail("we don't allow 'support' with non-internal namespace");
+    	} catch (InvalidDefinitionException e) {
+            	checkExceptionContains(e, InvalidDefinitionException.class, 
+                        "Invalid attribute \"support\"");
         }
     }
 }

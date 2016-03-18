@@ -53,13 +53,13 @@ public class DesignDefHandler extends RootTagHandler<DesignDef> {
     }
 
     public DesignDefHandler(DefDescriptor<DesignDef> defDescriptor, Source<DesignDef> source, XMLStreamReader xmlReader,
-                            boolean isInPrivilegedNamespace, DefinitionService definitionService,
+                            boolean isInInternalNamespace, DefinitionService definitionService,
                             ConfigAdapter configAdapter, DefinitionParserAdapter definitionParserAdapter) {
-        super(defDescriptor, source, xmlReader, isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter);
+        super(defDescriptor, source, xmlReader, isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter);
         builder = new DesignDefImpl.Builder();
         builder.setDescriptor(getDefDescriptor());
         builder.setLocation(getLocation());
-        builder.setAccess(getAccess(isInPrivilegedNamespace));
+        builder.setAccess(getAccess(isInInternalNamespace));
         if (source != null) {
             builder.setOwnHash(source.getHash());
         }
@@ -93,7 +93,7 @@ public class DesignDefHandler extends RootTagHandler<DesignDef> {
         String tag = getTagName();
         if (DesignAttributeDefHandler.TAG.equalsIgnoreCase(tag)) {
             DesignAttributeDef attributeDesign = new DesignAttributeDefHandler(this, xmlReader, source,
-                    isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter).getElement();
+                    isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter).getElement();
             builder.addAttributeDesign(
                     definitionService.getDefDescriptor(attributeDesign.getName(), DesignAttributeDef.class), attributeDesign);
         } else if (DesignTemplateDefHandler.TAG.equalsIgnoreCase(tag)) {
@@ -101,15 +101,15 @@ public class DesignDefHandler extends RootTagHandler<DesignDef> {
                 throw new XMLStreamException(String.format("<%s> may only contain one %s definition", getHandledTag(),
                         tag));
             }
-            DesignTemplateDef template = new DesignTemplateDefHandler(this, xmlReader, source, isInPrivilegedNamespace,
+            DesignTemplateDef template = new DesignTemplateDefHandler(this, xmlReader, source, isInInternalNamespace,
                     definitionService, configAdapter, definitionParserAdapter).getElement();
             builder.setDesignTemplateDef(template);
-        } else if (isInPrivilegedNamespace() && DesignLayoutDefHandler.TAG.equalsIgnoreCase(tag)) {
-            DesignLayoutDef layoutDesign = new DesignLayoutDefHandler(this, xmlReader, source, isInPrivilegedNamespace,
+        } else if (isInInternalNamespace() && DesignLayoutDefHandler.TAG.equalsIgnoreCase(tag)) {
+            DesignLayoutDef layoutDesign = new DesignLayoutDefHandler(this, xmlReader, source, isInInternalNamespace,
                     definitionService, configAdapter, definitionParserAdapter).getElement();
             builder.addLayoutDesign(layoutDesign.getName(), layoutDesign);
-        } else if (isInPrivilegedNamespace() && DesignOptionDefHandler.TAG.equalsIgnoreCase(tag)) {
-            DesignOptionDef option = new DesignOptionDefHandler(this, xmlReader, source, isInPrivilegedNamespace,
+        } else if (isInInternalNamespace() && DesignOptionDefHandler.TAG.equalsIgnoreCase(tag)) {
+            DesignOptionDef option = new DesignOptionDefHandler(this, xmlReader, source, isInInternalNamespace,
                     definitionService, configAdapter, definitionParserAdapter).getElement();
             builder.addOption(option);
         } else {

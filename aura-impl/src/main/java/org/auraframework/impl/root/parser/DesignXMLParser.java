@@ -43,9 +43,9 @@ public class DesignXMLParser extends XMLParser<DesignDef> {
     @Override
     protected DesignDefHandler getHandler(DefDescriptor<DesignDef> descriptor,
                                           Source<DesignDef> source, XMLStreamReader xmlReader,
-                                          boolean isInPrivilegedNamespace, DefinitionService definitionService,
+                                          boolean isInInternalNamespace, DefinitionService definitionService,
                                           ConfigAdapter configAdapter, DefinitionParserAdapter definitionParserAdapter) {
-        return new DesignDefHandler(descriptor, source, xmlReader, isInPrivilegedNamespace, definitionService,
+        return new DesignDefHandler(descriptor, source, xmlReader, isInInternalNamespace, definitionService,
                 configAdapter, definitionParserAdapter);
     }
 }

@@ -33,6 +33,7 @@ public interface DefinitionAccess extends JsonSerializable,Serializable {
     boolean isGlobal();
     boolean isPublic();
     boolean isPrivate();
+    boolean isPrivileged();
     boolean isInternal();
     
     // Validation

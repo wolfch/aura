@@ -13,17 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-({
-	afterRender: function(cmp, helper) {
-		this.superAfterRender();
-		
-		cmp.getEvent('panelDoneRendering').setParams({
-			panelId: cmp.getGlobalId(),
-			panelType: 'ui:panelDialog'
-		}).fire();
-		
-		if (cmp.get("v.isVisible")) {
-			helper.show(cmp);
-		}
-	}
-})// eslint-disable-line semi
+package org.auraframework.system;
+
+
+/**
+ */
+public interface InternalNamespaceSourceLoader {
+    boolean isInternalNamespace(String namespace);
+}

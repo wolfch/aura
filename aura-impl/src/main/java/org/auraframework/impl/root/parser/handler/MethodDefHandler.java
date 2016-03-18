@@ -49,7 +49,7 @@ public class MethodDefHandler<P extends RootDefinition> extends ParentedTagHandl
 
     private static final Set<String> ALLOWED_ATTRIBUTES = ImmutableSet.of(ATTRIBUTE_ACTION,
             ATTRIBUTE_NAME, ATTRIBUTE_DESCRIPTION, ATTRIBUTE_ACCESS);
-	private static final Set<String> PRIVILEGED_ALLOWED_ATTRIBUTES = new ImmutableSet.Builder<String>().add(
+	private static final Set<String> INTERNAL_ALLOWED_ATTRIBUTES = new ImmutableSet.Builder<String>().add(
 			ATTRIBUTE_SERIALIZE_TO).addAll(ALLOWED_ATTRIBUTES).build();
 
     private final MethodDefImpl.Builder builder = new MethodDefImpl.Builder();
@@ -66,9 +66,9 @@ public class MethodDefHandler<P extends RootDefinition> extends ParentedTagHandl
      *            appropriate position before getElement() is invoked.
      */
     public MethodDefHandler(RootTagHandler<P> parentHandler, XMLStreamReader xmlReader, Source<?> source,
-                            boolean isInPrivilegedNamespace, DefinitionService definitionService,
+                            boolean isInInternalNamespace, DefinitionService definitionService,
                             ConfigAdapter configAdapter, DefinitionParserAdapter definitionParserAdapter) {
-        super(parentHandler, xmlReader, source, isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter);
+        super(parentHandler, xmlReader, source, isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter);
         String name = getAttributeValue(ATTRIBUTE_NAME);
         if (AuraTextUtil.isNullEmptyOrWhitespace(name)) {
             error("The attribute '%s' is required on '<%s>'.", ATTRIBUTE_NAME, TAG);
@@ -78,7 +78,7 @@ public class MethodDefHandler<P extends RootDefinition> extends ParentedTagHandl
 
     @Override
     public Set<String> getAllowedAttributes() {
-        return isInPrivilegedNamespace() ? PRIVILEGED_ALLOWED_ATTRIBUTES : ALLOWED_ATTRIBUTES;
+        return isInInternalNamespace() ? INTERNAL_ALLOWED_ATTRIBUTES : ALLOWED_ATTRIBUTES;
     }
 
 	@Override
@@ -124,7 +124,7 @@ public class MethodDefHandler<P extends RootDefinition> extends ParentedTagHandl
     protected void handleChildTag() throws XMLStreamException, QuickFixException {
         String tag = getTagName();
         if (AttributeDefHandler.TAG.equalsIgnoreCase(tag)) {
-            AttributeDefImpl attributeDef = new AttributeDefHandler<>(this, xmlReader, source, isInPrivilegedNamespace,
+            AttributeDefImpl attributeDef = new AttributeDefHandler<>(this, xmlReader, source, isInInternalNamespace,
                     definitionService, configAdapter, definitionParserAdapter).getElement();
             builder.getAttributeDefs().put(definitionService.getDefDescriptor(attributeDef.getName(), AttributeDef.class),
                     attributeDef);

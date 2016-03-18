@@ -121,7 +121,7 @@ public class StringSourceLoaderController implements Controller {
     }
 
     @AuraEnabled
-    boolean isPrivilegedNamespace(@Key("namespace") String namespace) {
-        return stringSourceLoader.isPrivilegedNamespace(namespace);
+    boolean isInternalNamespace(@Key("namespace") String namespace) {
+        return stringSourceLoader.isInternalNamespace(namespace);
     }
 }

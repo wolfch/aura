@@ -26,8 +26,8 @@ public interface ConfigAdapter extends AuraAdapter {
     boolean isTestAllowed();
 
     boolean isProduction();
-//
-//    boolean isSysAdmin();
+
+    boolean isSysAdmin();
 
     Set<Mode> getAvailableModes();
 
@@ -89,8 +89,16 @@ public interface ConfigAdapter extends AuraAdapter {
      */
     String getEncryptionKey();
 
+    boolean isInternalNamespace(String namespace);
+    Set<String> getInternalNamespaces();
+    void addInternalNamespace(String namespace);
+    void removeInternalNamespace(String namespace);
+
     boolean isPrivilegedNamespace(String namespace);
     Set<String> getPrivilegedNamespaces();
+    void addPrivilegedNamespace(String namespace);
+    void removePrivilegedNamespace(String namespace);
+
     String getDefaultNamespace();
 
     boolean isUnsecuredPrefix(String prefix);
@@ -98,8 +106,6 @@ public interface ConfigAdapter extends AuraAdapter {
 	@Deprecated
 	boolean isUnsecuredNamespace(String namespace);
 
-	void addPrivilegedNamespace(String namespace);
-	void removePrivilegedNamespace(String namespace);
 
 	boolean isDocumentedNamespace(String namespace);
 

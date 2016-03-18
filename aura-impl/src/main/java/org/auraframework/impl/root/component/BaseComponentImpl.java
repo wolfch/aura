@@ -355,7 +355,7 @@ BaseComponent<D, I> {
             }
 
             if (def.getAPIVersion() != null  &&
-            		Aura.getConfigAdapter().isPrivilegedNamespace(def.getDescriptor().getNamespace()) &&
+            		Aura.getConfigAdapter().isInternalNamespace(def.getDescriptor().getNamespace()) &&
             		context.getCurrentCallingDescriptor() == null) {
             	json.writeMapEntry("version", def.getAPIVersion());
             }

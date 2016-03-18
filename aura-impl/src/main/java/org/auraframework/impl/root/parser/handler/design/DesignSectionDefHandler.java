@@ -45,12 +45,12 @@ public class DesignSectionDefHandler extends ParentedTagHandler<DesignSectionDef
     }
 
     public DesignSectionDefHandler(ContainerTagHandler<DesignDef> parentHandler, XMLStreamReader xmlReader, Source<?> source,
-                                   boolean isInPrivilegedNamespace, DefinitionService definitionService,
+                                   boolean isInInternalNamespace, DefinitionService definitionService,
                                    ConfigAdapter configAdapter, DefinitionParserAdapter definitionParserAdapter) {
-        super(parentHandler, xmlReader, source, isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter);
+        super(parentHandler, xmlReader, source, isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter);
         builder.setDescriptor(DefDescriptorImpl.getAssociateDescriptor(getParentDefDescriptor(), DesignSectionDef.class,
                 TAG));
-        builder.setAccess(getAccess(isInPrivilegedNamespace));
+        builder.setAccess(getAccess(isInInternalNamespace));
     }
 
     @Override
@@ -58,7 +58,7 @@ public class DesignSectionDefHandler extends ParentedTagHandler<DesignSectionDef
         String tag = getTagName();
         if (DesignItemsDefHandler.TAG.equalsIgnoreCase(tag)){
             DesignItemsDef items = new DesignItemsDefHandler(getParentHandler(), xmlReader, source,
-                    isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter).getElement();
+                    isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter).getElement();
             builder.addItems(items);
         } else {
             throw new XMLStreamException(String.format("<%s> cannot contain tag %s", getHandledTag(), tag));

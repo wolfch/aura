@@ -39,14 +39,14 @@ public class HTMLComponentDefRefHandler<P extends RootDefinition> extends Compon
     protected HTMLDefRefBuilderImpl htmlBuilder = new HTMLDefRefBuilderImpl();
 
     protected HTMLComponentDefRefHandler(RootTagHandler<P> parentHandler, String tag, XMLStreamReader xmlReader,
-                                         Source<?> source, boolean isInPrivilegedNamespace, DefinitionService definitionService,
+                                         Source<?> source, boolean isInInternalNamespace, DefinitionService definitionService,
                                          ConfigAdapter configAdapter, DefinitionParserAdapter definitionParserAdapter) {
-        super(parentHandler, xmlReader, source, isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter);
+        super(parentHandler, xmlReader, source, isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter);
         builder = htmlBuilder;
         builder.setLocation(getLocation());
         builder.setOwnHash(source.getHash());
         htmlBuilder.setTag(tag.trim());
-        builder.setAccess(getAccess(isInPrivilegedNamespace));
+        builder.setAccess(getAccess(isInInternalNamespace));
     }
 
     @Override

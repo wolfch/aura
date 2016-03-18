@@ -26,7 +26,7 @@ import org.auraframework.util.test.annotation.UnAdaptableTest;
 import org.junit.Test;
 
 /**
- * Verify access checks done during Instance creation, particularly in custom (non-privileged) namespaces
+ * Verify access checks done during Instance creation, particularly in custom (non-internal) namespaces
  */
 @UnAdaptableTest("namespace cxxx means something special in core")
 public class InstanceAccessTest extends AuraImplTestCase {

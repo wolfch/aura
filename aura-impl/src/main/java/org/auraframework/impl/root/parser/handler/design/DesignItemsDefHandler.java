@@ -46,12 +46,12 @@ public class DesignItemsDefHandler extends ParentedTagHandler<DesignItemsDef, De
     }
 
     public DesignItemsDefHandler(ContainerTagHandler<DesignDef> parentHandler, XMLStreamReader xmlReader, Source<?> source,
-                                 boolean isInPrivilegedNamespace, DefinitionService definitionService,
+                                 boolean isInInternalNamespace, DefinitionService definitionService,
                                  ConfigAdapter configAdapter, DefinitionParserAdapter definitionParserAdapter) {
-        super(parentHandler, xmlReader, source, isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter);
+        super(parentHandler, xmlReader, source, isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter);
         builder.setDescriptor(DefDescriptorImpl.getAssociateDescriptor(getParentDefDescriptor(), DesignItemsDef.class,
                 TAG));
-        builder.setAccess(getAccess(isInPrivilegedNamespace));
+        builder.setAccess(getAccess(isInInternalNamespace));
     }
 
     @Override
@@ -59,12 +59,12 @@ public class DesignItemsDefHandler extends ParentedTagHandler<DesignItemsDef, De
         String tag = getTagName();
         if (DesignLayoutAttributeDefHandler.TAG.equalsIgnoreCase(tag)) {
             DesignLayoutAttributeDef item = new DesignLayoutAttributeDefHandler(getParentHandler(), xmlReader, source,
-                    isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter).getElement();
+                    isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter).getElement();
             builder.addAttribute(item);
-        } else if(isInPrivilegedNamespace() && DesignLayoutComponentDefHandler.TAG.equalsIgnoreCase(tag)) {
-            //Component injection is only allowed in privileged namespaces
+        } else if(isInInternalNamespace() && DesignLayoutComponentDefHandler.TAG.equalsIgnoreCase(tag)) {
+            //Component injection is only allowed in internal namespaces
             DesignLayoutComponentDef cmp = new DesignLayoutComponentDefHandler(getParentHandler(), xmlReader, source,
-                    isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter).getElement();
+                    isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter).getElement();
             builder.addComponent(cmp);
         } else {
             throw new XMLStreamException(String.format("<%s> can not contain tag %s", getHandledTag(), tag));

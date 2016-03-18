@@ -15,8 +15,6 @@
     limitations under the License.
 
 -->
-<aura:component extends="ui:block">
-	<aura:set attribute="tag" value="header"/>
-    <aura:set attribute="class" value="{!($Browser.isAndroid ? 'android ' + v.class : v.class)}"/>
-    {!v.body}
-</aura:component>
+<aura:event type="COMPONENT" support="GA" description="Indicates that the content of a input file model has changed.">
+    <aura:attribute name="files" type="Object" />
+</aura:event>

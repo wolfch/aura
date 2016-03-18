@@ -94,12 +94,12 @@ public abstract class BaseComponentDefHandler<T extends BaseComponentDef, B exte
                     ATTRIBUTE_EXTENSIBLE, ATTRIBUTE_ABSTRACT, RootTagHandler.ATTRIBUTE_API_VERSION)
             .addAll(RootTagHandler.ALLOWED_ATTRIBUTES).build();
 
-    protected static final Set<String> PRIVILEGED_ALLOWED_ATTRIBUTES = new ImmutableSet.Builder<String>().add(
+    protected static final Set<String> INTERNAL_ALLOWED_ATTRIBUTES = new ImmutableSet.Builder<String>().add(
             ATTRIBUTE_RENDER, ATTRIBUTE_TEMPLATE, ATTRIBUTE_PROVIDER,
             ATTRIBUTE_STYLE, ATTRIBUTE_HELPER, ATTRIBUTE_RENDERER,
             ATTRIBUTE_WHITESPACE, ATTRIBUTE_TOKEN_OVERRIDES, ATTRIBUTE_DEFAULT_FLAVOR,
             ATTRIBUTE_DYNAMICALLY_FLAVORABLE)
-            .addAll(ALLOWED_ATTRIBUTES).addAll(RootTagHandler.PRIVILEGED_ALLOWED_ATTRIBUTES)
+            .addAll(ALLOWED_ATTRIBUTES).addAll(RootTagHandler.INTERNAL_ALLOWED_ATTRIBUTES)
             .build();
 
     private int innerCount = 0;
@@ -113,10 +113,10 @@ public abstract class BaseComponentDefHandler<T extends BaseComponentDef, B exte
     }
 
     public BaseComponentDefHandler(DefDescriptor<T> componentDefDescriptor, Source<?> source, XMLStreamReader xmlReader,
-                                   boolean isInPrivilegedNamespace, DefinitionService definitionService,
+                                   boolean isInInternalNamespace, DefinitionService definitionService,
                                    ContextService contextService,
                                    ConfigAdapter configAdapter, DefinitionParserAdapter definitionParserAdapter) {
-        super(componentDefDescriptor, source, xmlReader, isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter);
+        super(componentDefDescriptor, source, xmlReader, isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter);
         builder = createBuilder();
         builder.setLocation(getLocation());
         builder.setDescriptor(componentDefDescriptor);
@@ -135,14 +135,14 @@ public abstract class BaseComponentDefHandler<T extends BaseComponentDef, B exte
 
     @Override
     public Set<String> getAllowedAttributes() {
-        return isInPrivilegedNamespace ? PRIVILEGED_ALLOWED_ATTRIBUTES : ALLOWED_ATTRIBUTES;
+        return isInInternalNamespace ? RootTagHandler.INTERNAL_ALLOWED_ATTRIBUTES : ALLOWED_ATTRIBUTES;
     }
 
     @Override
     protected void handleChildTag() throws XMLStreamException, QuickFixException {
         String tag = getTagName();
         if (AttributeDefHandler.TAG.equalsIgnoreCase(tag)) {
-            AttributeDefHandler<T> handler = new AttributeDefHandler<>(this, xmlReader, source, isInPrivilegedNamespace,
+            AttributeDefHandler<T> handler = new AttributeDefHandler<>(this, xmlReader, source, isInInternalNamespace,
                     definitionService, configAdapter, definitionParserAdapter);
             AttributeDefImpl attributeDef = handler.getElement();
             DefDescriptor<AttributeDef> attributeDesc = attributeDef.getDescriptor();
@@ -165,9 +165,9 @@ public abstract class BaseComponentDefHandler<T extends BaseComponentDef, B exte
             }
 
             builder.getAttributeDefs().put(attributeDef.getDescriptor(),attributeDef);
-        } else if (isInPrivilegedNamespace && RequiredVersionDefHandler.TAG.equalsIgnoreCase(tag)) {
+        } else if (isInInternalNamespace && RequiredVersionDefHandler.TAG.equalsIgnoreCase(tag)) {
             RequiredVersionDefHandler<T> handler = new RequiredVersionDefHandler<>(this, xmlReader, source,
-                    isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter);
+                    isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter);
             RequiredVersionDefImpl requiredVersionDef = handler.getElement();
         	DefDescriptor<RequiredVersionDef> requiredVersionDesc = requiredVersionDef.getDescriptor();
         	if (builder.getRequiredVersionDefs().containsKey(requiredVersionDesc)) {
@@ -181,7 +181,7 @@ public abstract class BaseComponentDefHandler<T extends BaseComponentDef, B exte
         	builder.getRequiredVersionDefs().put(requiredVersionDesc, requiredVersionDef);
         } else if (RegisterEventHandler.TAG.equalsIgnoreCase(tag)) {
             RegisterEventHandler<T> handler = new RegisterEventHandler<>(this, xmlReader, source,
-                    isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter);
+                    isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter);
             RegisterEventDefImpl regDef = handler.getElement();
             DefDescriptor<MethodDef> methodDef = definitionService.getDefDescriptor(regDef.getAttributeName(), MethodDef.class);
             if (builder.events.containsKey(regDef.getAttributeName())) {
@@ -206,16 +206,16 @@ public abstract class BaseComponentDefHandler<T extends BaseComponentDef, B exte
         } else if (LibraryDefRefHandler.TAG.equalsIgnoreCase(tag)) {
             builder.imports.add(new LibraryDefRefHandler(this, xmlReader, source, definitionService).getElement());
         } else if (AttributeDefRefHandler.TAG.equalsIgnoreCase(tag)) {
-            builder.facets.add(new AttributeDefRefHandler<>(this, xmlReader, source, isInPrivilegedNamespace,
+            builder.facets.add(new AttributeDefRefHandler<>(this, xmlReader, source, isInInternalNamespace,
                     definitionService, configAdapter, definitionParserAdapter).getElement());
         } else if (DependencyDefHandler.TAG.equalsIgnoreCase(tag)) {
-            builder.addDependency(new DependencyDefHandler<>(this, xmlReader, source, isInPrivilegedNamespace,
+            builder.addDependency(new DependencyDefHandler<>(this, xmlReader, source, isInInternalNamespace,
                     definitionService, configAdapter, definitionParserAdapter).getElement());
         } else if (ClientLibraryDefHandler.TAG.equalsIgnoreCase(tag)) {
-            builder.addClientLibrary(new ClientLibraryDefHandler<>(this, xmlReader, source, isInPrivilegedNamespace,
+            builder.addClientLibrary(new ClientLibraryDefHandler<>(this, xmlReader, source, isInInternalNamespace,
                     definitionService, configAdapter, definitionParserAdapter).getElement());
         } else if (MethodDefHandler.TAG.equalsIgnoreCase(tag)) {
-            MethodDefHandler<T> handler = new MethodDefHandler<>(this, xmlReader, source, isInPrivilegedNamespace,
+            MethodDefHandler<T> handler = new MethodDefHandler<>(this, xmlReader, source, isInInternalNamespace,
                     definitionService, configAdapter, definitionParserAdapter);
             MethodDef methodDef = handler.getElement();
             DefDescriptor<MethodDef> methodDesc = methodDef.getDescriptor();

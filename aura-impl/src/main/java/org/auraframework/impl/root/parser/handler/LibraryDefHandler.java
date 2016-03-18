@@ -49,9 +49,9 @@ public class LibraryDefHandler extends RootTagHandler<LibraryDef> {
     }
 
     public LibraryDefHandler(DefDescriptor<LibraryDef> libraryDefDescriptor, Source<?> source, XMLStreamReader xmlReader,
-                             boolean isInPrivilegedNamespace, DefinitionService definitionService,
+                             boolean isInInternalNamespace, DefinitionService definitionService,
                              ConfigAdapter configAdapter, DefinitionParserAdapter definitionParserAdapter) {
-        super(libraryDefDescriptor, source, xmlReader, isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter);
+        super(libraryDefDescriptor, source, xmlReader, isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter);
     }
 
     @Override

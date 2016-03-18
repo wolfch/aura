@@ -47,15 +47,15 @@ public abstract class ParentedTagHandler<T extends Definition, P extends RootDef
     }
 
     public ParentedTagHandler(ContainerTagHandler<P> parentHandler, XMLStreamReader xmlReader, Source<?> source,
-                              boolean isInPrivilegedNamespace, DefinitionService definitionService,
+                              boolean isInInternalNamespace, DefinitionService definitionService,
                               ConfigAdapter configAdapter, DefinitionParserAdapter definitionParserAdapter) {
-        this(null, parentHandler, xmlReader, source, isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter);
+        this(null, parentHandler, xmlReader, source, isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter);
     }
 
     public ParentedTagHandler(DefDescriptor<T> defDescriptor, ContainerTagHandler<P> parentHandler, XMLStreamReader xmlReader, Source<?> source,
-                              boolean isInPrivilegedNamespace, DefinitionService definitionService,
+                              boolean isInInternalNamespace, DefinitionService definitionService,
                               ConfigAdapter configAdapter, DefinitionParserAdapter definitionParserAdapter) {
-        super(defDescriptor, xmlReader, source, isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter);
+        super(defDescriptor, xmlReader, source, isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter);
         this.parentHandler = parentHandler;
         this.setWhitespaceBehavior(parentHandler == null ? WhitespaceBehavior.OPTIMIZE : parentHandler
                 .getWhitespaceBehavior());
@@ -73,8 +73,8 @@ public abstract class ParentedTagHandler<T extends Definition, P extends RootDef
     }
 
     @Override
-    public boolean isInPrivilegedNamespace() {
-        return parentHandler != null && parentHandler.isInPrivilegedNamespace();
+    public boolean isInInternalNamespace() {
+        return parentHandler != null && parentHandler.isInInternalNamespace();
     }
 
     protected List<ComponentDefRef> tokenizeChildText() throws XMLStreamException, QuickFixException {

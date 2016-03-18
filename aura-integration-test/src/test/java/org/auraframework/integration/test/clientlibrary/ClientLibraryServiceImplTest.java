@@ -101,6 +101,7 @@ public class ClientLibraryServiceImplTest extends AuraImplTestCase {
         }
     }
 
+    @Test
     public void testGetResolvedUrl() {
         assertNull(clientLibraryService.getResolvedUrl(null));
 
@@ -143,7 +144,7 @@ public class ClientLibraryServiceImplTest extends AuraImplTestCase {
     }
 
     // Should we do this with a simple string source?
-    @Ignore("Need more libraries to test this")
+    @Ignore("TODO: W-2970512 Need more libraries to test this")
     @Test
     public void testCaseSensitiveName() throws Exception {
         contextService.endContext();
@@ -200,8 +201,8 @@ public class ClientLibraryServiceImplTest extends AuraImplTestCase {
         assertTrue(jsUrls.contains(url));
     }
 
+    @Ignore("TODO: W-2970512 Need test only injection of random1 & random2")
     @Test
-    @Ignore("Need test only injection of random1 & random2")
     public void testGetUrlsForAppWithDependenciesInPTESTMode() throws Exception {
         DefDescriptor<ApplicationDef> appDesc = definitionService.getDefDescriptor(
                 "clientLibraryTest:testDependencies", ApplicationDef.class);
@@ -223,6 +224,19 @@ public class ClientLibraryServiceImplTest extends AuraImplTestCase {
         url = getResolver("randoem2", Type.JS).getUrl();
         assertEquals(url, it.next());
         it.remove();
+    }
+
+    /**
+     * Verify ClientLibraryService doesn't process ClientLibraryDef whose name contain separated library names.
+     * Each library name has to have its own aura:clientLibrary tag.
+     */
+    @Test
+    public void testCommaSeparatedStringInNameWillNotResolve() throws Exception {
+        ClientLibraryService tmpService = new ClientLibraryServiceImpl();
+        ClientLibraryDef clientLibrary = vendor.makeClientLibraryDef("MyLib, MyLib2", ClientLibraryDef.Type.JS,
+                null, null, null);
+        String url = tmpService.getResolvedUrl(clientLibrary);
+        assertNull("Expected null if a invalid library name was specified", url);
     }
 
     private Set<String> getClientLibraryUrls(DefDescriptor<? extends BaseComponentDef> desc, Type libraryType)

@@ -22,11 +22,11 @@ import org.auraframework.def.BaseComponentDef;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.DefDescriptor.DefType;
-import org.auraframework.integration.test.util.WebDriverTestCase;
-import org.auraframework.integration.test.util.WebDriverTestCase.TargetBrowsers;
 import org.auraframework.system.AuraContext;
 import org.auraframework.system.AuraContext.Mode;
 import org.auraframework.test.perf.PerfWebDriverUtil;
+import org.auraframework.integration.test.util.WebDriverTestCase;
+import org.auraframework.integration.test.util.WebDriverTestCase.TargetBrowsers;
 import org.auraframework.test.util.WebDriverUtil.BrowserType;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.AuraFiles;
@@ -58,7 +58,7 @@ import java.util.logging.Logger;
 
 @PerfCmpTest
 @TargetBrowsers({ BrowserType.GOOGLECHROME })
-public abstract class PerfExecutorTest extends WebDriverTestCase {
+public class PerfExecutorTest extends WebDriverTestCase {
 
     private static final Logger logger = Logger.getLogger(PerfExecutorTest.class.getSimpleName());
     private DefDescriptor<BaseComponentDef> def;
@@ -101,7 +101,7 @@ public abstract class PerfExecutorTest extends WebDriverTestCase {
 
     private void setDB(String dbURI){
         this.dbURI = dbURI;
-        if (dbURI == null) {
+        if(dbURI == null) {
             this.dbURI = DEFAULT_DB_URI;
         }
     }
@@ -118,10 +118,10 @@ public abstract class PerfExecutorTest extends WebDriverTestCase {
         try {
             fileName = def.getDef().getLocation().getFileName();
             moduleDir = new File(fileName).getCanonicalFile().getParentFile().getParentFile().getParentFile();
-            if (fileName.contains("/core/")) {
+            if(fileName.contains("/core/")){
                 componentsDir = moduleDir.toString();
             } else {
-                componentsDir = AuraFiles.Core.getPath() + "/aura-components/src/test/components";
+                componentsDir =  AuraFiles.Core.getPath() + "/aura-components/src/test/components";
             }
         } catch (QuickFixException e1) {
             // TODO Auto-generated catch block
@@ -142,16 +142,16 @@ public abstract class PerfExecutorTest extends WebDriverTestCase {
         final By componentRendered = By.cssSelector(".perfTestFinish");
         final By auraErrorMessage = By.id("auraErrorMessage");
         ExpectedCondition<By> condition = prepareCondition(componentRendered, auraErrorMessage);
-        By locatorFound = new WebDriverWait(currentDriver, DEFAULT_TIMEOUT).withMessage("Error loading " + descriptor).until(
+        By locatorFound = new WebDriverWait(getDriver(), DEFAULT_TIMEOUT).withMessage("Error loading " + descriptor).until(
                 condition);
 
         if (locatorFound == auraErrorMessage) {
-            fail("Error loading " + descriptor.getName() + ": " + currentDriver.findElement(auraErrorMessage).getText());
+            fail("Error loading " + descriptor.getName() + ": " + getDriver().findElement(auraErrorMessage).getText());
         }
 
         // check for internal errors while rendering component
         if (locatorFound == componentRendered) {
-            String text = currentDriver.findElement(componentRendered).getText();
+            String text = getDriver().findElement(componentRendered).getText();
             if (text != null && text.contains("internal server error")) {
                 fail("Error loading " + descriptor.getDescriptorName() + ": " + text);
             }
@@ -174,7 +174,7 @@ public abstract class PerfExecutorTest extends WebDriverTestCase {
         return condition;
     }
 
-    private String generateUrl(DefDescriptor<BaseComponentDef> descriptor, Mode mode, String customUrl) throws UnsupportedEncodingException, MalformedURLException, URISyntaxException {
+    private String generateUrl (DefDescriptor<BaseComponentDef> descriptor, Mode mode, String customUrl) throws UnsupportedEncodingException, MalformedURLException, URISyntaxException {
         // If descriptor is application type, then build the url with .app extension
         if (descriptor.getDefType() == DefType.APPLICATION) {
             return new StringBuilder().append("/").append(descriptor.getNamespace())
@@ -196,12 +196,12 @@ public abstract class PerfExecutorTest extends WebDriverTestCase {
         Collection<String> customUrls = getCustomUrls().values();
         List<String> urls = new ArrayList<>();
         try {
-            if (customUrls.size() == 0) {
+            if(customUrls.size()==0) {
                 String url = generateUrl(def, Mode.STATS, "");
                 urls.add(url);
                 return urls;
             }
-            for (String customUrl : customUrls) {
+            for(String customUrl: customUrls) {
                 urls.add(generateUrl(def, Mode.STATS, customUrl));
             }
             return urls;
@@ -305,7 +305,7 @@ public abstract class PerfExecutorTest extends WebDriverTestCase {
     }
 
     public WebDriver getWebDriver(){
-        return currentDriver;
+        return getDriver();
     }
 
     @Override

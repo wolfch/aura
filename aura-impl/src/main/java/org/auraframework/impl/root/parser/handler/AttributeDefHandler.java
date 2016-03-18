@@ -56,7 +56,7 @@ public class AttributeDefHandler<P extends RootDefinition> extends ParentedTagHa
 
     private static final Set<String> ALLOWED_ATTRIBUTES = ImmutableSet.of(ATTRIBUTE_DEFAULT, ATTRIBUTE_REQUIRED,
             ATTRIBUTE_TYPE, ATTRIBUTE_NAME, ATTRIBUTE_DESCRIPTION, ATTRIBUTE_ACCESS);
-    private static final Set<String> PRIVILEGED_ALLOWED_ATTRIBUTES = new ImmutableSet.Builder<String>().add(
+    private static final Set<String> INTERNAL_ALLOWED_ATTRIBUTES = new ImmutableSet.Builder<String>().add(
             ATTRIBUTE_SERIALIZE_TO).addAll(ALLOWED_ATTRIBUTES).build();
 
     private final AttributeDefImpl.Builder builder = new AttributeDefImpl.Builder();
@@ -77,21 +77,21 @@ public class AttributeDefHandler<P extends RootDefinition> extends ParentedTagHa
      *            appropriate position before getElement() is invoked.
      */
     public AttributeDefHandler(ContainerTagHandler<P> parentHandler, XMLStreamReader xmlReader, Source<?> source,
-                               boolean isInPrivilegedNamespace, DefinitionService definitionService,
+                               boolean isInInternalNamespace, DefinitionService definitionService,
                                ConfigAdapter configAdapter, DefinitionParserAdapter definitionParserAdapter) {
-        this(parentHandler, xmlReader, source, null, isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter);
+        this(parentHandler, xmlReader, source, null, isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter);
     }
 
     public AttributeDefHandler(ContainerTagHandler<P> parentHandler, XMLStreamReader xmlReader, Source<?> source,
-                               String defaultType, boolean isInPrivilegedNamespace, DefinitionService definitionService,
+                               String defaultType, boolean isInInternalNamespace, DefinitionService definitionService,
                                ConfigAdapter configAdapter, DefinitionParserAdapter definitionParserAdapter) {
-        super(parentHandler, xmlReader, source, isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter);
+        super(parentHandler, xmlReader, source, isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter);
         this.defaultType = Optional.fromNullable(defaultType);
     }
 
     @Override
     public Set<String> getAllowedAttributes() {
-        return isInPrivilegedNamespace() ? PRIVILEGED_ALLOWED_ATTRIBUTES : ALLOWED_ATTRIBUTES;
+        return isInInternalNamespace() ? INTERNAL_ALLOWED_ATTRIBUTES : ALLOWED_ATTRIBUTES;
     }
 
     @Override

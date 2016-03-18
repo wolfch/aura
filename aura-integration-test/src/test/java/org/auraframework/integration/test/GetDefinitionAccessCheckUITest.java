@@ -22,7 +22,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 
-@ThreadHostileTest("Tests modify what namespaces are privileged or not")
+@ThreadHostileTest("Tests modify what namespaces are internal or not")
 public class GetDefinitionAccessCheckUITest extends WebDriverTestCase {
 
     @Override
@@ -35,7 +35,7 @@ public class GetDefinitionAccessCheckUITest extends WebDriverTestCase {
     @Ignore("TODO: (W-2799335): Disabled this test since $A.getDeifinition() doesn't do access check for Event")
     @Test
     public void testGetEventDefinitionWithoutAccess() throws Exception {
-        getMockConfigAdapter().setUnprivilegedNamespace("clientApiTest");
+        getMockConfigAdapter().setNonInternalNamespace("clientApiTest");
         open("/clientApiTest/getDefinition.cmp");
         findDomElement(By.cssSelector(".getEventDefinitionWithoutAccessButton")).click();
         waitForElementTextContains(findDomElement(By.cssSelector("div[id='complete']")), "true");
@@ -46,7 +46,7 @@ public class GetDefinitionAccessCheckUITest extends WebDriverTestCase {
 
     @Test
     public void testGetComponentDefinitionWithoutAccess() throws Exception {
-        getMockConfigAdapter().setUnprivilegedNamespace("clientApiTest");
+        getMockConfigAdapter().setNonInternalNamespace("clientApiTest");
         open("/clientApiTest/getDefinition.cmp");
         findDomElement(By.cssSelector(".getComponentDefinitionWithoutAccessButton")).click();
         waitForElementTextContains(findDomElement(By.cssSelector("div[id='complete']")), "true");
@@ -58,7 +58,7 @@ public class GetDefinitionAccessCheckUITest extends WebDriverTestCase {
     @Ignore("TODO: (W-2799335): Disabled this test since $A.getDeifinitions() doesn't do access check for Event")
     @Test
     public void testGetMutilpleDefinitionsWithoutAccess() throws Exception {
-        getMockConfigAdapter().setUnprivilegedNamespace("clientApiTest");
+        getMockConfigAdapter().setNonInternalNamespace("clientApiTest");
         open("/clientApiTest/getDefinition.cmp");
         findDomElement(By.cssSelector(".getDefinitionsWithoutAccessButton")).click();
         waitForElementTextContains(findDomElement(By.cssSelector("div[id='complete']")), "true");

@@ -53,6 +53,11 @@ public class ReferenceTreeModel implements ModelInstance{
     }
 
 
+    public boolean isRunningInInternalNamespace() {
+        String ns = configAdapter.getDefaultNamespace();
+        return ns == null || configAdapter.isInternalNamespace(ns);
+    }
+
     private final <E extends Definition> List<TreeNode> makeTreeNodes(String prefix, DefType type)
             throws QuickFixException {
         contextService.pushSystemContext();
@@ -129,7 +134,7 @@ public class ReferenceTreeModel implements ModelInstance{
             tree.add(new TreeNode(null, "Events", makeTreeNodes("markup", DefType.EVENT), false));
             tree.add(new TreeNode(null, "Libraries", makeTreeNodes("markup", DefType.LIBRARY), false));
 
-            if (isRunningInPrivilegedNamespace()) {
+            if (isRunningInInternalNamespace()) {
                 tree.add(new TreeNode(null, "Tests", makeTreeNodes("js", DefType.TESTSUITE), false));
             }
 

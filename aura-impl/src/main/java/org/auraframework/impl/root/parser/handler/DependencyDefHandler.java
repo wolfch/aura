@@ -52,14 +52,14 @@ public class DependencyDefHandler<P extends RootDefinition> extends ParentedTagH
     }
 
     public DependencyDefHandler(RootTagHandler<P> parentHandler, XMLStreamReader xmlReader, Source<?> source,
-                                boolean isInPrivilegedNamespace, DefinitionService definitionService,
+                                boolean isInInternalNamespace, DefinitionService definitionService,
                                 ConfigAdapter configAdapter, DefinitionParserAdapter definitionParserAdapter) throws DefinitionNotFoundException {
-        super(parentHandler, xmlReader, source, isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter);
+        super(parentHandler, xmlReader, source, isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter);
 
         this.builder = new DependencyDefImpl.Builder();
         this.builder.setLocation(getLocation());
         this.builder.setParentDescriptor(parentHandler.getDefDescriptor());
-        this.builder.setAccess(getAccess(isInPrivilegedNamespace));
+        this.builder.setAccess(getAccess(isInInternalNamespace));
     }
 
     @Override

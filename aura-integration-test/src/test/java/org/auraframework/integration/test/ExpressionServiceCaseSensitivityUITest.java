@@ -35,7 +35,7 @@ public class ExpressionServiceCaseSensitivityUITest extends WebDriverTestCase {
     public void testGetNestedAttribute() throws Exception {
         open("/attributesTest/caseSensitivity.app", Mode.DEV);
         String expected = "Possible Case Sensitivity Issue: Expression 'map.Fruit' on segment 'Fruit'. Possible you meant 'fruit'";
-        Object actual = auraUITestingUtil.getEval("try { $A.getRoot().get('v.map.Fruit'); } catch (e) { return e.message; }");
+        Object actual = getAuraUITestingUtil().getEval("try { $A.getRoot().get('v.map.Fruit'); } catch (e) { return e.message; }");
         Assert.assertEquals(expected, actual);
     }
 
@@ -47,7 +47,7 @@ public class ExpressionServiceCaseSensitivityUITest extends WebDriverTestCase {
     public void testGetNonExistentNestedAttribute() throws Exception {
         open("/attributesTest/caseSensitivity.app", Mode.DEV);
         String expected = "Possible Case Sensitivity Issue: Expression 'map.Fruit.blah' on segment 'Fruit'. Possible you meant 'fruit'";
-        Object actual = auraUITestingUtil.getEval("try { $A.getRoot().get('v.map.Fruit.blah'); } catch (e) { return e.message; }");
+        Object actual = getAuraUITestingUtil().getEval("try { $A.getRoot().get('v.map.Fruit.blah'); } catch (e) { return e.message; }");
         Assert.assertEquals(expected, actual);
     }
 
@@ -59,7 +59,7 @@ public class ExpressionServiceCaseSensitivityUITest extends WebDriverTestCase {
     public void testSetNestedAttribute() throws Exception {
         open("/attributesTest/caseSensitivity.app", Mode.DEV);
         String expected = "Possible Case Sensitivity Issue: Expression 'map.Fruit' on segment 'Fruit'. Possible you meant 'fruit'";
-        Object actual = auraUITestingUtil.getEval("try { $A.getRoot().set('v.map.Fruit', 'orange'); } catch (e) {return e.message; }");
+        Object actual = getAuraUITestingUtil().getEval("try { $A.getRoot().set('v.map.Fruit', 'orange'); } catch (e) {return e.message; }");
         Assert.assertEquals(expected, actual);
     }
 
@@ -71,7 +71,7 @@ public class ExpressionServiceCaseSensitivityUITest extends WebDriverTestCase {
     public void testSetNewNestedAttribute() throws Exception {
         open("/attributesTest/caseSensitivity.app", Mode.DEV);
         String expected = "Possible Case Sensitivity Issue: Expression 'map.Fruit.blah' on segment 'Fruit'. Possible you meant 'fruit'";
-        Object actual = auraUITestingUtil.getEval("try { $A.getRoot().set('v.map.Fruit.blah', 'orange'); } catch (e) { return e.message; }");
+        Object actual = getAuraUITestingUtil().getEval("try { $A.getRoot().set('v.map.Fruit.blah', 'orange'); } catch (e) { return e.message; }");
         Assert.assertEquals(expected, actual);
     }
 
@@ -81,8 +81,8 @@ public class ExpressionServiceCaseSensitivityUITest extends WebDriverTestCase {
     @Test
     public void testGetNoErrorMessageInProdMode() throws Exception {
         open("/attributesTest/caseSensitivity.app", Mode.PROD);
-        auraUITestingUtil.getEval("$A.getRoot().get('v.map.Fruit');");
-        auraUITestingUtil.assertNoAuraErrorMessage(null);
+        getAuraUITestingUtil().getEval("$A.getRoot().get('v.map.Fruit');");
+        getAuraUITestingUtil().assertNoAuraErrorMessage(null);
     }
 
     /**
@@ -91,7 +91,7 @@ public class ExpressionServiceCaseSensitivityUITest extends WebDriverTestCase {
     @Test
     public void testSetNoErrorMessageInProdMode() throws Exception {
         open("/attributesTest/caseSensitivity.app", Mode.PROD);
-        auraUITestingUtil.getEval("$A.getRoot().set('v.map.Fruit', 'orange');");
-        auraUITestingUtil.assertNoAuraErrorMessage(null);
+        getAuraUITestingUtil().getEval("$A.getRoot().set('v.map.Fruit', 'orange');");
+        getAuraUITestingUtil().assertNoAuraErrorMessage(null);
     }
 }

@@ -380,12 +380,12 @@ public class MasterDefRegistryImplTest extends AuraImplTestCase {
         assertEquals("value", masterDefReg.getCachedString(uid, houseboat, "test1"));
     }
 
-    @Test
-    @UnAdaptableTest("Particular permission is needed to retrieve non-priviledged cmp in autobuild.")
-    public void testNonPrivilegedStringCache() throws Exception {
-        String namespace = "testNonPrivilegedStringCache" + getAuraTestingUtil().getNonce();
+    @UnAdaptableTest("Particular permission is needed to retrieve non-internal cmp in autobuild.")
+	@Test
+    public void testNonInternalStringCache() throws Exception {
+        String namespace = "testNonInternalStringCache" + getAuraTestingUtil().getNonce();
 
-        assertFalse(namespace + "  should not have been isPriveleged", configAdapter.isPrivilegedNamespace(namespace));
+        assertFalse(namespace + "  should not have been internal", configAdapter.isInternalNamespace(namespace));
         DefDescriptor<ApplicationDef> houseboat = getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
                 String.format(baseApplicationTag, "", ""), String.format("%s:houseboat", namespace), false);
         MasterDefRegistryImplOverride masterDefReg = getDefRegistry(false);
@@ -1064,7 +1064,7 @@ public class MasterDefRegistryImplTest extends AuraImplTestCase {
         MasterDefRegistry mdr = getAuraMDR();
         MasterDefRegistryImpl mdri = (MasterDefRegistryImpl) mdr;
         Map<DefType, DefDescriptor<?>> defs = addDefsToCaches(mdri);
-        Map<DefType, DefDescriptor<?>> nonPrivDefs = addNonPriveledgedDefsToMDR(mdri);
+        Map<DefType, DefDescriptor<?>> nonPrivDefs = addNonInternalDefsToMDR(mdri);
         for (DefDescriptor<?> dd : defs.values()) {
             assertTrue(dd + " should exist.", dd.exists());
         }
@@ -1083,11 +1083,11 @@ public class MasterDefRegistryImplTest extends AuraImplTestCase {
         DefDescriptor<?> nsCmpDef = nonPrivDefs.get(DefType.COMPONENT);
 
         // only picking 3 defs to test the ns as they are mostly dupes
-        assertTrue(rendererDef.getNamespace() + "  should have been isPriveleged",
-                configAdapter.isPrivilegedNamespace(rendererDef.getNamespace()));
+        assertTrue(rendererDef.getNamespace() + "  should have been internal",
+                configAdapter.isInternalNamespace(rendererDef.getNamespace()));
 
-        assertFalse(npRendererDef.getNamespace() + "  should not have been isPriveleged",
-                configAdapter.isPrivilegedNamespace(npRendererDef.getNamespace()));
+        assertFalse(npRendererDef.getNamespace() + "  should not have been internal",
+                configAdapter.isInternalNamespace(npRendererDef.getNamespace()));
 
         MasterDefRegistry mdr2 = restartContextGetNewMDR();
         MasterDefRegistryImpl mdri2 = (MasterDefRegistryImpl) mdr2;
@@ -1127,7 +1127,7 @@ public class MasterDefRegistryImplTest extends AuraImplTestCase {
         MasterDefRegistry mdr = getAuraMDR();
         MasterDefRegistryImpl mdri = (MasterDefRegistryImpl) mdr;
         Map<DefType, DefDescriptor<?>> defs = addDefsToCaches(mdri);
-        Map<DefType, DefDescriptor<?>> nonPrivDefs = addNonPriveledgedDefsToMDR(mdri);
+        Map<DefType, DefDescriptor<?>> nonPrivDefs = addNonInternalDefsToMDR(mdri);
 
         DefDescriptor<?> rendererDef = defs.get(DefType.RENDERER);
         DefDescriptor<?> appDef = defs.get(DefType.APPLICATION);
@@ -1140,15 +1140,15 @@ public class MasterDefRegistryImplTest extends AuraImplTestCase {
         DefDescriptor<?> nsCmpDef = nonPrivDefs.get(DefType.COMPONENT);
 
         // only picking 3 defs to test the ns as they are mostly dupes
-        assertTrue(appDef.getNamespace() + "  should have been isPriveleged",
-                configAdapter.isPrivilegedNamespace(appDef.getNamespace()));
-        assertTrue(rendererDef.getNamespace() + "  should have been isPriveleged",
-                configAdapter.isPrivilegedNamespace(rendererDef.getNamespace()));
+        assertTrue(appDef.getNamespace() + "  should have been internal",
+                configAdapter.isInternalNamespace(appDef.getNamespace()));
+        assertTrue(rendererDef.getNamespace() + "  should have been internal",
+                configAdapter.isInternalNamespace(rendererDef.getNamespace()));
 
-        assertFalse(nsAppDef.getNamespace() + "  should not have been isPriveleged",
-                configAdapter.isPrivilegedNamespace(nsAppDef.getNamespace()));
-        assertFalse(npRendererDef.getNamespace() + "  should not have been isPriveleged",
-                configAdapter.isPrivilegedNamespace(npRendererDef.getNamespace()));
+        assertFalse(nsAppDef.getNamespace() + "  should not have been internal",
+                configAdapter.isInternalNamespace(nsAppDef.getNamespace()));
+        assertFalse(npRendererDef.getNamespace() + "  should not have been internal",
+                configAdapter.isInternalNamespace(npRendererDef.getNamespace()));
 
         assertTrue("RendererDef is in cache", isInDefsCache(rendererDef, mdri));
         assertTrue("app is in cache", isInDefsCache(appDef, mdri));
@@ -1180,7 +1180,7 @@ public class MasterDefRegistryImplTest extends AuraImplTestCase {
         MasterDefRegistry mdr = getAuraMDR();
         MasterDefRegistryImpl mdri = (MasterDefRegistryImpl) mdr;
         Map<DefType, DefDescriptor<?>> defs = addDefsToCaches(mdri);
-        Map<DefType, DefDescriptor<?>> nonPrivDefs = addNonPriveledgedDefsToMDR(mdri);
+        Map<DefType, DefDescriptor<?>> nonPrivDefs = addNonInternalDefsToMDR(mdri);
 
         DefDescriptor<?> rendererDef = defs.get(DefType.RENDERER);
 
@@ -1188,10 +1188,10 @@ public class MasterDefRegistryImplTest extends AuraImplTestCase {
 
         // only picking 3 defs to test the ns as they are mostly dupes
         assertTrue(rendererDef.getNamespace() + "  should have been isPriveleged",
-                configAdapter.isPrivilegedNamespace(rendererDef.getNamespace()));
+                configAdapter.isInternalNamespace(rendererDef.getNamespace()));
 
         assertFalse(npRendererDef.getNamespace() + "  should not have been isPriveleged",
-                configAdapter.isPrivilegedNamespace(npRendererDef.getNamespace()));
+                configAdapter.isInternalNamespace(npRendererDef.getNamespace()));
 
         DescriptorFilter filter = new DescriptorFilter("*://test:*");
         Set<DefDescriptor<?>> results = mdr.find(filter);
@@ -1364,75 +1364,75 @@ public class MasterDefRegistryImplTest extends AuraImplTestCase {
     @Test
     public void testDepsCacheCompound() throws Exception {
     	String auraIf = "<aura:if isTrue='{!true}'>It is true</aura:if>";
-    	DefDescriptor<ComponentDef> privilegedCmpWithCompound = getAuraTestingUtil().addSourceAutoCleanup(
+    	DefDescriptor<ComponentDef> internalCmpWithCompound = getAuraTestingUtil().addSourceAutoCleanup(
                 ComponentDef.class, String.format(baseComponentTag, "access='global'", auraIf), null, true);
 
         MasterDefRegistry mdr = contextService.getCurrentContext().getDefRegistry();
          MasterDefRegistryImpl mdri = (MasterDefRegistryImpl) mdr;
 
-        instanceService.getInstance(privilegedCmpWithCompound, null);
+         instanceService.getInstance(internalCmpWithCompound, null);
          assertTrue(isInDepsCache(null, "compound://aura.if", mdri));
     }
     
     /**
-     * we have a component in Unprivileged NameSpace , it depends on some component on a Privileged NameSpace
-     * test verify getting def of Unprivileged one won't add itself, or the privileged component into dependency cache
-     * also verify getting def of privileged one will add itself to dependency cache
+     * we have a component in non-internal NameSpace , it depends on some component on a internal NameSpace
+     * test verify getting def of non-internal one won't add itself, or the internal component into dependency cache
+     * also verify getting def of internal one will add itself to dependency cache
      * 
-     * we also have a component in Privileged NameSpace which depends on a component on a Unprivileged NameSpace
-     * test verify getting def of the Privileged one will throw error, and it won't add itself or Unprivileged component 
+     * we also have a component in internal NameSpace which depends on a component on a non-internal NameSpace
+     * test verify getting def of the internal one will throw error, and it won't add itself or non-internal component
      * into dependency cache.
      * @throws Exception
      */
-    @Test
-    public void testDepsCachePrivAndUnPrivNamespace() throws Exception {
-        String unprivilegedNamespace = getAuraTestingUtil().getNonce("alien");
+	@Test
+    public void testDepsCacheInternalAndExternalNamespace() throws Exception {
+        String externalNamespace = getAuraTestingUtil().getNonce("alien");
 
-        // in privileged namespace
-        DefDescriptor<ComponentDef> privilegedCmp = getAuraTestingUtil().addSourceAutoCleanup(
+        // in internal namespace
+        DefDescriptor<ComponentDef> internalCmp = getAuraTestingUtil().addSourceAutoCleanup(
                 ComponentDef.class, String.format(baseComponentTag, "access='global'", ""), null, true);
-        // in unprivileged namespace depending on privileged cmp
-        DefDescriptor<ComponentDef> unprivilegedCmp = getAuraTestingUtil().addSourceAutoCleanup(
-                definitionService.getDefDescriptor(String.format("markup://%s:cmp", unprivilegedNamespace),
+        // in external namespace depending on internal cmp
+        DefDescriptor<ComponentDef> externalCmp = getAuraTestingUtil().addSourceAutoCleanup(
+                definitionService.getDefDescriptor(String.format("markup://%s:cmp", externalNamespace),
                         ComponentDef.class),
                 String.format(baseComponentTag, "access='global'",
-                        String.format("<%s/>", privilegedCmp.getDescriptorName())),
+                        String.format("<%s/>", internalCmp.getDescriptorName())),
                 false);
 
-        // in privileged namespace depending on unprivileged cmp
-        DefDescriptor<ComponentDef> privilegedRoot = getAuraTestingUtil().addSourceAutoCleanup(
+        // in internal namespace depending on external cmp
+        DefDescriptor<ComponentDef> internalRoot = getAuraTestingUtil().addSourceAutoCleanup(
                 ComponentDef.class,
                 String.format(baseComponentTag, "access='global'",
-                        String.format("<%s/>", unprivilegedCmp.getDescriptorName())),
+                        String.format("<%s/>", externalCmp.getDescriptorName())),
                 null, true);
 
-        assertTrue(configAdapter.isPrivilegedNamespace(privilegedCmp.getNamespace()));
-        assertFalse(configAdapter.isPrivilegedNamespace(unprivilegedCmp.getNamespace()));
-        assertTrue(configAdapter.isPrivilegedNamespace(privilegedRoot.getNamespace()));
+        assertTrue(configAdapter.isInternalNamespace(internalCmp.getNamespace()));
+        assertFalse(configAdapter.isInternalNamespace(externalCmp.getNamespace()));
+        assertTrue(configAdapter.isInternalNamespace(internalRoot.getNamespace()));
 
         MasterDefRegistry mdr = contextService.getCurrentContext().getDefRegistry();
         MasterDefRegistryImpl mdri = (MasterDefRegistryImpl) mdr;
 
         try {
-            mdr.getDef(privilegedRoot);
-            fail("Shouldn't be able to have a privileged cmp depend on an unprivileged cmp");
+            mdr.getDef(internalRoot);
+            fail("Shouldn't be able to have an internal cmp depend on an external cmp");
         } catch (Throwable t) {
             this.assertExceptionMessageStartsWith(t,
                     DefinitionNotFoundException.class, String.format(
                             "No COMPONENT named %s found",
-                            unprivilegedCmp.getQualifiedName()));
+                            externalCmp.getQualifiedName()));
         }
 
-        mdr.getDef(unprivilegedCmp);
-        assertFalse(isInDepsCache(privilegedCmp, "", mdri));
-        assertFalse(isInDepsCache(unprivilegedCmp, "", mdri));
-        assertFalse(isInDepsCache(privilegedRoot, "", mdri));
+        mdr.getDef(externalCmp);
+        assertFalse(isInDepsCache(internalCmp, "", mdri));
+        assertFalse(isInDepsCache(externalCmp, "", mdri));
+        assertFalse(isInDepsCache(internalRoot, "", mdri));
 
 
-        mdr.getDef(privilegedCmp);
-        assertTrue(isInDepsCache(privilegedCmp, "", mdri));
-        assertFalse(isInDepsCache(unprivilegedCmp, "", mdri));
-        assertFalse(isInDepsCache(privilegedRoot, "", mdri));
+        mdr.getDef(internalCmp);
+        assertTrue(isInDepsCache(internalCmp, "", mdri));
+        assertFalse(isInDepsCache(externalCmp, "", mdri));
+        assertFalse(isInDepsCache(internalRoot, "", mdri));
 
     }
 
@@ -1444,7 +1444,7 @@ public class MasterDefRegistryImplTest extends AuraImplTestCase {
         String prefix = controllerDef.getPrefix();
         assertEquals(prefix, "java");
 
-        assertFalse(configAdapter.isPrivilegedNamespace(controllerDef.getNamespace()));
+        assertFalse(configAdapter.isInternalNamespace(controllerDef.getNamespace()));
 
         MasterDefRegistry mdr = contextService.getCurrentContext().getDefRegistry();
         // mdr.getDef(controllerDef);
@@ -1473,7 +1473,7 @@ public class MasterDefRegistryImplTest extends AuraImplTestCase {
      * @return List of DefDescriptors that have been added to the mdr caches.
      */
     @UnAdaptableTest("namesapce start with c means something special in core")
-    private Map<DefType, DefDescriptor<?>> addNonPriveledgedDefsToMDR(MasterDefRegistryImpl mdr) throws Exception {
+    private Map<DefType, DefDescriptor<?>> addNonInternalDefsToMDR(MasterDefRegistryImpl mdr) throws Exception {
         DefDescriptor<ComponentDef> cmpDef = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
                 "<aura:component>"
                         + "<aura:attribute name='label' type='String'/>"

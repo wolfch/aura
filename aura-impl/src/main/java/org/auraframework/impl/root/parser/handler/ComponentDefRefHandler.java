@@ -55,12 +55,12 @@ public class ComponentDefRefHandler<P extends RootDefinition> extends ParentedTa
     }
 
     public ComponentDefRefHandler(RootTagHandler<P> parentHandler, XMLStreamReader xmlReader, Source<?> source,
-                                  boolean isInPrivilegedNamespace, DefinitionService definitionService,
+                                  boolean isInInternalNamespace, DefinitionService definitionService,
                                   ConfigAdapter configAdapter, DefinitionParserAdapter definitionParserAdapter) {
-        super(parentHandler, xmlReader, source, isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter);
+        super(parentHandler, xmlReader, source, isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter);
         builder.setDescriptor(definitionService.getDefDescriptor(getTagName(), ComponentDef.class));
         builder.setLocation(getLocation());
-        builder.setAccess(getAccess(isInPrivilegedNamespace));
+        builder.setAccess(getAccess(isInInternalNamespace));
         body = new ArrayList<>();
     }
 
@@ -69,10 +69,10 @@ public class ComponentDefRefHandler<P extends RootDefinition> extends ParentedTa
      * use it cause of java stupidness
      */
     protected ComponentDefRefHandler(RootTagHandler<P> parentHandler, DefDescriptor<ComponentDef> descriptor,
-                                     XMLStreamReader xmlReader, Source<?> source, boolean isInPrivilegedNamespace,
+                                     XMLStreamReader xmlReader, Source<?> source, boolean isInInternalNamespace,
                                      DefinitionService definitionService,
                                      ConfigAdapter configAdapter, DefinitionParserAdapter definitionParserAdapter) {
-        super(parentHandler, xmlReader, source, isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter);
+        super(parentHandler, xmlReader, source, isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter);
         builder.setDescriptor(descriptor);
         builder.setLocation(getLocation());
         body = new ArrayList<>();
@@ -176,7 +176,7 @@ public class ComponentDefRefHandler<P extends RootDefinition> extends ParentedTa
         String tag = getTagName();
         if (AttributeDefRefHandler.TAG.equalsIgnoreCase(tag)) {
             AttributeDefRefImpl attributeDefRef = new AttributeDefRefHandler<>(getParentHandler(), xmlReader, source,
-                    isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter)
+                    isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter)
                     .getElement();
             builder.setAttribute(attributeDefRef.getDescriptor(), attributeDefRef);
         } else {

@@ -34,7 +34,7 @@ import javax.inject.Inject;
 import java.util.List;
 
 /**
- * 
+ *
  * Unit tests for ClientLibraryDefHandler.
  */
 public class ClientLibraryDefHandlerTest extends AuraImplTestCase {
@@ -143,10 +143,30 @@ public class ClientLibraryDefHandlerTest extends AuraImplTestCase {
                 "myID", Format.XML);
         ComponentDef cd = componentXMLParser.parse(descriptor, source);
         try {
-        	cd.validateDefinition();
+            cd.validateDefinition();
             fail("Should not accept invalid mode specification.");
         } catch (Exception e) {
             checkExceptionFull(e, InvalidDefinitionException.class, "Invalid mode specified");
         }
+    }
+
+    /**
+     * Currently aura:clientLibrary only ignore invalid attributes. It should work as other aura tags
+     * throwing error when containing invalid tags.
+     * TODO(W-2970463): update the test when the item is done.
+     */
+    public void testInvalidAttributeInLibraryTag() throws Exception {
+        String cmpMarkup =
+                "<aura:component>" +
+                "    <aura:clientLibrary name='HTML5Shiv' type='JS' unknown='bla' url=''/>" +
+                "</aura:component>";
+        StringSource<ComponentDef> source = new StringSource<>(fileMonitor, descriptor, cmpMarkup
+                ,"myID", Format.XML);
+        ComponentDef cd = new ComponentXMLParser().parse(descriptor, source);
+        cd.validateDefinition();
+        List<ClientLibraryDef> clientLibrarys = cd.getClientLibraries();
+        ClientLibraryDef clientLibraryDef = clientLibrarys.get(0);
+
+        assertEquals("HTML5Shiv", clientLibraryDef.getLibraryName());
     }
 }

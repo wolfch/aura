@@ -42,11 +42,11 @@ public class FlavorIncludeDefHandler<P extends RootDefinition> extends ParentedT
     private final FlavorIncludeDefImpl.Builder builder = new FlavorIncludeDefImpl.Builder();
 
     public FlavorIncludeDefHandler(RootTagHandler<P> parentHandler, XMLStreamReader xmlReader, Source<?> source,
-                                   boolean isInPrivilegedNamespace, DefinitionService definitionService,
+                                   boolean isInInternalNamespace, DefinitionService definitionService,
                                    ConfigAdapter configAdapter, DefinitionParserAdapter definitionParserAdapter) {
-        super(parentHandler, xmlReader, source, isInPrivilegedNamespace, definitionService, configAdapter, definitionParserAdapter);
+        super(parentHandler, xmlReader, source, isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter);
         builder.setLocation(getLocation());
-        builder.setAccess(getAccess(isInPrivilegedNamespace));
+        builder.setAccess(getAccess(isInInternalNamespace));
     }
 
     @Override

@@ -43,10 +43,10 @@ public class TokensXMLParser extends XMLParser<TokensDef> {
 
     @Override
     protected TokensDefHandler getHandler(DefDescriptor<TokensDef> descriptor,
-                                          Source<TokensDef> source, XMLStreamReader xmlReader, boolean isInPrivilegedNamespace,
+                                          Source<TokensDef> source, XMLStreamReader xmlReader, boolean isInInternalNamespace,
                                           DefinitionService definitionService,
                                           ConfigAdapter configAdapter, DefinitionParserAdapter definitionParserAdapter) throws QuickFixException {
-        return new TokensDefHandler(descriptor, source, xmlReader, isInPrivilegedNamespace, definitionService,
+        return new TokensDefHandler(descriptor, source, xmlReader, isInInternalNamespace, definitionService,
                 configAdapter, definitionParserAdapter);
     }
 }

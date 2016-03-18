@@ -345,7 +345,7 @@ public class StringSourceExternalLoader implements StringSourceLoader {
     }
 
     @Override
-    public boolean isPrivilegedNamespace(String namespace) {
+    public boolean isInternalNamespace(String namespace) {
         return true;
     }
 

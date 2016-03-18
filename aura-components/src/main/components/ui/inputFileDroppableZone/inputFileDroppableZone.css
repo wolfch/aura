@@ -13,20 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-({
-	init: function (cmp, event, helper) {
-		helper.init(cmp, event);
-	},
-	
-    show: function (cmp, event, helper) {
-        helper.show(cmp, event);
-    },
-    
-    hide: function (cmp, event, helper) {
-        helper.hide(cmp, event);
-    },
-    
-    close: function (cmp, event, helper) {
-    	helper.close(cmp, event);
-    }
-})// eslint-disable-line semi
+
+.THIS.droppable-zone {
+    padding: 15px;
+    border: 2px dashed #ccc;
+}
+
+.THIS.droppable-zone.drag-over {
+    border-color: green;
+}
+

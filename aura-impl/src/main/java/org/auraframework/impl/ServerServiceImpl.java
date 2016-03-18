@@ -392,10 +392,14 @@ public class ServerServiceImpl implements ServerService {
         serializationService.writeCollection(componentDefs, BaseComponentDef.class, sb, "JSON");
         sb.append(",");
 
-        // append namespaces. for now. *sigh*
-        sb.append("namespaces:");
+        // append namespaces.
+        sb.append("ns:{");
+        sb.append(" internal:");
+        JsonEncoder.serialize(configAdapter.getInternalNamespaces(), sb, context.getJsonSerializationContext());
+        sb.append(" ,");
+        sb.append(" privileged:");
         JsonEncoder.serialize(configAdapter.getPrivilegedNamespaces(), sb, context.getJsonSerializationContext());
-        sb.append(",");
+        sb.append("},");
 
         // append event definitions
         sb.append("eventDefs:");

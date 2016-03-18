@@ -52,9 +52,6 @@ public class IntegrationImpl implements Integration {
     private static final String COMPONENT_DEF_TEMPLATE =
         "{'componentDef': 'markup://%s', 'attributes': { 'values' : %s }, 'localId': '%s'}";
 
-    private static final String ASYNC_INJECTION_TEMPLATE =
-        "$A.run(function() { $A.clientService.injectComponentAsync(%s, '%s', %s); });";
-
     private static final String DEFAULT_APPLICATION = "aura:integrationServiceApp";
 
     private final String contextPath;
@@ -159,7 +156,9 @@ public class IntegrationImpl implements Integration {
                     // set event handlers to either js "undefined" or object of event and handler names
                     String eventHandlers = jsonEventHandlers != null ? jsonEventHandlers.toString() : "undefined";
                     String def = String.format(COMPONENT_DEF_TEMPLATE, tag, jsonAttributes.toString(), localId);
-                    String newComponentScript = String.format(ASYNC_INJECTION_TEMPLATE, def, locatorDomId, eventHandlers);
+                    
+                    // DCHASMAN TODO Either switch this to $A.getRoot()._aisScopedCallback() which requires some sync init code or switch everything to LO!
+                    String newComponentScript = String.format("$A.run(function() { $A.clientService.injectComponentAsync(%s, '%s', %s); });", def, locatorDomId, eventHandlers);
 
                     init.append(newComponentScript);
 
@@ -209,7 +208,7 @@ public class IntegrationImpl implements Integration {
                         init.append(";\n");
                     }
 
-                    init.append(String.format("$A.run(function() { $A.clientService.injectComponent(config, \"%s\", \"%s\"); });", locatorDomId, localId));
+                    init.append(String.format("$A.getRoot()._aisScopedCallback(function() { $A.clientService.injectComponent(config, \"%s\", \"%s\"); });", locatorDomId, localId));
                 }
 
                 out.append("<script>").append(init).append("</script>");
