@@ -173,7 +173,7 @@ public class CSPReportLoggingUITest extends WebDriverTestCase {
         openNoAura(uri);
 
         // generate an intentional csp report
-        auraUITestingUtil
+        getAuraUITestingUtil()
                 .getRawEval("var s=document.createElement('script');s.type='text/javascript';s.async=true;s.src='http://expectedreport.salesforce.com/';document.getElementsByTagName('head')[0].appendChild(s);");
 
         List<Map<String, Object>> logs = getCspReportLogs(1);
@@ -285,7 +285,7 @@ public class CSPReportLoggingUITest extends WebDriverTestCase {
         
 
         open(cmpDesc);
-        auraUITestingUtil.findDomElement(By.cssSelector(".button")).click();
+        getAuraUITestingUtil().findDomElement(By.cssSelector(".button")).click();
 
         List<Map<String, Object>> logs = getCspReportLogs(expectedLogs);
         

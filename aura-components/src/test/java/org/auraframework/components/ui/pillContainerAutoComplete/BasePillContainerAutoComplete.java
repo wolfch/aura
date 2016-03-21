@@ -42,7 +42,7 @@ public class BasePillContainerAutoComplete extends WebDriverTestCase {
         open(CMP_URL);
         WebElement input = findDomElement(By.cssSelector(INPUT));
         input.sendKeys("khDmXpDDmALzDqhYeCvJgqEmjUPJqV");
-        auraUITestingUtil.pressEnter(input);
+        getAuraUITestingUtil().pressEnter(input);
         assertFalse("Auto complete List Content should not be visible", isListContentVisible());
         input.sendKeys("test");
         assertNotNull("Auto complete List Content should be visible", isListContentVisible());
@@ -60,7 +60,7 @@ public class BasePillContainerAutoComplete extends WebDriverTestCase {
         open(CMP_URL);
         WebElement input = findDomElement(By.cssSelector(INPUT));
         input.sendKeys("khDmXpDDmALzDqhYeCvJgqEmjUPJqV");
-        auraUITestingUtil.pressEnter(input);
+        getAuraUITestingUtil().pressEnter(input);
         assertFalse("Auto complete List Content should not be visible", isListContentVisible());
         input.sendKeys("test");
         assertNotNull("Auto complete List Content should be visible", isListContentVisible());
