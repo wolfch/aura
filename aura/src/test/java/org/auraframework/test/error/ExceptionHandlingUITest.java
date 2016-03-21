@@ -84,7 +84,7 @@ public class ExceptionHandlingUITest extends WebDriverTestCase {
     }
 
     private void assertNoStacktrace() throws Exception {
-        String actual = auraUITestingUtil.getAuraErrorMessage().replaceAll("\\s+", " ");
+        String actual = getAuraUITestingUtil().getAuraErrorMessage().replaceAll("\\s+", " ");
         assertEquals("Unable to process your request", actual);
     }
 
@@ -102,7 +102,7 @@ public class ExceptionHandlingUITest extends WebDriverTestCase {
     }
 
     private void assertStacktrace(String messageStartsWith, String... causeStartsWith) throws Exception {
-        String actual = auraUITestingUtil.getAuraErrorMessage().replaceAll("\\s+", " ");
+        String actual = getAuraUITestingUtil().getAuraErrorMessage().replaceAll("\\s+", " ");
         assertStacktraceCommon(actual, messageStartsWith, causeStartsWith);
     }
 
@@ -310,7 +310,7 @@ public class ExceptionHandlingUITest extends WebDriverTestCase {
         findDomElement(By.cssSelector(".update")).click();
         waitForElementText(findDomElement(By.cssSelector(".uiOutputText")), "modified", true, 3000);
         assertTrue("Page was not changed after client action",
-                auraUITestingUtil.getBooleanEval("return !!document.__PageModifiedTestFlag"));
+                getAuraUITestingUtil().getBooleanEval("return !!document.__PageModifiedTestFlag"));
 
         // make server POST call with outdated lastmod
         findDomElement(By.cssSelector(".trigger")).click();
@@ -321,11 +321,11 @@ public class ExceptionHandlingUITest extends WebDriverTestCase {
         wait.until(new ExpectedCondition<Boolean>() {
             @Override
             public Boolean apply(WebDriver d) {
-                return !auraUITestingUtil.getBooleanEval("return !!document.__PageModifiedTestFlag");
+                return !getAuraUITestingUtil().getBooleanEval("return !!document.__PageModifiedTestFlag");
             }
         });
         // Wait for page to reload and aura framework initialization
-        auraUITestingUtil.waitForAuraInit();
+        getAuraUITestingUtil().waitForAuraInit();
         waitForElementText(findDomElement(By.cssSelector(".uiOutputText")), "initial", true, 3000);
     }
 
@@ -336,27 +336,27 @@ public class ExceptionHandlingUITest extends WebDriverTestCase {
         DefDescriptor<?> cdd = addSourceAutoCleanup(ComponentDef.class,
                 "<aura:component>{!'&lt;'}script{!'&gt;'}alert('foo');{!'&lt;'}/script{!'&gt;'}</aura:component>");
         openRaw(getAppUrl("", String.format("<%s:%s/>", cdd.getNamespace(), cdd.getName())));
-        auraUITestingUtil.waitForElementFunction(By.tagName("body"), new Function<WebElement, Boolean>() {
+        getAuraUITestingUtil().waitForElementFunction(By.tagName("body"), new Function<WebElement, Boolean>() {
                 @Override
 			    public Boolean apply(WebElement elem) {
 				    return elem.getText().contains("alert(");
 			    }
             },
             "XSS may have injected a bad <script> tag");
-        assertEquals("", auraUITestingUtil.getAuraErrorMessage());
+        assertEquals("", getAuraUITestingUtil().getAuraErrorMessage());
     }
 
     public void testXssScenarioTwo() throws Exception {
         DefDescriptor<?>  cdd = addSourceAutoCleanup(ComponentDef.class,
                 "<aura:component>{!'&lt;script&gt;'}alert({!'\"foo\");&lt;/script&gt;'}</aura:component>");
         openRaw(getAppUrl("", String.format("<%s:%s/>", cdd.getNamespace(), cdd.getName())));
-        auraUITestingUtil.waitForElementFunction(By.tagName("body"), new Function<WebElement, Boolean>() {
+        getAuraUITestingUtil().waitForElementFunction(By.tagName("body"), new Function<WebElement, Boolean>() {
                 @Override
 		        public Boolean apply(WebElement elem) {
 			        return elem.getText().contains("alert(");
 		        }
             },
             "XSS may have injected a bad <script> tag");
-        assertEquals("", auraUITestingUtil.getAuraErrorMessage());
+        assertEquals("", getAuraUITestingUtil().getAuraErrorMessage());
     }
 }

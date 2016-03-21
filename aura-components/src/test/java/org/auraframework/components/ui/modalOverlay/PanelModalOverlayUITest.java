@@ -216,7 +216,7 @@ public class PanelModalOverlayUITest extends WebDriverTestCase {
         verifyOverlayNotActive();
         openOverlay(PANELDIALOG_MODAL_BUTTON);
         verifyOverlayActive();
-        assertEquals("Button1 should be active element", "button 1", auraUITestingUtil.getEval(ACTIVE_ELEMENT_TEXT));
+        assertEquals("Button1 should be active element", "button 1", getAuraUITestingUtil().getEval(ACTIVE_ELEMENT_TEXT));
         pressTabOnActiveElementAndWait("button 2");
         pressTabOnActiveElementAndWait("open another overlay");
         pressTabOnActiveElementAndWait("Close");
@@ -234,7 +234,7 @@ public class PanelModalOverlayUITest extends WebDriverTestCase {
         verifyOverlayNotActive();
         openOverlay(PANELDIALOG_NONMODAL_BUTTON);
         verifyOverlayActive();
-        assertEquals("Button1 should be active element", "button 1", auraUITestingUtil.getEval(ACTIVE_ELEMENT_TEXT));
+        assertEquals("Button1 should be active element", "button 1", getAuraUITestingUtil().getEval(ACTIVE_ELEMENT_TEXT));
         pressTabOnActiveElementAndWait("button 2");
         pressTabOnActiveElementAndWait("open another overlay");
         pressTabOnActiveElementAndWait("Close");
@@ -252,7 +252,7 @@ public class PanelModalOverlayUITest extends WebDriverTestCase {
     }
 
     private void waitNumberOfPanelsInDom(final int expectedPanels) {
-        auraUITestingUtil
+        getAuraUITestingUtil()
                 .waitUntil(
                         new ExpectedCondition<Boolean>() {
                             @Override
@@ -314,7 +314,7 @@ public class PanelModalOverlayUITest extends WebDriverTestCase {
     }
 
     private void pressEscapeOnActiveElement() throws InterruptedException {
-        WebElement activeElement = (WebElement) auraUITestingUtil.getEval(ACTIVE_ELEMENT);
+        WebElement activeElement = (WebElement) getAuraUITestingUtil().getEval(ACTIVE_ELEMENT);
         activeElement.sendKeys(Keys.ESCAPE);
     }
 
@@ -324,12 +324,12 @@ public class PanelModalOverlayUITest extends WebDriverTestCase {
     }
 
     private void waitForActiveElementText(final String expectedText, String message) {
-        auraUITestingUtil
+        getAuraUITestingUtil()
                 .waitUntil(
                         new ExpectedCondition<Boolean>() {
                             @Override
                             public Boolean apply(WebDriver d) {
-                                String text = (String) auraUITestingUtil.getEval(ACTIVE_ELEMENT_TEXT);
+                                String text = (String) getAuraUITestingUtil().getEval(ACTIVE_ELEMENT_TEXT);
                                 return text.startsWith(expectedText);
                             }
                         },
@@ -337,7 +337,7 @@ public class PanelModalOverlayUITest extends WebDriverTestCase {
     }
 
     private void pressTabOnActiveElement() {
-        WebElement activeElement = (WebElement) auraUITestingUtil.getEval(ACTIVE_ELEMENT);
+        WebElement activeElement = (WebElement) getAuraUITestingUtil().getEval(ACTIVE_ELEMENT);
         activeElement.sendKeys(Keys.TAB);
     }
 

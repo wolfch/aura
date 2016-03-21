@@ -218,9 +218,4 @@ public class AccessChecksUITest extends WebDriverTestCase {
     private void verifyComponentCreated(String expected) {
         waitForElementTextPresent(getDriver().findElement(By.className("output")), expected);
     }
-
-    private void verifyComponentNotCreated() {
-        auraUITestingUtil.waitForElementText(By.className("output"), "null", true, "Expected 'null' to be outputted "
-                + "to indicate component could not be created due to access check violations");
-    }
 }
