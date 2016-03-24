@@ -34,6 +34,7 @@ import junit.framework.TestResult;
 import org.auraframework.test.util.WebDriverProvider;
 import org.auraframework.util.AuraUtil;
 import org.auraframework.util.test.annotation.ThreadHostileTest;
+import org.springframework.test.context.TestContextManager;
 
 /**
  * This executor handles the execution of test cases
@@ -41,6 +42,7 @@ import org.auraframework.util.test.annotation.ThreadHostileTest;
 public class TestExecutor {
     public static final int NUM_THREADS = Integer.parseInt(System.getProperty("testThreadCount", "4"));
     private static final Logger logger = Logger.getLogger("TestExecutor");
+    private static final TestContextManager testContextManager = new TestContextManager(IntegrationTestCase.class);
     private final ExecutorService executor;
 
     /**
@@ -144,6 +146,7 @@ public class TestExecutor {
             lock.lock();
             long start = System.nanoTime();
             try {
+                testContextManager.prepareTestInstance(test);
                 test.run(result);
                 return result;
             } finally {
