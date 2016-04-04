@@ -23,7 +23,7 @@
         tabbody_active: '.uiTab.active'
     },
 
-    owner: 'sle',
+    owner: 'ctatlah',
 
     /**
      * adding dynamic tab
