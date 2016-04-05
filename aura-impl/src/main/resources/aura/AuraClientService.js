@@ -144,6 +144,9 @@ AuraClientService = function AuraClientService () {
     this.namespaces={internal:{},privileged:{}};
     this.lastSendTime = Date.now();
 
+    // This will be only changed after the unload event
+    this._appNotTearingDown = true;
+
     // XHR timeout (milliseconds)
     this.xhrTimeout = undefined;
 
@@ -193,6 +196,9 @@ AuraClientService = function AuraClientService () {
     // Run client actions synchronously. This is the previous behaviour.
     //
     this.optionClientSynchronous = true;
+
+    this.reloadFunction = undefined;
+    this.reloadPointPassed = false;
 
     this.handleAppCache();
 
@@ -276,7 +282,7 @@ AuraClientService.prototype.decode = function(response, noStrip, timedOut) {
     // now that we have a response from a server.
     //
     if (this._isDisconnected) {
-        e = $A.get("e.aura:connectionResumed");
+        e = $A.getEvt("markup://aura:connectionResumed");
         if (e) {
             this._isDisconnected = false;
             e.fire();
@@ -335,13 +341,13 @@ AuraClientService.prototype.decode = function(response, noStrip, timedOut) {
             var appCache = window.applicationCache;
             if (appCache && (appCache.status === appCache.IDLE || appCache.status > appCache.DOWNLOADING)) {
                 try {
-                    appCache.update();
+                appCache.update();
                 } catch (ignore) {
                     //
                     // not sure what we should do here. but since this seems to only happen in corner cases
                     // we'll ignore this one for now.
                     //
-                }
+            }
             }
             return ret;
         } else if (resp["exceptionEvent"] === true) {
@@ -461,8 +467,18 @@ AuraClientService.prototype.throwExceptionEvent = function(resp) {
 };
 
 AuraClientService.prototype.fireDoneWaiting = function() {
-    $A.get("e.aura:doneWaiting").fire();
+    $A.eventService.getNewEvent("markup://aura:doneWaiting").fire();
 };
+
+/**
+ * This will be called by the unload event
+ *
+ * @private
+ */
+AuraClientService.prototype.tearDown = function() {
+    this._appNotTearingDown = false;
+};
+
 
 /**
  * make the current thread be 'in aura collections'
@@ -598,15 +614,6 @@ AuraClientService.prototype.countAvailableXHRs = function(/*isBackground*/) {
 };
 
 /**
- * release the current thread from 'in aura collections'
- *
- * @export
- */
-AuraClientService.prototype.inFlightXHRs = function(/*isBackground*/) {
-    return this.allXHRs.length - this.availableXHRs.length;
-};
-
-/**
  * Get an available XHR.
  *
  * Used for instrumentation
@@ -704,31 +711,39 @@ AuraClientService.prototype.isDevMode = function() {
  * Clears actions and ComponentDefStorage stores then reloads the page.
  */
 AuraClientService.prototype.dumpCachesAndReload = function() {
-    // reload even if storage clear fails
-    var actionStorage = Action.getStorage();
-    var actionClear = actionStorage && actionStorage.isPersistent() ? actionStorage.clear() : Promise["resolve"]([]);
+    if (this.reloadFunction) {
+        return;
+    }
+    this.reloadFunction = function() {
+        // reload even if storage clear fails
+        var actionStorage = Action.getStorage();
+        var actionClear = actionStorage && actionStorage.isPersistent() ? actionStorage.clear() : Promise["resolve"]([]);
 
-    actionClear.then(
-        undefined, // noop on success
-        function(e) {
-            $A.log("Failed to clear persistent actions cache", e);
-            // do not rethrow to return to resolve state
-        }
-    ).then(
-        function() {
-            return $A.componentService.clearDefsFromStorage();
-        }
-    ).then(
-        undefined, // noop on success
-        function(e) {
-            $A.log("Failed to clear persistent component def storage", e);
-            // do not rethrow to return to resolve state
-        }
-    ).then(
-        function() {
-            window.location.reload(true);
-        }
-    );
+        actionClear.then(
+            undefined, // noop on success
+            function(e) {
+                $A.log("Failed to clear persistent actions cache", e);
+                // do not rethrow to return to resolve state
+            }
+        ).then(
+            function() {
+                return $A.componentService.clearDefsFromStorage();
+            }
+        ).then(
+            undefined, // noop on success
+            function(e) {
+                $A.log("Failed to clear persistent component def storage", e);
+                // do not rethrow to return to resolve state
+            }
+        ).then(
+            function() {
+                window.location.reload(true);
+            }
+        );
+    };
+    if (this.reloadPointPassed) {
+        this.reloadFunction();
+    }
 };
 
 AuraClientService.prototype.handleAppCache = function() {
@@ -861,14 +876,14 @@ AuraClientService.prototype.setOutdated = function() {
         // an appcache, but appcache.update() will fail (The only known way to reproduce is to use chrome dev
         // tools and disable caching.
         try {
-            appCache.update();
+        appCache.update();
         } catch (e) {
             //
             // whoops. something is inconsistent, but we don't really want to hard fail.
             // so, instead, try a different route.
             //
             this.dumpCachesAndReload();
-        }
+    }
     }
 };
 
@@ -887,7 +902,7 @@ AuraClientService.prototype.setConnected = function(isConnected) {
         return;
     }
 
-    var e = $A.get(isDisconnected ? "e.aura:connectionLost" : "e.aura:connectionResumed");
+    var e = $A.eventService.getNewEvent(isDisconnected ? "aura:connectionLost" : "aura:connectionResumed");
     if (e) {
         this._isDisconnected = isDisconnected;
         e.fire();
@@ -1010,6 +1025,23 @@ AuraClientService.prototype.init = function(config, token, container) {
         throw new $A.auraError("Error during init", e, $A.severity.QUIET);
     }
     //#end
+};
+
+/**
+ * Return the number of inFlightXHRs
+ *
+ * @export
+ */
+AuraClientService.prototype.inFlightXHRs = function(excludeBackground) {
+    if (excludeBackground) {
+        var inFlight = $A.util.filter(this.allXHRs, function (xhr) {
+            return this.availableXHRs.indexOf(xhr) === -1 && !xhr.background;
+        }, this);
+
+        return inFlight.length;
+    }
+
+    return this.allXHRs.length - this.availableXHRs.length;
 };
 
 /**
@@ -1662,7 +1694,7 @@ AuraClientService.prototype.sendActionXHRs = function() {
     if (background.length) {
         this.sendAsSingle(background, background.length);
     }
-    
+
     if (deferred.length) {
         if (this.idle()) {
             this.sendAsSingle(deferred, 1);
@@ -1864,6 +1896,7 @@ AuraClientService.prototype.send = function(auraXHR, actions, method, options) {
         }
         actionsToSend.push(action.prepareToSend());
     }
+
     if (actionsToSend.length === 0) {
         return false;
     }
@@ -1897,13 +1930,16 @@ AuraClientService.prototype.send = function(auraXHR, actions, method, options) {
         url = url + "?" + qs;
     }
 
+    auraXHR.background = options && options.background;
     auraXHR.length = qs.length;
     auraXHR.request = this.createXHR();
     auraXHR.marker = Aura.Services.AuraClientServiceMarker++;
-    auraXHR.request["open"](method, url, true);
-    if ("withCredentials" in auraXHR.request) {
+    auraXHR.request["open"](method, url, this._appNotTearingDown);
+
+    if (this._appNotTearingDown && "withCredentials" in auraXHR.request) {
         auraXHR.request["withCredentials"] = true;
     }
+
     //
     // Careful! On some browsers "onreadystatechange" is a write only property, so make
     // sure that we only write it. And for safety's sake, just write it once.
@@ -1957,7 +1993,7 @@ AuraClientService.prototype.send = function(auraXHR, actions, method, options) {
 
     // legacy code, spinner actually relies on the waiting event, need a proper fix
     setTimeout(function() {
-        $A.get("e.aura:waiting").fire();
+        $A.eventService.getNewEvent("markup://aura:waiting").fire();
     }, 1);
 
     this.lastSendTime = Date.now();
@@ -2752,7 +2788,7 @@ AuraClientService.prototype.allowAccess = function(definition, component) {
                     }
                 }
 
-                var effectiveAccess=definition.access||isInternal?'I':'P';
+                var effectiveAccess=definition.access||(isInternal?'I':'P');
                 if(effectiveAccess==='P') {
                     // PUBLIC means "same namespace only"
                     var targetNamespace = definition.getDescriptor().getNamespace();

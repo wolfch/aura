@@ -19,12 +19,15 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.auraframework.adapter.ConfigAdapter;
 import org.auraframework.def.BaseComponentDef;
+import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.Definition;
 import org.auraframework.instance.GlobalValueProvider;
+import org.auraframework.service.DefinitionService;
 import org.auraframework.system.AuraContext;
 import org.auraframework.test.TestContext;
 import org.auraframework.test.TestContextAdapter;
+import org.auraframework.throwable.ClientOutOfSyncException;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.json.Json;
 import org.auraframework.util.json.JsonSerializers.NoneSerializer;
@@ -32,9 +35,11 @@ import org.auraframework.util.json.JsonSerializers.NoneSerializer;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * AuraContext JSON Serializer
@@ -44,10 +49,13 @@ public class AuraContextJsonSerializer extends NoneSerializer<AuraContext> {
 
     private final TestContextAdapter testContextAdapter;
     private final ConfigAdapter configAdapter;
+    private final DefinitionService definitionService;
 
-    public AuraContextJsonSerializer(ConfigAdapter configAdapter, TestContextAdapter testContextAdapter) {
+    public AuraContextJsonSerializer(ConfigAdapter configAdapter, TestContextAdapter testContextAdapter,
+            DefinitionService definitionService) {
         this.configAdapter = configAdapter;
         this.testContextAdapter = testContextAdapter;
+        this.definitionService = definitionService;
     }
 
     private void writeDefs(Json json, String name, List<Definition> writable) throws IOException {
@@ -83,22 +91,6 @@ public class AuraContextJsonSerializer extends NoneSerializer<AuraContext> {
                 locales.add(locale.toString());
             }
             json.writeMapEntry("requestedLocales", locales);
-        }
-        Map<String, String> loadedStrings = Maps.newHashMap();
-        Map<DefDescriptor<?>, String> clientLoaded = Maps.newHashMap();
-        clientLoaded.putAll(ctx.getClientLoaded());
-        for (Map.Entry<DefDescriptor<?>, String> entry : ctx.getLoaded().entrySet()) {
-            loadedStrings.put(String.format("%s@%s", entry.getKey().getDefType().toString(),
-                    entry.getKey().getQualifiedName()), entry.getValue());
-            clientLoaded.remove(entry.getKey());
-        }
-        for (DefDescriptor<?> deleted : clientLoaded.keySet()) {
-            loadedStrings.put(String.format("%s@%s", deleted.getDefType().toString(),
-                    deleted.getQualifiedName()), DELETED);
-        }
-        if (loadedStrings.size() > 0) {
-            json.writeMapKey("loaded");
-            json.writeMap(loadedStrings);
         }
 
         if (testContextAdapter != null) {
@@ -158,6 +150,37 @@ public class AuraContextJsonSerializer extends NoneSerializer<AuraContext> {
             writeDefs(json, "libraryDefs", libraryDefs);
         }
 
+        try {
+            addTrackedDefs(appDesc, defMap);
+        } catch (QuickFixException e) {
+            // If we fail, we have nothing to do.
+        }
+
+        // Create the new loaded array.
+        // loaded = server + (client - server) @ DELETED.
+        Map<String, String> loadedStrings = Maps.newHashMap();
+
+        // Step 1: Start with client defintion set
+        Set<DefDescriptor<?>> currentLoaded = new HashSet<>();
+        currentLoaded.addAll(ctx.getClientLoaded().keySet());
+
+        // Step 2: serialize the server set and subtract the server set from the client set.
+        for (Map.Entry<DefDescriptor<?>, String> entry : ctx.getLoaded().entrySet()) {
+            loadedStrings.put(String.format("%s@%s", entry.getKey().getDefType().toString(),
+                    entry.getKey().getQualifiedName()), entry.getValue());
+            currentLoaded.remove(entry.getKey());
+        }
+
+        // Step 3: serialize remaining not found client definitions, now unused.
+        for (DefDescriptor<?> deleted : currentLoaded) {
+            loadedStrings.put(String.format("%s@%s", deleted.getDefType().toString(),
+                    deleted.getQualifiedName()), DELETED);
+        }
+        if (loadedStrings.size() > 0) {
+            json.writeMapKey("loaded");
+            json.writeMap(loadedStrings);
+        }
+
         ctx.serializeAsPart(json);
 
         //
@@ -193,5 +216,31 @@ public class AuraContextJsonSerializer extends NoneSerializer<AuraContext> {
             json.writeArrayEnd();
         }
         json.writeMapEnd();
+    }
+
+    private void addTrackedDefs(DefDescriptor<? extends BaseComponentDef> appDesc, 
+            Map<DefDescriptor<? extends Definition>, Definition> defMap) throws QuickFixException {
+
+    	if (appDesc == null || defMap == null || defMap.isEmpty()) {
+            return;
+    	}
+
+    	BaseComponentDef appDef = definitionService.getDefinition(appDesc);
+        List<DefDescriptor<ComponentDef>> trackedDefs = appDef.getTrackedDependencies();
+        if (trackedDefs == null || trackedDefs.isEmpty()) {
+            return;
+        }
+
+        for (DefDescriptor<? extends Definition> desc : defMap.keySet()) {
+            if (trackedDefs.contains(desc)) {
+                try {
+                    definitionService.updateLoaded(desc);
+                } catch (ClientOutOfSyncException e) {
+                    // We can swallow the exception here since desc is taken
+                    // from the set of definition we are already returning
+                    // and out of sync would have already been processed.
+                }
+            }
+        }
     }
 }

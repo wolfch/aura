@@ -30,8 +30,8 @@ import org.auraframework.def.DefinitionAccess;
 import org.auraframework.def.DependencyDef;
 import org.auraframework.def.EventHandlerDef;
 import org.auraframework.def.HelperDef;
-import org.auraframework.def.LibraryDefRef;
 import org.auraframework.def.InterfaceDef;
+import org.auraframework.def.LibraryDefRef;
 import org.auraframework.def.ModelDef;
 import org.auraframework.def.RegisterEventDef;
 import org.auraframework.def.RendererDef;
@@ -96,7 +96,8 @@ public abstract class BaseComponentDefImplUnitTest<I extends BaseComponentDefImp
     protected WhitespaceBehavior whitespaceBehavior;
     protected List<DependencyDef> dependencies;
     @Mock
-    protected DefDescriptor<ControllerDef> mockControllerDef;
+    protected DefDescriptor<ControllerDef> mockControllerDesc;
+    protected ControllerDef mockControllerDef;
 
     protected DefinitionAccess GLOBAL_ACCESS;
     protected DefinitionAccess PRIVATE_ACCESS;
@@ -138,16 +139,25 @@ public abstract class BaseComponentDefImplUnitTest<I extends BaseComponentDefImp
     public void testValidateDefinition() throws Exception {
         //set up controllerDescriptors here to make sure we don't check it when validating definition
         this.controllerDescriptors = new ArrayList<>();
-        this.mockControllerDef = Mockito.mock(DefDescriptor.class);
-        this.controllerDescriptors.add(mockControllerDef);
+        this.mockControllerDef = Mockito.mock(ControllerDef.class);
+        Mockito.doReturn("{}").when(this.mockControllerDef).getCode();
+        this.mockControllerDesc = Mockito.mock(DefDescriptor.class);
+        Mockito.doReturn(this.mockControllerDef).when(this.mockControllerDesc).getDef();
+        this.controllerDescriptors.add(mockControllerDesc);
         this.modelDefDescriptor = Mockito.mock(DefDescriptor.class);
         testAuraContext = contextService.startContext(Mode.UTEST, Format.JSON, Authentication.AUTHENTICATED);
         
         setupTemplate(true);
-        buildDefinition().validateDefinition();
+        D def = buildDefinition();
         
-        //verify we didn't touch controllerDef/modelDef, that's validateReference's job, not validateDefinition
-        Mockito.verify(this.mockControllerDef, Mockito.times(0)).getDef();
+        // verify that controllerDef was called while building the definition
+        Mockito.verify(this.mockControllerDesc, Mockito.times(1)).getDef();
+
+        def.validateDefinition();
+
+        //verify we didn't touch controllerDef during validateDefinition
+        Mockito.verify(this.mockControllerDesc, Mockito.times(1)).getDef();
+        //verify we didn't touch modelDef during build and validateDefinition, that's validateReference's job       
         Mockito.verify(this.modelDefDescriptor, Mockito.times(0)).getDef();
     }
 

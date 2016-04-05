@@ -18,15 +18,13 @@ package org.auraframework.def;
 
 /**
  */
-public interface ProviderDef extends Definition {
+public interface ProviderDef extends CodeDefinition {
     @Override
     DefDescriptor<? extends ProviderDef> getDescriptor();
 //
 //    ComponentConfig provide(DefDescriptor<? extends RootDefinition> intfDescriptor) throws QuickFixException;
 //
 //    ComponentConfig provide(ComponentDefRefBuilder ref) throws QuickFixException;
-
-    boolean isLocal();
 
     boolean supportsRefProvide();
 

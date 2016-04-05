@@ -40,6 +40,14 @@ public interface StringSourceLoader extends SourceLoader, InternalNamespaceSourc
     String DEFAULT_CUSTOM_NAMESPACE = "cstring";
     String OTHER_CUSTOM_NAMESPACE = "cstring1";
     String ANOTHER_CUSTOM_NAMESPACE = "cstring2";
+    String DEFAULT_PRIVILEGED_NAMESPACE = "privilegedNS";
+    String OTHER_PRIVILEGED_NAMESPACE = "privilegedNS1";
+
+    enum NamespaceAccess {
+        INTERNAL,
+        PRIVILEGED,
+        CUSTOM
+    };
 
     /**
      * Generate a {@link DefDescriptor} with a unique name. If namePrefix does not contain a namespace, the descriptor
@@ -59,12 +67,12 @@ public interface StringSourceLoader extends SourceLoader, InternalNamespaceSourc
      * @param defClass the definition class that this source will represent
      * @param contents the source contents
      * @param namePrefix if non-null, then generate some name with the given prefix for the descriptor.
-     * @param isInternalNamespace if true, namespace is internal
+     * @param access the access type of the namespace.
      * @return the created {@link StringSource}
      * @throws IllegalStateException when loading a definition that already exists with the same descriptor.
      */
     <D extends Definition> StringSource<D> addSource(Class<D> defClass, String contents,
-                                                     @Nullable String namePrefix, boolean isInternalNamespace);
+                                                     @Nullable String namePrefix, NamespaceAccess type);
 
     /**
      * Load a definition.
@@ -73,11 +81,11 @@ public interface StringSourceLoader extends SourceLoader, InternalNamespaceSourc
      * @param contents the source contents
      * @param namePrefix if non-null, then generate some name with the given prefix for the descriptor.
      * @param overwrite if true, overwrite any previously loaded definition
-     * @param isInternalNamespace if true, namespace is internal
+     * @param access the access type of the namespace.
      * @return the created {@link StringSource}
      */
     <D extends Definition> StringSource<D> putSource(Class<D> defClass, String contents,
-                                                     @Nullable String namePrefix, boolean overwrite, boolean isInternalNamespace);
+                                                     @Nullable String namePrefix, boolean overwrite, NamespaceAccess access);
 
     /**
      * Load a definition.
@@ -86,11 +94,13 @@ public interface StringSourceLoader extends SourceLoader, InternalNamespaceSourc
      * @param contents the source contents
      * @param namePrefix if non-null, then generate some name with the given prefix for the descriptor.
      * @param overwrite if true, overwrite any previously loaded definition
-     * @param isInternalNamespace if true, namespace is internal
+     * @param access the access type of the namespace.
      * @return the created {@link StringSource}
      */
     <D extends Definition, B extends Definition> StringSource<D> putSource(Class<D> defClass, String contents,
-                                                                           @Nullable String namePrefix, boolean overwrite, boolean isInternalNamespace, @Nullable DefDescriptor<B> bundle);
+                                                                           @Nullable String namePrefix,
+                                                                           boolean overwrite, NamespaceAccess access,
+                                                                           @Nullable DefDescriptor<B> bundle);
 
     /**
      * Load a definition.
@@ -108,11 +118,12 @@ public interface StringSourceLoader extends SourceLoader, InternalNamespaceSourc
      * @param descriptor the DefDescriptor key for the loaded definition
      * @param contents the source contents
      * @param overwrite if true, overwrite any previously loaded definition
-     * @param isInternalNamespace if true, namespace is internal
+     * @param access the access type for the namespace
      * @return the created {@link StringSource}
      */
     <D extends Definition> StringSource<D> putSource(DefDescriptor<D> descriptor, String contents,
-                                                     boolean overwrite, boolean isInternalNamespace);
+                                                     boolean overwrite, NamespaceAccess access);
+
     /**
      * Remove a definition from the source loader.
      * 

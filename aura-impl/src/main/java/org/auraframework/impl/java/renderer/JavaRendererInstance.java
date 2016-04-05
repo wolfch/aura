@@ -15,17 +15,18 @@
  */
 package org.auraframework.impl.java.renderer;
 
+import java.io.IOException;
+
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.Renderer;
 import org.auraframework.def.RendererDef;
 import org.auraframework.instance.BaseComponent;
 import org.auraframework.instance.RendererInstance;
 import org.auraframework.service.LoggingService;
+import org.auraframework.system.RenderContext;
 import org.auraframework.throwable.AuraExceptionUtil;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.json.Json;
-
-import java.io.IOException;
 
 /**
  * As opposed to making every renderer support the Instance<?> interface,
@@ -63,11 +64,11 @@ public class JavaRendererInstance implements RendererInstance {
     }
 
     @Override
-    public void render(BaseComponent<?, ?> component, Appendable appendable) throws IOException, QuickFixException {
+    public void render(BaseComponent<?, ?> component, RenderContext rc) throws IOException, QuickFixException {
         loggingService.stopTimer(LoggingService.TIMER_AURA);
         loggingService.startTimer("java");
         try {
-            renderer.render(component, appendable);
+            renderer.render(component, rc);
             loggingService.incrementNum("JavaCallCount");
         } catch (Exception e) {
             throw AuraExceptionUtil.wrapExecutionException(e, rendererDef.getLocation());

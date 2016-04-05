@@ -18,7 +18,8 @@ package org.auraframework.integration.test.java.controller;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.auraframework.Aura;
+import javax.inject.Inject;
+
 import org.auraframework.cache.Cache;
 import org.auraframework.def.ActionDef;
 import org.auraframework.def.ControllerDef;
@@ -34,14 +35,11 @@ import org.auraframework.impl.java.model.JavaValueDef;
 import org.auraframework.instance.Action;
 import org.auraframework.instance.Action.State;
 import org.auraframework.service.CachingService;
-import org.auraframework.service.InstanceService;
 import org.auraframework.system.LoggingContext.KeyValueLogger;
 import org.auraframework.throwable.AuraUnhandledException;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.junit.Test;
 import org.mockito.Mockito;
-
-import javax.inject.Inject;
 
 /**
  * Integration tests for JavaAction.

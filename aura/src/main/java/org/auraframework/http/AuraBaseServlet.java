@@ -15,14 +15,7 @@
  */
 package org.auraframework.http;
 
-import org.auraframework.adapter.ServletUtilAdapter;
-import org.auraframework.def.DefDescriptor;
-import org.auraframework.http.RequestParam.StringParam;
-import org.auraframework.service.ContextService;
-import org.auraframework.system.AuraContext;
-import org.auraframework.system.AuraContext.Mode;
-import org.auraframework.throwable.quickfix.QuickFixException;
-import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+import java.io.IOException;
 
 import javax.activation.MimetypesFileTypeMap;
 import javax.inject.Inject;
@@ -31,8 +24,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.List;
+
+import org.auraframework.adapter.ServletUtilAdapter;
+import org.auraframework.http.RequestParam.StringParam;
+import org.auraframework.system.AuraContext;
+import org.auraframework.system.AuraContext.Mode;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 @SuppressWarnings("serial")
 public abstract class AuraBaseServlet extends HttpServlet {
@@ -78,13 +75,7 @@ public abstract class AuraBaseServlet extends HttpServlet {
     protected final static StringParam csrfToken = new StringParam(AURA_PREFIX + "token", 0, true);
 
     @Inject
-    private void setStaticFields(ServletUtilAdapter servletUtilAdapter, ContextService contextService) {
-        AuraBaseServlet.servletUtilAdapter = servletUtilAdapter;
-        AuraBaseServlet.contextService = contextService;
-    }
-
-    private static ServletUtilAdapter servletUtilAdapter;
-    private static ContextService contextService;
+    private ServletUtilAdapter servletUtilAdapter;
 
 //    public static String getToken() {
 //        return ConfigAdapter().getCSRFToken();
@@ -94,42 +85,6 @@ public abstract class AuraBaseServlet extends HttpServlet {
 //        ConfigAdapter().validateCSRFToken(token);
 //    }
 
-    /**
-     * Tell the browser to not cache.
-     *
-     * This sets several headers to try to ensure that the page will not be cached. Not sure if last modified matters
-     * -goliver
-     *
-     * @param response the HTTP response to which we will add headers.
-     */
-    public static void setNoCache(HttpServletResponse response) {
-        servletUtilAdapter.setNoCache(response);
-    }
-
-    /**
-     * Set a long cache timeout.
-     *
-     * This sets several headers to try to ensure that the page will be cached for a reasonable length of time. Of note
-     * is the last-modified header, which is set to a day ago so that browsers consider it to be safe.
-     *
-     * @param response the HTTP response to which we will add headers.
-     */
-    public static void setLongCache(HttpServletResponse response) {
-        servletUtilAdapter.setLongCache(response);
-    }
-
-    /**
-     * Set a 'short' cache timeout.
-     *
-     * This sets several headers to try to ensure that the page will be cached for a shortish length of time. Of note is
-     * the last-modified header, which is set to a day ago so that browsers consider it to be safe.
-     *
-     * @param response the HTTP response to which we will add headers.
-     */
-    public static void setShortCache(HttpServletResponse response) {
-        servletUtilAdapter.setShortCache(response);
-    }
-
     public AuraBaseServlet() {
         super();
     }
@@ -137,10 +92,12 @@ public abstract class AuraBaseServlet extends HttpServlet {
     /**
      * Check to see if we are in production mode.
      */
+    @Deprecated
     protected boolean isProductionMode(Mode mode) {
         return servletUtilAdapter.isProductionMode(mode);
     }
 
+    @Deprecated
     public String getContentType(AuraContext.Format format) {
         return servletUtilAdapter.getContentType(format);
     }
@@ -151,43 +108,8 @@ public abstract class AuraBaseServlet extends HttpServlet {
         SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this, config.getServletContext());
     }
 
-    /**
-     * Sets mandatory headers, notably for anti-clickjacking.
-     */
-    protected void setBasicHeaders(DefDescriptor<?> top, HttpServletRequest req, HttpServletResponse rsp) {
-        servletUtilAdapter.setCSPHeaders(top, req, rsp);
-    }
-
-
-    @Deprecated
-    public static List<String> getScripts() throws QuickFixException {
-        return servletUtilAdapter.getScripts(contextService.getCurrentContext());
-    }
-
-    @Deprecated
-    public static List<String> getStyles() throws QuickFixException {
-        return servletUtilAdapter.getStyles(contextService.getCurrentContext());
-    }
-
-    @Deprecated
-    public static List<String> getBaseScripts(AuraContext context) throws QuickFixException {
-        return servletUtilAdapter.getBaseScripts(context);
-    }
-
-    @Deprecated
-    public static List<String> getNamespacesScripts(AuraContext context) throws QuickFixException {
-        return servletUtilAdapter.getNamespacesScripts(context);
-    }
-
     @Deprecated
     protected void send404(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         servletUtilAdapter.send404(getServletConfig().getServletContext(), request, response);
-    }
-
-    @Deprecated
-    public void handleServletException(Throwable t, boolean quickfix, AuraContext context,
-            HttpServletRequest request, HttpServletResponse response,
-            boolean written) throws IOException {
-        servletUtilAdapter.handleServletException(t, quickfix, context, request, response, written);
     }
 }

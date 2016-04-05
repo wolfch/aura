@@ -15,13 +15,14 @@
  */
 package org.auraframework.impl.root.component;
 
+import java.io.IOException;
+import java.util.List;
+
 import org.auraframework.builder.ComponentDefBuilder;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.impl.system.DefDescriptorImpl;
 import org.auraframework.util.json.Json;
-
-import java.io.IOException;
 
 /**
  * The definition of a component. Holds all information about a given type of
@@ -53,11 +54,16 @@ public class ComponentDefImpl extends BaseComponentDefImpl<ComponentDef> impleme
             finish();
             return new ComponentDefImpl(this);
         }
-    }
 
     @Override
     public DefDescriptor<ComponentDef> getDefaultExtendsDescriptor() {
         return ComponentDefImpl.PROTOTYPE_COMPONENT;
+    }
+	}
+
+    @Override
+    public List<DefDescriptor<ComponentDef>> getTrackedDependencies() {
+    	return null;
     }
 
     @Override

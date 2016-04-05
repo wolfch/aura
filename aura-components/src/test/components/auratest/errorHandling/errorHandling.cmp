@@ -35,6 +35,11 @@
 
     <aura:import library="auratest:errorHandlingLib" property="ErrorHandlingLib"/>
 
+    <aura:method name="throwErrorFromClientController"
+                 action="{!c.throwErrorFromClientController}"/>
+    <aura:method name="throwErrorFromFunctionWrappedInGetCallback"
+                 action="{!c.throwErrorFromFunctionWrappedInGetCallback}"/>
+
     <table class="errorFromCmpTable">
     <caption> Errors from Component:</caption>
     <tr>
@@ -78,6 +83,14 @@
         </td>
     </tr>
     <tr>
+        <td>Throw Error from Callback Function in Library Code in Component: </td>
+        <td>
+          <ui:button label="Throw"
+                     press="{!c.throwErrorFromCallbackFunctionInLibrary}"
+                     class="errorFromCallbackFunctionInLibraryButton"/>
+        </td>
+    </tr>
+    <tr>
         <td>Throw Error From Component Rerender: </td>
         <td>
           <ui:button label="Throw"
@@ -95,7 +108,7 @@
     </tr>
     </table>
 
-    systemError Event is handled on App: <div id="eventHandledOnCmp">{!v.eventHandled}</div>
+    systemError Event is handled on component: <div id="eventHandledOnCmp">{!v.eventHandled}</div>
     <div id="cmpErrorOutput"> {!v.message} </div>
 
 </aura:component>

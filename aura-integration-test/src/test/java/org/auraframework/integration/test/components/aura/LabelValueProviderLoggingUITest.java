@@ -32,6 +32,10 @@ public class LabelValueProviderLoggingUITest extends AbstractLoggingUITest {
     private final String URL = "/gvpTest/labelProvider.cmp";
     private By label1 = By.xpath("//div[@id='div1']");
 
+    public LabelValueProviderLoggingUITest() {
+        super("LoggingContextImpl");
+    }
+
     /**
      * Test we have one java call for each valid label request.
      */

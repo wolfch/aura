@@ -16,12 +16,17 @@
 package org.auraframework.impl.root.application;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import com.google.common.collect.Maps;
 import org.auraframework.Aura;
 import org.auraframework.builder.ApplicationDefBuilder;
 import org.auraframework.def.ActionDef;
 import org.auraframework.def.ApplicationDef;
+import org.auraframework.def.ComponentDef;
 import org.auraframework.def.ControllerDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.EventDef;
@@ -32,6 +37,7 @@ import org.auraframework.expression.PropertyReference;
 import org.auraframework.impl.expression.AuraExpressionBuilder;
 import org.auraframework.impl.root.component.BaseComponentDefImpl;
 import org.auraframework.impl.system.DefDescriptorImpl;
+import org.auraframework.impl.util.AuraUtil;
 import org.auraframework.impl.util.TextTokenizer;
 import org.auraframework.instance.Action;
 import org.auraframework.system.AuraContext;
@@ -40,16 +46,22 @@ import org.auraframework.throwable.quickfix.InvalidDefinitionException;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.json.Json;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import com.google.common.collect.Maps;
 
 /**
  * The definition of an Application. Holds all information about a given type of application. ApplicationDefs are
  * immutable singletons per type of Application. Once they are created, they can only be replaced, never changed.
  */
 public class ApplicationDefImpl extends BaseComponentDefImpl<ApplicationDef> implements ApplicationDef {
+
+    private static final long serialVersionUID = 9044177107921912717L;
+	
+    private final DefDescriptor<EventDef> locationChangeEventDescriptor;
+    private final List<DefDescriptor<ComponentDef>> trackedDependencies;
+    private final Boolean isAppcacheEnabled;
+    private final String additionalAppCacheURLs;
+
+    private final Boolean isOnePageApp;
 
     public static final DefDescriptor<ApplicationDef> PROTOTYPE_APPLICATION = new DefDescriptorImpl<>(
             "markup", "aura", "application", ApplicationDef.class);
@@ -58,7 +70,7 @@ public class ApplicationDefImpl extends BaseComponentDefImpl<ApplicationDef> imp
         super(builder);
 
         this.locationChangeEventDescriptor = builder.locationChangeEventDescriptor;
-
+        this.trackedDependencies = AuraUtil.immutableList(builder.trackedDependency);
         this.isAppcacheEnabled = builder.isAppcacheEnabled;
         this.additionalAppCacheURLs = builder.additionalAppCacheURLs;
         this.isOnePageApp = builder.isOnePageApp;
@@ -66,6 +78,7 @@ public class ApplicationDefImpl extends BaseComponentDefImpl<ApplicationDef> imp
 
     public static class Builder extends BaseComponentDefImpl.Builder<ApplicationDef>implements ApplicationDefBuilder {
         public DefDescriptor<EventDef> locationChangeEventDescriptor;
+        public List<DefDescriptor<ComponentDef>> trackedDependency;
         public Boolean isAppcacheEnabled;
         public Boolean isOnePageApp;
         public String additionalAppCacheURLs;
@@ -79,11 +92,18 @@ public class ApplicationDefImpl extends BaseComponentDefImpl<ApplicationDef> imp
             finish();
             return new ApplicationDefImpl(this);
         }
-    }
 
-    @Override
-    public DefDescriptor<ApplicationDef> getDefaultExtendsDescriptor() {
-        return ApplicationDefImpl.PROTOTYPE_APPLICATION;
+         @Override
+        public DefDescriptor<ApplicationDef> getDefaultExtendsDescriptor() {
+            return ApplicationDefImpl.PROTOTYPE_APPLICATION;
+        }
+
+        public void addTrackedDependency(DefDescriptor<ComponentDef> trackedDef) {
+        	if (this.trackedDependency == null) {
+        		 this.trackedDependency = new ArrayList<>();
+        	}
+        	this.trackedDependency.add(trackedDef);
+        }
     }
 
     /**
@@ -103,6 +123,11 @@ public class ApplicationDefImpl extends BaseComponentDefImpl<ApplicationDef> imp
         }
     }
 
+    @Override
+    public List<DefDescriptor<ComponentDef>> getTrackedDependencies() {
+    	return trackedDependencies;
+    }
+    
     @Override
     protected void serializeFields(Json json) throws IOException, QuickFixException {
         DefDescriptor<EventDef> locationChangeEventDescriptor = getLocationChangeEventDescriptor();
@@ -223,13 +248,4 @@ public class ApplicationDefImpl extends BaseComponentDefImpl<ApplicationDef> imp
             }
         }
     }
-
-    private final DefDescriptor<EventDef> locationChangeEventDescriptor;
-
-    private final Boolean isAppcacheEnabled;
-    private final String additionalAppCacheURLs;
-
-    private final Boolean isOnePageApp;
-
-    private static final long serialVersionUID = 9044177107921912717L;
 }

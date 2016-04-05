@@ -21,7 +21,6 @@ import org.auraframework.def.IncludeDef;
 import org.auraframework.def.LibraryDef;
 import org.auraframework.def.RootDefinition;
 import org.auraframework.impl.root.library.IncludeDefRefImpl;
-import org.auraframework.impl.util.AuraUtil;
 import org.auraframework.service.DefinitionService;
 import org.auraframework.system.Source;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
@@ -106,7 +105,8 @@ public class IncludeDefRefHandler extends XMLHandler<IncludeDefRefImpl> {
 
         String aliases = getAttributeValue(ATTRIBUTE_ALIASES);
         if (!AuraTextUtil.isNullEmptyOrWhitespace(aliases)) {
-            builder.setAliases(AuraUtil.immutableList(Arrays.asList(aliases.trim().split("\\s*\\,\\s*"))));
+        	List<String> aliasList = Arrays.asList(aliases.trim().split("\\s*\\,\\s*"));
+            builder.setAliases(aliasList);
         }
 
         String export = getAttributeValue(ATTRIBUTE_EXPORT);
@@ -122,7 +122,6 @@ public class IncludeDefRefHandler extends XMLHandler<IncludeDefRefImpl> {
         }
 
         builder.setOwnHash(source.getHash());
-
         return builder.build();
     }
 

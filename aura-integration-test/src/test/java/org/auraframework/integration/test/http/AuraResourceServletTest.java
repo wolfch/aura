@@ -182,8 +182,7 @@ public class AuraResourceServletTest extends AuraTestCase {
         context.setClient(clientWEBKIT);
         final String uid = context.getDefRegistry().getUid(null, appDesc);
         context.addLoaded(appDesc, uid);
-        Mode mode = context.getMode();
-        final boolean minify = !(mode.isTestMode() || mode.isDevMode());
+        boolean minify = context.getMode().minify();
         final String mKey = minify ? "MIN:" : "DEV:";
 
         DummyHttpServletRequest request = new DummyHttpServletRequest("app.css") {
@@ -228,8 +227,7 @@ public class AuraResourceServletTest extends AuraTestCase {
                 .startContext(Mode.DEV, AuraContext.Format.CSS, AuraContext.Authentication.AUTHENTICATED, appDesc);
         final String uid = context.getDefRegistry().getUid(null, appDesc);
         context.addLoaded(appDesc, uid);
-        Mode mode = context.getMode();
-        final boolean minify = !(mode.isTestMode() || mode.isDevMode());
+        boolean minify = context.getMode().minify();
         final String mKey = minify ? "MIN:" : "DEV:";
 
         DummyHttpServletRequest request = new DummyHttpServletRequest("app.css") {
@@ -270,8 +268,7 @@ public class AuraResourceServletTest extends AuraTestCase {
                 .startContext(Mode.DEV, AuraContext.Format.JS, AuraContext.Authentication.AUTHENTICATED, appDesc);
         final String uid = context.getDefRegistry().getUid(null, appDesc);
         context.addLoaded(appDesc, uid);
-        Mode mode = context.getMode();
-        final boolean minify = !(mode.isTestMode() || mode.isDevMode());
+        boolean minify = context.getMode().minify();
         final String mKey = minify ? "MIN:" : "DEV:";
 
         DummyHttpServletRequest request = new DummyHttpServletRequest("app.js") {

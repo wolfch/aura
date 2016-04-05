@@ -16,6 +16,7 @@
 package org.auraframework.integration.test.http;
 
 import org.auraframework.adapter.ConfigAdapter;
+import org.auraframework.adapter.ServletUtilAdapter;
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.http.ManifestUtil;
@@ -36,6 +37,9 @@ import javax.inject.Inject;
 public class AuraServletIntegrationTest extends IntegrationTestCase {
     @Inject
     private ConfigAdapter configAdapter;
+
+    @Inject
+    private ServletUtilAdapter servletUtilAdapter;
     /**
      * check manifest URL when context has no preloads.
      */
@@ -45,7 +49,7 @@ public class AuraServletIntegrationTest extends IntegrationTestCase {
                 "appCache:nopreload", ApplicationDef.class);
         contextService.startContext(Mode.PROD, Format.HTML, Authentication.AUTHENTICATED, desc);
         assertTrue(new ManifestUtil(contextService, configAdapter).isManifestEnabled());
-        String url = new ManifestUtil(contextService, configAdapter).getManifestUrl();
+        String url = servletUtilAdapter.getManifestUrl(contextService.getCurrentContext(), null);
         assertEquals("/l/%7B%22mode%22%3A%22PROD%22%2C%22app%22%3A%22appCache%3Anopreload%22%2C%22test%22%3A%22org.auraframework.integration.test.http.AuraServletIntegrationTest.testGetManifestWithoutPreloads%22%7D/app.manifest", url);
     }
 
@@ -58,7 +62,7 @@ public class AuraServletIntegrationTest extends IntegrationTestCase {
         DefDescriptor<ApplicationDef> desc = definitionService.getDefDescriptor(
                 "appCache:withpreload", ApplicationDef.class);
         contextService.startContext(Mode.PROD, Format.HTML, Authentication.AUTHENTICATED, desc);
-        String url = new ManifestUtil(contextService, configAdapter).getManifestUrl();
+        String url = servletUtilAdapter.getManifestUrl(contextService.getCurrentContext(), null);
         assertEquals("/l/%7B%22mode%22%3A%22PROD%22%2C%22app%22%3A%22appCache%3Awithpreload%22%2C%22test%22%3A%22org.auraframework.integration.test.http.AuraServletIntegrationTest.testGetManifestWithPreloads%22%7D/app.manifest", url);
     }
 }

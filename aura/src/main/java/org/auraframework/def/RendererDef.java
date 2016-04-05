@@ -15,13 +15,9 @@
  */
 package org.auraframework.def;
 
-import org.auraframework.throwable.quickfix.QuickFixException;
-
-import java.io.IOException;
-
 /**
  */
-public interface RendererDef extends Definition {
+public interface RendererDef extends CodeDefinition {
     @Override
     DefDescriptor<RendererDef> getDescriptor();
 
@@ -34,9 +30,5 @@ public interface RendererDef extends Definition {
      * @throws QuickFixException if there is an exception retrieving a
      *             component.
      */
-    //void render(BaseComponent<?, ?> component, Appendable out) throws IOException, QuickFixException;
-
-    boolean isLocal();
-
-    Class<?> getJavaType();
+    //void render(BaseComponent<?, ?> component, RenderContext rc) throws IOException, QuickFixException;
 }

@@ -19,6 +19,7 @@ import org.auraframework.adapter.ConfigAdapter;
 import org.auraframework.annotations.Annotations.ServiceComponentRenderer;
 import org.auraframework.def.Renderer;
 import org.auraframework.instance.BaseComponent;
+import org.auraframework.system.RenderContext;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
 import javax.inject.Inject;
@@ -33,13 +34,13 @@ public class CryptoAdapterRegistrationRenderer implements Renderer {
     private ConfigAdapter configAdapter;
 
     @Override
-    public void render(BaseComponent<?, ?> component, Appendable appendable) throws IOException, QuickFixException {
+    public void render(BaseComponent<?, ?> component, RenderContext renderContext) throws IOException, QuickFixException {
 
         Boolean debug = (Boolean) component.getAttributes().getValue("debugLoggingEnabled");
 
         String encryptionKeyUrl = configAdapter.getEncryptionKeyURL();
-        appendable
-                .append("<script nonce='LockerServiceTemporaryNonce'>\n")
+        renderContext.pushScript();
+        renderContext.getCurrent()
                 .append("(function(){\n")
                 .append(debug ? "  $A.log('CryptoAdapter registering');\n" : "")
                 .append("  var CryptoAdapter = $A.storageService.CryptoAdapter;\n")
@@ -69,7 +70,7 @@ public class CryptoAdapterRegistrationRenderer implements Renderer {
                 .append(debug ? "  $A.log('CryptoAdapter requesting key');\n" : "")
                 .append("  request.open('GET', url, true);\n")
                 .append("  request.send();\n")
-                .append("}());\n")
-                .append("</script>\n");
+            .append("}());\n");
+        renderContext.popScript();
     }
 }

@@ -21,6 +21,7 @@ import org.auraframework.def.Definition;
 import org.auraframework.def.EventDef;
 import org.auraframework.impl.AuraImplTestCase;
 import org.auraframework.test.source.StringSourceLoader;
+import org.auraframework.test.source.StringSourceLoader.NamespaceAccess;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.test.annotation.UnAdaptableTest;
 import org.junit.Test;
@@ -36,11 +37,13 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         //create event with system namespace
         String eventSource = "<aura:event type='COMPONENT'/>";
         DefDescriptor<? extends Definition> eventDescriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, eventSource,
-                StringSourceLoader.DEFAULT_NAMESPACE + ":testevent", true);
+                StringSourceLoader.DEFAULT_NAMESPACE + ":testevent",
+                        NamespaceAccess.INTERNAL);
         //create event extends the event above
         String source = "<aura:event type='COMPONENT' extends='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, source,
-                StringSourceLoader.OTHER_NAMESPACE + ":testevent2", true);
+                StringSourceLoader.OTHER_NAMESPACE + ":testevent2",
+                        NamespaceAccess.INTERNAL);
         descriptor.getDef();
     }
 
@@ -57,11 +60,13 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         //create event with system namespace
         String eventSource = "<aura:event type='COMPONENT'/>";
         DefDescriptor<? extends Definition> eventDescriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, eventSource,
-                StringSourceLoader.DEFAULT_NAMESPACE + ":testevent", true);
+                StringSourceLoader.DEFAULT_NAMESPACE + ":testevent",
+                        NamespaceAccess.INTERNAL);
         //create event extends the event above
         String source = "<aura:event type='COMPONENT' extends='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, source,
-                StringSourceLoader.DEFAULT_NAMESPACE + ":testevent2", true);
+                StringSourceLoader.DEFAULT_NAMESPACE + ":testevent2",
+                        NamespaceAccess.INTERNAL);
         descriptor.getDef();
     }
 
@@ -74,11 +79,13 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         //create event with system namespace
         String eventSource = "<aura:event type='COMPONENT'/>";
         DefDescriptor<? extends Definition> eventDescriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, eventSource,
-                StringSourceLoader.DEFAULT_NAMESPACE + ":testevent", true);
+                StringSourceLoader.DEFAULT_NAMESPACE + ":testevent",
+                        NamespaceAccess.INTERNAL);
         //create event extends the event above
         String source = "<aura:event type='COMPONENT' extends='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, source,
-                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent2", false);
+                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent2",
+                        NamespaceAccess.CUSTOM);
         try {
             descriptor.getDef();
             fail("event of custom namespace shouldn't be able to extends event of system namespace");
@@ -98,11 +105,13 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         //create event with custom namespace
         String eventSource = "<aura:event type='COMPONENT'/>";
         DefDescriptor<? extends Definition> eventDescriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, eventSource,
-                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent", false);
+                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent",
+                        NamespaceAccess.CUSTOM);
         //create event extends the event above
         String source = "<aura:event type='COMPONENT' extends='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, source,
-                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent2", false);
+                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent2",
+                        NamespaceAccess.CUSTOM);
         descriptor.getDef();
     }
 
@@ -115,11 +124,13 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         //create event with custom namespace
         String eventSource = "<aura:event type='COMPONENT'/>";
         DefDescriptor<? extends Definition> eventDescriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, eventSource,
-                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent", false);
+                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent",
+                        NamespaceAccess.CUSTOM);
         //create event extends the event above
         String source = "<aura:event type='COMPONENT' extends='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, source,
-                StringSourceLoader.DEFAULT_NAMESPACE + ":testevent2", true);
+                StringSourceLoader.DEFAULT_NAMESPACE + ":testevent2",
+                        NamespaceAccess.INTERNAL);
         descriptor.getDef();
     }
 
@@ -135,11 +146,13 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         //create event with system namespace
         String eventSource = "<aura:event type='COMPONENT' access='PUBLIC'/>";
         DefDescriptor<? extends Definition> eventDescriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, eventSource,
-                StringSourceLoader.DEFAULT_NAMESPACE + ":testevent", true);
+                StringSourceLoader.DEFAULT_NAMESPACE + ":testevent",
+                        NamespaceAccess.INTERNAL);
         //create event extends the event above
         String source = "<aura:event type='COMPONENT' extends='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, source,
-                StringSourceLoader.DEFAULT_NAMESPACE + ":testevent2", true);
+                StringSourceLoader.DEFAULT_NAMESPACE + ":testevent2",
+                        NamespaceAccess.INTERNAL);
         descriptor.getDef();
     }
     /**
@@ -151,11 +164,13 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         //create event with system namespace
         String eventSource = "<aura:event type='COMPONENT' access='PUBLIC'/>";
         DefDescriptor<? extends Definition> eventDescriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, eventSource,
-                StringSourceLoader.DEFAULT_NAMESPACE + ":testevent", true);
+                StringSourceLoader.DEFAULT_NAMESPACE + ":testevent",
+                        NamespaceAccess.INTERNAL);
         //create event extends the event above
         String source = "<aura:event type='COMPONENT' extends='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, source,
-                StringSourceLoader.OTHER_NAMESPACE + ":testevent2", true);
+                StringSourceLoader.OTHER_NAMESPACE + ":testevent2",
+                        NamespaceAccess.INTERNAL);
         descriptor.getDef();
     }
     /**
@@ -167,11 +182,13 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         //create event with system namespace
         String eventSource = "<aura:event type='COMPONENT' access='PUBLIC'/>";
         DefDescriptor<? extends Definition> eventDescriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, eventSource,
-                StringSourceLoader.DEFAULT_NAMESPACE + ":testevent", true);
+                StringSourceLoader.DEFAULT_NAMESPACE + ":testevent",
+                        NamespaceAccess.INTERNAL);
         //create event extends the event above
         String source = "<aura:event type='COMPONENT' extends='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, source,
-                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent2", false);
+                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent2",
+                        NamespaceAccess.CUSTOM);
         try {
             descriptor.getDef();
             fail("event of custom namespace shouldn't be able to extends event of system namespace");
@@ -190,11 +207,13 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         //create event with custom namespace
         String eventSource = "<aura:event type='COMPONENT' access='PUBLIC'/>";
         DefDescriptor<? extends Definition> eventDescriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, eventSource,
-                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent", false);
+                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent",
+                        NamespaceAccess.CUSTOM);
         //create event extends the event above
         String source = "<aura:event type='COMPONENT' extends='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, source,
-                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent2", false);
+                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent2",
+                        NamespaceAccess.CUSTOM);
         descriptor.getDef();
     }
     /**
@@ -206,11 +225,13 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         //create event with custom namespace
         String eventSource = "<aura:event type='COMPONENT' access='PUBLIC'/>";
         DefDescriptor<? extends Definition> eventDescriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, eventSource,
-                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent", false);
+                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent",
+                        NamespaceAccess.CUSTOM);
         //create event extends the event above
         String source = "<aura:event type='COMPONENT' extends='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, source,
-                StringSourceLoader.OTHER_CUSTOM_NAMESPACE + ":testevent2", false);
+                StringSourceLoader.OTHER_CUSTOM_NAMESPACE + ":testevent2",
+                        NamespaceAccess.CUSTOM);
         try {
             descriptor.getDef();
             fail("event of custom namespace shouldn't be able to extends event of system namespace");
@@ -230,11 +251,13 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         //create event with custom namespace
         String eventSource = "<aura:event type='COMPONENT' access='PUBLIC'/>";
         DefDescriptor<? extends Definition> eventDescriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, eventSource,
-                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent", false);
+                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent",
+                        NamespaceAccess.CUSTOM);
         //create event extends the event above
         String source = "<aura:event type='COMPONENT' extends='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, source,
-                StringSourceLoader.DEFAULT_NAMESPACE + ":testevent2", true);
+                StringSourceLoader.DEFAULT_NAMESPACE + ":testevent2",
+                        NamespaceAccess.INTERNAL);
         descriptor.getDef();
     }
 
@@ -250,11 +273,13 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         //create event with system namespace
         String eventSource = "<aura:event type='COMPONENT' access='GLOBAL'/>";
         DefDescriptor<? extends Definition> eventDescriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, eventSource,
-                StringSourceLoader.DEFAULT_NAMESPACE + ":testevent", true);
+                StringSourceLoader.DEFAULT_NAMESPACE + ":testevent",
+                        NamespaceAccess.INTERNAL);
         //create event extends the event above
         String source = "<aura:event type='COMPONENT' extends='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, source,
-                StringSourceLoader.DEFAULT_NAMESPACE + ":testevent2", true);
+                StringSourceLoader.DEFAULT_NAMESPACE + ":testevent2",
+                        NamespaceAccess.INTERNAL);
         descriptor.getDef();
     }
 
@@ -267,11 +292,13 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         //create event with system namespace
         String eventSource = "<aura:event type='COMPONENT' access='GLOBAL'/>";
         DefDescriptor<? extends Definition> eventDescriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, eventSource,
-                StringSourceLoader.DEFAULT_NAMESPACE + ":testevent", true);
+                StringSourceLoader.DEFAULT_NAMESPACE + ":testevent",
+                        NamespaceAccess.INTERNAL);
         //create event extends the event above
         String source = "<aura:event type='COMPONENT' extends='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, source,
-                StringSourceLoader.OTHER_NAMESPACE + ":testevent2", true);
+                StringSourceLoader.OTHER_NAMESPACE + ":testevent2",
+                        NamespaceAccess.INTERNAL);
         descriptor.getDef();
     }
 
@@ -284,11 +311,13 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         //create event with system namespace
         String eventSource = "<aura:event type='COMPONENT' access='GLOBAL'/>";
         DefDescriptor<? extends Definition> eventDescriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, eventSource,
-                StringSourceLoader.DEFAULT_NAMESPACE + ":testevent", true);
+                StringSourceLoader.DEFAULT_NAMESPACE + ":testevent",
+                        NamespaceAccess.INTERNAL);
         //create event extends the event above
         String source = "<aura:event type='COMPONENT' extends='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, source,
-                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent2", false);
+                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent2",
+                        NamespaceAccess.CUSTOM);
         descriptor.getDef();
     }
 
@@ -301,11 +330,13 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         //create event with custom namespace
         String eventSource = "<aura:event type='COMPONENT' access='GLOBAL'/>";
         DefDescriptor<? extends Definition> eventDescriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, eventSource,
-                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent", false);
+                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent",
+                        NamespaceAccess.CUSTOM);
         //create event extends the event above
         String source = "<aura:event type='COMPONENT' extends='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, source,
-                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent2", false);
+                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent2",
+                        NamespaceAccess.CUSTOM);
         descriptor.getDef();
     }
 
@@ -318,11 +349,13 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         //create event with custom namespace
         String eventSource = "<aura:event type='COMPONENT' access='GLOBAL'/>";
         DefDescriptor<? extends Definition> eventDescriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, eventSource,
-                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent", false);
+                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent",
+                        NamespaceAccess.CUSTOM);
         //create event extends the event above
         String source = "<aura:event type='COMPONENT' extends='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, source,
-                StringSourceLoader.OTHER_CUSTOM_NAMESPACE + ":testevent2", false);
+                StringSourceLoader.OTHER_CUSTOM_NAMESPACE + ":testevent2",
+                        NamespaceAccess.CUSTOM);
         descriptor.getDef();
     }
 
@@ -335,11 +368,13 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         //create event with custom namespace
         String eventSource = "<aura:event type='COMPONENT' access='GLOBAL'/>";
         DefDescriptor<? extends Definition> eventDescriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, eventSource,
-                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent", false);
+                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent",
+                        NamespaceAccess.CUSTOM);
         //create event extends the event above
         String source = "<aura:event type='COMPONENT' extends='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, source,
-                StringSourceLoader.DEFAULT_NAMESPACE + ":testevent2", true);
+                StringSourceLoader.DEFAULT_NAMESPACE + ":testevent2",
+                        NamespaceAccess.INTERNAL);
         descriptor.getDef();
     }
 
@@ -352,11 +387,13 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         //create event with system namespace
         String eventSource = "<aura:event type='COMPONENT'/>";
         DefDescriptor<? extends Definition> eventDescriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, eventSource,
-                StringSourceLoader.DEFAULT_NAMESPACE + ":testevent", true);
+                StringSourceLoader.DEFAULT_NAMESPACE + ":testevent",
+                        NamespaceAccess.INTERNAL);
         //create component register the event above
         String source = "<aura:component> <aura:registerEvent name='testevent' type='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /></aura:component> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, source,
-                StringSourceLoader.OTHER_NAMESPACE + ":testcomponent", true);
+                StringSourceLoader.OTHER_NAMESPACE + ":testcomponent",
+                        NamespaceAccess.INTERNAL);
         descriptor.getDef();
     }
     /**
@@ -368,11 +405,13 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         //create event with system namespace
         String eventSource = "<aura:event type='COMPONENT'/>";
         DefDescriptor<? extends Definition> eventDescriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, eventSource,
-                StringSourceLoader.DEFAULT_NAMESPACE + ":testevent", true);
+                StringSourceLoader.DEFAULT_NAMESPACE + ":testevent",
+                        NamespaceAccess.INTERNAL);
         //create component register the event above
         String source = "<aura:component> <aura:registerEvent name='testevent' type='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /></aura:component> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, source,
-                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testcomponent", false);
+                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testcomponent",
+                        NamespaceAccess.CUSTOM);
         try {
             descriptor.getDef();
             fail("component of custom namespace shouldn't be able to register event of system namespace");
@@ -392,11 +431,13 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         //create event with custom namespace
         String eventSource = "<aura:event type='COMPONENT'/>";
         DefDescriptor<? extends Definition> eventDescriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, eventSource,
-                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent", false);
+                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent",
+                        NamespaceAccess.CUSTOM);
         //create component register the event above
         String source = "<aura:component> <aura:registerEvent name='testevent' type='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /></aura:component> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, source,
-                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testcomponent", false);
+                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testcomponent",
+                        NamespaceAccess.CUSTOM);
         descriptor.getDef();
     }
 
@@ -409,11 +450,13 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         //create event with custom namespace
         String eventSource = "<aura:event type='COMPONENT'/>";
         DefDescriptor<? extends Definition> eventDescriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, eventSource,
-                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent", false);
+                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent",
+                        NamespaceAccess.CUSTOM);
         //create component register the event above
         String source = "<aura:component> <aura:registerEvent name='testevent' type='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /></aura:component> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, source,
-                StringSourceLoader.OTHER_CUSTOM_NAMESPACE + ":testcomponent", false);
+                StringSourceLoader.OTHER_CUSTOM_NAMESPACE + ":testcomponent",
+                        NamespaceAccess.CUSTOM);
         try {
             descriptor.getDef();
             fail("component of custom namespace shouldn't be able to register event of other custom namespace");
@@ -434,11 +477,13 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         //create event with custom namespace
         String eventSource = "<aura:event type='COMPONENT'/>";
         DefDescriptor<? extends Definition> eventDescriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, eventSource,
-                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent", false);
+                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent",
+                        NamespaceAccess.CUSTOM);
         //create component register the event above
         String source = "<aura:component> <aura:registerEvent name='testevent' type='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /></aura:component> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, source,
-                StringSourceLoader.DEFAULT_NAMESPACE + ":testcomponent", true);
+                StringSourceLoader.DEFAULT_NAMESPACE + ":testcomponent",
+                        NamespaceAccess.INTERNAL);
         descriptor.getDef();
     }
 
@@ -454,11 +499,13 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         //create event with system namespace
         String eventSource = "<aura:event type='COMPONENT' access='PUBLIC'/>";
         DefDescriptor<? extends Definition> eventDescriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, eventSource,
-                StringSourceLoader.DEFAULT_NAMESPACE + ":testevent", true);
+                StringSourceLoader.DEFAULT_NAMESPACE + ":testevent",
+                        NamespaceAccess.INTERNAL);
         //create component register the event above
         String source = "<aura:component> <aura:registerEvent name='testevent' type='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /></aura:component> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, source,
-                StringSourceLoader.DEFAULT_NAMESPACE + ":testcomponent", true);
+                StringSourceLoader.DEFAULT_NAMESPACE + ":testcomponent",
+                        NamespaceAccess.INTERNAL);
         descriptor.getDef();
     }
     /**
@@ -470,11 +517,13 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         //create event with system namespace
         String eventSource = "<aura:event type='COMPONENT' access='PUBLIC'/>";
         DefDescriptor<? extends Definition> eventDescriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, eventSource,
-                StringSourceLoader.DEFAULT_NAMESPACE + ":testevent", true);
+                StringSourceLoader.DEFAULT_NAMESPACE + ":testevent",
+                        NamespaceAccess.INTERNAL);
         //create component register the event above
         String source = "<aura:component> <aura:registerEvent name='testevent' type='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /></aura:component> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, source,
-                StringSourceLoader.OTHER_NAMESPACE + ":testcomponent", true);
+                StringSourceLoader.OTHER_NAMESPACE + ":testcomponent",
+                        NamespaceAccess.INTERNAL);
         descriptor.getDef();
     }
     /**
@@ -486,11 +535,13 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         //create event with system namespace
         String eventSource = "<aura:event type='COMPONENT' access='PUBLIC'/>";
         DefDescriptor<? extends Definition> eventDescriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, eventSource,
-                StringSourceLoader.DEFAULT_NAMESPACE + ":testevent", true);
+                StringSourceLoader.DEFAULT_NAMESPACE + ":testevent",
+                        NamespaceAccess.INTERNAL);
         //create component register the event above
         String source = "<aura:component> <aura:registerEvent name='testevent' type='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /></aura:component> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, source,
-                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testcomponent", false);
+                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testcomponent",
+                        NamespaceAccess.CUSTOM);
         try {
             descriptor.getDef();
             fail("component of custom namespace shouldn't be able to register event of system namespace");
@@ -509,11 +560,13 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         //create event with custom namespace
         String eventSource = "<aura:event type='COMPONENT' access='PUBLIC'/>";
         DefDescriptor<? extends Definition> eventDescriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, eventSource,
-                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent", false);
+                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent",
+                        NamespaceAccess.CUSTOM);
         //create component register the event above
         String source = "<aura:component> <aura:registerEvent name='testevent' type='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /></aura:component> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, source,
-                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testcomponent", false);
+                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testcomponent",
+                        NamespaceAccess.CUSTOM);
         descriptor.getDef();
     }
 
@@ -526,11 +579,13 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         //create event with custom namespace
         String eventSource = "<aura:event type='COMPONENT' access='PUBLIC'/>";
         DefDescriptor<? extends Definition> eventDescriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, eventSource,
-                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent", false);
+                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent",
+                        NamespaceAccess.CUSTOM);
         //create component register the event above
         String source = "<aura:component> <aura:registerEvent name='testevent' type='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /></aura:component> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, source,
-                StringSourceLoader.OTHER_CUSTOM_NAMESPACE + ":testcomponent", false);
+                StringSourceLoader.OTHER_CUSTOM_NAMESPACE + ":testcomponent",
+                        NamespaceAccess.CUSTOM);
         try {
             descriptor.getDef();
             fail("component of custom namespace shouldn't be able to register event of other custom namespace");
@@ -550,11 +605,13 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         //create event with custom namespace
         String eventSource = "<aura:event type='COMPONENT' access='PUBLIC'/>";
         DefDescriptor<? extends Definition> eventDescriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, eventSource,
-                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent", false);
+                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent",
+                        NamespaceAccess.CUSTOM);
         //create component register the event above
         String source = "<aura:component> <aura:registerEvent name='testevent' type='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /></aura:component> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, source,
-                StringSourceLoader.DEFAULT_NAMESPACE + ":testcomponent", true);
+                StringSourceLoader.DEFAULT_NAMESPACE + ":testcomponent",
+                        NamespaceAccess.INTERNAL);
         descriptor.getDef();
     }
 
@@ -571,11 +628,13 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         //create event with system namespace
         String eventSource = "<aura:event type='COMPONENT' access='GLOBAL'/>";
         DefDescriptor<? extends Definition> eventDescriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, eventSource,
-                StringSourceLoader.DEFAULT_NAMESPACE + ":testevent", true);
+                StringSourceLoader.DEFAULT_NAMESPACE + ":testevent",
+                        NamespaceAccess.INTERNAL);
         //create component register the event above
         String source = "<aura:component> <aura:registerEvent name='testevent' type='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /></aura:component> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, source,
-                StringSourceLoader.DEFAULT_NAMESPACE + ":testcomponent", true);
+                StringSourceLoader.DEFAULT_NAMESPACE + ":testcomponent",
+                        NamespaceAccess.INTERNAL);
         descriptor.getDef();
     }
 
@@ -588,11 +647,13 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         //create event with system namespace
         String eventSource = "<aura:event type='COMPONENT' access='GLOBAL'/>";
         DefDescriptor<? extends Definition> eventDescriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, eventSource,
-                StringSourceLoader.DEFAULT_NAMESPACE + ":testevent", true);
+                StringSourceLoader.DEFAULT_NAMESPACE + ":testevent",
+                        NamespaceAccess.INTERNAL);
         //create component register the event above
         String source = "<aura:component> <aura:registerEvent name='testevent' type='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /></aura:component> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, source,
-                StringSourceLoader.OTHER_NAMESPACE + ":testcomponent", true);
+                StringSourceLoader.OTHER_NAMESPACE + ":testcomponent",
+                        NamespaceAccess.INTERNAL);
         descriptor.getDef();
     }
 
@@ -605,11 +666,13 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         //create event with system namespace
         String eventSource = "<aura:event type='COMPONENT' access='GLOBAL'/>";
         DefDescriptor<? extends Definition> eventDescriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, eventSource,
-                StringSourceLoader.DEFAULT_NAMESPACE + ":testevent", true);
+                StringSourceLoader.DEFAULT_NAMESPACE + ":testevent",
+                        NamespaceAccess.INTERNAL);
         //create component register the event above
         String source = "<aura:component> <aura:registerEvent name='testevent' type='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /></aura:component> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, source,
-                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testcomponent", false);
+                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testcomponent",
+                        NamespaceAccess.CUSTOM);
         descriptor.getDef();
     }
 
@@ -622,11 +685,13 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         //create event with custom namespace
         String eventSource = "<aura:event type='COMPONENT' access='GLOBAL'/>";
         DefDescriptor<? extends Definition> eventDescriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, eventSource,
-                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent", false);
+                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent",
+                        NamespaceAccess.CUSTOM);
         //create component register the event above
         String source = "<aura:component> <aura:registerEvent name='testevent' type='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /></aura:component> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, source,
-                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testcomponent", false);
+                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testcomponent",
+                        NamespaceAccess.CUSTOM);
         descriptor.getDef();
     }
 
@@ -639,11 +704,13 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         //create event with custom namespace
         String eventSource = "<aura:event type='COMPONENT' access='GLOBAL'/>";
         DefDescriptor<? extends Definition> eventDescriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, eventSource,
-                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent", false);
+                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent",
+                        NamespaceAccess.CUSTOM);
         //create component register the event above
         String source = "<aura:component> <aura:registerEvent name='testevent' type='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /></aura:component> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, source,
-                StringSourceLoader.OTHER_CUSTOM_NAMESPACE + ":testcomponent", false);
+                StringSourceLoader.OTHER_CUSTOM_NAMESPACE + ":testcomponent",
+                        NamespaceAccess.CUSTOM);
         descriptor.getDef();
     }
 
@@ -656,11 +723,13 @@ public class EventAccessAttributeEnforcementTest extends AuraImplTestCase {
         //create event with custom namespace
         String eventSource = "<aura:event type='COMPONENT' access='GLOBAL'/>";
         DefDescriptor<? extends Definition> eventDescriptor = getAuraTestingUtil().addSourceAutoCleanup(EventDef.class, eventSource,
-                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent", false);
+                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testevent",
+                        NamespaceAccess.CUSTOM);
         //create component register the event above
         String source = "<aura:component> <aura:registerEvent name='testevent' type='" + eventDescriptor.getNamespace() + ":" + eventDescriptor.getName() + "' /></aura:component> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, source,
-                StringSourceLoader.DEFAULT_NAMESPACE + ":testcomponent", true);
+                StringSourceLoader.DEFAULT_NAMESPACE + ":testcomponent",
+                        NamespaceAccess.INTERNAL);
         descriptor.getDef();
     }
 }

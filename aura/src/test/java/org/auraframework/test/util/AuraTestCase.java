@@ -15,31 +15,25 @@
  */
 package org.auraframework.test.util;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Pattern;
+
+import javax.inject.Inject;
+
 import org.auraframework.AuraDeprecated;
 import org.auraframework.adapter.ConfigAdapter;
 import org.auraframework.adapter.ExceptionAdapter;
-import org.auraframework.def.BaseComponentDef;
-import org.auraframework.def.ControllerDef;
-import org.auraframework.def.DefDescriptor;
-import org.auraframework.def.Definition;
 import org.auraframework.service.ContextService;
-import org.auraframework.service.DefinitionService;
 import org.auraframework.service.LoggingService;
 import org.auraframework.system.AuraContext;
 import org.auraframework.system.Location;
 import org.auraframework.system.Source;
 import org.auraframework.test.TestContextAdapter;
 import org.auraframework.test.adapter.MockConfigAdapter;
-import org.auraframework.test.source.StringSourceLoader;
 import org.auraframework.throwable.AuraExceptionInfo;
 import org.auraframework.util.FileMonitor;
 import org.auraframework.util.test.util.UnitTestCase;
-
-import javax.inject.Inject;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.regex.Pattern;
 
 import junit.framework.AssertionFailedError;
 
@@ -309,10 +303,6 @@ public abstract class AuraTestCase extends UnitTestCase {
             auraTesingMarkupUtil = new AuraTestingMarkupUtil();
         }
         return auraTesingMarkupUtil;
-    }
-
-    protected DefDescriptor<ControllerDef> getClientController(BaseComponentDef def) throws Exception {
-        return def.getRemoteControllerDef().getDescriptor();
     }
 
     /**

@@ -28,6 +28,7 @@ import org.auraframework.impl.java.controller.JavaAction;
 import org.auraframework.instance.Action;
 import org.auraframework.instance.ActionWithKeyOverride;
 import org.auraframework.service.ContextService;
+import org.auraframework.service.DefinitionService;
 import org.auraframework.system.AuraContext.Mode;
 import org.auraframework.system.Location;
 import org.auraframework.test.TestContextAdapter;
@@ -61,6 +62,9 @@ public class JsonSerializerAdapterImpl implements JsonSerializerAdapter {
     @Inject
     private ContextService contextService;
 
+    @Inject
+    private DefinitionService definitionService;
+
     @Autowired(required=false)
     private TestContextAdapter testContextAdapter;
 
@@ -69,7 +73,8 @@ public class JsonSerializerAdapterImpl implements JsonSerializerAdapter {
         if (lookupSerializers == null) {
             lookupSerializers = Maps.newLinkedHashMap();
             lookupSerializers.putAll(JsonSerializers.MAPPY_FASTY);
-            lookupSerializers.put(AuraContextImpl.class.getName(), getAuraContextJsonSerializer(configAdapter, testContextAdapter));
+            lookupSerializers.put(AuraContextImpl.class.getName(),
+                    getAuraContextJsonSerializer(configAdapter, testContextAdapter, definitionService));
             lookupSerializers.put(JavaAction.class.getName(), Action.SERIALIZER);
             lookupSerializers.put(ActionWithKeyOverride.class.getName(), Action.SERIALIZER);
             lookupSerializers.put(BigDecimal.class.getName(), JsonSerializers.BIGDECIMAL);
@@ -133,9 +138,9 @@ public class JsonSerializerAdapterImpl implements JsonSerializerAdapter {
         }
     }
 
-    private AuraContextJsonSerializer getAuraContextJsonSerializer(ConfigAdapter configAdapter, TestContextAdapter testContextAdapter) {
+    private AuraContextJsonSerializer getAuraContextJsonSerializer(ConfigAdapter configAdapter, TestContextAdapter testContextAdapter, DefinitionService definitionService) {
         if (auraContextJsonSerializer == null) {
-            auraContextJsonSerializer = new AuraContextJsonSerializer(configAdapter, testContextAdapter);
+            auraContextJsonSerializer = new AuraContextJsonSerializer(configAdapter, testContextAdapter, definitionService);
         }
         return auraContextJsonSerializer;
     }

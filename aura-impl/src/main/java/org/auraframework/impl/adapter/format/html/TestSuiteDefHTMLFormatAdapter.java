@@ -70,12 +70,12 @@ public class TestSuiteDefHTMLFormatAdapter extends HTMLFormatAdapter<TestSuiteDe
         attribs.put("auraStyleTags", sb.toString());
 
         sb = new StringBuilder();
-        writeHtmlScripts(servletUtilAdapter.getScripts(context), sb);
+        writeHtmlScripts(servletUtilAdapter.getScripts(context, true, attributes), sb);
         attribs.put("auraScriptTags", sb.toString());
 
         sb = new StringBuilder();
         serializationService.write(value, attributes, getType(), sb, "JSON");
-        attribs.put("auraInitBlock", String.format("<script>aura.test.init(%s);</script>", sb.toString()));
+        attribs.put("auraInitBlock", String.format("<script>$A.runAfterInit(function() {aura.test.init(%s);});</script>", sb.toString()));
 
         try {
             Component c = instanceService.getInstance("aura:template", ComponentDef.class, attribs);

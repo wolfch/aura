@@ -189,7 +189,8 @@ AuraComponentService.prototype.createComponent = function(type, attributes, call
         "componentDef" : this.createDescriptorConfig(type),
         "attributes"   : { "values" : attributes },
         "localId"      : attributes && attributes["aura:id"],
-        "flavor"       : (attributes && attributes["aura:flavor"])
+        "flavor"       : (attributes && attributes["aura:flavor"]),
+        "skipCreationPath": true
     };
 
     this.createComponentPrivAsync(config, callback);
@@ -814,6 +815,14 @@ AuraComponentService.prototype.hasDefinition = function(descriptor) {
 
 
 /**
+ * Return the definition of the components that were not used yet (we have the def config but we haven't build the def instance)
+ * @export
+ */
+AuraComponentService.prototype.getUnusedDefinitions = function () {
+    return Object.keys(this.savedComponentConfigs);
+};
+
+/**
  * Get the component definition. If it is not available will go to the server to retrieve it.
  *
  * This method is private, to utilize it, you should use $A.getDefinition("prefix:markup");
@@ -889,6 +898,7 @@ AuraComponentService.prototype.hasDefinition = function(descriptor) {
 
 /**
  * Gets the component definition from the registry.
+ * Does not go to the server if the definition is not available.
  *
  * @param {String|Object} descriptor The descriptor (<code>markup://ui:scroller</code>) or other component attributes that are provided during its initialization.
  * @returns {ComponentDef} The metadata of the component
@@ -1354,23 +1364,55 @@ AuraComponentService.prototype.createComponentPrivAsync = function (config, call
             throw new $A.auraError("Component class not found: " + descriptor, null, $A.severity.QUIET);
         }
 
-        callback(new classConstructor(config, forceClientCreation), 'SUCCESS');
-        return action;
+        if($A.clientService.allowAccess(def)) {
+            callback(new classConstructor(config, forceClientCreation), 'SUCCESS');
+        }else{
+            var context=$A.getContext();
+            var message="Access Check Failed! AuraComponentService.createComponent(): '" + descriptor + "' is not visible to '" + context.getCurrentAccess() + "'.";
+            if(context.enableAccessChecks) {
+                if(context.logAccessFailures){
+                    $A.error(message);
+                }
+                callback(null, "ERROR", "Unknown component '" + descriptor + "'.");
+            }else{
+                if(context.logAccessFailures){
+                    $A.warning(message);
+                }
+                callback(new classConstructor(config, forceClientCreation), 'SUCCESS');
+            }
+        }
+        return;
     }
 
     action = this.requestComponent(this, callback, config);
     action.setAbortable();
     $A.enqueueAction(action);
-    return action;
 };
 
 AuraComponentService.prototype.createComponentPriv = function (config) {
     var descriptor = this.getDescriptorFromConfig(config["componentDef"]);
     var def = this.getComponentDef({ "descriptor" : descriptor });
-    $A.assert(def, 'Definition does not exist on the client for descriptor:'+descriptor);
 
-    var classConstructor = this.getComponentClass(descriptor);
-    return new classConstructor(config);
+    if($A.clientService.allowAccess(def)) {
+        var classConstructor = this.getComponentClass(descriptor);
+        return new classConstructor(config);
+    }else{
+        var context=$A.getContext();
+        var message="Access Check Failed! AuraComponentService.createComponentFromConfig(): '" + descriptor + "' is not visible to '" + context.getCurrentAccess() + "'.";
+        if(context.enableAccessChecks) {
+            if(context.logAccessFailures){
+                $A.error(message);
+            }
+        }else{
+            if(context.logAccessFailures){
+                $A.warning(message);
+            }
+            if(def) {
+                return new (this.getComponentClass(descriptor))(config);
+            }
+        }
+    }
+    throw new Error('Definition does not exist on the client for descriptor:'+descriptor);
 };
 
 /*

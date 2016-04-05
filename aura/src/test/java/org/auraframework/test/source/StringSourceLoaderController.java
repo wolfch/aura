@@ -62,7 +62,7 @@ public class StringSourceLoaderController implements Controller {
             @Key("bundleDefClass") String bundleDefClass,
             @Key("contents") String contents,
             @Key("overwrite") boolean overwrite,
-            @Key("isPrivilegedNamespace") boolean isPrivilegedNamespace)
+            @Key("access") StringSourceLoader.NamespaceAccess access)
             throws ClassNotFoundException {
 
         DefDescriptor<B> bundleDescriptor = null;
@@ -72,8 +72,7 @@ public class StringSourceLoaderController implements Controller {
         }
         DefDescriptor<D> descriptor = definitionService.getDefDescriptor(name,
                 (Class<D>) Class.forName(defClass), bundleDescriptor);
-        stringSourceLoader.putSource(descriptor, contents, overwrite,
-                isPrivilegedNamespace);
+        stringSourceLoader.putSource(descriptor, contents, overwrite, access);
     }
 
     @SuppressWarnings("unchecked")

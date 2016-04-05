@@ -46,7 +46,7 @@ public abstract class AbstractRendererForTestingIntegrationService implements Re
 
         Integration integration = integrationService.createIntegration(
                 "", Mode.DEV, true, null, applicationTag, null);
-        integration.injectComponent(tag, attributes, localId, locatorDomId, out, useAsync);
+        integration.injectComponentHtml(tag, attributes, localId, locatorDomId, out, useAsync);
 
         // The only not-so-ideal part of this approach to testing
         // IntegrationService is that we have to start the

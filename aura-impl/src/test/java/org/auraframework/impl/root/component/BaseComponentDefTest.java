@@ -1572,7 +1572,7 @@ public abstract class BaseComponentDefTest<T extends BaseComponentDef> extends R
         		definitionService.getDefinition(interfaceImpl).isInstanceOf(parentInterface));
         assertTrue("Failed to assert inherface extension across one level.",
         		definitionService.getDefinition(parentInterface).isInstanceOf(grandParentInterface));
-        assertTrue("Failed to assert inheritance implementation across multiple levels.", 
+        assertTrue("Failed to assert inheritance implementation across multiple levels.",
         		definitionService.getDefinition(interfaceImpl)
                 .isInstanceOf(grandParentInterface));
 
@@ -1912,9 +1912,9 @@ public abstract class BaseComponentDefTest<T extends BaseComponentDef> extends R
      */
     @Test
     public void testValidateReferencesWithNonExistentInterface() throws Exception {
-        Set<DefDescriptor<InterfaceDef>> interfaces = new
-                HashSet<>();
-        interfaces.add(vendor.makeInterfaceDefDescriptor("say:what"));
+    	DefDescriptor<InterfaceDef> idd = vendor.makeInterfaceDefDescriptor("say:what");
+        Set<DefDescriptor<InterfaceDef>> interfaces = new HashSet<>();
+        interfaces.add(idd);
         BaseComponentDef bcd = vendor.makeBaseComponentDefWithNulls(getDefClass(),
                 getAuraTestingUtil().getNonce("test:cmp"), null, null, null, null, null,
                 null, null, interfaces, null, null, null, false, false, AuraContext.Access.INTERNAL);
@@ -1925,8 +1925,7 @@ public abstract class BaseComponentDefTest<T extends BaseComponentDef> extends R
             checkExceptionFull(
                     e,
                     DefinitionNotFoundException.class,
-                    String.format("No INTERFACE named markup://say:what found",
-                            bcd.getDescriptor().getQualifiedName()));
+                    String.format("No INTERFACE named %s found", idd.getQualifiedName()));
         }
     }
 

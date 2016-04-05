@@ -118,8 +118,12 @@ public class JavaRendererDef extends DefinitionImpl<RendererDef> implements Rend
         }
     }
 
-    @Override
     public Class<?> getJavaType() {
         return this.renderer.getClass();
+    }
+
+    @Override
+    public String getCode() {
+        return null;
     }
 }

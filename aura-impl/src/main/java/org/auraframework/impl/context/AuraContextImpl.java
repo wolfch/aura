@@ -65,6 +65,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 public class AuraContextImpl implements AuraContext {
+    // JBUCH: TEMPORARY FLAG FOR 202 CRUC. REMOVE IN 204.
+    protected boolean enableAccessChecks = true;
+
     private static final Logger logger = Logger.getLogger(AuraContextImpl.class);
 
     private final Set<DefDescriptor<?>> staleChecks = new HashSet<>();

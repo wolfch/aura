@@ -16,6 +16,7 @@
 package org.auraframework.impl;
 
 import org.auraframework.adapter.ConfigAdapter;
+import org.auraframework.adapter.ServletUtilAdapter;
 import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.impl.integration.IntegrationImpl;
 import org.auraframework.integration.Integration;
@@ -23,6 +24,7 @@ import org.auraframework.service.ContextService;
 import org.auraframework.service.DefinitionService;
 import org.auraframework.service.InstanceService;
 import org.auraframework.service.IntegrationService;
+import org.auraframework.service.RenderingService;
 import org.auraframework.service.SerializationService;
 import org.auraframework.system.AuraContext.Mode;
 import org.auraframework.throwable.quickfix.QuickFixException;
@@ -38,13 +40,16 @@ public class IntegrationServiceImpl implements IntegrationService {
     private DefinitionService definitionService;
     private SerializationService serializationService;
     private ContextService contextService;
+    private RenderingService renderingService;
     private ConfigAdapter configAdapter;
+    private ServletUtilAdapter servletUtilAdapter;
  
     @Override
     public Integration createIntegration(String contextPath, Mode mode, boolean initializeAura, String userAgent,
                                          String application, Object dummy) throws QuickFixException {
         return new IntegrationImpl(contextPath, mode, initializeAura, userAgent, application, instanceService,
-                definitionService, serializationService, contextService, configAdapter);
+                definitionService, serializationService, contextService, configAdapter,
+                renderingService, servletUtilAdapter);
     }
 
     @Inject
@@ -68,7 +73,17 @@ public class IntegrationServiceImpl implements IntegrationService {
     }
 
     @Inject
+    public void setRenderingService(RenderingService renderingService) {
+        this.renderingService = renderingService;
+    }
+
+    @Inject
     public void setConfigAdapter(ConfigAdapter configAdapter) {
         this.configAdapter = configAdapter;
+    }
+
+    @Inject
+    public void setServletUtilAdapter(ServletUtilAdapter servletUtilAdapter) {
+        this.servletUtilAdapter = servletUtilAdapter;
     }
 }

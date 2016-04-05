@@ -19,6 +19,7 @@ import org.auraframework.annotations.Annotations.ServiceComponentRenderer;
 import org.auraframework.def.Renderer;
 import org.auraframework.instance.BaseComponent;
 import org.auraframework.service.RenderingService;
+import org.auraframework.system.RenderContext;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
 import javax.inject.Inject;
@@ -35,12 +36,12 @@ public class ComponentRenderer implements Renderer {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void render(BaseComponent<?, ?> component, Appendable out) throws IOException, QuickFixException {
+    public void render(BaseComponent<?, ?> component, RenderContext rc) throws IOException, QuickFixException {
         Object bodyAttribute = component.getAttributes().getValue("body");
         if(bodyAttribute !=null && bodyAttribute instanceof List) {
             List<BaseComponent<?, ?>> body = (List<BaseComponent<?, ?>>) bodyAttribute;
             for (BaseComponent<?, ?> c : body) {
-                renderingService.render(c, out);
+                renderingService.render(c, rc);
             }
         }
     }

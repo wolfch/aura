@@ -28,6 +28,7 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
  * see W-1985839 and W-2009411
  */
 @UnAdaptableTest
+@ThreadHostileTest("Tests modify if locker service is enabled")
 public class InputRichTextUITest extends WebDriverTestCase {
     private final String URL = "/uitest/inputRichText_Test.cmp";
     private final String CMP_URL = "/ui/inputRichText.cmp";
@@ -37,6 +38,13 @@ public class InputRichTextUITest extends WebDriverTestCase {
     private final String OUTPUT_LOCATOR = ".uiOutputText";
     private final String IN_RICHTEXT_BODY = ".inputRichTextBody";
     private final String RT_CMP = "Text";
+
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        
+        getMockConfigAdapter().setLockerServiceEnabled(false);
+    }
 
     /**
      * Able to tab into inputRichText Component.

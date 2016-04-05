@@ -78,6 +78,12 @@ function Action(def, suffix, method, paramDefs, background, cmp, caboose) {
 
     var ctx = $A.getContext();
     this.callingCmp = ctx ? ctx.getCurrentAccess() : null;
+
+    // propagating locker key when possible
+    var key = cmp && getLockerSecret(cmp, "key");
+    if (key) {
+        setLockerSecret(this, "key", key);
+    }
 }
 
 // Static methods:
@@ -743,8 +749,8 @@ Action.prototype.updateFromResponse = function(response) {
         // Careful now. If we get back an event from the server as part of the error,
         // we want to fire off the event. Note that this will also remove it from the
         // list of errors, and this may leave us with an empty error list. In that case
-        // we toss in a message of 'event fired' to prevent confusion from having an
-        // error state, but no error.
+        // we reset our state to 'EVENT' to avoid the error callback, since we have
+        // an event that should handle things.
         //
         // This code is perhaps a bit tenuous, as it attempts to reverse the mapping from
         // event descriptor to event name in the component, giving back the first one that
@@ -764,9 +770,7 @@ Action.prototype.updateFromResponse = function(response) {
             }
         }
         if (fired === true && newErrors.length === 0) {
-            newErrors.push({
-                "message" : "Event fired"
-            });
+            this.state = "EVENT";
         }
         this.error = newErrors;
     } else if (this.originalResponse && this.state === "SUCCESS") {
@@ -966,7 +970,7 @@ Action.prototype.setAbortable = function() {
 };
 
 /**
- * [Deprecated] [Returns undefined] 
+ * [Deprecated] [Returns undefined]
  *
  * @public
  * @returns {string} undefined
@@ -1157,16 +1161,21 @@ Action.prototype.toJSON = function() {
  * @param e the exception with which we want to mark the action.
  */
 Action.prototype.markException = function(e) {
+    var descriptor = this.def ? this.def.toString() : "";
+
     // if the error doesn't have id, we wrap it with auraError so that when displaying UI, it will have an id
     if (!e.id) {
-        var descriptor = this.def ? this.def.toString() : "";
         e = new $A.auraError(descriptor ? "Action failed: " + descriptor : "", e);
         e.component = descriptor;
+    } else if (e instanceof $A.auraError) {
+        // keep the root cause failing descriptor
+        e.component = e.component || descriptor;
     }
 
     this.state = "ERROR";
     this.error = e;
     if ($A.clientService.inAuraLoop()) {
+        $A.lastKnownError = e;
         throw e;
     }
 };

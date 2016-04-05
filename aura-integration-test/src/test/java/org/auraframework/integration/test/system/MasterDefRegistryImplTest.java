@@ -30,9 +30,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.common.collect.Lists;
+import javax.annotation.Nonnull;
+import javax.inject.Inject;
 
-import com.google.common.collect.Sets;
 import org.auraframework.adapter.ConfigAdapter;
 import org.auraframework.adapter.RegistryAdapter;
 import org.auraframework.cache.Cache;
@@ -63,6 +63,7 @@ import org.auraframework.system.MasterDefRegistry;
 import org.auraframework.system.SourceListener;
 import org.auraframework.system.SourceLoader;
 import org.auraframework.test.source.StringSourceLoader;
+import org.auraframework.test.source.StringSourceLoader.NamespaceAccess;
 import org.auraframework.test.util.AuraTestingUtil;
 import org.auraframework.throwable.NoAccessException;
 import org.auraframework.throwable.quickfix.DefinitionNotFoundException;
@@ -79,9 +80,8 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import com.google.common.base.Optional;
-
-import javax.annotation.Nonnull;
-import javax.inject.Inject;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 @ThreadHostileTest("Don't you go clearing my caches.")
 public class MasterDefRegistryImplTest extends AuraImplTestCase {
@@ -387,7 +387,8 @@ public class MasterDefRegistryImplTest extends AuraImplTestCase {
 
         assertFalse(namespace + "  should not have been internal", configAdapter.isInternalNamespace(namespace));
         DefDescriptor<ApplicationDef> houseboat = getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
-                String.format(baseApplicationTag, "", ""), String.format("%s:houseboat", namespace), false);
+                String.format(baseApplicationTag, "", ""), String.format("%s:houseboat", namespace),
+                        NamespaceAccess.CUSTOM);
         MasterDefRegistryImplOverride masterDefReg = getDefRegistry(false);
         String uid = masterDefReg.getUid(null, houseboat);
         assertNull("Found string in new MDR", masterDefReg.getCachedString(uid, houseboat, "test1"));
@@ -1046,7 +1047,7 @@ public class MasterDefRegistryImplTest extends AuraImplTestCase {
     public void testAssertAccess_StoreAccessInfoInCacheIfNotPresent() throws Exception {
         DefDescriptor<ComponentDef> desc = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
                 String.format(baseComponentTag, "", ""), StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testComp",
-                false);
+                        NamespaceAccess.CUSTOM);
         
         when(mockAccessCheckCache.getIfPresent(anyString())).thenReturn(null);
 
@@ -1365,7 +1366,8 @@ public class MasterDefRegistryImplTest extends AuraImplTestCase {
     public void testDepsCacheCompound() throws Exception {
     	String auraIf = "<aura:if isTrue='{!true}'>It is true</aura:if>";
     	DefDescriptor<ComponentDef> internalCmpWithCompound = getAuraTestingUtil().addSourceAutoCleanup(
-                ComponentDef.class, String.format(baseComponentTag, "access='global'", auraIf), null, true);
+                ComponentDef.class, String.format(baseComponentTag, "access='global'", auraIf), null,
+                        NamespaceAccess.INTERNAL);
 
         MasterDefRegistry mdr = contextService.getCurrentContext().getDefRegistry();
          MasterDefRegistryImpl mdri = (MasterDefRegistryImpl) mdr;
@@ -1390,21 +1392,22 @@ public class MasterDefRegistryImplTest extends AuraImplTestCase {
 
         // in internal namespace
         DefDescriptor<ComponentDef> internalCmp = getAuraTestingUtil().addSourceAutoCleanup(
-                ComponentDef.class, String.format(baseComponentTag, "access='global'", ""), null, true);
+                ComponentDef.class, String.format(baseComponentTag, "access='global'", ""), null,
+                        NamespaceAccess.INTERNAL);
         // in external namespace depending on internal cmp
         DefDescriptor<ComponentDef> externalCmp = getAuraTestingUtil().addSourceAutoCleanup(
                 definitionService.getDefDescriptor(String.format("markup://%s:cmp", externalNamespace),
                         ComponentDef.class),
                 String.format(baseComponentTag, "access='global'",
                         String.format("<%s/>", internalCmp.getDescriptorName())),
-                false);
+                        NamespaceAccess.CUSTOM);
 
         // in internal namespace depending on external cmp
         DefDescriptor<ComponentDef> internalRoot = getAuraTestingUtil().addSourceAutoCleanup(
                 ComponentDef.class,
                 String.format(baseComponentTag, "access='global'",
-                        String.format("<%s/>", externalCmp.getDescriptorName())),
-                null, true);
+                        String.format("<%s/>", externalCmp.getDescriptorName())), null,
+                        NamespaceAccess.INTERNAL);
 
         assertTrue(configAdapter.isInternalNamespace(internalCmp.getNamespace()));
         assertFalse(configAdapter.isInternalNamespace(externalCmp.getNamespace()));
@@ -1480,32 +1483,36 @@ public class MasterDefRegistryImplTest extends AuraImplTestCase {
                         + "<aura:attribute name='class' type='String'/>"
                         + "<aura:registerevent name='press' type='test:test_press'/>"
                         + "<div onclick='{!c.press}' class='{!v.class}'>{!v.label}</div>"
-                        + "</aura:component>", "cstring:test_button", false);
+                        + "</aura:component>", "cstring:test_button",
+                        NamespaceAccess.CUSTOM);
         DefDescriptor<ControllerDef> cmpControllerDef = getAuraTestingUtil().addSourceAutoCleanup(ControllerDef.class,
                 "{    press : function(cmp, event){        cmp.getEvent('press').fire();    }}",
-                "cstring.test_button", false);
+                "cstring.test_button",
+                        NamespaceAccess.CUSTOM);
         DefDescriptor<RendererDef> otherNamespaceDef = getAuraTestingUtil()
                 .addSourceAutoCleanup(
                         RendererDef.class,
-                        "({render: function(cmp) {"
-                                + "cmp.getValue('v.simplevalue1').setValue($A.get('$Label' + '.Related_Lists' + '.task_mode_today', cmp));"
-                                + "cmp.getValue('v.simplevalue2').setValue($A.get('$Label.DOESNT.EXIST', cmp));"
-                                + "cmp.getValue('v.simplevalue3').setValue($A.get('$Label.Related_Lists.DOESNTEXIST', cmp));"
-                                + "// Both section and name are required. This request will return undefined and no action is requested."
-                                + "cmp.getValue('v.simplevalue4').setValue($A.get('$Label.DOESNTEXIST', cmp));"
-                                + "// These requests are here to test that there are no multiple action requests for the same $Label"
-                                + "// See LabelValueProviderUITest.java"
-                                + "var tmt = $A.get('$Label.Related_Lists.task_mode_today', cmp);"
-                                + "tmt = $A.get('$Label.Related_Lists.task_mode_today', cmp);"
-                                + "tmt = $A.get('$Label.Related_Lists.task_mode_today', cmp);"
-                                + "tmt = $A.get('$Label.Related_Lists.task_mode_today', cmp);"
-                                + "tmt = $A.get('$Label.Related_Lists.task_mode_today', cmp);"
-                                + "return this.superRender();"
+                        "({render: function(cmp) {\n"
+                                + "cmp.getValue('v.simplevalue1').setValue($A.get('$Label' + '.Related_Lists' + '.task_mode_today', cmp));\n"
+                                + "cmp.getValue('v.simplevalue2').setValue($A.get('$Label.DOESNT.EXIST', cmp));\n"
+                                + "cmp.getValue('v.simplevalue3').setValue($A.get('$Label.Related_Lists.DOESNTEXIST', cmp));\n"
+                                + "// Both section and name are required. This request will return undefined and no action is requested.\n"
+                                + "cmp.getValue('v.simplevalue4').setValue($A.get('$Label.DOESNTEXIST', cmp));\n"
+                                + "// These requests are here to test that there are no multiple action requests for the same $Label\n"
+                                + "// See LabelValueProviderUITest.java\n"
+                                + "var tmt = $A.get('$Label.Related_Lists.task_mode_today', cmp);\n"
+                                + "tmt = $A.get('$Label.Related_Lists.task_mode_today', cmp);\n"
+                                + "tmt = $A.get('$Label.Related_Lists.task_mode_today', cmp);\n"
+                                + "tmt = $A.get('$Label.Related_Lists.task_mode_today', cmp);\n"
+                                + "tmt = $A.get('$Label.Related_Lists.task_mode_today', cmp);\n"
+                                + "return this.superRender();\n"
                                 + "}})",
-                        "cstring1.labelProvider", false);
+                        "cstring1.labelProvider",
+                        NamespaceAccess.CUSTOM);
         DefDescriptor<ApplicationDef> app = getAuraTestingUtil().addSourceAutoCleanup(
                 ApplicationDef.class,
-                "<aura:application></aura:application>", "cstring1:blank", false);
+                "<aura:application></aura:application>", "cstring1:blank",
+                        NamespaceAccess.CUSTOM);
 
 
         Map<DefType, DefDescriptor<?>> map = new HashMap<>();

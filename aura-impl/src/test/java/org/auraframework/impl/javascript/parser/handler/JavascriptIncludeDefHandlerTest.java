@@ -19,7 +19,6 @@ import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.IncludeDef;
 import org.auraframework.impl.def.DefinitionTest;
 import org.auraframework.test.source.StringSource;
-import org.auraframework.throwable.quickfix.InvalidDefinitionException;
 import org.auraframework.util.FileMonitor;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -29,7 +28,7 @@ import javax.inject.Inject;
 public class JavascriptIncludeDefHandlerTest extends DefinitionTest<IncludeDef> {
     @Inject
     private FileMonitor fileMonitor;
-    
+
     @Mock
     DefDescriptor<IncludeDef> descriptor;
     private String filename = "dummyPath";
@@ -57,68 +56,6 @@ public class JavascriptIncludeDefHandlerTest extends DefinitionTest<IncludeDef> 
     @Test
     public void testOtherJsButNotJson() throws Exception {
         String code = "var something = 'borrowed'";
-        StringSource<IncludeDef> source = new StringSource<>(fileMonitor, descriptor, code, filename, null);
-        JavascriptIncludeDefHandler handler = new JavascriptIncludeDefHandler(descriptor, source);
-        IncludeDef def = handler.getDefinition();
-        def.validateDefinition();
-        assertEquals(code, def.getCode());
-    }
-
-    @Test
-    public void testInvalidTryToBreakOut() throws Exception {
-        String code = "function(){\n}}) alert('watch out')";
-        StringSource<IncludeDef> source = new StringSource<>(fileMonitor, descriptor, code, filename, null);
-        JavascriptIncludeDefHandler handler = new JavascriptIncludeDefHandler(descriptor, source);
-        IncludeDef def = handler.getDefinition();
-        try {
-            def.validateDefinition();
-            fail("Invalid breaking JS wasn't validated");
-        } catch (InvalidDefinitionException t) {
-            assertExceptionMessageEndsWith(
-                    t,
-                    InvalidDefinitionException.class,
-                    String.format("JS Processing Error: %s (line 2, char 1) : Parse error. syntax error\n", filename));
-        }
-    }
-
-    @Test
-    public void testExtraCurlyBrace() throws Exception {
-        String code = "var a=66;\n}";
-        // source will have an extra curly brace at the end
-        StringSource<IncludeDef> source = new StringSource<>(fileMonitor, descriptor, code, filename, null);
-        JavascriptIncludeDefHandler handler = new JavascriptIncludeDefHandler(descriptor, source);
-        IncludeDef def = handler.getDefinition();
-        try {
-            def.validateDefinition();
-            fail("Invalid unclosed JS wasn't validated");
-        } catch (Throwable t) {
-            assertExceptionMessageEndsWith(t, InvalidDefinitionException.class,
-                    String.format("JS Processing Error: %s (line 2, char 0) : Parse error. syntax error\n", filename));
-        }
-    }
-
-    @Test
-    public void testUnClosed() throws Exception {
-        String code = "function(){return 66;";
-        StringSource<IncludeDef> source = new StringSource<>(fileMonitor, descriptor, code, filename, null);
-        JavascriptIncludeDefHandler handler = new JavascriptIncludeDefHandler(descriptor, source);
-        IncludeDef def = handler.getDefinition();
-        try {
-            def.validateDefinition();
-            fail("Invalid unclosed JS wasn't validated");
-        } catch (Throwable t) {
-            assertExceptionMessageEndsWith(
-                    t,
-                    InvalidDefinitionException.class,
-                    String.format(
-                            "JS Processing Error: %s (line 1, char %s) : Parse error. missing } after function body\n",
-                            filename, code.length() - 1));
-        }
-    }
-
-    @Test
-    public void testWarningIgnoredForNonStandardJsDoc() throws Exception {
-        String code = "function(){return 'x'}\n/*!\n * @version 1\n */";
         StringSource<IncludeDef> source = new StringSource<>(fileMonitor, descriptor, code, filename, null);
         JavascriptIncludeDefHandler handler = new JavascriptIncludeDefHandler(descriptor, source);
         IncludeDef def = handler.getDefinition();

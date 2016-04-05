@@ -18,6 +18,7 @@ package org.auraframework.renderer;
 import org.auraframework.annotations.Annotations.ServiceComponentRenderer;
 import org.auraframework.def.Renderer;
 import org.auraframework.instance.BaseComponent;
+import org.auraframework.system.RenderContext;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
 import java.io.IOException;
@@ -28,8 +29,8 @@ import java.io.IOException;
 public class TextRenderer implements Renderer {
 
     @Override
-    public void render(BaseComponent<?, ?> component, Appendable out) throws IOException, QuickFixException {
+    public void render(BaseComponent<?, ?> component, RenderContext rc) throws IOException, QuickFixException {
 
-        out.append((String) component.getAttributes().getValue("value"));
+        rc.getCurrent().append((String) component.getAttributes().getValue("value"));
     }
 }

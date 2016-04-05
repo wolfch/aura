@@ -23,7 +23,7 @@ import org.auraframework.instance.ComponentConfig;
  * A simple ProviderDef.
  */
 public class MockProviderDef extends MockDefinition<ProviderDef> implements ProviderDef {
-	private static final long serialVersionUID = -8841310282805891659L;
+    private static final long serialVersionUID = -8841310282805891659L;
     //private final ComponentConfig config;
 
     public MockProviderDef(DefDescriptor<ProviderDef> descriptor, ComponentConfig componentConfig) {
@@ -56,13 +56,17 @@ public class MockProviderDef extends MockDefinition<ProviderDef> implements Prov
     }
 
     @Override
+    public String getCode() {
+        return null;
+    }
+
+    @Override
     public boolean supportsRefProvide() {
         return true;
     }
 
     @Override
     public Class<?> getJavaType() {
-        // Should probably implement a MockProvider in this directory
         return null;
     }
 }

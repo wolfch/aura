@@ -18,6 +18,7 @@ package org.auraframework.impl.renderer.sampleJavaRenderers;
 import org.auraframework.annotations.Annotations.ServiceComponentRenderer;
 import org.auraframework.def.Renderer;
 import org.auraframework.instance.BaseComponent;
+import org.auraframework.system.RenderContext;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
 import java.io.IOException;
@@ -28,12 +29,13 @@ public class RendererToInjectCmpInNonExistingPlaceholder extends AbstractRendere
         Renderer {
 
     @Override
-    public void render(BaseComponent<?, ?> component, Appendable out) throws IOException, QuickFixException {
+    public void render(BaseComponent<?, ?> component, RenderContext rc) throws IOException, QuickFixException {
         String desc = (String) component.getAttributes().getValue("desc");
         String placeholder = (String) component.getAttributes().getValue("placeholder");
         String localId = (String) component.getAttributes().getValue("localId");
         Boolean useAsync = (Boolean) component.getAttributes().getValue("useAsync");
 
+        Appendable out = rc.getCurrent();
         injectComponent(desc, Collections.<String, Object> emptyMap(), localId, placeholder, out, useAsync);
     }
 

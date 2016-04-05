@@ -244,6 +244,8 @@ function AuraInstance () {
         QUIET: "QUIET"
     };
 
+    this.lastKnownError = null;
+
     /**
      * Instance of the AuraLocalizationService which provides utility methods for localizing data or getting formatters for numbers, currencies, dates, etc.<br/>
      * See the documentation for <a href="#reference?topic=api:AuraLocalizationService">AuraLocalizationService</a> for the members.
@@ -265,7 +267,6 @@ function AuraInstance () {
 
     //#if {"excludeModes" : ["PRODUCTION", "PRODUCTIONDEBUG"]}
     this.devToolService = new AuraDevToolService();
-    this.errors = [];
     //#end
 
 
@@ -404,6 +405,7 @@ function AuraInstance () {
     this.enqueueAction             = this.clientService.enqueueAction.bind(this.clientService);
     this.deferAction               = this.clientService.deferAction.bind(this.clientService);
     this.deferPendingActions       = this.clientService.deferPendingActions.bind(this.clientService);
+    this.runAfterInit               = this.clientService.runAfterInitDefs.bind(this.clientService);
 
     this.render                    = this.renderingService.render.bind(this.renderingService);
     this.rerender                  = this.renderingService.rerender.bind(this.renderingService);
@@ -428,15 +430,15 @@ function AuraInstance () {
      * @public
      */
     this.pushCreationPath = function(creationPath) {
-    	var ctx = this.getContext();
-    	if (!ctx) {
+        var ctx = this.getContext();
+        if (!ctx) {
             return;
-    	}
-    	var act = ctx.getCurrentAction();
-    	if (!act) {
+        }
+        var act = ctx.getCurrentAction();
+        if (!act) {
             return;
-    	}
-    	act.pushCreationPath(creationPath);
+        }
+        act.pushCreationPath(creationPath);
     };
 
 
@@ -447,15 +449,15 @@ function AuraInstance () {
      * @public
      */
     this.popCreationPath = function(creationPath) {
-    	var ctx = this.getContext();
-    	if (!ctx) {
+        var ctx = this.getContext();
+        if (!ctx) {
             return;
-    	}
-    	var act = ctx.getCurrentAction();
-    	if (!act) {
+        }
+        var act = ctx.getCurrentAction();
+        if (!act) {
             return;
-    	}
-    	act.popCreationPath(creationPath);
+        }
+        act.popCreationPath(creationPath);
     };
 
     /**
@@ -465,18 +467,19 @@ function AuraInstance () {
      * @public
      */
     this.setCreationPathIndex = function(idx) {
-    	var ctx = this.getContext();
-    	if (!ctx) {
+        var ctx = this.getContext();
+        if (!ctx) {
             return;
-    	}
-    	var act = ctx.getCurrentAction();
-    	if (!act) {
+        }
+        var act = ctx.getCurrentAction();
+        if (!act) {
             return;
-    	}
-    	act.setCreationPathIndex(idx);
+        }
+        act.setCreationPathIndex(idx);
     };
 
-    //	Google Closure Compiler Symbol Exports
+    //  Google Closure Compiler Symbol Exports
+    this["runAfterInit"] = this.runAfterInit;
     this["clientService"] = this.clientService;
     this["componentService"] = this.componentService;
     this["renderingService"] = this.renderingService;
@@ -563,10 +566,10 @@ function AuraInstance () {
         event : 'aura:clientRedirect',
         "globalId" : "Aura",
         "handler" : function(evt) {
-        	var url = evt.getParam('url');
-        	if (url != null) {
-        		window.location = url;
-        	}
+            var url = evt.getParam('url');
+            if (url != null) {
+                window.location = url;
+            }
         }
     });
 
@@ -603,6 +606,16 @@ AuraInstance.prototype.getCurrentTransactionId = function() { return undefined; 
  */
 AuraInstance.prototype.initAsync = function(config) {
     Aura.bootstrapMark("initAsync");
+
+    //
+    // This hook is to allow for reloading after aura is initialized, including
+    // any storage setup, as we may well have to clear persistent storage.
+    //
+    this.clientService.reloadPointPassed = true;
+    if (this.clientService.reloadFunction) {
+        this.clientService.reloadFunction();
+        return;
+    }
 
     var regexpDetectURLProcotolSegment = /^(.*?:)?\/\//;
 
@@ -667,10 +680,15 @@ AuraInstance.prototype.setLanguage = function() {
 /**
  * Initializes Aura with context info but without retrieving component from server. Used for synchronous initialization.
  *
+ * Whoever named this function should be shot, but I won't rename for now. Eventually we want to use
+ * startApplication, and make it either auto-require app.js or have the caller load app.js and then invoke
+ * startApplication with the data.
+ *
  * @param {Object} config The configuration attributes
  * @param {Boolean} useExisting
  * @param {Boolean} doNotInitializeServices Set to true if the History service should not be initialized, or false if
- * 	 it should. Defaults to true for Aura Integration Service.
+ *   it should. Defaults to true for Aura Integration Service.
+ * @public
  */
 AuraInstance.prototype.initConfig = function(config, useExisting, doNotInitializeServices) {
     config = $A.util.json.resolveRefsObject(config);
@@ -685,7 +703,7 @@ AuraInstance.prototype.initConfig = function(config, useExisting, doNotInitializ
         $A.context.setCurrentAction(null);
     } else {
         // Use the existing context and just join the new context into it
-        // FIXME: is this used? it won't do the right thing if there are components.
+        // FIXME: This is used by integration service, and will not work correctly with components.
         $A.getContext()['merge'](config["context"]);
     }
 };
@@ -704,10 +722,10 @@ AuraInstance.prototype.initConfig = function(config, useExisting, doNotInitializ
 AuraInstance.prototype.initPriv = function(config, token, container, doNotInitializeServices) {
     if (!$A["hasErrors"]) {
         Aura.bootstrapMark("createAndRenderAppInit");
+        $A.addTearDownHandler();
         var app = $A.clientService["init"](config, token, $A.util.getElement(container));
         $A.setRoot(app);
         Aura.bootstrapMark("createAndRenderAppReady");
-
         if (!$A.initialized) {
             $A.initialized = true;
             $A.addDefaultErrorHandler(app);
@@ -718,6 +736,14 @@ AuraInstance.prototype.initPriv = function(config, token, container, doNotInitia
             });
         }
     }
+};
+
+/**
+ * Add default handler to aura:systemError event
+ * @private
+ */
+AuraInstance.prototype.addTearDownHandler = function () {
+    window.addEventListener('unload', $A.getCallback($A.clientService.tearDown.bind($A.clientService)));
 };
 
 /**
@@ -745,7 +771,7 @@ AuraInstance.prototype.finishInit = function(doNotInitializeServices) {
         $A.util.removeClass(document.body, "loading");
         delete $A.globalValueProviders;
         this["finishedInit"] = true;
-        $A.get("e.aura:initialized").fire();
+        $A.eventService.getNewEvent("markup://aura:initialized").fire();
         $A.metricsService.applicationReady();
     }
 
@@ -797,44 +823,34 @@ AuraInstance.prototype.handleError = function(message, e) {
     var dispMsg = message;
     var evtArgs = {"message":dispMsg,"error":null,"auraError":null};
     if (e) {
-        //#if {"excludeModes" : ["PRODUCTION", "PRODUCTIONDEBUG"]}
-        // only keep the most recent 1000 errors
-        var len = this.errors.length;
-        if (len === 1000) {
-            this.errors = this.errors.slice(1, len);
-        }
-
-        this.errors.push(e);
-        //#end
         if (e["handled"]) {
             return;
         } else {
             e["handled"] = true;
         }
 
-        if (e["name"] === "AuraError") {
+        if (e instanceof $A.auraFriendlyError) {
+            e.severity = e.severity || this.severity.QUIET;
+            evtArgs = {"message":e["message"],"error":e["name"],"auraError":e};
+        } else if (e instanceof $A.auraError) {
             var format = "Something has gone wrong. {0}.\nPlease try again.\n";
             var displayMessage = e.message || e.name;
             e.severity = e.severity || this.severity["ALERT"];
-
+            displayMessage += "\n" + (e.component ? "Failing descriptor: {" + e.component + "}" : "");
             //#if {"excludeModes" : ["PRODUCTION", "PRODUCTIONDEBUG"]}
             displayMessage += "\n" + e.stackTrace;
             //#end
             dispMsg = $A.util.format(format, displayMessage);
-        }
-
-        if (e["name"] === "AuraFriendlyError") {
-            e.severity = e.severity || this.severity.QUIET;
-            evtArgs = {"message":e["message"],"error":e["name"],"auraError":e};
-        }
-        else {
             // use null error string to specify non auraFriendlyError type.
             evtArgs = {"message":dispMsg,"error":null,"auraError":e};
         }
     }
 
     if ($A.initialized) {
-        $A.getEvt("aura:systemError").fire(evtArgs);
+        // fire the event later so the current handleError could return even if an error occurs in the event handler.
+        window.setTimeout(function() {
+            $A.eventService.getNewEvent('markup://aura:systemError').fire(evtArgs);
+        }, 0);
     } else {
         if ($A.showErrors()) {
             $A.message(dispMsg);
@@ -847,19 +863,32 @@ AuraInstance.prototype.handleError = function(message, e) {
  * Note that the method should only be used if try-catch mechanism
  * of error handling is not desired or not functional (ex: in nested promises)
  * @public
+ * @param {String} message The message to display.
+ * @param {Error} error An error object to be included in handling and reporting.
  * @platform
  */
 AuraInstance.prototype.reportError = function(message, error) {
-    // when the method is called w/o error object, we create a dummy to have client error id.
-    error = error || new $A.auraError("[NoErrorObjectAvailable] " + message);
+    // for browsers that doesn't have 5th argument (error object) passed in the onerror handler,
+    // we use our bookkeeping object this.lastKnownError
+    // when there is still no error object, we create a dummy to have client error id.
+    error = error ||
+        ((this.lastKnownError && message && message.indexOf(this.lastKnownError.message) > -1) ? this.lastKnownError : null) ||
+        new $A.auraError("[NoErrorObjectAvailable] " + message);
 
     $A.handleError(message, error);
     if ($A.initialized) {
         $A.getCallback(function() {
+            if (error && message) {
+                // if there's extra info in the message that's not in error.message, include it for report.
+                if (message !== error.message && message.indexOf(error.message) > -1) {
+                    error.message = message;
+                }
+            }
             $A.logger.reportError(error);
         })();
         $A.services.client.postProcess();
     }
+    this.lastKnownError = null;
 };
 
 /**
@@ -909,28 +938,30 @@ AuraInstance.prototype.getCallback = function(callback) {
     var context=$A.getContext().getCurrentAccess();
     return function(){
         $A.getContext().setCurrentAccess(context);
-        $A.clientService.pushStack(name);
+        $A.clientService.pushStack("$A.getCallback()");
         try {
             return callback.apply(this,Array.prototype.slice.call(arguments));
         } catch (e) {
             // no need to wrap AFE with auraError as
             // customers who throw AFE would want to handle it with their own custom experience.
-            if (e instanceof $A.auraFriendlyError || e instanceof $A.auraError) {
+            if (e instanceof $A.auraError) {
                 if (context && context.getDef) {
                     e.component = e.component || context.getDef().getDescriptor().toString();
                 }
 
+                $A.lastKnownError = e;
                 throw e;
             } else {
-                var errorWrapper = new $A.auraError("Uncaught error in "+name, e);
+                var errorWrapper = new $A.auraError("Error in $A.getCallback()", e);
                 if (context && context.getDef) {
                     errorWrapper.component = context.getDef().getDescriptor().toString();
                 }
 
+                $A.lastKnownError = errorWrapper;
                 throw errorWrapper;
             }
         } finally {
-            $A.clientService.popStack(name);
+            $A.clientService.popStack("$A.getCallback()");
             $A.getContext().releaseCurrentAccess();
         }
     };
@@ -1274,7 +1305,7 @@ AuraInstance.prototype.getDefinitions = function(descriptors, callback) {
         if(descriptor && descriptor.indexOf("e.") !== -1) {
             descriptor = descriptor.replace("e.", "");
             isEvent = true;
-            def =this.eventService.getEventDef(descriptor);
+            def =this.eventService.getDef(descriptor);
         } else {
             def = this.componentService.getDef(descriptor);
             isEvent = false;
@@ -1283,7 +1314,7 @@ AuraInstance.prototype.getDefinitions = function(descriptors, callback) {
             returnDefinitions[c] = def;
         } else {
             // detect without access checks
-            if((isEvent && !this.eventService.hasDefinition(descriptor)) ||
+            if((isEvent && !this.eventService.getEventDef(descriptor)) ||
                     (!isEvent && !this.componentService.getComponentDef(this.componentService.createDescriptorConfig(descriptor)))) {
 
                 requestDefinitions.push(descriptors[c]);
@@ -1314,7 +1345,7 @@ AuraInstance.prototype.getDefinitions = function(descriptors, callback) {
                 if(pendingMap.hasOwnProperty(requestedDescriptor)) {
                     pendingInfo = pendingMap[requestedDescriptor];
                     if(pendingInfo["isEvent"]) {
-                        returnDefinitions[pendingInfo["position"]] = this.eventService.getEventDef(requestedDescriptor) || null;
+                        returnDefinitions[pendingInfo["position"]] = this.eventService.getDef(requestedDescriptor) || null;
                     } else {
                         returnDefinitions[pendingInfo["position"]] = this.componentService.getDef(requestedDescriptor) || null;
                     }
@@ -1375,6 +1406,7 @@ AuraInstance.prototype.Perf = window['Perf'] || PerfShim;
      * @borrows AuraComponentService#newComponentAsync as $A.newCmpAsync
      * @borrows AuraInstance#localizationService as localizationService
      * @borrows AuraInstance#util as util
+     * @borrows AuraInstance#reportError as $A.reportError
      */
     window['$A'] = new AuraInstance();
     Aura.bootstrapMark("frameworkReady");

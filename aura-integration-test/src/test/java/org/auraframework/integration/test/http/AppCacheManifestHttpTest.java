@@ -74,7 +74,11 @@ public class AppCacheManifestHttpTest extends AuraHttpTestCase {
     }
 
     private String getManifestErrorUrl(String manifestURI) {
-        return manifestURI + "?aura.error=true";
+        if (manifestURI.indexOf("?") != -1) {
+            return manifestURI + "&aura.error=true";
+        } else {
+            return manifestURI + "?aura.error=true";
+        }
     }
 
     private List<String> getManifestLinks(String manifestContents) throws IOException {
@@ -257,7 +261,6 @@ public class AppCacheManifestHttpTest extends AuraHttpTestCase {
         HttpResponse httpResponse = perform(get);
         String response = getResponseBody(httpResponse);
 
-        assertEquals(HttpStatus.SC_NO_CONTENT, getStatusCode(httpResponse));
         assertManifestHeaders(httpResponse);
 
         get.releaseConnection();
@@ -265,6 +268,7 @@ public class AppCacheManifestHttpTest extends AuraHttpTestCase {
         if (response != null) {
             fail("Expected empty response, but got:\n" + response);
         }
+        assertEquals(HttpStatus.SC_NO_CONTENT, getStatusCode(httpResponse));
     }
 
     /**

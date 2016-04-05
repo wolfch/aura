@@ -22,6 +22,7 @@ import org.auraframework.instance.BaseComponent;
 import org.auraframework.instance.Wrapper;
 import org.auraframework.service.InstanceService;
 import org.auraframework.service.RenderingService;
+import org.auraframework.system.RenderContext;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
 import javax.inject.Inject;
@@ -38,7 +39,7 @@ public class ExpressionRenderer implements Renderer {
     private InstanceService instanceService;
 
     @Override
-    public void render(BaseComponent<?, ?> component, Appendable out) throws IOException, QuickFixException {
+    public void render(BaseComponent<?, ?> component, RenderContext rc) throws IOException, QuickFixException {
         Object value = component.getAttributes().getValue("value");
 
         if (value instanceof Wrapper) {
@@ -59,20 +60,20 @@ public class ExpressionRenderer implements Renderer {
                 // would cause problems.
                 escaped = escaped.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
             }
-            out.append(escaped);
+            rc.getCurrent().append(escaped);
         } else if (value instanceof List) {
             List<?> kids = (List<?>) value;
             for (Object kid : kids) {
                 if (kid instanceof BaseComponent) {
-                    this.renderingService.render((BaseComponent<?, ?>) kid, out);
+                    this.renderingService.render((BaseComponent<?, ?>) kid, rc);
                 } else if (kid instanceof ComponentDefRef) {
                     BaseComponent cmp = (BaseComponent) this.instanceService.getInstance((ComponentDefRef) kid,
                             component);
-                    this.renderingService.render(cmp, out);
+                    this.renderingService.render(cmp, rc);
                 }
             }
         } else if (value != null) {
-            out.append(value.toString());
+            rc.getCurrent().append(value.toString());
         }
     }
 }

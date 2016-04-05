@@ -82,6 +82,8 @@ public class StringSourceExternalLoader implements StringSourceLoader {
 
     private final Map<DefDescriptor<? extends Definition>, StringSource<? extends Definition>> localSources = new ConcurrentHashMap<>();
 
+    private final ConcurrentHashMap<String, NamespaceAccess> localAccess = new ConcurrentHashMap<>();
+
     private String buildContextForPost(Mode mode,
                                        DefDescriptor<? extends BaseComponentDef> app, String fwuid,
                                        List<String> dn) throws QuickFixException {
@@ -220,50 +222,42 @@ public class StringSourceExternalLoader implements StringSourceLoader {
     @Override
     public final <D extends Definition> StringSource<D> addSource(
             Class<D> defClass, String contents, @Nullable String namePrefix,
-            boolean isPrivilegedNamespace) {
+            NamespaceAccess access) {
         return putSource(defClass, contents, namePrefix, false,
-                isPrivilegedNamespace);
+                access);
     }
 
     @Override
     public final <D extends Definition> StringSource<D> putSource(
             Class<D> defClass, String contents, @Nullable String namePrefix,
-            boolean overwrite, boolean isPrivilegedNamespace) {
+            boolean overwrite, NamespaceAccess access) {
         return putSource(defClass, contents, namePrefix, overwrite,
-                isPrivilegedNamespace, null);
+                access, null);
     }
 
     @Override
     public final <D extends Definition, B extends Definition> StringSource<D> putSource(
             Class<D> defClass, String contents, @Nullable String namePrefix,
-            boolean overwrite, boolean isPrivilegedNamespace,
-            @Nullable DefDescriptor<B> bundle) {
-        DefDescriptor<D> descriptor = createStringSourceDescriptor(namePrefix,
-                defClass, bundle);
-        return putSource(descriptor, contents, overwrite, isPrivilegedNamespace);
+            boolean overwrite, NamespaceAccess access, @Nullable DefDescriptor<B> bundle) {
+        DefDescriptor<D> descriptor = createStringSourceDescriptor(namePrefix, defClass, bundle);
+        return putSource(descriptor, contents, overwrite, access);
     }
 
     @Override
     public final <D extends Definition> StringSource<D> putSource(
             DefDescriptor<D> descriptor, String contents, boolean overwrite) {
-        return putSource(descriptor, contents, overwrite, true);
+        return putSource(descriptor, contents, overwrite, NamespaceAccess.INTERNAL);
     }
 
     @Override
     public final <D extends Definition> StringSource<D> putSource(
             DefDescriptor<D> descriptor, String contents, boolean overwrite,
-            boolean isPrivilegedNamespace) {
-        putRemoteSource(descriptor, contents, overwrite, isPrivilegedNamespace);
-        Format format = DescriptorInfo.get(descriptor.getDefType().getPrimaryInterface()).getFormat();
-        StringSource<D> source = new RemoteStringSource<>(fileMonitor, descriptor, contents,
-                descriptor.getQualifiedName(), format);
-        localSources.put(descriptor, source);
-        return source;
+            NamespaceAccess access) {
+        return putRemoteSource(descriptor, contents, overwrite, access);
     }
 
-    private final <D extends Definition> void putRemoteSource(
-            DefDescriptor<D> descriptor, String contents, boolean overwrite,
-            boolean isPrivilegedNamespace) {
+    private final <D extends Definition> RemoteStringSource<D> putRemoteSource(
+            DefDescriptor<D> descriptor, String contents, boolean overwrite, NamespaceAccess access) {
         Map<String, Object> params = Maps.newHashMap();
         params.put("name", descriptor.getQualifiedName());
         params.put("defClass", descriptor.getDefType().getPrimaryInterface().getCanonicalName());
@@ -274,9 +268,17 @@ public class StringSourceExternalLoader implements StringSourceLoader {
                 .getDefType().getPrimaryInterface().getCanonicalName());
         params.put("contents", contents);
         params.put("overwrite", overwrite);
-        params.put("isPrivilegedNamespace", isPrivilegedNamespace);
+        params.put("access", access);
+
+        Format format = DescriptorInfo.get(descriptor.getDefType().getPrimaryInterface()).getFormat();
+
+        RemoteStringSource<D> source = new RemoteStringSource<>(fileMonitor, descriptor, contents,
+                descriptor.getQualifiedName(), format, access);
+        localSources.put(descriptor, source);
+        localAccess.putIfAbsent(descriptor.getNamespace(), access);
 
         invokeAction(getControllerDescriptor("putSource"), params);
+        return source;
     }
 
     /**
@@ -339,27 +341,32 @@ public class StringSourceExternalLoader implements StringSourceLoader {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <D extends Definition> Source<D> getSource(
-            DefDescriptor<D> descriptor) {
+    public <D extends Definition> Source<D> getSource(DefDescriptor<D> descriptor) {
         return (Source<D>) localSources.get(descriptor);
     }
 
     @Override
     public boolean isInternalNamespace(String namespace) {
-        return true;
+        if (namespace == null) {
+            return false;
+        }
+        NamespaceAccess access = localAccess.get(namespace);
+        return access == NamespaceAccess.INTERNAL;
     }
 
     private class RemoteStringSource<D extends Definition> extends StringSource<D> {
         private static final long serialVersionUID = 2891764196250418955L;
+        NamespaceAccess access;
 
         private RemoteStringSource(SourceListener sourceListener, DefDescriptor<D> descriptor, String contents,
-                                   String id, Format format) {
+                                   String id, Format format, NamespaceAccess access) {
             super(sourceListener, descriptor, contents, id, format);
+            this.access = access;
         }
 
         @Override
         public boolean addOrUpdate(CharSequence newContents) {
-            StringSourceExternalLoader.this.putRemoteSource(getDescriptor(), newContents.toString(), true, true);
+            StringSourceExternalLoader.this.putRemoteSource(getDescriptor(), newContents.toString(), true, access);
             return super.addOrUpdate(newContents);
         }
     }

@@ -109,7 +109,7 @@ public class AuraServlet extends AuraBaseServlet {
     public final static StringParam tag = new StringParam(AURA_PREFIX + "tag", 128, true);
     public final static EnumParam<DefType> defTypeParam = new EnumParam<>(AURA_PREFIX + "deftype", false,
             DefType.class);
-
+    
     private final static StringParam csrfToken = new StringParam(AURA_PREFIX + "token", 0, true);
     private final static StringParam formatAdapterParam = new StringParam(AURA_PREFIX + "formatAdapter", 0, false);
     private final static StringParam messageParam = new StringParam("message", 0, false);
@@ -139,7 +139,7 @@ public class AuraServlet extends AuraBaseServlet {
      * @returns true if we are finished with the request.
      */
     private void handleNoCacheRedirect(String nocache, HttpServletRequest request,
-                                       HttpServletResponse response) throws IOException {
+            HttpServletResponse response) throws IOException {
 
         response.setContentType("text/plain");
         response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
@@ -292,13 +292,16 @@ public class AuraServlet extends AuraBaseServlet {
         // the app in play, so we couldn't do this earlier.
         servletUtilAdapter.setCSPHeaders(defDescriptor, request, response);
         T def;
-
         try {
             context.setFrameworkUID(configAdapter.getAuraFrameworkNonce());
 
             context.setApplicationDescriptor(defDescriptor);
             definitionService.updateLoaded(defDescriptor);
             def = definitionService.getDefinition(defDescriptor);
+
+            // Knowing the app, we can do the HTTP headers, some of which depend on
+            // the app in play, so we couldn't do this earlier.
+            servletUtilAdapter.setCSPHeaders(defDescriptor, request, response);
 
             if (!context.isTestMode() && !context.isDevMode()) {
                 assertAccess(def);
@@ -341,7 +344,7 @@ public class AuraServlet extends AuraBaseServlet {
         String defaultNamespace = configAdapter.getDefaultNamespace();
         DefDescriptor<?> referencingDescriptor = (defaultNamespace != null && !defaultNamespace.isEmpty())
                 ? definitionService.getDefDescriptor(String.format("%s:servletAccess", defaultNamespace),
-                ApplicationDef.class)
+                        ApplicationDef.class)
                 : null;
         definitionService.getDefRegistry().assertAccess(referencingDescriptor, def);
     }

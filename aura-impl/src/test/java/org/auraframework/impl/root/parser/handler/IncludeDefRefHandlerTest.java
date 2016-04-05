@@ -45,7 +45,7 @@ import com.google.common.collect.Lists;
 public class IncludeDefRefHandlerTest extends AuraImplTestCase {
     @Inject
     private FileMonitor fileMonitor;
-    
+
     @Mock
     DefDescriptor<IncludeDefRef> descriptor;
 
@@ -216,7 +216,7 @@ public class IncludeDefRefHandlerTest extends AuraImplTestCase {
         String expectedDescription = "needs to be included";
         StringSource<IncludeDefRef> source = new StringSource<>(fileMonitor, descriptor,
                 String.format(
-                        "<%s name='%s' description='%s'/>", IncludeDefRefHandler.TAG, expectedName, expectedDescription),
+                "<%s name='%s' description='%s'/>", IncludeDefRefHandler.TAG, expectedName, expectedDescription),
                 "myID", Format.XML);
         Mockito.doReturn(DefType.LIBRARY).when(parentDescriptor).getDefType();
         Mockito.doReturn(parentDescriptor).when(parentHandler).getDefDescriptor();

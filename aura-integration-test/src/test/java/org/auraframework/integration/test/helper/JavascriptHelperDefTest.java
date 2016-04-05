@@ -62,6 +62,6 @@ public class JavascriptHelperDefTest extends AuraImplTestCase {
         HelperDef helperDef = definitionService.getDefinition(helperDesc);
 
         assertThat(helperDef, instanceOf(JavascriptHelperDef.class));
-        this.serializeAndGoldFile(helperDef, "_JSHelperDef");
+        goldFileText(helperDef.getCode());
     }
 }

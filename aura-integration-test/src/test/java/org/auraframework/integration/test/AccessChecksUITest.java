@@ -23,22 +23,23 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 
-@ThreadHostileTest("Tests modify what namespaces are Internal or not")
+@ThreadHostileTest("Tests modify what namespaces are Internal or not and locker service enabled")
 public class AccessChecksUITest extends WebDriverTestCase {
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        
         // TODO: remove when $A.createComponent is exposed in the locker
         getMockConfigAdapter().setLockerServiceEnabled(false);
     }
-    
+
     @Test
     public void testGlobalComponentAccessibleFromExternalNamespace() throws Exception {
         getMockConfigAdapter().setNonInternalNamespace("componentTest");
         open("/componentTest/accessExternalNamespace.cmp?cmpToCreate=auratest:accessGlobalComponent");
         clickCreateComponentButton();
-        verifyComponentCreated("auratest:accessGlobalComponent");
+        verifyComponentCreated("auratest:accessGlobalComponent", false);
     }
 
     /**
@@ -49,15 +50,14 @@ public class AccessChecksUITest extends WebDriverTestCase {
      */
 	@Test
     public void testPublicComponentInaccessibleFromExternalNamespace() throws Exception {
-        getMockConfigAdapter().setNonInternalNamespace("componentTest");
         open("/componentTest/accessExternalNamespace.cmp?cmpToCreate=auratest:accessPublicComponent");
         clickCreateComponentButton();
 
         // Component create will fail on the client due to access checks so wait for error dialog to be displayed
         // and then assert no new component on page.
         waitForElementTextContains(
-                getDriver().findElement(By.id("auraErrorMessage")), "componentDef is required");
-        assertEquals("No new component should be present", "", getDriver().findElement(By.className("output"))
+                getDriver().findElement(By.id("auraErrorMessage")), "Access Check Failed");
+        assertEquals("No new component should be present", "null", getDriver().findElement(By.className("output"))
                 .getText());
     }
 
@@ -110,7 +110,7 @@ public class AccessChecksUITest extends WebDriverTestCase {
         doAttributeAccessTest("undefined");
 
     }
-	
+
 	@Test
     public void testAccessPublicMarkupOnExternalNamespaceFromInternal() throws Exception {
         getMockConfigAdapter().setNonInternalNamespace("auratest");
@@ -124,14 +124,14 @@ public class AccessChecksUITest extends WebDriverTestCase {
         open("/componentTest/accessExternalNamespace.cmp?cmpToCreate=auratest:accessGlobalAttribute");
         doAttributeAccessTest("GLOBAL");
     }
-	
+
 	@Test
     public void testAccessGlobalMarkupOnExternalNamespaceFromInternal() throws Exception {
         getMockConfigAdapter().setNonInternalNamespace("auratest");
         open("/componentTest/accessExternalNamespace.cmp?cmpToCreate=auratest:accessGlobalAttribute");
         doAttributeAccessTest("GLOBAL");
     }
-	
+
 	@Test
     public void testAccessGlobalMarkupOnExternalNamespaceFromExternal() throws Exception {
         getMockConfigAdapter().setNonInternalNamespace("auratest");
@@ -139,14 +139,14 @@ public class AccessChecksUITest extends WebDriverTestCase {
         open("/componentTest/accessExternalNamespace.cmp?cmpToCreate=auratest:accessGlobalAttribute");
         doAttributeAccessTest("GLOBAL");
     }
-	
+
 	@Test
     public void testAccessPrivateMarkupOnInternalNamespaceFromExternal() throws Exception {
         getMockConfigAdapter().setNonInternalNamespace("componentTest");
         open("/componentTest/accessExternalNamespace.cmp?cmpToCreate=auratest:accessPrivateAttribute");
         doAttributeAccessTest("undefined");
     }
-	
+
 	@Test
     public void testAccessPrivateMarkupOnExternalNamespaceFromInternal() throws Exception {
         getMockConfigAdapter().setNonInternalNamespace("auratest");
@@ -213,7 +213,7 @@ public class AccessChecksUITest extends WebDriverTestCase {
         waitForElementTextContains(
                 getDriver().findElement(By.className("accessGlobalComponent")), "auratest:accessGlobalComponent");
     }
-	
+
 	@Test
     public void testAccessInternalProvidesPublicComponent() throws Exception {
         getMockConfigAdapter().setNonInternalNamespace("auratest");
@@ -240,8 +240,13 @@ public class AccessChecksUITest extends WebDriverTestCase {
         executor.executeScript("arguments[0].click();", webElement);
     }
 
-    private void verifyComponentCreated(String expected) {
-        waitForElementTextPresent(getDriver().findElement(By.className("output")), expected);
+    private void verifyComponentCreated(String expected, boolean exactMatch) {
+    	if(exactMatch == true) {
+            waitForElementTextPresent(getDriver().findElement(By.className("output")), expected);
+    	} else {
+            this.waitForElementTextContains(getDriver().findElement(By.className("output")), expected);
+    	}
+        
     }
 
     private void verifyComponentNotCreated() {

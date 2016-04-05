@@ -39,6 +39,7 @@ import org.auraframework.expression.PropertyReference;
 import org.auraframework.impl.java.model.JavaModel;
 import org.auraframework.impl.root.AttributeDefImpl;
 import org.auraframework.impl.root.AttributeSetImpl;
+import org.auraframework.impl.system.RenderContextImpl;
 import org.auraframework.instance.Action;
 import org.auraframework.instance.AttributeSet;
 import org.auraframework.instance.AuraValueProviderType;
@@ -193,16 +194,16 @@ BaseComponent<D, I> {
         instanceStack.pushInstance(this, descriptor);
 
         if (def == null) {
-                def = descriptor.getDef();
-                if (extender == null && def.isAbstract() && def.getProviderDescriptor() == null) {
-                    throw new InvalidDefinitionException(String.format("%s cannot be instantiated directly.",
-                            descriptor), def.getLocation());
-                }
-                if (extender == null && (def.isAbstract() || def.getLocalProviderDef() != null)) {
-                    this.intfDescriptor = def.getDescriptor();
-                }
+            def = descriptor.getDef();
+            if (extender == null && def.isAbstract() && def.getProviderDescriptor() == null) {
+                throw new InvalidDefinitionException(String.format("%s cannot be instantiated directly.",
+                        descriptor), def.getLocation());
+            }
+            if (extender == null && (def.isAbstract() || def.getLocalProviderDef() != null)) {
+                this.intfDescriptor = def.getDescriptor();
+            }
 
-                desc = descriptor;
+            desc = descriptor;
         } else {
             desc = descriptor;
         }
@@ -355,8 +356,8 @@ BaseComponent<D, I> {
             }
 
             if (def.getAPIVersion() != null  &&
-            		Aura.getConfigAdapter().isInternalNamespace(def.getDescriptor().getNamespace()) &&
-            		context.getCurrentCallingDescriptor() == null) {
+                Aura.getConfigAdapter().isInternalNamespace(def.getDescriptor().getNamespace()) &&
+                context.getCurrentCallingDescriptor() == null) {
             	json.writeMapEntry("version", def.getAPIVersion());
             }
 
@@ -364,7 +365,9 @@ BaseComponent<D, I> {
                 RendererDef rendererDef = def.getRendererDescriptor().getDef();
                 if (rendererDef.isLocal()) {
                     StringWriter sw = new StringWriter();
-                    ((RendererInstance) Aura.getInstanceService().getInstance(def.getRendererDescriptor())).render(this, sw);
+                    StringWriter garbage = new StringWriter();
+                    RendererInstance renderer = Aura.getInstanceService().getInstance(rendererDef);
+                    renderer.render(this, new RenderContextImpl(sw, garbage));
                     // Not writing directly to json.appendable because then it wouldn't get escaped.
                     // ideally Json would have a FilterWriter that escapes that we could use here.
                     json.writeMapEntry("rendering", sw.toString());
@@ -408,7 +411,7 @@ BaseComponent<D, I> {
                 if (modelDef instanceof JavaModelDef) {
                     model = instanceService.getInstance(modelDef);
                 } else {
-                    model = modelDef.newInstance();
+                model = modelDef.newInstance();
                 }
 
                 if (modelDef.hasMembers()) {

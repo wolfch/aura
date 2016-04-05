@@ -32,6 +32,7 @@ import org.auraframework.system.AuraContext.Mode;
 import org.auraframework.system.Source;
 import org.auraframework.system.SourceListener;
 import org.auraframework.test.source.StringSourceLoader;
+import org.auraframework.test.source.StringSourceLoader.NamespaceAccess;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.FileMonitor;
 import org.auraframework.util.json.JsonEncoder;
@@ -102,14 +103,11 @@ public class AuraTestingUtil {
         AuraContext context = contextService.getCurrentContext();
         if (context != null) {
         	Source<T> res = context.getDefRegistry().getSource(descriptor);
-            if(res != null) {
-            	return context.getDefRegistry().getSource(descriptor);
-            } else {
-            	 return stringSourceLoader.getSource(descriptor);
+            if (res != null) {
+                return res;
             }
-        } else {
-            return stringSourceLoader.getSource(descriptor);
         }
+        return stringSourceLoader.getSource(descriptor);
     }
 
     /**
@@ -164,7 +162,7 @@ public class AuraTestingUtil {
      * @return the {@link DefDescriptor} for the created definition
      */
     public <T extends Definition> DefDescriptor<T> addSourceAutoCleanup(Class<T> defClass, String contents) {
-        return addSourceAutoCleanup(defClass, contents, null);
+        return addSourceAutoCleanup(defClass, contents, null, NamespaceAccess.INTERNAL);
     }
 
     /**
@@ -177,7 +175,7 @@ public class AuraTestingUtil {
      */
     public <T extends Definition> DefDescriptor<T> addSourceAutoCleanup(Class<T> defClass, String contents,
             String namePrefix) {
-        return addSourceAutoCleanup(defClass, contents, namePrefix, true);
+        return addSourceAutoCleanup(defClass, contents, namePrefix, NamespaceAccess.INTERNAL);
     }
 
     /**
@@ -186,13 +184,13 @@ public class AuraTestingUtil {
      * @param defClass interface of the definition represented by this source
      * @param contents source contents
      * @param namePrefix package name prefix
-     * @param isInternalNamespace if true, namespace is internal
+     * @param access the namespace access type.
      * @return the {@link DefDescriptor} for the created definition
      */
     public <T extends Definition> DefDescriptor<T> addSourceAutoCleanup(Class<T> defClass, String contents,
-            String namePrefix, boolean isInternalNamespace) {
+            String namePrefix, NamespaceAccess access) {
         DefDescriptor<T> descriptor = stringSourceLoader.addSource(defClass, contents, namePrefix,
-                isInternalNamespace).getDescriptor();
+                access).getDescriptor();
         markForCleanup(descriptor);
         return descriptor;
     }
@@ -205,7 +203,7 @@ public class AuraTestingUtil {
      * @return the {@link DefDescriptor} for the created definition
      */
     public <T extends Definition> DefDescriptor<T> addSourceAutoCleanup(DefDescriptor<T> descriptor, String contents) {
-        return addSourceAutoCleanup(descriptor, contents, true);
+        return addSourceAutoCleanup(descriptor, contents, NamespaceAccess.INTERNAL);
     }
 
     /**
@@ -213,11 +211,12 @@ public class AuraTestingUtil {
      *
      * @param descriptor descriptor for the source to be created
      * @param contents source contents
+     * @param access namespace access type.
      * @return the {@link DefDescriptor} for the created definition
      */
     public <T extends Definition> DefDescriptor<T> addSourceAutoCleanup(DefDescriptor<T> descriptor, String contents,
-            boolean isInternalNamespace) {
-        stringSourceLoader.putSource(descriptor, contents, false, isInternalNamespace);
+            NamespaceAccess access) {
+        stringSourceLoader.putSource(descriptor, contents, false, access);
         markForCleanup(descriptor);
         return descriptor;
     }
@@ -406,7 +405,7 @@ public class AuraTestingUtil {
      * @param configurationClass annotated spring configuration class
      */
     public void startSpringContext(Class<?> configurationClass) {
-        AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();        
+        AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
         applicationContext.register(configurationClass);
         applicationContext.refresh();
         applicationContext.close();

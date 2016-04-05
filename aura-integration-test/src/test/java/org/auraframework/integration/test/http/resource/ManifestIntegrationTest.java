@@ -15,24 +15,6 @@
  */
 package org.auraframework.integration.test.http.resource;
 
-import org.auraframework.adapter.ConfigAdapter;
-import org.auraframework.adapter.ServletUtilAdapter;
-import org.auraframework.def.ApplicationDef;
-import org.auraframework.def.ComponentDef;
-import org.auraframework.def.DefDescriptor;
-import org.auraframework.http.resource.Manifest;
-import org.auraframework.impl.AuraImplTestCase;
-import org.auraframework.system.AuraContext;
-import org.junit.Test;
-
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
@@ -42,6 +24,27 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Vector;
+
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.auraframework.adapter.ConfigAdapter;
+import org.auraframework.adapter.ServletUtilAdapter;
+import org.auraframework.def.ApplicationDef;
+import org.auraframework.def.ComponentDef;
+import org.auraframework.def.DefDescriptor;
+import org.auraframework.http.resource.Manifest;
+import org.auraframework.impl.AuraImplTestCase;
+import org.auraframework.system.AuraContext;
+import org.junit.Test;
+import org.mockito.Mockito;
 
 public class ManifestIntegrationTest extends AuraImplTestCase {
     @Inject
@@ -75,11 +78,12 @@ public class ManifestIntegrationTest extends AuraImplTestCase {
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
         when(response.getWriter()).thenReturn(new PrintWriter(stringWriter));
+        when(request.getParameterNames()).thenReturn(new Vector<String>().elements());
 
         ServletUtilAdapter spyServletUtilAdapter = spy(servletUtilAdapter);
         ConfigAdapter spyConfigAdapter = spy(configAdapter);
         doReturn(new ArrayList<String>()).when(spyServletUtilAdapter).getStyles(context);
-        doReturn(new ArrayList<String>()).when(spyServletUtilAdapter).getScripts(context);
+        doReturn(new ArrayList<String>()).when(spyServletUtilAdapter).getScripts(Mockito.any(), Mockito.anyBoolean(), Mockito.anyMap());
 
         Manifest manifest = new Manifest();
         manifest.setServletUtilAdapter(spyServletUtilAdapter);

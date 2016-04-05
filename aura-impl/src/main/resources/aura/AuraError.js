@@ -18,17 +18,16 @@
 /**
  * @description Creates an AuraError instance.
  * @constructor
- * @param {Object} def
- * @param {Object} data
- * @param {Component} component
- * @returns {Function}
+ * @param {String} message - the detail message about the error.
+ * @param {Object} innerError - an Error object whose properties are to be placed into AuraError.
+ * @param {String} severity - the severity of the error. Aura built-in values are defined in $A.severity.
  * @export
  */
 function AuraError() {
     this.name       = "AuraError";
     this.message    = "";
     this.stackTrace = "";
-    this.severity  = "";
+    this.severity   = "";
 
     // the component that throws the error
     this.component = "";
@@ -91,10 +90,10 @@ function AuraError() {
         }
 
         var error = innerError || new Error(message);
-        error.name = this.name;
+        this.name = innerError ? innerError.name : this.name;
         this.lineNumber = error.lineNumber;
         this.number = error.number;
-        this.message = message + (innerError ? " [" + innerError.message + "]" : "");
+        this.message = message + (innerError ? " [" + innerError.toString() + "]" : "");
         this.stackTrace = getStackTrace(error);
         this.severity = severity;
     }
@@ -113,5 +112,8 @@ function AuraError() {
 
 AuraError.prototype = new Error();
 AuraError.prototype.constructor = AuraError;
+AuraError.prototype.toString = function() {
+    return this.message || Error.prototype.toString();
+};
 
 Aura.Errors.AuraError = AuraError;

@@ -19,6 +19,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+
+import org.auraframework.adapter.ConfigAdapter;
 import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.ComponentDef;
@@ -77,6 +79,9 @@ public class StringSourceLoaderImpl implements StringSourceLoader {
     private DefinitionService definitionService;
 
     @Inject
+    private ConfigAdapter configAdapter;
+
+    @Inject
     private FileMonitor fileMonitor;
 
     private static final String DEFAULT_NAME_PREFIX = "thing";
@@ -95,29 +100,97 @@ public class StringSourceLoaderImpl implements StringSourceLoader {
     private static AtomicLong counter = new AtomicLong();
     private static Lock nsLock = new ReentrantLock();
 
+    private static class NamespaceInfo {
+        private final ConcurrentHashMap<DefDescriptor<? extends Definition>, StringSource<? extends Definition>> defs;
+        private final String namespace;
+        private final NamespaceAccess access;
+        private boolean isPermanent;
+
+        public NamespaceInfo(String namespace, NamespaceAccess access) {
+            this.namespace = namespace;
+            this.access = access;
+            this.defs = new ConcurrentHashMap<>();
+        }
+
+        public void setPermanent() {
+            this.isPermanent = true;
+        }
+
+        @SuppressWarnings("unchecked")
+        public <D extends Definition> StringSource<D> get(DefDescriptor<D> descriptor) {
+            return (StringSource<D>)defs.get(descriptor);
+        }
+
+        /**
+         * Put a definition in the namespace.
+         *
+         * @param def the definition.
+         * @param overwrite should we overwrite whatever is there?
+         */
+        public <D extends Definition> boolean put(StringSource<D> def, boolean overwrite) {
+            StringSource<? extends Definition> oldDef;
+            if (overwrite) {
+                oldDef = defs.put(def.getDescriptor(), def);
+            } else {
+                oldDef = defs.putIfAbsent(def.getDescriptor(), def);
+            }
+            Preconditions.checkState(overwrite || oldDef == null);
+            return oldDef != null;
+        }
+
+        public void validateAccess(NamespaceAccess requestedAccess) {
+            if (access != requestedAccess) {
+                throw new RuntimeException("Mismatch on access of "+ namespace
+                        + " current access = " + access
+                        + " requested access = " + requestedAccess);
+            }
+        }
+
+        public boolean remove(DefDescriptor<? extends Definition> descriptor) {
+            Preconditions.checkState(defs.remove(descriptor) != null);
+            return defs.size() == 0;
+        }
+    }
+
     /**
      * This map stores all of the sources owned by this loader, split into namespaces.
      */
-    private final Map<String, Map<DefDescriptor<? extends Definition>, StringSource<? extends Definition>>> namespaces = new ConcurrentHashMap<>();
-
-    private final Map<String, Map<DefDescriptor<? extends Definition>, StringSource<? extends Definition>>> customNamespaces = new ConcurrentHashMap<>();
+    private final Map<String, NamespaceInfo> namespaces = new ConcurrentHashMap<>();
 
     public StringSourceLoaderImpl() {
     }
 
+    private NamespaceInfo getOrAddNamespace(String namespace, NamespaceAccess access) {
+        nsLock.lock();
+        try {
+            NamespaceInfo result = namespaces.get(namespace);
+            if (result == null) {
+                result = new NamespaceInfo(namespace, access);
+                namespaces.put(namespace, result);
+                if (access == NamespaceAccess.PRIVILEGED) {
+                    configAdapter.addPrivilegedNamespace(namespace);
+                    result.setPermanent();
+                }
+            } else {
+                result.validateAccess(access);
+            }
+            return result;
+        } finally {
+            nsLock.unlock();
+        }
+    }
+
     @PostConstruct
     private void init() {
-        namespaces.put(DEFAULT_NAMESPACE,
-                new ConcurrentHashMap<DefDescriptor<? extends Definition>, StringSource<? extends Definition>>());
-        namespaces.put(OTHER_NAMESPACE,
-                new ConcurrentHashMap<DefDescriptor<? extends Definition>, StringSource<? extends Definition>>());
+        getOrAddNamespace(DEFAULT_NAMESPACE, NamespaceAccess.INTERNAL).setPermanent();
+        getOrAddNamespace(OTHER_NAMESPACE, NamespaceAccess.INTERNAL).setPermanent();
 
-        customNamespaces.put(DEFAULT_CUSTOM_NAMESPACE,
-                new ConcurrentHashMap<DefDescriptor<? extends Definition>, StringSource<? extends Definition>>());
-        customNamespaces.put(OTHER_CUSTOM_NAMESPACE,
-                new ConcurrentHashMap<DefDescriptor<? extends Definition>, StringSource<? extends Definition>>());
-        customNamespaces.put(ANOTHER_CUSTOM_NAMESPACE,
-                new ConcurrentHashMap<DefDescriptor<? extends Definition>, StringSource<? extends Definition>>());
+        getOrAddNamespace(DEFAULT_CUSTOM_NAMESPACE, NamespaceAccess.CUSTOM).setPermanent();
+        getOrAddNamespace(OTHER_CUSTOM_NAMESPACE, NamespaceAccess.CUSTOM).setPermanent();
+        getOrAddNamespace(ANOTHER_CUSTOM_NAMESPACE, NamespaceAccess.CUSTOM).setPermanent();
+
+        getOrAddNamespace(DEFAULT_PRIVILEGED_NAMESPACE, NamespaceAccess.PRIVILEGED).setPermanent();
+        getOrAddNamespace(OTHER_PRIVILEGED_NAMESPACE, NamespaceAccess.PRIVILEGED).setPermanent();
     }
 
     /**
@@ -169,8 +242,9 @@ public class StringSourceLoaderImpl implements StringSourceLoader {
      */
     @Override
     public final <D extends Definition> StringSource<D> addSource(Class<D> defClass, String contents,
-                                                                  @Nullable String namePrefix, boolean isInternalNamespace) {
-        return putSource(defClass, contents, namePrefix, false, isInternalNamespace);
+                                                                  @Nullable String namePrefix,
+                                                                  NamespaceAccess access) {
+        return putSource(defClass, contents, namePrefix, false, access);
     }
 
     /**
@@ -185,8 +259,9 @@ public class StringSourceLoaderImpl implements StringSourceLoader {
      */
     @Override
     public final <D extends Definition> StringSource<D> putSource(Class<D> defClass, String contents,
-                                                                  @Nullable String namePrefix, boolean overwrite, boolean isInternalNamespace) {
-        return putSource(defClass, contents, namePrefix, overwrite, isInternalNamespace, null);
+                                                                  @Nullable String namePrefix, boolean overwrite,
+                                                                  NamespaceAccess access) {
+        return putSource(defClass, contents, namePrefix, overwrite, access, null);
     }
 
     /**
@@ -200,11 +275,11 @@ public class StringSourceLoaderImpl implements StringSourceLoader {
      * @return the created {@link StringSource}
      */
     @Override
-    public final <D extends Definition, B extends Definition> StringSource<D> putSource(Class<D> defClass, String contents,
-                                                                                        @Nullable String namePrefix, boolean overwrite, boolean isInternalNamespace, 
-																						@Nullable DefDescriptor<B> bundle) {
+    public final <D extends Definition, B extends Definition> StringSource<D> putSource(Class<D> defClass,
+            String contents, @Nullable String namePrefix, boolean overwrite, NamespaceAccess access,
+            @Nullable DefDescriptor<B> bundle) {
         DefDescriptor<D> descriptor = createStringSourceDescriptor(namePrefix, defClass, bundle);
-        return putSource(descriptor, contents, overwrite, isInternalNamespace);
+        return putSource(descriptor, contents, overwrite, access);
     }
 
     /**
@@ -218,7 +293,7 @@ public class StringSourceLoaderImpl implements StringSourceLoader {
     @Override
     public final <D extends Definition> StringSource<D> putSource(DefDescriptor<D> descriptor, String contents,
                                                                   boolean overwrite) {
-        return putSource(descriptor, contents, overwrite, true);
+        return putSource(descriptor, contents, overwrite, NamespaceAccess.INTERNAL);
     }
 
     /**
@@ -232,43 +307,25 @@ public class StringSourceLoaderImpl implements StringSourceLoader {
      */
     @Override
     public final <D extends Definition> StringSource<D> putSource(DefDescriptor<D> descriptor, String contents,
-                                                                  boolean overwrite, boolean isInternalNamespace) {
+                                                                  boolean overwrite, NamespaceAccess access) {
         Format format = DescriptorInfo.get(descriptor.getDefType().getPrimaryInterface()).getFormat();
         StringSource<D> source = new StringSource<>(fileMonitor, descriptor, contents, descriptor.getQualifiedName(), format);
-        return putSource(descriptor, source, overwrite, isInternalNamespace);
+        return putSource(descriptor, source, overwrite, access);
     }
 
-    private <D extends Definition> StringSource<D> putSource(DefDescriptor<D> descriptor,
-                                                                   StringSource<D> source, boolean overwrite, boolean isInternalNamespace) {
+    private final <D extends Definition> StringSource<D> putSource(DefDescriptor<D> descriptor,
+            StringSource<D> source, boolean overwrite, NamespaceAccess access) {
         SourceMonitorEvent event = SourceMonitorEvent.CREATED;
 
         nsLock.lock();
         try {
             String namespace = descriptor.getNamespace();
-            Map<DefDescriptor<? extends Definition>, StringSource<? extends Definition>> sourceMap;
+            NamespaceInfo namespaceInfo = getOrAddNamespace(namespace, access);
 
-            if (isInternalNamespace) {
-                sourceMap = namespaces.get(namespace);
-            } else {
-                sourceMap = customNamespaces.get(namespace);
+            boolean containsKey = namespaceInfo.put(source, overwrite);
+            if (containsKey) {
+                event = SourceMonitorEvent.CHANGED;
             }
-
-            if (sourceMap == null) {
-                sourceMap = Maps.newHashMap();
-                if (isInternalNamespace) {
-                    namespaces.put(namespace, sourceMap);
-                } else {
-                    customNamespaces.put(namespace, sourceMap);
-                }
-            } else {
-                boolean containsKey = sourceMap.containsKey(descriptor);
-                Preconditions.checkState(overwrite || !containsKey);
-                if (containsKey) {
-                    event = SourceMonitorEvent.CHANGED;
-                }
-
-            }
-            sourceMap.put(descriptor, source);
         } finally {
             nsLock.unlock();
         }
@@ -288,23 +345,10 @@ public class StringSourceLoaderImpl implements StringSourceLoader {
         nsLock.lock();
         try {
             String namespace = descriptor.getNamespace();
-            Map<DefDescriptor<? extends Definition>, StringSource<? extends Definition>> sourceMap;
-
-            if (namespaces.containsKey(namespace)) {
-                sourceMap = namespaces.get(namespace);
-                Preconditions.checkState(sourceMap != null);
-                Preconditions.checkState(sourceMap.remove(descriptor) != null);
-                if (!DEFAULT_NAMESPACE.equals(namespace) && !OTHER_NAMESPACE.equals(namespace) && sourceMap.isEmpty()) {
-                    namespaces.remove(namespace);
-                }
-            } else if (customNamespaces.containsKey(namespace)) {
-                sourceMap = customNamespaces.get(namespace);
-                Preconditions.checkState(sourceMap != null);
-                Preconditions.checkState(sourceMap.remove(descriptor) != null);
-                if (!DEFAULT_CUSTOM_NAMESPACE.equals(namespace) && !OTHER_CUSTOM_NAMESPACE.equals(namespace)
-                        && !ANOTHER_CUSTOM_NAMESPACE.equals(namespace) && sourceMap.isEmpty()) {
-                    customNamespaces.remove(namespace);
-                }
+            NamespaceInfo namespaceInfo = namespaces.get(namespace);
+            Preconditions.checkState(namespaceInfo != null);
+            if (namespaceInfo.remove(descriptor) && !namespaceInfo.isPermanent) {
+                namespaces.remove(namespace);
             }
         } finally {
             nsLock.unlock();
@@ -328,16 +372,7 @@ public class StringSourceLoaderImpl implements StringSourceLoader {
         Set<DefDescriptor<?>> ret = Sets.newHashSet();
         for (String namespace : namespaces.keySet()) {
             if (matcher.matchNamespace(namespace)) {
-                for (DefDescriptor<?> desc : namespaces.get(namespace).keySet()) {
-                    if (matcher.matchDescriptorNoNS(desc)) {
-                        ret.add(desc);
-                    }
-                }
-            }
-        }
-        for (String namespace : customNamespaces.keySet()) {
-            if (matcher.matchNamespace(namespace)) {
-                for (DefDescriptor<?> desc : customNamespaces.get(namespace).keySet()) {
+                for (DefDescriptor<?> desc : namespaces.get(namespace).defs.keySet()) {
                     if (matcher.matchDescriptorNoNS(desc)) {
                         ret.add(desc);
                     }
@@ -352,17 +387,10 @@ public class StringSourceLoaderImpl implements StringSourceLoader {
     public <D extends Definition> Set<DefDescriptor<D>> find(Class<D> primaryInterface, String prefix,
                                                              String namespace) {
         Set<DefDescriptor<D>> ret = Sets.newHashSet();
+        NamespaceInfo namespaceInfo = namespaces.get(namespace);
 
-        Map<DefDescriptor<? extends Definition>, StringSource<? extends Definition>> sourceMap = null;
-
-        if (namespaces.containsKey(namespace)) {
-            sourceMap = namespaces.get(namespace);
-        } else if (customNamespaces.containsKey(namespace)) {
-            sourceMap = customNamespaces.get(namespace);
-        }
-
-        if (sourceMap != null) {
-            for (DefDescriptor<? extends Definition> desc : sourceMap.keySet()) {
+        if (namespaceInfo != null) {
+            for (DefDescriptor<? extends Definition> desc : namespaceInfo.defs.keySet()) {
                 if (desc.getDefType().getPrimaryInterface() == primaryInterface && desc.getPrefix().equals(prefix)) {
                     ret.add((DefDescriptor<D>) desc);
                 }
@@ -378,10 +406,7 @@ public class StringSourceLoaderImpl implements StringSourceLoader {
 
     @Override
     public Set<String> getNamespaces() {
-        Set<String> allNamespaces = new HashSet<>(namespaces.keySet());
-        Set<String> cNamespaces = new HashSet<>(customNamespaces.keySet());
-        allNamespaces.addAll(cNamespaces);
-        return ImmutableSet.copyOf(allNamespaces);
+        return new HashSet<>(namespaces.keySet());
     }
 
     @Override
@@ -389,19 +414,12 @@ public class StringSourceLoaderImpl implements StringSourceLoader {
         return PREFIXES;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public <D extends Definition> Source<D> getSource(DefDescriptor<D> descriptor) {
-        Map<DefDescriptor<? extends Definition>, StringSource<? extends Definition>> sourceMap = null;
+        NamespaceInfo namespaceInfo = namespaces.get(descriptor.getNamespace());
 
-        if (namespaces.containsKey(descriptor.getNamespace())) {
-            sourceMap = namespaces.get(descriptor.getNamespace());
-        } else if (customNamespaces.containsKey(descriptor.getNamespace())) {
-            sourceMap = customNamespaces.get(descriptor.getNamespace());
-        }
-
-        if (sourceMap != null) {
-            StringSource<D> ret = (StringSource<D>) sourceMap.get(descriptor);
+        if (namespaceInfo != null) {
+            StringSource<D> ret = namespaceInfo.get(descriptor);
             if (ret != null) {
                 // return a copy of the StringSource to emulate other Sources (hash is reset)
                 return new StringSource<>(fileMonitor, ret);
@@ -477,6 +495,10 @@ public class StringSourceLoaderImpl implements StringSourceLoader {
 
     @Override
     public boolean isInternalNamespace(String namespace) {
-        return namespace != null && namespaces.containsKey(namespace);
+        if (namespace == null) {
+            return false;
+        }
+        NamespaceInfo namespaceInfo = namespaces.get(namespace);
+        return namespaceInfo != null && namespaceInfo.access == NamespaceAccess.INTERNAL;
     }
 }

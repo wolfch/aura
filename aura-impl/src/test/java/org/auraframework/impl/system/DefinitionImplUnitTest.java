@@ -39,7 +39,9 @@ import javax.inject.Inject;
 import java.util.Map;
 
 public abstract class DefinitionImplUnitTest<I extends DefinitionImpl<D>, D extends Definition, R extends Definition, B extends RefBuilderImpl<D, R>>
-        extends AuraTestCase {
+extends AuraTestCase {
+
+    protected String descriptorName;
     protected String qualifiedDescriptorName;
     @Mock
     protected DefDescriptor<D> descriptor;
@@ -79,7 +81,7 @@ public abstract class DefinitionImplUnitTest<I extends DefinitionImpl<D>, D exte
     @Test
     public void testGetName() throws Exception {
         String actual = buildDefinition().getName();
-        assertEquals(this.qualifiedDescriptorName, actual);
+        assertEquals(this.descriptorName, actual);
     }
 
     @Test
@@ -235,7 +237,8 @@ public abstract class DefinitionImplUnitTest<I extends DefinitionImpl<D>, D exte
 
     protected R buildDefinition(B builder) throws Exception {
         if (this.qualifiedDescriptorName != null && this.descriptor != null) {
-            Mockito.doReturn(this.qualifiedDescriptorName).when(this.descriptor).getName();
+            Mockito.doReturn(this.descriptorName).when(this.descriptor).getName();
+            Mockito.doReturn(this.qualifiedDescriptorName).when(this.descriptor).getQualifiedName();
         }
         builder.setDescriptor(this.descriptor);
         builder.setLocation(this.location);

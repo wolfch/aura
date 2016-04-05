@@ -15,17 +15,20 @@
  */
 package org.auraframework.impl.javascript.parser.handler;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.BaseComponentDef;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.DefDescriptor.DefType;
 import org.auraframework.def.TestSuiteDef;
-import org.auraframework.expression.PropertyReference;
 import org.auraframework.impl.DefinitionAccessImpl;
 import org.auraframework.impl.javascript.testsuite.JavascriptTestCaseDef;
 import org.auraframework.impl.javascript.testsuite.JavascriptTestSuiteDef;
@@ -37,12 +40,10 @@ import org.auraframework.throwable.quickfix.InvalidDefinitionException;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.json.JsFunction;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 /**
  * Javascript handler for test suite defs
@@ -72,7 +73,7 @@ public class JavascriptTestSuiteDefHandler extends JavascriptHandler<TestSuiteDe
 
     @SuppressWarnings("unchecked")
     @Override
-    protected JavascriptTestSuiteDef createDefinition(Map<String, Object> map) throws QuickFixException {
+    protected JavascriptTestSuiteDef createDefinition(String code) throws QuickFixException, IOException {
         builder.setDescriptor(descriptor);
         builder.setLocation(getLocation());
         builder.setAccess(new DefinitionAccessImpl(AuraContext.Access.PUBLIC));
@@ -82,6 +83,7 @@ public class JavascriptTestSuiteDefHandler extends JavascriptHandler<TestSuiteDe
                 .getAssociateDescriptor(descriptor, ComponentDef.class,
                         DefDescriptor.MARKUP_PREFIX);
 
+        Map<String, Object> map = codeToMap(code);
         Map<String, Object> suiteAttributes = (Map<String, Object>) map.get("attributes");
         List<String> suiteLabels = (List<String>) map.get("labels");
         String suiteScrumTeam = (String) map.get("scrumTeam");
@@ -202,11 +204,6 @@ public class JavascriptTestSuiteDefHandler extends JavascriptHandler<TestSuiteDe
         }
 
         return builder.build();
-    }
-
-    @Override
-    public void addExpressionReferences(Set<PropertyReference> propRefs) {
-        // ignore these
     }
 
     @Override

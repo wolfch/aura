@@ -15,23 +15,21 @@
  */
 package org.auraframework.http;
 
-import com.google.common.collect.Maps;
-import org.auraframework.adapter.ConfigAdapter;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
+import javax.inject.Inject;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.auraframework.adapter.ServletUtilAdapter;
 import org.auraframework.service.ContextService;
 import org.auraframework.system.AuraContext;
 import org.auraframework.system.AuraResource;
 
-import javax.inject.Inject;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.net.URI;
-import java.util.List;
-import java.util.Map;
+import com.google.common.collect.Maps;
 
 /**
  * The aura resource servlet.
@@ -49,6 +47,7 @@ public class AuraResourceServlet extends AuraBaseServlet {
 
     private static final long serialVersionUID = -3642790050433142397L;
     public final static String ORIG_REQUEST_URI = "aura.origRequestURI";
+
     private final Map<String,AuraResource> nameToResource = Maps.newHashMap();
 
     protected ServletUtilAdapter servletUtilAdapter;
@@ -61,9 +60,6 @@ public class AuraResourceServlet extends AuraBaseServlet {
         }
     }
 
-    /*
-     * we pass in context, just in case someone overriding this function might want to use it.
-     */
     protected AuraResource findResource(String fullName) {
         if (fullName == null) {
             return null;
@@ -83,7 +79,6 @@ public class AuraResourceServlet extends AuraBaseServlet {
                 return resource;
             }
         }
-        System.out.println("ERROR: Unable to find resource for " + (last != null ? last : fullName));
         return null;
     }
 
@@ -107,8 +102,7 @@ public class AuraResourceServlet extends AuraBaseServlet {
             return;
         }
         resource.setContentType(response);
-
-        setBasicHeaders(context.getApplicationDescriptor(), request, response);
+        servletUtilAdapter.setCSPHeaders(context.getApplicationDescriptor(), request, response);
 
         resource.write(request, response, context);
     }

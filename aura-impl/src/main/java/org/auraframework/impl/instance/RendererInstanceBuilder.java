@@ -46,7 +46,7 @@ public class RendererInstanceBuilder implements InstanceBuilder<RendererInstance
 
     @Override
     public RendererInstance getInstance(RendererDef rendererDef, Map<String, Object> attributes) throws QuickFixException {
-        Object instance = applicationContext.getBean(rendererDef.getJavaType());
+        Object instance = applicationContext.getBean(((JavaRendererDef)rendererDef).getJavaType());
         if (instance instanceof Renderer) {
             return new JavaRendererInstance(rendererDef, (Renderer) instance, loggingService);
         }

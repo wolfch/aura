@@ -15,8 +15,16 @@
  */
 package org.auraframework.integration.test.clientlibrary;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+
+import javax.inject.Inject;
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+
 import org.auraframework.adapter.DefinitionParserAdapter;
-import org.auraframework.clientlibrary.ClientLibraryService;
 import org.auraframework.def.ClientLibraryDef;
 import org.auraframework.def.ClientLibraryDef.Type;
 import org.auraframework.def.ComponentDef;
@@ -33,14 +41,6 @@ import org.auraframework.test.source.StringSource;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
 import org.auraframework.util.FileMonitor;
 import org.junit.Test;
-
-import javax.inject.Inject;
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Unit tests for {@link ClientLibraryDefImpl}

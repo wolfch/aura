@@ -42,7 +42,7 @@ public class ApplicationDefImplUnitTest extends
     Boolean isOnePageApp;
 
     public ApplicationDefImplUnitTest() {
-        super();
+        descriptorName = "application";
         qualifiedDescriptorName = "test:application";
     }
 

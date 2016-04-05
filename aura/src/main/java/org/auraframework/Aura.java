@@ -68,7 +68,7 @@ public class Aura implements AuraDeprecated {
     public void setLocalizationAdapter(LocalizationAdapter adapter) {
         localizationAdapter = adapter;
     }
-    
+
     @Inject
     public void setExceptionAdapter(ExceptionAdapter adapter) {
         exceptionAdapter = adapter;
@@ -230,7 +230,7 @@ public class Aura implements AuraDeprecated {
     public static LocalizationService getLocalizationService() {
         return localizationService;
     }
-    
+
     /**
      * USE INJECTION INSTEAD
      * @return
@@ -256,7 +256,7 @@ public class Aura implements AuraDeprecated {
     public static CachingService getCachingService() {
         return cachingService;
     }
-    
+
     /**
      * USE INJECTION INSTEAD
      * @return

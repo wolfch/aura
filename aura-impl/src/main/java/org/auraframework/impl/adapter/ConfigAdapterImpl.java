@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -85,12 +86,12 @@ public class ConfigAdapterImpl implements ConfigAdapter {
     private static final String VERSION_PROPERTY = "aura.build.version";
     private static final String VALIDATE_CSS_CONFIG = "aura.css.validate";
 
-    private final Set<String> SYSTEM_NAMESPACES = Sets.newHashSet();
-    private final Set<String> CANONICAL_NAMESPACES = Sets.newTreeSet();
-    private final Set<String> PRIVILEGED_NAMESPACES = Sets.newTreeSet();
+    private final Map<String, Boolean> SYSTEM_NAMESPACES = new ConcurrentHashMap<String,Boolean>();
+    private final Map<String, Boolean> CANONICAL_NAMESPACES = new ConcurrentHashMap<String,Boolean>();
+    private final Map<String, Boolean> PRIVILEGED_NAMESPACES = new ConcurrentHashMap<String,Boolean>();
 
-    private volatile Set<String> CANONICAL_RETURN = Sets.newTreeSet();
-    private volatile Set<String> PRIVILEGED_RETURN = Sets.newTreeSet();
+    private volatile Set<String> CANONICAL_IMMUTABLE = Sets.newTreeSet();
+    private volatile Set<String> PRIVILEGED_IMMUTABLE = Sets.newTreeSet();
 
     private final Set<String> UNSECURED_PREFIXES = new ImmutableSortedSet.Builder<>(String.CASE_INSENSITIVE_ORDER).add("aura", "layout").build();
 
@@ -122,11 +123,11 @@ public class ConfigAdapterImpl implements ConfigAdapter {
     
     @Inject
     private FileMonitor fileMonitor;
-    
+
     private String resourceCacheDir;
 
     public ConfigAdapterImpl() {
-        this.resourceCacheDir = getDefaultCacheDir();
+        this(IOUtil.newTempDir("auracache"));
     }
 
     /**
@@ -135,20 +136,17 @@ public class ConfigAdapterImpl implements ConfigAdapter {
      */
     public ConfigAdapterImpl(final String resourceCacheDir) {
         this.resourceCacheDir = resourceCacheDir;
+
     }
 
-    private static String getDefaultCacheDir() {
-        return IOUtil.newTempDir("auracache");
-    }
 
     public ConfigAdapterImpl(String resourceCacheDir, LocalizationAdapter localizationAdapter, InstanceService instanceService, ContextService contextService, FileMonitor fileMonitor) {
         this.resourceCacheDir = resourceCacheDir;
         this.localizationAdapter = localizationAdapter;
         this.instanceService = instanceService;
         this.contextService = contextService;
+
         this.fileMonitor = fileMonitor;
-        
-        initialize();
     }
 
     @PostConstruct
@@ -221,12 +219,14 @@ public class ConfigAdapterImpl implements ConfigAdapter {
         if (!isProduction()) {
             fileMonitor.start();
         }
+        contextService.registerGlobal("isVoiceOver", true, false);
+        contextService.registerGlobal("dynamicTypeSize", true, "");
     }
 
     protected FileGroup newAuraResourcesHashingGroup() throws IOException {
         return new AuraResourcesHashingGroup(fileMonitor, true);
     }
-    
+
     @Override
     public boolean isTestAllowed() {
         return !isProduction();
@@ -243,23 +243,27 @@ public class ConfigAdapterImpl implements ConfigAdapter {
     }
 
     @Override
-    public synchronized boolean isInternalNamespace(String namespace) {
-        return namespace != null && SYSTEM_NAMESPACES.contains(namespace.toLowerCase());
+    public boolean isInternalNamespace(String namespace) {
+        return namespace != null && SYSTEM_NAMESPACES.containsKey(namespace.toLowerCase());
     }
 
     @Override
     public Set<String> getInternalNamespaces(){
-        return CANONICAL_RETURN;
+        synchronized (CANONICAL_NAMESPACES) {
+            return CANONICAL_IMMUTABLE;
+        }
     }
 
     @Override
-    public synchronized boolean isPrivilegedNamespace(String namespace) {
-        return namespace != null && PRIVILEGED_NAMESPACES.contains(namespace);
+    public boolean isPrivilegedNamespace(String namespace) {
+        return namespace != null && PRIVILEGED_NAMESPACES.containsKey(namespace);
     }
 
     @Override
     public Set<String> getPrivilegedNamespaces(){
-        return PRIVILEGED_RETURN;
+        synchronized (PRIVILEGED_NAMESPACES) {
+            return PRIVILEGED_IMMUTABLE;
+        }
     }
 
     @Override
@@ -655,33 +659,41 @@ public class ConfigAdapterImpl implements ConfigAdapter {
     }
 
     @Override
-    public synchronized void addInternalNamespace(String namespace) {
+    public void addInternalNamespace(String namespace) {
         if(namespace != null && !namespace.isEmpty()){
-            SYSTEM_NAMESPACES.add(namespace.toLowerCase());
-            CANONICAL_NAMESPACES.add(namespace);
-            CANONICAL_RETURN = new ImmutableSet.Builder<String>().addAll(CANONICAL_NAMESPACES).build();
+            SYSTEM_NAMESPACES.put(namespace.toLowerCase(), Boolean.TRUE);
+            CANONICAL_NAMESPACES.put(namespace, Boolean.TRUE);
+            synchronized (CANONICAL_NAMESPACES) {
+                CANONICAL_IMMUTABLE = ImmutableSortedSet.copyOf(CANONICAL_NAMESPACES.keySet());
+            }
         }
     }
 
     @Override
-    public synchronized void removeInternalNamespace(String namespace) {
+    public void removeInternalNamespace(String namespace) {
         SYSTEM_NAMESPACES.remove(namespace.toLowerCase());
         CANONICAL_NAMESPACES.remove(namespace);
-        CANONICAL_RETURN = new ImmutableSet.Builder<String>().addAll(CANONICAL_NAMESPACES).build();
-    }
-
-    @Override
-    public synchronized void addPrivilegedNamespace(String namespace) {
-        if(namespace != null && !namespace.isEmpty()){
-            PRIVILEGED_NAMESPACES.add(namespace);
-            PRIVILEGED_RETURN = new ImmutableSet.Builder<String>().addAll(PRIVILEGED_NAMESPACES).build();
+        synchronized (CANONICAL_NAMESPACES) {
+            CANONICAL_IMMUTABLE = ImmutableSortedSet.copyOf(CANONICAL_NAMESPACES.keySet());
         }
     }
 
     @Override
-    public synchronized void removePrivilegedNamespace(String namespace) {
+    public void addPrivilegedNamespace(String namespace) {
+        if(namespace != null && !namespace.isEmpty()){
+            PRIVILEGED_NAMESPACES.put(namespace, Boolean.TRUE);
+            synchronized (PRIVILEGED_NAMESPACES) {
+                PRIVILEGED_IMMUTABLE = ImmutableSortedSet.copyOf(PRIVILEGED_NAMESPACES.keySet());
+            }
+        }
+    }
+
+    @Override
+    public void removePrivilegedNamespace(String namespace) {
         PRIVILEGED_NAMESPACES.remove(namespace);
-        PRIVILEGED_RETURN = new ImmutableSet.Builder<String>().addAll(PRIVILEGED_NAMESPACES).build();
+        synchronized (PRIVILEGED_NAMESPACES) {
+            PRIVILEGED_IMMUTABLE = ImmutableSortedSet.copyOf(PRIVILEGED_NAMESPACES.keySet());
+        }
     }
 
     @Override
@@ -728,12 +740,12 @@ public class ConfigAdapterImpl implements ConfigAdapter {
         this.fileMonitor = fileMonitor;
     }
 
-    @Override
-    public boolean isLockerServiceEnabled() {
-        return true;
-    }
+	@Override
+	public boolean isLockerServiceEnabled() {
+		return true;
+	}
 
-    protected boolean isSafeEvalWorkerURI(String uri) {
+	protected boolean isSafeEvalWorkerURI(String uri) {
         return uri.endsWith("/lockerservice/safeEval.html");
-    }
+	}
 }

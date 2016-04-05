@@ -22,6 +22,7 @@ import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.JavaControllerDef;
 import org.auraframework.impl.AuraImplTestCase;
 import org.auraframework.test.source.StringSourceLoader;
+import org.auraframework.test.source.StringSourceLoader.NamespaceAccess;
 import org.auraframework.throwable.NoAccessException;
 import org.auraframework.throwable.quickfix.DefinitionNotFoundException;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
@@ -142,7 +143,8 @@ public class JavaControllerTest extends AuraImplTestCase {
     public void testUsingJavaControllerInInternalNamespace() throws Exception {
         String cmpMarkup = "<aura:component controller='java://org.auraframework.components.test.java.controller.TestController'></aura:component>";
         DefDescriptor<ComponentDef> cmpDefDesc = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                cmpMarkup, StringSourceLoader.DEFAULT_NAMESPACE + ":testComponent", true);
+                cmpMarkup, StringSourceLoader.DEFAULT_NAMESPACE + ":testComponent",
+                        NamespaceAccess.INTERNAL);
 
         ComponentDef cmpDef = definitionService.getDefinition(cmpDefDesc);
         assertNotNull(cmpDef);
@@ -156,7 +158,8 @@ public class JavaControllerTest extends AuraImplTestCase {
     public void testUsingJavaControllerInExternalNamespace() throws Exception {
         String cmpMarkup = "<aura:component controller='java://org.auraframework.components.test.java.controller.TestController'></aura:component>";
         DefDescriptor<ComponentDef> cmpDefDesc = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                cmpMarkup, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testComponent", false);
+                cmpMarkup, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testComponent",
+                        NamespaceAccess.CUSTOM);
 
         try {
             definitionService.getDefinition(cmpDefDesc);

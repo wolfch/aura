@@ -25,6 +25,9 @@ import org.auraframework.util.test.util.UnitTestCase;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import java.util.Enumeration;
+import java.util.Vector;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -51,6 +54,11 @@ public class ManifestTest extends UnitTestCase {
         assertEquals(Format.MANIFEST, new Manifest().getFormat());
     }
 
+    private Enumeration<String> getEmptyStringEnumeration() {
+        Vector<String> vector = new Vector<>();
+        return vector.elements();
+    }
+
     /**
      * Test for manifest disabled.
      */
@@ -66,6 +74,7 @@ public class ManifestTest extends UnitTestCase {
         manifest.setServletUtilAdapter(servletUtilAdapter);
 
         Mockito.when(manifestUtil.isManifestEnabled(request)).thenReturn(false);
+        Mockito.when(request.getParameterNames()).thenReturn(getEmptyStringEnumeration());
 
         manifest.write(request, response, null);
 
@@ -101,6 +110,7 @@ public class ManifestTest extends UnitTestCase {
 
         Mockito.when(manifestUtil.isManifestEnabled(request)).thenReturn(true);
         Mockito.when(manifestUtil.checkManifestCookie(request, response)).thenReturn(false);
+        Mockito.when(request.getParameterNames()).thenReturn(getEmptyStringEnumeration());
 
         manifest.write(request, response, null);
 
@@ -136,6 +146,7 @@ public class ManifestTest extends UnitTestCase {
 
         Mockito.when(manifestUtil.isManifestEnabled(request)).thenReturn(true);
         Mockito.when(manifestUtil.checkManifestCookie(request, response)).thenReturn(true);
+        Mockito.when(request.getParameterNames()).thenReturn(getEmptyStringEnumeration());
 
         manifest.write(request, response, context);
         

@@ -17,20 +17,15 @@ package org.auraframework.integration.test.renderer;
 
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
-import org.auraframework.def.Renderer;
 import org.auraframework.def.RendererDef;
 import org.auraframework.impl.AuraImplTestCase;
 import org.auraframework.impl.DefinitionAccessImpl;
 import org.auraframework.impl.java.renderer.JavaRendererDef;
 import org.auraframework.impl.java.renderer.JavaRendererDefFactory;
-import org.auraframework.instance.BaseComponent;
 import org.auraframework.system.AuraContext;
 import org.auraframework.throwable.quickfix.DefinitionNotFoundException;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
 import org.junit.Test;
-
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 
 /**
  * This class has automation for JavaRendererDefFactory. This factory fetches definitions of renderers defined in Java.
@@ -80,25 +75,6 @@ public class JavaRendererDefFactoryTest extends AuraImplTestCase {
     }
 
     /**
-     * Verify that Renderer interface declares method with correct properties. Renderer interface will be implemented by
-     * all Renderers.
-     * 
-     * @throws Exception
-     */
-    @Test
-    public void testRendererInterfaceProperties() throws Exception {
-        try {
-            Method renderMethod = Renderer.class.getMethod("render", BaseComponent.class, Appendable.class);
-            assertTrue("render method on Renderer interface should be declared public.",
-                    Modifier.isPublic(renderMethod.getModifiers()));
-        } catch (NoSuchMethodException e) {
-            // The interface org.auraframework.def.Renderer should declare a render method to be overriden by
-            // Java renderers.
-            fail("Renderer interface does not declare a render method.");
-        }
-    }
-
-    /**
      * Verify that specifying an absrtact java class as renderer throws an Exception.
      * 
      * @throws Exception
@@ -110,7 +86,7 @@ public class JavaRendererDefFactoryTest extends AuraImplTestCase {
                 "java://org.auraframework.impl.renderer.sampleJavaRenderers.TestAbstractRenderer", RendererDef.class);
         try {
         	definitionService.getDefinition(descriptor);
-            fail("JavaRenderers that extend Renderer interface cannot be abstract.");
+        	fail("JavaRenderers that extend Renderer interface cannot be abstract.");
         } catch (Exception e) {
             checkExceptionFull(e, InvalidDefinitionException.class,
                     "Cannot instantiate org.auraframework.impl.renderer.sampleJavaRenderers.TestAbstractRenderer",

@@ -15,8 +15,10 @@
  */
 package org.auraframework.integration.test.logging;
 
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.auraframework.impl.test.util.LoggingTestAppender;
 import org.auraframework.integration.test.util.WebDriverTestCase;
 import org.auraframework.util.test.annotation.ThreadHostileTest;
 
@@ -33,12 +35,23 @@ public abstract class AbstractLoggingUITest extends WebDriverTestCase {
     private Level originalLevel;
     protected LoggingTestAppender appender;
 
+    public AbstractLoggingUITest() {
+        logger = Logger.getRootLogger();
+    }
+
+    public AbstractLoggingUITest(Class<?> loggerClass) {
+        logger = Logger.getLogger(loggerClass);
+    }
+
+    public AbstractLoggingUITest(String loggerName) {
+        logger = Logger.getLogger(loggerName);
+    }
+
     @Override
     public void setUp() throws Exception {
         super.setUp();
         appender = new LoggingTestAppender();
 
-        logger = Logger.getLogger("LoggingContextImpl");
         // When we run integration tests, the logging level of logger LoggingContextImpl
         // is WARN, setting it into INFO here so that we can get the log as we run the app.
         originalLevel = logger.getLevel();

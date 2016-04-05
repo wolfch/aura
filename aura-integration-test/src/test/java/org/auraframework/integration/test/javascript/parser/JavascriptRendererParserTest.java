@@ -23,7 +23,6 @@ import org.auraframework.impl.javascript.parser.JavascriptRendererParser;
 import org.auraframework.impl.javascript.renderer.JavascriptRendererDef;
 import org.auraframework.system.Source;
 import org.auraframework.test.source.StringSourceLoader;
-import org.auraframework.util.json.JsonEncoder;
 import org.junit.Test;
 
 import javax.inject.Inject;
@@ -34,7 +33,7 @@ import static org.junit.Assert.assertThat;
 public class JavascriptRendererParserTest extends AuraImplTestCase {
     @Inject
     StringSourceLoader loader;
-    
+
     /**
      * Verify JavascriptRendererParser can parse normal JavaScript Renderer.
      */
@@ -95,8 +94,8 @@ public class JavascriptRendererParserTest extends AuraImplTestCase {
         assertThat(rendererDef, instanceOf(JavascriptRendererDef.class));
         rendererDef.validateDefinition();
 
-        String jsonStr = JsonEncoder.serialize(rendererDef);
-        assertEquals("The latest function should survive.", "{\"render\":function(cmp) {var v = 2;}}", jsonStr);
+        String code = rendererDef.getCode();
+        assertEquals("The latest function should survive.", "{\n    \"render\":function(cmp) {var v = 2;}\n  }", code);
     }
 
     @Test
@@ -111,8 +110,9 @@ public class JavascriptRendererParserTest extends AuraImplTestCase {
         Source<RendererDef> source = loader.getSource(rendererDesc);
 
         RendererDef rendererDef = new JavascriptRendererParser().parse(rendererDesc, source);
-        String jsonStr = JsonEncoder.serialize(rendererDef);
+
+        String code = rendererDef.getCode();
         assertEquals("Renderer parser should ignore non renderer function elements.",
-                "{\"render\":function(cmp) {var v = 1;}}", jsonStr);
+                "{\n    \"render\":function(cmp) {var v = 1;}\n  }", code);
     }
 }

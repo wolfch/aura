@@ -15,6 +15,11 @@
  */
 package org.auraframework.integration.test.renderer;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
+
+import javax.inject.Inject;
+
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.RendererDef;
 import org.auraframework.impl.AuraImplTestCase;
@@ -25,11 +30,6 @@ import org.auraframework.service.InstanceService;
 import org.auraframework.system.AuraContext;
 import org.auraframework.throwable.AuraRuntimeException;
 import org.junit.Test;
-
-import javax.inject.Inject;
-
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
 
 /**
  * Test class to verify implementation of JavascriptRendererDef.
@@ -69,10 +69,8 @@ public class JavascriptRendererDefTest extends AuraImplTestCase {
         try {
             RendererInstance renderer = instanceService.getInstance(rendererDef);
             fail("AuraRuntimeException should be thrown when trying to create a javascript renderer client render() in local. renderer=" + renderer);
-        } catch (AuraRuntimeException e) {
-            //checkExceptionFull(e, AuraRuntimeException.class, null);
         } catch (Exception ex) {
-            fail("Unexpected exception thrown" + ex.getMessage());
+            checkExceptionFull(ex, AuraRuntimeException.class, "Instances of class org.auraframework.impl.javascript.renderer.JavascriptRendererDef cannot be created.");
         }
     }
 
@@ -89,7 +87,7 @@ public class JavascriptRendererDefTest extends AuraImplTestCase {
         RendererDef rendererDef = definitionService.getDefinition(rendererDesc);
 
         assertThat(rendererDef, instanceOf(JavascriptRendererDef.class));
-        serializeAndGoldFile(rendererDef, "_JSRendererDef");
+        goldFileText(rendererDef.getCode());
     }
 
     @Test
@@ -99,6 +97,6 @@ public class JavascriptRendererDefTest extends AuraImplTestCase {
         RendererDef rendererDef = definitionService.getDefinition(rendererDesc);
 
         assertThat(rendererDef, instanceOf(JavascriptRendererDef.class));
-        serializeAndGoldFile(rendererDef, "_JSRendererDef");
+        goldFileText(rendererDef.getCode());
     }
 }

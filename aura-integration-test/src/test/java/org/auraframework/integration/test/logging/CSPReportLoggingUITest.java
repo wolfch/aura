@@ -29,6 +29,7 @@ import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.HelperDef;
 import org.auraframework.def.StyleDef;
 import org.auraframework.http.CSPReporterServlet;
+import org.auraframework.impl.test.util.LoggingTestAppender;
 import org.auraframework.integration.test.util.WebDriverTestCase.TargetBrowsers;
 import org.auraframework.test.util.WebDriverUtil.BrowserType;
 import org.auraframework.util.test.annotation.UnAdaptableTest;
@@ -39,6 +40,10 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 @TargetBrowsers(BrowserType.GOOGLECHROME)
 @UnAdaptableTest("AbstractLoggingUITest has tag @ThreadHostileTest which is not supported in SFDC.")
 public class CSPReportLoggingUITest extends AbstractLoggingUITest {
+
+    public CSPReportLoggingUITest(String name) {
+        super("LoggingContextImpl");
+    }
 
     public void testReportCSPViolationForClientRenderedCSS() throws Exception {
         DefDescriptor<ComponentDef> cmpDesc = addSourceAutoCleanup(
@@ -306,23 +311,20 @@ public class CSPReportLoggingUITest extends AbstractLoggingUITest {
      * @throws InterruptedException
      */
     private List<String> getCspReportLogs(LoggingTestAppender appender, int expectedLogsSize) throws InterruptedException {
-    	List<String> cspRecords = new ArrayList<>();
+        List<String> cspRecords = new ArrayList<>();
         if(expectedLogsSize == 0 ) {
             List<LoggingEvent> logs = appender.getLog();
-            synchronized(logs) {
                 while (!logs.isEmpty()) {
                     LoggingEvent log = logs.remove(0);
                     if (log.getMessage().toString().contains(CSPReporterServlet.JSON_NAME)) {
                         cspRecords.add(log.getMessage().toString());
                     }
                 }
-            }
         } else {
             getAuraUITestingUtil().waitUntil(new ExpectedCondition<Boolean>() {
                 @Override
                 public Boolean apply(WebDriver d) {
                     List<LoggingEvent> logs = appender.getLog();
-                        synchronized(logs) {
                             while (!logs.isEmpty()) {
                                 LoggingEvent log = logs.remove(0);
                                 if (log.getMessage().toString().contains(CSPReporterServlet.JSON_NAME)) {
@@ -332,12 +334,11 @@ public class CSPReportLoggingUITest extends AbstractLoggingUITest {
                         }
                         return false;
                     }
-                }
             },
             10,
             "Did not find expected number of log lines (expected " + expectedLogsSize + ", found " + cspRecords.size() + ").");
         }
-    	
+
         return cspRecords;
     }
     

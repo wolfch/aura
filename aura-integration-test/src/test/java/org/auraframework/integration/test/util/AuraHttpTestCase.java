@@ -76,7 +76,7 @@ import java.util.Map;
 public abstract class AuraHttpTestCase extends IntegrationTestCase {
     @Inject
     private ConfigAdapter configAdapter;
-    
+
     /**
      * Given a URL to post a GET request, this method compares the actual status code of the response with an expected
      * status code.
@@ -120,13 +120,13 @@ public abstract class AuraHttpTestCase extends IntegrationTestCase {
                 AuraContext context = contextService.getCurrentContext();
                 boolean testMode = context != null && context.isTestMode();
                 if (testMode || allowInline) {
-                    assertEquals("script-src is wrong", "'self' chrome-extension: 'unsafe-inline' 'unsafe-eval' 'nonce-LockerServiceTemporaryNonce'",
+                    assertEquals("script-src is wrong", "'self' chrome-extension: 'unsafe-eval'",
                             csp.get("script-src"));
-                    assertEquals("style-src is wrong", "'self' chrome-extension: 'unsafe-inline' 'nonce-LockerServiceTemporaryNonce'",
+                    assertEquals("style-src is wrong", "'self' chrome-extension: 'unsafe-inline'",
                             csp.get("style-src"));
                 } else {
                     assertEquals("script-src is wrong",
-                            "'self' chrome-extension: 'unsafe-inline' 'nonce-LockerServiceTemporaryNonce'",
+                            "'self' chrome-extension:",
                             csp.get("script-src"));
                     assertEquals("style-src is wrong",
                             "'self' chrome-extension: 'unsafe-inline'",

@@ -70,7 +70,14 @@ function lib() { //eslint-disable-line no-unused-vars
 	     * unregister the previous handler.
 	     */
 	    attachDomHandlerToElement: function(component, element, event) {
-	    	var globalId = component.getGlobalId();
+			// we need to use the rendering component for the element otherwise we get multiple component
+			// registrations for the same element and therefore duplicate events @bug W-2987574@
+			// this happens when a ui:input contains another ui:input (which really shouldn't be happening!)
+			var renderingCmp = $A.componentService.getRenderingComponentForElement(element);
+			if (!renderingCmp) {
+				renderingCmp = component;
+			}
+			var globalId = renderingCmp.getGlobalId();
 	        var handler = $A.getCallback(this.domEventHandler);
 	        var elementId = this.getUid(element) || this.newUid(element);
 
@@ -143,6 +150,8 @@ function lib() { //eslint-disable-line no-unused-vars
 	        }
 
 	        var component = htmlCmp.getComponentValueProvider().getConcreteComponent();
+			// patch for input number(inputNumber, inputCurrency, inputPercent)
+			component = component.meta.name ===  'ui$inputSmartNumber' ?  component.getComponentValueProvider().getConcreteComponent() : component;
 	        var helper = component.getDef().getHelper();
 
 	        if (component._recentlyClicked) {

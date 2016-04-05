@@ -15,10 +15,13 @@
     limitations under the License.
 
 -->
-<aura:application access="unauthenticated" controller="java://org.auraframework.components.test.java.controller.TestController">
+<aura:application access="unauthenticated"
+        controller="java://org.auraframework.components.test.java.controller.TestController">
     <aura:attribute name="message" type="String"/>
-    <aura:attribute name="error" type="String"/>
+    <aura:attribute name="severity" type="String"/>
+    <aura:attribute name="errorId" type="String"/>
     <aura:attribute name="eventHandled" type="Boolean" default="false"/>
+    <aura:attribute name="actionDone" type="Boolean" default="false"/>
 
     <!-- The following attributes can be passed in with url to perform tests -->
     <!-- set false when testing defult handler-->
@@ -27,6 +30,7 @@
     <aura:attribute name="throwErrorFromInit" type="Boolean" default="false"/>
     <aura:attribute name="throwErrorFromRender" type="boolean" default="false"/>
     <aura:attribute name="throwErrorFromAfterRender" type="Boolean" default="false"/>
+    <aura:attribute name="throwErrorInHandler" type="Boolean" default="false"/>
 
     <!-- The following attributes can be passed in with url and need to click button to perform tests -->
     <aura:attribute name="throwErrorFromRerender" type="Boolean" default="false" />
@@ -41,6 +45,11 @@
     <aura:handler name="init" value="{!this}" action="{!c.init}"/>
     <aura:handler event="aura:systemError" action="{!c.handleSystemError}"/>
 
+    <aura:method name="throwErrorFromClientController"
+                 action="{!c.throwErrorFromClientController}"/>
+    <aura:method name="throwErrorFromServerActionCallback"
+                 action="{!c.throwErrorFromServerActionCallback}"/>
+
     <table class="errorFromAppTable">
     <caption> Errors from Application: </caption>
     <tr>
@@ -48,7 +57,8 @@
         <td>
           <ui:button label="Throw"
                      press="{!c.throwErrorFromClientController}"
-                     class="errorFromClientControllerButton"/>
+                     class="errorFromClientControllerButton"
+                     aura:id="errorFromClientControllerButton"/>
         </td>
     </tr>
     <tr>
@@ -64,7 +74,8 @@
         <td>
           <ui:button label="Throw"
                      press="{!c.throwErrorFromCreateComponentCallback}"
-                     class="errorFromCreateComponentCallbackButton"/>
+                     class="errorFromCreateComponentCallbackButton"
+                     aura:id="errorFromCreateComponentCallbackButton"/>
         </td>
     </tr>
     <tr>
@@ -104,7 +115,8 @@
         <td>
           <ui:button label="Throw"
                      press="{!c.throwAuraErrorFromClientController}"
-                     class="auraErrorFromClientControllerButton"/>
+                     class="auraErrorFromClientControllerButton"
+                     aura:id="auraErrorFromClientControllerButton"/>
         </td>
     </tr>
     <tr>
@@ -112,13 +124,38 @@
         <td>
           <ui:button label="Throw"
                      press="{!c.throwAuraFriendlyErrorFromClientController}"
-                     class="auraFriendlyErrorFromClientControllerButton"/>
+                     class="auraFriendlyErrorFromClientControllerButton"
+                     aura:id="auraFriendlyErrorFromClientControllerButton"/>
+        </td>
+    </tr>
+    <tr>
+        <td>Error from aura:method handler: </td>
+        <td>
+          <ui:button label="Throw"
+                     press="{!c.throwErrorFromAuraMethodHandler}"
+                     class="errorFromAuraMethodHandlerButton"
+                     aura:id="errorFromAuraMethodHandlerButton"/>
+        </td>
+    </tr>
+    <tr>
+        <td>Error from contained component client controller: </td>
+        <td>
+          <ui:button label="Throw"
+                     press="{!c.throwErrorFromContainedCmpController}"
+                     class="errorFromContainedCmpControllerButton"
+                     aura:id="errorFromContainedCmpControllerButton"/>
         </td>
     </tr>
     </table>
 
     systemError Event is handled on App: <div id="eventHandledOnApp">{!v.eventHandled}</div>
-    <div id="appErrorOutput"> {!v.message} </div>
+    <br/>
+    <aura:if isTrue="{!v.eventHandled}">
+    <h2>Error details:</h2><br/>
+        Message: <div id="appErrorOutput"> {!v.message} </div><br/>
+        Severity: <div id="appErrorSeverityOutput"> {!v.severity} </div><br/>
+        Id: <div id="appErrorIdOutput"> {!v.errorId} </div><br/>
+    </aura:if>
 
     <br/><br/>
     <aura:if isTrue="{!v.addInvalidComponent}">
@@ -132,5 +169,10 @@
             </auratest:errorHandling>
         </aura:set>
     </aura:if>
+
+    <br/>
+    Client error is sent via Caboose Actions, force a foreground action to sent error to server:
+    <ui:button label="Server Action" press="{!c.doServerAction}" class="serverActionButton"/>
+    <div id="actionDone"> {!v.actionDone} </div>
 
 </aura:application>

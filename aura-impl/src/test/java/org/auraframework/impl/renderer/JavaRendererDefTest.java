@@ -15,6 +15,11 @@
  */
 package org.auraframework.impl.renderer;
 
+import java.io.IOException;
+import java.io.StringWriter;
+
+import javax.inject.Inject;
+
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.RendererDef;
 import org.auraframework.impl.AuraImplTestCase;
@@ -25,15 +30,13 @@ import org.auraframework.instance.Component;
 import org.auraframework.instance.RendererInstance;
 import org.auraframework.service.InstanceService;
 import org.auraframework.system.AuraContext;
+import org.auraframework.system.RenderContext;
 import org.auraframework.throwable.AuraError;
 import org.auraframework.throwable.AuraExecutionException;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
 import org.auraframework.util.json.JsonEncoder;
 import org.junit.Test;
-
-import javax.inject.Inject;
-import java.io.IOException;
-import java.io.StringWriter;
+import org.mockito.Mockito;
 
 /**
  * Test class to verify implementation of Java (server side) renderers for component.
@@ -90,60 +93,20 @@ public class JavaRendererDefTest extends AuraImplTestCase {
      */
     @Test
     public void testInvokeRender() throws Exception {
-        RendererInstance renderer = createRenderer("java://org.auraframework.impl.renderer.sampleJavaRenderers.TestSimpleRenderer");
-        renderer.render(dummyCmp, sw);
+        RendererInstance def = createRenderer("java://org.auraframework.impl.renderer.sampleJavaRenderers.TestSimpleRenderer");
+        RenderContext rc = Mockito.mock(RenderContext.class);
+        Mockito.when(rc.getCurrent()).thenReturn(sw);
+        def.render(dummyCmp, rc);
         this.goldFileText(sw.toString());
     }
 
-    private class AppendableThrower implements Appendable {
-        private final IOException ioe;
-        private final RuntimeException rte;
-        private final Error err;
-
-        public AppendableThrower(IOException ioe) {
-            this.ioe = ioe;
-            this.rte = null;
-            this.err = null;
+    private Appendable getThrower(Throwable t) throws Exception {
+        Appendable thrower = Mockito.mock(Appendable.class);
+        Mockito.doThrow(t).when(thrower).append(Mockito.anyChar());
+        Mockito.doThrow(t).when(thrower).append(Mockito.any(CharSequence.class), Mockito.anyInt(), Mockito.anyInt());
+        Mockito.doThrow(t).when(thrower).append(Mockito.any(CharSequence.class));
+        return thrower;
         }
-
-        public AppendableThrower(RuntimeException rte) {
-            this.ioe = null;
-            this.rte = rte;
-            this.err = null;
-        }
-
-        public AppendableThrower(Error err) {
-            this.ioe = null;
-            this.rte = null;
-            this.err = err;
-        }
-
-        private Appendable throwit() throws IOException {
-            if (this.ioe != null) {
-                throw this.ioe;
-            } else if (this.rte != null) {
-                throw this.rte;
-            } else {
-                throw this.err;
-            }
-            // unreachable!
-        }
-
-        @Override
-        public Appendable append(CharSequence csq) throws IOException {
-            return throwit();
-        }
-
-        @Override
-        public Appendable append(CharSequence csq, int start, int end) throws IOException {
-            return throwit();
-        }
-
-        @Override
-        public Appendable append(char c) throws IOException {
-            return throwit();
-        }
-    }
 
     /**
      * Verify that Exceptions/Errors are surfaced.
@@ -154,26 +117,36 @@ public class JavaRendererDefTest extends AuraImplTestCase {
     @Test
     public void testExceptionThrownByComponentRendererHandled() throws Exception {
         RendererInstance renderer = createRenderer("java://org.auraframework.impl.renderer.sampleJavaRenderers.TestSimpleRenderer");
-        IOException ioe = new IOException();
-        AuraError err = new AuraError("expected");
         RuntimeException re = new RuntimeException("expected");
+        RenderContext rc;
 
+        IOException ioe = new IOException();
+        rc = Mockito.mock(RenderContext.class);
+        Appendable append = getThrower(ioe);
+        Mockito.when(rc.getCurrent()).thenReturn(append);
         try {
-            renderer.render(null, new AppendableThrower(ioe));
+            renderer.render(null, rc);
             fail("no exception on a throwing appendable");
         } catch (AuraExecutionException expected) {
             assertEquals("Did not throw wrapped IOException", ioe, expected.getCause());
         }
 
+        AuraError err = new AuraError("expected");
+        rc = Mockito.mock(RenderContext.class);
+        append = getThrower(err);
+        Mockito.when(rc.getCurrent()).thenReturn(append);
         try {
-            renderer.render(null, new AppendableThrower(err));
+            renderer.render(null, rc);
             fail("No exception on a throwing appendable.");
         } catch (AuraError expected) {
             assertEquals("Did not throw error", err, expected);
         }
 
+        rc = Mockito.mock(RenderContext.class);
+        append = getThrower(re);
+        Mockito.when(rc.getCurrent()).thenReturn(append);
         try {
-            renderer.render(null, new AppendableThrower(re));
+            renderer.render(null, rc);
             fail("no exception on a throwing appendable");
         } catch (AuraExecutionException expected) {
             assertEquals("Did not throw error", re, expected.getCause());
@@ -181,8 +154,10 @@ public class JavaRendererDefTest extends AuraImplTestCase {
 
         // Make sure ArithmeticExceptions are wrapped and sent up the chain
         renderer = createRenderer("java://org.auraframework.impl.renderer.sampleJavaRenderers.TestRendererThrowingException");
+        rc = Mockito.mock(RenderContext.class);
+        Mockito.when(rc.getCurrent()).thenReturn(Mockito.mock(Appendable.class));
         try {
-            renderer.render(dummyCmp, sw);
+            renderer.render(dummyCmp, rc);
             fail("Should be able to catch exceptions during rendering.");
         } catch (AuraExecutionException e) {
             // The thrown Exception should be AuraExecutionException, but we should still have the ArithemeticException
@@ -192,8 +167,10 @@ public class JavaRendererDefTest extends AuraImplTestCase {
 
         // Make sure QuickFixExceptions are not swallowed
         renderer = createRenderer("java://org.auraframework.impl.renderer.sampleJavaRenderers.TestRendererThrowsQFEDuringRender");
+        rc = Mockito.mock(RenderContext.class);
+        Mockito.when(rc.getCurrent()).thenReturn(Mockito.mock(Appendable.class));
         try {
-            renderer.render(dummyCmp, sw);
+            renderer.render(dummyCmp, rc);
             fail("Should be able to catch QuickFixExceptions during rendering.");
         } catch (Exception e) {
             checkExceptionFull(e, InvalidDefinitionException.class, "From TestRendererThrowsQFEDuringRender");
