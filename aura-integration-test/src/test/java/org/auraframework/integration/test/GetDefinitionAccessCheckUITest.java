@@ -30,7 +30,7 @@ public class GetDefinitionAccessCheckUITest extends WebDriverTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        
+
         // TODO: remove when $A.createComponent is exposed in the locker
         getMockConfigAdapter().setLockerServiceEnabled(false);
     }
