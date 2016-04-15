@@ -2113,24 +2113,24 @@ Component.prototype.validatePartialConfig=function(config, partialConfig){
 };
 
 Component.prototype.getMethodHandler = function(methodDef){
-    var component=this;
+    //var component=this;
     var observer=this.getActionCaller(this,methodDef.action||("c."+methodDef.getDescriptor().name));
     return function(/*param1,param2,paramN*/){
-        if(!$A.clientService.allowAccess(methodDef,component)) {
-            var context = $A.getContext();
-            var message = "Access Check Failed! Component.method():'" + methodDef.getDescriptor().toString() + "' is not visible to '" + (context && context.getCurrentAccess()) + "'.";
-            if (context.enableAccessChecks) {
-                if (context.logAccessFailures) {
-                    $A.error(message);
-                }
-                return false;
-            } else {
-                if (context.logAccessFailures) {
-                    $A.warning(message);
-                }
-                //Intentional fallthrough
-            }
-        }
+        // if(!$A.clientService.allowAccess(methodDef,component)) {
+        //     var context = $A.getContext();
+        //     var message = "Access Check Failed! Component.method():'" + methodDef.getDescriptor().toString() + "' is not visible to '" + (context && context.getCurrentAccess()) + "'.";
+        //     if (context.enableAccessChecks) {
+        //         if (context.logAccessFailures) {
+        //             $A.error(message);
+        //         }
+        //         return false;
+        //     } else {
+        //         if (context.logAccessFailures) {
+        //             $A.warning(message);
+        //         }
+        //         //Intentional fallthrough
+        //     }
+        // }
         var eventDef = $A.eventService.getEventDef("aura:methodCall");
         var dispatcher = {};
         dispatcher[eventDef.getDescriptor().getQualifiedName()] = [observer];

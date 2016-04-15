@@ -484,13 +484,13 @@
        }
    },
 
-   testCanNotAccessRemotePublicMethod: {
+   testCanAccessRemotePublicMethod: {
        attributes: {
            "testType": "PUBLIC"
        },
        test: function(cmp) {
-           $A.test.expectAuraError("Access Check Failed!");
            cmp.find("testRemoteMethods").getElement().click();
+           $A.test.assertEquals("publicMethod", cmp.find("remote").get("v.output"));
        }
    },
 
