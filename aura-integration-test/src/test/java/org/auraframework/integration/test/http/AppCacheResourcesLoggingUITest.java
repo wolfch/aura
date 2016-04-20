@@ -108,22 +108,22 @@ public class AppCacheResourcesLoggingUITest extends AbstractLoggingUITest {
 
         public AppDescription() {
         namespace = "appCacheResourcesUITest" + getAuraTestingUtil().getNonce();
-        appName = "cacheapplication";
-        cmpName = "cachecomponent";
+            appName = "cacheapplication";
+            cmpName = "cachecomponent";
 
-        cmpDesc = createDef(ComponentDef.class,
-                String.format("%s:%s", namespace, cmpName), SRC_COMPONENT);
+            cmpDesc = createDef(ComponentDef.class,
+                    String.format("%s:%s", namespace, cmpName), SRC_COMPONENT);
 
-        controllerDesc = createDef(ControllerDef.class, String.format("%s://%s.%s",
-                DefDescriptor.JAVASCRIPT_PREFIX, namespace, cmpName),
-                SRC_CONTROLLER);
+            controllerDesc = createDef(ControllerDef.class, String.format("%s://%s.%s",
+                    DefDescriptor.JAVASCRIPT_PREFIX, namespace, cmpName),
+                    SRC_CONTROLLER);
 
-        createDef(
-                ApplicationDef.class,
-                String.format("%s:%s", namespace, appName),
-                String.format("<aura:application useAppcache='true' render='client'>"
-                        + "<%s:%s/>" + "</aura:application>", namespace, cmpDesc.getName()));
-    }
+            createDef(
+                    ApplicationDef.class,
+                    String.format("%s:%s", namespace, appName),
+                    String.format("<aura:application useAppcache='true' render='client'>"
+                            + "<%s:%s/>" + "</aura:application>", namespace, cmpDesc.getName()));
+        }
     }
 
 
@@ -171,6 +171,7 @@ public class AppCacheResourcesLoggingUITest extends AbstractLoggingUITest {
         List<Request> expectedChange = Lists.newArrayList();
         expectedChange.add(new Request("/auraResource", "manifest", 404)); // reset
         expectedChange.add(new Request(getUrl(app), null, 302)); // hard refresh
+        expectedChange.add(new Request("/auraResource", "js", 200));
         switch (getBrowserType()) {
         case GOOGLECHROME:
             expectedChange.add(new Request(3, "/auraResource", "manifest", 200));
@@ -183,7 +184,6 @@ public class AppCacheResourcesLoggingUITest extends AbstractLoggingUITest {
             //FIXME: we need to differentiate here... our test mechanism hasn't kept up with our implementation
             //there should be an app.js and an inline.js here.
             //expectedChange.add(new Request("/auraResource", "js", 200));
-            expectedChange.add(new Request("/auraResource", "js", 200));
         }
         assertRequests(expectedChange, logs);
         assertAppCacheStatus(Status.IDLE);
@@ -253,6 +253,7 @@ public class AppCacheResourcesLoggingUITest extends AbstractLoggingUITest {
 
         expectedChange.add(new Request("/auraResource", "manifest", 404)); // reset
         expectedChange.add(new Request(getUrl(app), null, 302)); // hard refresh
+        expectedChange.add(new Request(2, "/auraResource", "js", 200));
         switch (getBrowserType()) {
         case GOOGLECHROME:
             expectedChange.add(new Request(3, "/auraResource", "manifest", 200));
@@ -265,7 +266,6 @@ public class AppCacheResourcesLoggingUITest extends AbstractLoggingUITest {
             //FIXME: we need to differentiate here... our test mechanism hasn't kept up with our implementation
             //expectedChange.add(new Request("/auraResource", "js", 200), there should be an app.js and an
             //inline.js here.
-            expectedChange.add(new Request(2, "/auraResource", "js", 200));
         }
         assertRequests(expectedChange, logs);
         assertAppCacheStatus(Status.IDLE);
@@ -289,7 +289,7 @@ public class AppCacheResourcesLoggingUITest extends AbstractLoggingUITest {
         List<Request> expectedInitialRequests = Lists.newArrayList(getExpectedInitialRequests(app));
 		expectedInitialRequests.add(sGif);
 		assertRequests(expectedInitialRequests, logs);
-		
+
         assertAppCacheStatus(Status.IDLE);
 
         // update a component's css file
@@ -301,7 +301,7 @@ public class AppCacheResourcesLoggingUITest extends AbstractLoggingUITest {
         List<Request> expectedChangeRequests = Lists.newArrayList(getExpectedChangeRequests(app));
         expectedChangeRequests.add(sGif);
 		assertRequests(expectedChangeRequests, logs);
-        
+
         assertAppCacheStatus(Status.IDLE);
     }
 

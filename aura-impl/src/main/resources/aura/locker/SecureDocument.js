@@ -27,6 +27,11 @@
 function SecureDocument(doc, key) {
     "use strict";
 
+    function trust(st, el) {
+        $A.lockerService.trust(st, el);
+        return SecureElement(el, key);
+    }
+
     var o = Object.create(null, {
         toString: {
             value: function() {
@@ -42,46 +47,59 @@ function SecureDocument(doc, key) {
                         return SecureScriptElement(key);
 
                     default:
-                        var el = doc.createElement(tag);
-                        $A.lockerService.trust(o, el);
-                        return SecureElement(el, key);
+                        return trust(o, doc.createElement(tag));
                 }
             }
         },
         createDocumentFragment: {
             value: function() {
-                var frag = doc.createDocumentFragment();
-                $A.lockerService.trust(o, frag);
-                return SecureElement(frag, key);
+                return trust(o, doc.createDocumentFragment());
             }
         },
         createTextNode: {
             value: function(text) {
-                var node = doc.createTextNode(text);
-                $A.lockerService.trust(o, node);
-                return SecureElement(node, key);
+                return trust(o, doc.createTextNode(text));
+            }
+        },
+        createComment: {
+            value: function(data) {
+                return trust(o, doc.createComment(data));
+            }
+        },
+        documentElement: {
+        	enumerable: true,
+    		get : function() {
+                return trust(o, doc.documentElement.cloneNode());
             }
         }
     });
+
     Object.defineProperties(o, {
-        body: SecureThing.createFilteredProperty(o, doc, "body"),
-        head: SecureThing.createFilteredProperty(o, doc, "head"),
+        addEventListener: SecureElement.createAddEventListenerDescriptor(o, doc, key),
 
-        getElementById: SecureThing.createFilteredMethod(o, doc, "getElementById"),
-        getElementsByClassName: SecureThing.createFilteredMethod(o, doc, "getElementsByClassName"),
-        getElementsByName: SecureThing.createFilteredMethod(o, doc, "getElementsByName"),
-        getElementsByTagName: SecureThing.createFilteredMethod(o, doc, "getElementsByTagName"),
+        body: SecureObject.createFilteredProperty(o, doc, "body"),
+        head: SecureObject.createFilteredProperty(o, doc, "head"),
 
-        querySelector: SecureThing.createFilteredMethod(o, doc, "querySelector"),
-        querySelectorAll: SecureThing.createFilteredMethod(o, doc, "querySelectorAll"),
+        childNodes: SecureObject.createFilteredProperty(o, doc, "childNodes"),
 
-        title: SecureThing.createFilteredProperty(o, doc, "title"),
+        nodeType: SecureObject.createFilteredProperty(o, doc, "nodeType"),
+
+        getElementById: SecureObject.createFilteredMethod(o, doc, "getElementById"),
+        getElementsByClassName: SecureObject.createFilteredMethod(o, doc, "getElementsByClassName"),
+        getElementsByName: SecureObject.createFilteredMethod(o, doc, "getElementsByName"),
+        getElementsByTagName: SecureObject.createFilteredMethod(o, doc, "getElementsByTagName"),
+
+        querySelector: SecureObject.createFilteredMethod(o, doc, "querySelector"),
+        querySelectorAll: SecureObject.createFilteredMethod(o, doc, "querySelectorAll"),
+
+        title: SecureObject.createFilteredProperty(o, doc, "title"),
 
         // DCHASMAN TODO W-2839646 Figure out how much we want to filter cookie access???
-        cookie: SecureThing.createFilteredProperty(o, doc, "cookie")
+        cookie: SecureObject.createFilteredProperty(o, doc, "cookie")
     });
 
     setLockerSecret(o, "key", key);
     setLockerSecret(o, "ref", doc);
-    return Object.seal(o);
+
+    return o;
 }

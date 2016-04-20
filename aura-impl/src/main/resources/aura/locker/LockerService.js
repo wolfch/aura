@@ -26,12 +26,79 @@ function LockerService() {
 
 	// This whilelist represents reflective ECMAScript APIs or reflective DOM APIs
 	// which, by definition, do not provide authority or access to globals.
-	// TODO: grow this list...
 	var whitelist = [
-			'undefined', 'NaN', 'Date', 'Number', 'Boolean', 'alert', 'confirm',
-			'Intl', 'Error', 'console', 'Object',
-			'clearTimeout', 'clearInterval', 'String'
-		];
+	    // Accessible Intrinsics (not reachable by own property name traversal)
+	    // -> from ES5
+	    "ThrowTypeError",
+	    // -> from ES6.
+	    "IteratorPrototype",
+	    "ArrayIteratorPrototype",
+	    "StringIteratorPrototype",
+	    "MapIteratorPrototype",
+	    "SetIteratorPrototype",
+	    "GeneratorFunction",
+	    "TypedArray",
+	
+	    // Intrinsics
+	    // -> from ES5
+	    "Function",
+	    "WeakMap",
+	    "StringMap",
+	    // Proxy,
+	    "escape",
+	    "unescape",
+	    "Object",
+	    "NaN",
+	    "Infinity",
+	    "undefined",
+	    // eval,
+	    "parseInt",
+	    "parseFloat",
+	    "isNaN",
+	    "isFinite",
+	    "decodeURI",
+	    "decodeURIComponent",
+	    "encodeURI",
+	    "encodeURIComponent",
+	    "Function",
+	    "Array",
+	    "String",
+	    "Boolean",
+	    "Number",
+	    "Math",
+	    "Date",
+	    "RegExp",
+	    "Error",
+	    "EvalError",
+	    "RangeError",
+	    "ReferenceError",
+	    "SyntaxError",
+	    "TypeError",
+	    "URIError",
+	    "JSON",
+	    // -> from ES6
+	    "ArrayBuffer",
+	    "Int8Array",
+	    "Uint8Array",
+	    "Uint8ClampedArray",
+	    "Int16Array",
+	    "Uint16Array",
+	    "Int32Array",
+	    "Uint32Array",
+	    "Float32Array",
+	    "Float64Array",
+	    "DataView",
+	    
+	    // Misc
+	    "alert",
+	    "clearInterval",
+	    "clearTimeout",
+	    "confirm",
+	    "console",
+	    "Intl",
+	    "location",
+	    "Node"
+	];
 
 	var nsKeys = {};
 	var validLockSet = typeof WeakSet !== "undefined" ? new WeakSet() : {
@@ -87,13 +154,18 @@ function LockerService() {
 			return this.create(code, key);
 		},
 
-		getEnv : function(key) {
+		getEnv : function(key, doNotCreate) {
 			var psuedoKeySymbol = JSON.stringify(key);
 			var env = keyToEnvironmentMap[psuedoKeySymbol];
-			if (!env) {
+			if (!env && !doNotCreate) {
 				env = keyToEnvironmentMap[psuedoKeySymbol] = SecureWindow(window, key);
 			}
 			return env;
+		},
+
+		getEnvForSecureObject : function(st, doNotCreate) {
+			var key = getLockerSecret(st, "key");
+			return key && key !== masterKey ? this.getEnv(key, doNotCreate) : undefined;
 		},
 
 		create : function(code, key) {
@@ -249,6 +321,11 @@ function LockerService() {
 	})();
 
 	service["createForDef"] = service.createForDef;
+	service["getEnvForSecureObject"] = service.getEnvForSecureObject;
+	
+	// DCHASMAN TODO Remove this once we get 202 synced up to using SecureObject name instead of SecureThing
+	service["getEnvForSecureThing"] = service.getEnvForSecureObject;
+	
 	service["trust"] = service.trust;
 	service["showLockedNodes"] = service.showLockedNodes;
 

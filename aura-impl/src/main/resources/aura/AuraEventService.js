@@ -58,6 +58,15 @@ AuraEventService.prototype.newEvent = function(eventDef, eventName, sourceCmp) {
     return this.getNewEvent(eventDef, eventName, sourceCmp);
 };
 
+/**
+ * Get a new Event instance, but do not do an access check on the event definition. This method is private to 
+ * aura and should only be used within trusted portions of the framework.
+ *
+ * @param {String} eventDef The event object in the format namespace:component
+ * @param {String=} eventName The event name if the event is a "COMPONENT" type event
+ * @param {sourceCmp=} eventName The component source if the event is a "COMPONENT" type event
+ * @return {Event} new Event
+ */
 AuraEventService.prototype.getNewEvent = function(eventDefinition, eventName, sourceCmp) {
     var eventDef = eventDefinition;
     if(typeof eventDefinition === "string") {
@@ -194,7 +203,7 @@ AuraEventService.prototype.get = function(name, callback) {
         }
         return this.getDefinition(name, callback);
     }
-    return this.newEvent(name);
+    return newEvent;
 };
 
 /**
@@ -271,16 +280,17 @@ AuraEventService.prototype.getDef = function(descriptor) {
     if(definition && !$A.clientService.allowAccess(definition)) {
         var context=$A.getContext();
         var message="Access Check Failed! EventService.getEventDef():'" + definition.getDescriptor().toString() + "' is not visible to '" + (context&&context.getCurrentAccess()) + "'.";
-        // if(context.enableAccessChecks) {
-        //     if(context.logAccessFailures){
-        //         $A.error(message);
-        //    }
-        //     return null;
-        // } else {
-        //     if(context.logAccessFailures){
+        //if(context.enableAccessChecks) {
+        //    if(context.logAccessFailures){
+        //        $A.error(message);
+        //   }
+        //    return null;
+        //} else {
+            $A.logger.reportError(new $A.auraError("[NoErrorObjectAvailable] " + message));
+            if(context.logAccessFailures){
                 $A.warning(message);
-            //}
-            //Intentional fallthrough
+            }
+            // Intentional fallthrough
         //}
     }
     
@@ -301,17 +311,18 @@ AuraEventService.prototype.hasDefinition = function(descriptor) {
     if(definition && !$A.clientService.allowAccess(definition)) {
         var context=$A.getContext();
         var message="Access Check Failed! EventService.hasDefinition():'" + definition.getDescriptor().toString() + "' is not visible to '" + (context&&context.getCurrentAccess()) + "'.";
-        if(context.enableAccessChecks) {
-           if(context.logAccessFailures){
-               $A.error(message);
-           }
-           return false;
-        }else{
+        //if(context.enableAccessChecks) {
+        //   if(context.logAccessFailures){
+        //       $A.error(message);
+        //   }
+        //   return false;
+        //}else{
+            $A.logger.reportError(new $A.auraError("[NoErrorObjectAvailable] " + message));
             if(context.logAccessFailures){
                 $A.warning(message);
             }
             //Intentional fallthrough
-        }
+        //}
     }
     return !!definition;
 };

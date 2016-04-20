@@ -142,7 +142,7 @@
      * Test to verify positioned panels have display:none added when hiding it. 
      * Bug: W-2653120
      */
-    testPositionedPanelHide: {
+    testPositionedPanelHideAndShow: {
     	attributes : {"testPanelType" : "panel", "testDirection" : "east", "testShowPointer" : true, "testReferenceElementSelector" : ".createPanelBtnClass"},
     	test: [function(cmp) {
     		this.createPanel(cmp);
@@ -153,10 +153,21 @@
     		panel = $A.getCmp(panelGlobalId);
     		panel.hide();
     	}, function(cmp) {
-    	$A.test.addWaitForWithFailureMessage("none", function () {
-            return $A.test.getStyle(panel.getElement(),'display')
-        }, "Positioned panels should have display:none when hiding it.");
-    	}]
+    		$A.test.addWaitForWithFailureMessage("none", function () {
+    			return $A.test.getStyle(panel.getElement(),'display')
+    		}, "Positioned panels should have display:none when hiding it.");
+    		$A.test.assertEquals(0, parseInt($A.test.getStyle(panel.getElement(),'opacity')), "Opacity of the panel should be 0 after hiding the panel");
+        /* TODO: Uncomment once W-2802284 is fixed
+        	panel.show();
+        }, function(cmp) {
+        	this.waitForPanelDialogOpen();
+        }, function(cmp) {
+        	$A.test.addWaitForWithFailureMessage("block", function () {
+    			return $A.test.getStyle(panel.getElement(),'display')
+    		}, "Positioned panels should have display:block after showing it.");
+    		$A.test.assertEquals(1, parseInt($A.test.getStyle(panel.getElement(),'opacity')), "Opacity of the panel should be 1 after showing the panel");
+        */
+		}]
     },
     
     /**
@@ -682,6 +693,21 @@
             }).fire();
     	}, function(cmp) {
     		this.waitForModalClose();
+    	}]
+    },
+    
+    testPanelDoesNotTrapFocus: {
+    	attributes : {"testTrapFocus" : false},
+    	test: [function(cmp) {
+    		this.createPanel(cmp);
+    	}, function(cmp) {
+    		this.waitForModalOpen();
+    	}, function(cmp) {
+    		var panel = cmp._panel;
+    		if (panel == null) {
+    			panel = this.getPanelFromDomElement(cmp, "modal");
+    		}
+    		$A.test.assertFalse(panel.get("v.trapFocus"), "trapFocus was not false");
     	}]
     },
     

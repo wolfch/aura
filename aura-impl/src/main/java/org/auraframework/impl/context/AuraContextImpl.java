@@ -566,7 +566,7 @@ public class AuraContextImpl implements AuraContext {
             throw new AuraRuntimeException("Attempt to retrieve unknown $Global variable: " + approvedName);
         }
         if (globalValues.containsKey(approvedName)) {
-            return globalValues.get(approvedName).getValue();
+        	return globalValues.get(approvedName).getValue();
         }
         return allowedGlobalValues.get(approvedName).getValue();
     }

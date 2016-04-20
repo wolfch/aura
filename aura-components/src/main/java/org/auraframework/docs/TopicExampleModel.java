@@ -26,7 +26,6 @@ import org.auraframework.def.DefDescriptor.DefType;
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.Definition;
 import org.auraframework.def.LibraryDefRef;
-import org.auraframework.def.IncludeDef;
 import org.auraframework.def.IncludeDefRef;
 import org.auraframework.def.LibraryDef;
 import org.auraframework.def.RootDefinition;
@@ -89,7 +88,7 @@ public class TopicExampleModel implements ModelInstance {
                     defs.add(new DefModel(libraryDef.getDescriptor()));
                     // Treat the included js files specially because they load source differently:
                     for (IncludeDefRef includeDef : libraryDef.getIncludes()) {
-                        includeDefs.add(new IncludeDefModel((DefDescriptor<IncludeDef>) includeDef.getDescriptor()));
+                        includeDefs.add(new IncludeDefModel(includeDef.getDescriptor()));
                     }
                 }
             }

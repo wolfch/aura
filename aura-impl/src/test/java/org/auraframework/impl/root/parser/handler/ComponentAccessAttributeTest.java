@@ -50,7 +50,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -65,7 +65,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access=''/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -86,7 +86,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='BLAH'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -107,7 +107,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='org.auraframework.impl.test.util.TestAccessMethods.invalid'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -130,7 +130,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='GLOBAL, BLAH, GLOBAL'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -152,7 +152,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
             String cmpSource = "<aura:component access='GLOBAL,org.auraframework.impl.test.util.TestAccessMethods.allowGlobal' />";
             DefDescriptor<ComponentDef> descriptor = 
                     getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                            cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
+                    cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
                             NamespaceAccess.CUSTOM);
             Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
             
@@ -174,7 +174,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='org.auraframework.impl.test.util.TestAccessMethods.allowGlobal,AUTHENTICATED'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -199,7 +199,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='GLOBAL'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -212,7 +212,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='PUBLIC'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -225,7 +225,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='PRIVATE'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -245,7 +245,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='INTERNAL'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -265,7 +265,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='PRIVILEGED'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -289,7 +289,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='org.auraframework.impl.test.util.TestAccessMethods.allowGlobal'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -308,7 +308,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='org.auraframework.impl.test.util.TestAccessMethods.allowPublic'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -327,7 +327,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='org.auraframework.impl.test.util.TestAccessMethods.allowPrivate'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -346,7 +346,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='org.auraframework.impl.test.util.TestAccessMethods.allowPrivileged'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -365,7 +365,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='org.auraframework.impl.test.util.TestAccessMethods.allowInternal'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -389,7 +389,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='GLOBAL, PRIVATE'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -411,7 +411,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='PUBLIC, PUBLIC'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -429,7 +429,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='AUTHENTICATED'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -449,7 +449,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='UNAUTHENTICATED'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -473,7 +473,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='org.auraframework.impl.test.util.TestAccessMethods.allowAuthenticated'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -496,7 +496,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='AUTHENTICATED,UNAUTHENTICATED'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -519,7 +519,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='AUTHENTICATED,AUTHENTICATED'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -542,7 +542,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='AUTHENTICATED,GLOBAL'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -561,7 +561,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='AUTHENTICATED,PRIVATE'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -580,7 +580,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='AUTHENTICATED,PUBLIC'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -599,7 +599,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='AUTHENTICATED,PRIVILEGED'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -618,7 +618,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='AUTHENTICATED,INTERNAL'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testComponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -643,7 +643,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -658,7 +658,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access=''/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -679,7 +679,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='BLAH'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -700,7 +700,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='org.auraframework.impl.test.util.TestAccessMethods.invalid'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -723,7 +723,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='GLOBAL, BLAH, GLOBAL'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -745,7 +745,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
             String cmpSource = "<aura:component access='GLOBAL,org.auraframework.impl.test.util.TestAccessMethods.allowGlobal' />";
             DefDescriptor<ComponentDef> descriptor = 
                     getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                            cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
+                    cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
                         NamespaceAccess.INTERNAL);
             Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
             
@@ -769,7 +769,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='org.auraframework.impl.test.util.TestAccessMethods.allowGlobal,AUTHENTICATED'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -794,7 +794,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='GLOBAL'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -807,7 +807,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='PUBLIC'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -821,7 +821,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='PRIVATE'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -841,7 +841,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='INTERNAL'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -854,7 +854,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='PRIVILEGED'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -873,7 +873,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='org.auraframework.impl.test.util.TestAccessMethods.allowGlobal'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -886,7 +886,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='org.auraframework.impl.test.util.TestAccessMethods.allowPublic'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -900,7 +900,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='org.auraframework.impl.test.util.TestAccessMethods.allowPrivate'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -913,7 +913,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='org.auraframework.impl.test.util.TestAccessMethods.allowPrivileged'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -926,7 +926,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='org.auraframework.impl.test.util.TestAccessMethods.allowInternal'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -945,7 +945,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='GLOBAL, PRIVATE'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -968,7 +968,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='PUBLIC, PUBLIC'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -986,7 +986,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='AUTHENTICATED'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1005,7 +1005,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='UNAUTHENTICATED'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1030,7 +1030,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='org.auraframework.impl.test.util.TestAccessMethods.allowAuthenticated'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1054,7 +1054,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='AUTHENTICATED,UNAUTHENTICATED'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1078,7 +1078,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='AUTHENTICATED,AUTHENTICATED'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1103,7 +1103,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='AUTHENTICATED,GLOBAL'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1122,7 +1122,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='AUTHENTICATED,PRIVATE'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1141,7 +1141,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='AUTHENTICATED,PUBLIC'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1160,7 +1160,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='AUTHENTICATED,PRIVILEGED'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1179,7 +1179,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='AUTHENTICATED,INTERNAL'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testComponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1207,7 +1207,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testComponent",
+                cmpSource, "privilegedNS:testComponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1222,7 +1222,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access=''/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testComponent",
+                cmpSource, "privilegedNS:testComponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1243,7 +1243,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='BLAH'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testComponent",
+                cmpSource, "privilegedNS:testComponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1264,7 +1264,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='org.auraframework.impl.test.util.TestAccessMethods.invalid'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testComponent",
+                cmpSource, "privilegedNS:testComponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1287,7 +1287,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='GLOBAL, BLAH, GLOBAL'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testComponent",
+                cmpSource, "privilegedNS:testComponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1309,7 +1309,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
             String cmpSource = "<aura:component access='GLOBAL,org.auraframework.impl.test.util.TestAccessMethods.allowGlobal' />";
             DefDescriptor<ComponentDef> descriptor = 
                     getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                            cmpSource, "privilegedNS:testComponent",
+                    cmpSource, "privilegedNS:testComponent",
                         NamespaceAccess.PRIVILEGED);
             Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
             
@@ -1331,7 +1331,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='org.auraframework.impl.test.util.TestAccessMethods.allowGlobal,AUTHENTICATED'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testComponent",
+                cmpSource, "privilegedNS:testComponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1357,7 +1357,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='GLOBAL'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testComponent",
+                cmpSource, "privilegedNS:testComponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1370,7 +1370,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='PUBLIC'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testComponent",
+                cmpSource, "privilegedNS:testComponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1383,7 +1383,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='PRIVATE'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testComponent",
+                cmpSource, "privilegedNS:testComponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1403,7 +1403,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='INTERNAL'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testComponent",
+                cmpSource, "privilegedNS:testComponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1423,7 +1423,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='PRIVILEGED'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testComponent",
+                cmpSource, "privilegedNS:testComponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1441,7 +1441,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='org.auraframework.impl.test.util.TestAccessMethods.allowGlobal'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testComponent",
+                cmpSource, "privilegedNS:testComponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1460,7 +1460,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='org.auraframework.impl.test.util.TestAccessMethods.allowPublic'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testComponent",
+                cmpSource, "privilegedNS:testComponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1479,7 +1479,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='org.auraframework.impl.test.util.TestAccessMethods.allowPrivate'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testComponent",
+                cmpSource, "privilegedNS:testComponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1498,7 +1498,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='org.auraframework.impl.test.util.TestAccessMethods.allowPrivileged'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testComponent",
+                cmpSource, "privilegedNS:testComponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1517,7 +1517,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='org.auraframework.impl.test.util.TestAccessMethods.allowInternal'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testComponent",
+                cmpSource, "privilegedNS:testComponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1542,7 +1542,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='GLOBAL, PRIVATE'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testComponent",
+                cmpSource, "privilegedNS:testComponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1565,7 +1565,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='PUBLIC, PUBLIC'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testComponent",
+                cmpSource, "privilegedNS:testComponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1583,7 +1583,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='AUTHENTICATED'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testComponent",
+                cmpSource, "privilegedNS:testComponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1602,7 +1602,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='UNAUTHENTICATED'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testComponent",
+                cmpSource, "privilegedNS:testComponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1627,7 +1627,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='org.auraframework.impl.test.util.TestAccessMethods.allowAuthenticated'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testComponent",
+                cmpSource, "privilegedNS:testComponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1651,7 +1651,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='AUTHENTICATED,UNAUTHENTICATED'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testComponent",
+                cmpSource, "privilegedNS:testComponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1674,7 +1674,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='AUTHENTICATED,AUTHENTICATED'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testComponent",
+                cmpSource, "privilegedNS:testComponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1698,7 +1698,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='AUTHENTICATED,GLOBAL'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testComponent",
+                cmpSource, "privilegedNS:testComponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1717,7 +1717,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='AUTHENTICATED,PRIVATE'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testComponent",
+                cmpSource, "privilegedNS:testComponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1736,7 +1736,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='AUTHENTICATED,PUBLIC'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testComponent",
+                cmpSource, "privilegedNS:testComponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1755,7 +1755,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='AUTHENTICATED,PRIVILEGED'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testComponent",
+                cmpSource, "privilegedNS:testComponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1774,7 +1774,7 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component access='AUTHENTICATED,INTERNAL'/>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testComponent",
+                cmpSource, "privilegedNS:testComponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         

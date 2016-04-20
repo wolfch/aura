@@ -56,7 +56,6 @@ import org.auraframework.util.json.Json;
 import org.auraframework.util.json.JsonEncoder;
 import org.auraframework.util.json.JsonReader;
 import org.auraframework.util.json.JsonStreamReader;
-import org.auraframework.util.test.annotation.UnAdaptableTest;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -226,8 +225,7 @@ public abstract class BaseComponentDefTest<T extends BaseComponentDef> extends R
     }
 
     @Test
-    @UnAdaptableTest("no locker service in core yet W-2930725")
-    public void testSerialize() throws Exception {
+    public void testSerializeWithAttributes() throws Exception {
         Map<DefDescriptor<AttributeDef>, AttributeDef> testAttributeDefs = ImmutableMap.of(
                 definitionService.getDefDescriptor("testAttributeDescriptorName", AttributeDef.class),
                 (AttributeDef) vendor.makeAttributeDefWithNulls(
@@ -237,18 +235,22 @@ public abstract class BaseComponentDefTest<T extends BaseComponentDef> extends R
                         vendor.makeAttributeDefRef("testAttributeDescriptorName", "testValue",
                                 vendor.makeLocation("filename1", 5, 5, 0)), false, null,
                         vendor.makeLocation("filename1", 5, 5, 0)));
-        List<ComponentDefRef> testChildren = ImmutableList.of(vendor.makeComponentDefRefWithNulls(
-                vendor.makeComponentDefDescriptor("test:text"), null, vendor.makeLocation("filename2", 10, 10, 0)));
         serializeAndGoldFile(vendor.makeBaseComponentDefWithNulls(getDefClass(),
-                "aura:test", testAttributeDefs, null, testChildren, vendor.makeLocation("filename1", 5, 5, 0), null,
+                "aura:test", testAttributeDefs, null, null, vendor.makeLocation("filename1", 5, 5, 0), null,
+                null, null, null, null, null, null, false, false));
+    }
+
+    public void testSerializeBasic() throws Exception {
+        serializeAndGoldFile(vendor.makeBaseComponentDefWithNulls(getDefClass(),
+                "aura:test", null, null, null, vendor.makeLocation("filename2", 10, 10, 0), null,
                 null, null, null, null, null, null, false, false, AuraContext.Access.INTERNAL));
     }
 
     @Test
-    @UnAdaptableTest("no locker service in core yet W-2930725")
-    public void testSerialize2() throws Exception {
+    public void testSerializeInLocker() throws Exception {
+        // Using a non-internal namespace will put the component in the Locker
         serializeAndGoldFile(vendor.makeBaseComponentDefWithNulls(getDefClass(),
-                "fake:component", null, null, null, vendor.makeLocation("filename2", 10, 10, 0), null,
+                "nonInternal:component", null, null, null, vendor.makeLocation("filename3", 10, 10, 0), null,
                 null, null, null, null, null, null, false, false, AuraContext.Access.PUBLIC));
     }
 
@@ -521,7 +523,7 @@ public abstract class BaseComponentDefTest<T extends BaseComponentDef> extends R
             define(baseTag, "renderer='oops'", "");
             fail("Should not be able to load component with invalid renderer");
         } catch (QuickFixException e) {
-            checkExceptionStart(e, DefinitionNotFoundException.class, "No RENDERER named js://oops found :");
+            checkExceptionStart(e, DefinitionNotFoundException.class, "No RENDERER named js://oops found");
         }
     }
 
@@ -547,7 +549,7 @@ public abstract class BaseComponentDefTest<T extends BaseComponentDef> extends R
             define(baseTag, "provider='oops'", "");
             fail("Should not be able to load component with invalid provider");
         } catch (QuickFixException e) {
-            checkExceptionStart(e, DefinitionNotFoundException.class, "No PROVIDER named java://oops found :");
+            checkExceptionStart(e, DefinitionNotFoundException.class, "No PROVIDER named java://oops found");
         }
     }
 

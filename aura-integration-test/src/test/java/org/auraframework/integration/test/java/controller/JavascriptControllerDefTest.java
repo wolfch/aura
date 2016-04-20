@@ -23,8 +23,10 @@ import java.util.Map;
 import org.auraframework.def.ActionDef;
 import org.auraframework.def.ControllerDef;
 import org.auraframework.def.DefDescriptor;
+import org.auraframework.expression.PropertyReference;
 import org.auraframework.impl.AuraImplTestCase;
 import org.auraframework.impl.DefinitionAccessImpl;
+import org.auraframework.impl.expression.PropertyReferenceImpl;
 import org.auraframework.impl.javascript.controller.JavascriptActionDef;
 import org.auraframework.impl.javascript.controller.JavascriptControllerDef;
 import org.auraframework.impl.javascript.controller.JavascriptPseudoAction;
@@ -45,6 +47,22 @@ public class JavascriptControllerDefTest extends AuraImplTestCase {
         builder.setAccess(new DefinitionAccessImpl(AuraContext.Access.PUBLIC));
         ControllerDef controllerDef = builder.build();
         assertFalse(controllerDef.isLocal());
+    }
+
+    @Test
+    public void testRetrieveLabelsWithInvalidLabelExpression() throws QuickFixException {
+        // the label expression is missing a part, "name"
+        PropertyReference propertyReference = new PropertyReferenceImpl("$Label.section", null);
+        JavascriptControllerDef.Builder builder = new JavascriptControllerDef.Builder();
+        builder.addExpressionRef(propertyReference);
+        ControllerDef controllerDef = builder.build();
+
+        try {
+            controllerDef.retrieveLabels();
+        } catch(Exception e) {
+            String expectMessage = "Labels should have a section and a name";
+            checkExceptionContains(e, InvalidExpressionException.class, expectMessage);
+        }
     }
 
     @Test

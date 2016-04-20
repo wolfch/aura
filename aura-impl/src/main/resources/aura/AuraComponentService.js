@@ -661,6 +661,13 @@ AuraComponentService.prototype.requestComponent = function(callbackScope, callba
             return;
         }
 
+        // We won't be able to do an access check if the access is invalid, so
+        // just skip trying to do anything. 
+        var currentAccess = $A.getContext().getCurrentAccess();
+        if(currentAccess && !currentAccess.isValid()) {
+            return;
+        }
+
         var newComp = null;
         var status= a.getState();
         var statusMessage='';
@@ -984,13 +991,14 @@ AuraComponentService.prototype.getControllerDef = function(descriptor) {
  * @param {Object} relationshipMap relationship map referencing ComponentDef descriptor
  * @param {Object} registry registry that hold definition type
  * @return {*} Def definition
+ * @private
  */
 AuraComponentService.prototype.getDefFromRelationship = function(descriptor, relationshipMap, registry) {
     var def = registry[descriptor];
     if (!def && relationshipMap[descriptor]) {
         var componentDefDescriptor = relationshipMap[descriptor];
         if (this.savedComponentConfigs[componentDefDescriptor]) {
-            this.getDef(componentDefDescriptor);
+            this.getComponentDef(this.createDescriptorConfig(componentDefDescriptor));
             return registry[descriptor];
         }
     }
@@ -1258,17 +1266,18 @@ AuraComponentService.prototype.saveComponentConfig = function(config) {
  * Asynchronously retrieves all definitions from storage and adds to saved component config or library registry.
  * @return {Promise} a promise that resolves when definitions are restored.
  */
-AuraComponentService.prototype.restoreDefsFromStorage = function () {
+AuraComponentService.prototype.restoreDefsFromStorage = function (context) {
     var defStorage = this.componentDefStorage.getStorage();
     if (!defStorage || !defStorage.isPersistent()) {
         // If the def storage is not persistent, that means that actions are not secure.
         // Which means that we might have partial pieces that we can use (layouts://), so
         // restore but do not block waiting since we are not dependent on them for start the app.
-        this.componentDefStorage.restoreAll();
+
+        this.componentDefStorage.restoreAll(context);
         return Promise["resolve"]();
     }
 
-    return this.componentDefStorage.restoreAll();
+    return this.componentDefStorage.restoreAll(context);
 };
 
 /**
@@ -1281,13 +1290,15 @@ AuraComponentService.prototype.clearDefsFromStorage = function () {
 
 /**
  * Saves component and library defs to persistent storage.
- * @param {Object} context the new context from which defs are to be stored.
+ * @param {Object} config the config bag from which defs are to be stored.
+ * @param {Object} context the context (already merged)
  * @return {Promise} promise which resolves when storing is complete. If errors occur during
  *  the process they are handled (and logged) so the returned promise always resolves.
  */
-AuraComponentService.prototype.saveDefsToStorage = function (context) {
-    var cmpConfigs = context["componentDefs"];
-    var libConfigs = context["libraryDefs"];
+AuraComponentService.prototype.saveDefsToStorage = function (config, context) {
+    var cmpConfigs = config["componentDefs"];
+    var libConfigs = config["libraryDefs"];
+
     if (cmpConfigs.length === 0 && libConfigs.length === 0) {
         return Promise["resolve"]();
     }
@@ -1304,8 +1315,8 @@ AuraComponentService.prototype.saveDefsToStorage = function (context) {
     return this.pruneDefsFromStorage(defSizeKb + libSizeKb)
         .then(
             function() {
-            return self.componentDefStorage.storeDefs(cmpConfigs, libConfigs);
-        }
+                return self.componentDefStorage.storeDefs(cmpConfigs, libConfigs, context);
+            }
         )
         .then(
             undefined, // noop
@@ -1484,8 +1495,7 @@ AuraComponentService.prototype.buildDependencyGraph = function() {
     // NOTE: AuraClientService.js' "$AuraClientService.token$" goes directly to the adapter, bypassing
     // the isolation key, so will never be returned by storage.getAll().
     var actionsBlackList = ["globalValueProviders",                                 /* GlobalValueProviders.js */
-                            "aura://ComponentController/ACTION$getApplication",     /* AuraClientService.js */
-                            "$AuraContext$"];                                       /* AuraContext.js */
+                            "aura://ComponentController/ACTION$getApplication"];    /* AuraClientService.js */
 
 
     var promises = [];

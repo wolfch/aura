@@ -37,7 +37,7 @@
     <!-- private attributes -->
     <aura:attribute name="_today" type="String" description="The date string (yyyy-MM-dd) of today based on the Aura time zone."/>
 
-    <aura:method name="highlightRange" action="{!c.highlightRange}" access="PUBLIC"
+    <aura:method name="highlightRange" action="{!c.highlightRange}"
                  description="highlight the dates between rangeStart and rangeEnd inclusive">
         <aura:attribute name="rangeStart" type="String" description="Start date of the range in the format yyyy-mm-dd"/>
         <aura:attribute name="rangeEnd" type="String" description="End date of the range in the format yyyy-mm-dd"/>
@@ -51,8 +51,8 @@
         <div class="scroller" aura:id="scroller" onclick="{!c.trapClicks}">
             <aura:if isTrue="{!v.hasTime}">
                 <div class="headerBar">
-                    <a aura:id="cancel" onclick="{!c.cancel}" class="calCancel button" href="javascript:void(0);">Cancel</a>
-                    <a aura:id="set" onclick="{!c.set}" class="calSet button" href="javascript:void(0);">Set</a>
+                    <a aura:id="cancel" onclick="{!c.cancel}" class="calCancel button">Cancel</a>
+                    <a aura:id="set" onclick="{!c.set}" class="calSet button">Set</a>
                 </div>
             </aura:if>
             <div class="dateBar">

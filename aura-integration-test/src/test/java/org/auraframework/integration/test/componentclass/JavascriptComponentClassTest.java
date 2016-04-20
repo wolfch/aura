@@ -31,6 +31,7 @@ import org.auraframework.def.ProviderDef;
 import org.auraframework.def.RendererDef;
 import org.auraframework.impl.AuraImplTestCase;
 import org.auraframework.impl.DefinitionAccessImpl;
+import org.auraframework.impl.root.component.JavascriptComponentClass;
 import org.auraframework.impl.root.component.ComponentDefImpl.Builder;
 import org.auraframework.system.AuraContext;
 import org.junit.Test;
@@ -58,13 +59,14 @@ public class JavascriptComponentClassTest extends AuraImplTestCase {
     }
 
     @Test
-    public void testwriteClassForPlainComponent() throws Exception {
-    	builder.build();
-    	this.goldFileText(builder.code);
+    public void testWriteClassForPlainComponent() throws Exception {
+        ComponentDef componentDef = builder.build();
+        JavascriptComponentClass javascriptClass = new JavascriptComponentClass.Builder().setDefinition(componentDef).build();
+    	this.goldFileText(javascriptClass.getCode());
     }
 
     @Test
-    public void testwriteClassForComponentWithClientController() throws Exception {
+    public void testWriteClassForComponentWithClientController() throws Exception {
         String controllerCode =
                 "({\n" +
                 "    funtion1: function(cmp, event, helper) {\n" +
@@ -74,12 +76,13 @@ public class JavascriptComponentClassTest extends AuraImplTestCase {
         DefDescriptor<ControllerDef> controllerDescriptor = addSourceAutoCleanup(ControllerDef.class, controllerCode);
 
         builder.addControllerDef(controllerDescriptor.getDef());
-        builder.build();
-    	this.goldFileText(builder.code);
+        ComponentDef componentDef = builder.build();
+        JavascriptComponentClass javascriptClass = new JavascriptComponentClass.Builder().setDefinition(componentDef).build();
+    	this.goldFileText(javascriptClass.getCode());
     }
 
     @Test
-    public void testwriteClassForComponentWithHelper() throws Exception {
+    public void testWriteClassForComponentWithHelper() throws Exception {
         String helperCode =
                 "({" +
                 "    funtion1:function() {\n" +
@@ -89,12 +92,13 @@ public class JavascriptComponentClassTest extends AuraImplTestCase {
         DefDescriptor<HelperDef> helperDescriptor = addSourceAutoCleanup(HelperDef.class, helperCode);
 
         builder.addHelper(helperDescriptor.getQualifiedName());
-    	builder.build();
-    	this.goldFileText(builder.code);
+        ComponentDef componentDef = builder.build();
+        JavascriptComponentClass javascriptClass = new JavascriptComponentClass.Builder().setDefinition(componentDef).build();
+    	this.goldFileText(javascriptClass.getCode());
     }
 
     @Test
-    public void testwriteClassForComponentWithClientProvider() throws Exception {
+    public void testWriteClassForComponentWithClientProvider() throws Exception {
         
         String providerCode =
                 "({\n" +
@@ -105,12 +109,13 @@ public class JavascriptComponentClassTest extends AuraImplTestCase {
         DefDescriptor<ProviderDef> providerDescriptor = addSourceAutoCleanup(ProviderDef.class, providerCode);
         
     	builder.addProvider(providerDescriptor.getQualifiedName());
-    	builder.build();
-    	this.goldFileText(builder.code);
+        ComponentDef componentDef = builder.build();
+        JavascriptComponentClass javascriptClass = new JavascriptComponentClass.Builder().setDefinition(componentDef).build();
+    	this.goldFileText(javascriptClass.getCode());
     }
 
     @Test
-    public void testwriteClassForComponentWithClientRenderer() throws Exception {
+    public void testWriteClassForComponentWithClientRenderer() throws Exception {
         String rendererCode =
                 "({\n" +
                 "    render: function(cmp) {\n" +
@@ -120,23 +125,25 @@ public class JavascriptComponentClassTest extends AuraImplTestCase {
         DefDescriptor<RendererDef> rendererDescriptor = addSourceAutoCleanup(RendererDef.class, rendererCode);
 
         builder.addRendererDef(rendererDescriptor.getDef());
-    	builder.build();
-    	this.goldFileText(builder.code);
+        ComponentDef componentDef = builder.build();
+        JavascriptComponentClass javascriptClass = new JavascriptComponentClass.Builder().setDefinition(componentDef).build();
+    	this.goldFileText(javascriptClass.getCode());
     }
 
     @Test
-    public void testwriteClassForComponentWithClientEmptyRenderer() throws Exception {
+    public void testWriteClassForComponentWithClientEmptyRenderer() throws Exception {
         String rendererCode = "({ })";
         DefDescriptor<RendererDef> rendererDescriptor = addSourceAutoCleanup(RendererDef.class, rendererCode);
 
         builder.addRendererDef(rendererDescriptor.getDef());
-    	builder.build();
-    	this.goldFileText(builder.code);
+        ComponentDef componentDef = builder.build();
+        JavascriptComponentClass javascriptClass = new JavascriptComponentClass.Builder().setDefinition(componentDef).build();
+    	this.goldFileText(javascriptClass.getCode());
     }
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testwriteClassForComponentImportsLib() throws Exception {
+    public void testWriteClassForComponentImportsLib() throws Exception {
 
         DefDescriptor<LibraryDef> libraryDescriptor = mock(DefDescriptor.class);
         when(libraryDescriptor.getDescriptorName()).thenReturn("test:testLibrary");
@@ -154,20 +161,57 @@ public class JavascriptComponentClassTest extends AuraImplTestCase {
         importDefs.add(mockImportDef2);
 
         builder.imports = importDefs;
-    	builder.build();
-    	this.goldFileText(builder.code);
+        ComponentDef componentDef = builder.build();
+        JavascriptComponentClass javascriptClass = new JavascriptComponentClass.Builder().setDefinition(componentDef).build();
+    	this.goldFileText(javascriptClass.getCode());
     }
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testwriteClassForComponentExtendingOtherComponent() throws Exception {
-
-        DefDescriptor<ComponentDef> mockSuperCmpDescriptor = mock(DefDescriptor.class);
+    public void testWriteClassForComponentExtendingOtherComponent() throws Exception {
         // mock testing component's super component def descriptor
-        when(mockSuperCmpDescriptor.getQualifiedName()).thenReturn("markup://test:superComponent");
+        DefDescriptor<ComponentDef> mockParentDescriptor = mock(DefDescriptor.class);
+        when(mockParentDescriptor.getQualifiedName()).thenReturn("markup://test:superComponent");
+        
+        builder.extendsDescriptor = mockParentDescriptor;
+        ComponentDef componentDef = builder.build();
+        JavascriptComponentClass javascriptClass = new JavascriptComponentClass.Builder().setDefinition(componentDef).build();
+    	this.goldFileText(javascriptClass.getCode());
+    }
 
-        builder.extendsDescriptor = mockSuperCmpDescriptor;
-    	builder.build();
-    	this.goldFileText(builder.code);
+    public void testWriteClassForLockerComponentMinified() throws Exception {
+        // Fake a non-internal namespace so component is put in Locker
+        Mockito.doReturn("nonInternal").when(descriptor).getNamespace();
+
+        // We need more than the base component to get minified code
+        String controllerCode =
+                "({\n" +
+                "    funtion1: function(cmp, event, helper) {\n" +
+                "        cmp.get('bla');\n" +
+                "    }\n" +
+                "})\n";
+        DefDescriptor<ControllerDef> controllerDescriptor = addSourceAutoCleanup(ControllerDef.class, controllerCode);
+        builder.addControllerDef(controllerDescriptor.getDef());
+        ComponentDef def = builder.build();
+        JavascriptComponentClass javascriptClass = new JavascriptComponentClass.Builder().setDefinition(def).build();
+        this.goldFileText(javascriptClass.getMinifiedCode());
+    }
+
+    public void testWriteClassForLockerComponentUnminified() throws Exception {
+        // Fake a non-internal namespace so component is put in Locker
+        Mockito.doReturn("nonInternal").when(descriptor).getNamespace();
+
+        // We need more than the base component to get minified code
+        String controllerCode =
+                "({\n" +
+                "    funtion1: function(cmp, event, helper) {\n" +
+                "        cmp.get('bla');\n" +
+                "    }\n" +
+                "})\n";
+        DefDescriptor<ControllerDef> controllerDescriptor = addSourceAutoCleanup(ControllerDef.class, controllerCode);
+        builder.addControllerDef(controllerDescriptor.getDef());
+        ComponentDef def = builder.build();
+        JavascriptComponentClass javascriptClass = new JavascriptComponentClass.Builder().setDefinition(def).build();
+        this.goldFileText(javascriptClass.getCode());
     }
 }

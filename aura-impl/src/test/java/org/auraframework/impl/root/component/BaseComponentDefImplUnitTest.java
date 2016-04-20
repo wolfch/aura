@@ -46,9 +46,7 @@ import org.auraframework.service.DefinitionService;
 import org.auraframework.system.AuraContext.Authentication;
 import org.auraframework.system.AuraContext.Format;
 import org.auraframework.system.AuraContext.Mode;
-import org.auraframework.system.Location;
 import org.auraframework.throwable.AuraRuntimeException;
-import org.auraframework.throwable.NoAccessException;
 import org.auraframework.throwable.quickfix.InvalidAccessValueException;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
 import org.auraframework.throwable.quickfix.QuickFixException;
@@ -150,17 +148,17 @@ public abstract class BaseComponentDefImplUnitTest<I extends BaseComponentDefImp
         setupTemplate(true);
         D def = buildDefinition();
         
-        // verify that controllerDef was called while building the definition
-        Mockito.verify(this.mockControllerDesc, Mockito.times(1)).getDef();
+        // verify that controllerDef was not called while building the definition
+        Mockito.verify(this.mockControllerDesc, Mockito.times(0)).getDef();
 
         def.validateDefinition();
 
         //verify we didn't touch controllerDef during validateDefinition
-        Mockito.verify(this.mockControllerDesc, Mockito.times(1)).getDef();
+        Mockito.verify(this.mockControllerDesc, Mockito.times(0)).getDef();
         //verify we didn't touch modelDef during build and validateDefinition, that's validateReference's job       
         Mockito.verify(this.modelDefDescriptor, Mockito.times(0)).getDef();
     }
-
+    
     @Test
     public void testValidateReferencesExpressionToOwnPrivateAttribute() throws Exception {
         setupValidateReferences();
@@ -189,42 +187,6 @@ public abstract class BaseComponentDefImplUnitTest<I extends BaseComponentDefImp
         //buildDefinition().validateReferences();
     }
 
-    @Test
-    public void testValidateReferencesExpressionToSuperPrivateAttribute() throws Exception {
-        setupValidateReferences();
-
-        DefDescriptor<AttributeDef> attrDesc = definitionService.getDefDescriptor("privateAttribute", AttributeDef.class);
-        AttributeDef attrDef = Mockito.mock(AttributeDef.class);
-        Mockito.doReturn(attrDesc).when(attrDef).getDescriptor();
-        Mockito.doReturn(PRIVATE_ACCESS).when(attrDef).getAccess();
-
-        @SuppressWarnings("unchecked")
-        D parentDef = (D) Mockito.mock(getBuilder().getClass().getDeclaringClass());
-        Mockito.doReturn(this.extendsDescriptor).when(parentDef).getDescriptor();
-        Mockito.doReturn(ImmutableMap.of(attrDesc, attrDef)).when(parentDef).getAttributeDefs();
-        Mockito.doReturn(true).when(parentDef).isExtensible();
-        Mockito.doReturn(SupportLevel.GA).when(parentDef).getSupport();
-        Mockito.doReturn(parentDef).when(this.extendsDescriptor).getDef();
-        Mockito.doReturn(PRIVATE_ACCESS).when(parentDef).getAccess();
-        Mockito.doReturn(DefType.COMPONENT).when(this.extendsDescriptor).getDefType();
-
-        Location exprLocation = new Location("expression", 0);
-        this.expressionRefs = Sets.newHashSet();
-        this.expressionRefs.add(new PropertyReferenceImpl("v.privateAttribute", exprLocation));
-        this.attributeDefs = ImmutableMap.of();
-        setupTemplate(true);
-        modelDefDescriptor = null;
-
-        try {
-            buildDefinition().validateReferences();
-            fail("Expected an exception when trying to refer to a private attribute in an expression");
-        } catch (NoAccessException t) {
-            assertExceptionMessageStartsWith(t, NoAccessException.class,
-                    "Access to COMPONENT");
-            //FIXME: we should have a better location here.
-            //assertEquals(exprLocation, ((NoAccessException) t).getLocation());
-        }
-    }
 
     @Test
     public void testTemplateMustBeTemplate() throws Exception {
@@ -239,40 +201,6 @@ public abstract class BaseComponentDefImplUnitTest<I extends BaseComponentDefImp
             assertExceptionMessageStartsWith(t, InvalidDefinitionException.class,
                     String.format("Template %s must be marked as a template", templateDefDescriptor));
         }
-    }
-
-    @Test
-    public void testValidateReferencesExpressionToOwnPrivateAttributeOverridingSuper() throws Exception {
-        setupValidateReferences();
-
-        DefDescriptor<AttributeDef> attrDesc = definitionService.getDefDescriptor("privateAttribute", AttributeDef.class);
-        AttributeDef attrDef = Mockito.mock(AttributeDef.class);
-        Mockito.doReturn(attrDesc).when(attrDef).getDescriptor();
-        Mockito.doReturn(PRIVATE_ACCESS).when(attrDef).getAccess();
-
-        @SuppressWarnings("unchecked")
-        D parentDef = (D) Mockito.mock(getBuilder().getClass().getDeclaringClass());
-        Mockito.doReturn(this.extendsDescriptor).when(parentDef).getDescriptor();
-        Mockito.doReturn(ImmutableMap.of(attrDesc, attrDef)).when(parentDef).getAttributeDefs();
-        Mockito.doReturn(true).when(parentDef).isExtensible();
-        Mockito.doReturn(SupportLevel.GA).when(parentDef).getSupport();
-        Mockito.doReturn(parentDef).when(this.extendsDescriptor).getDef();
-        Mockito.doReturn(PRIVATE_ACCESS).when(parentDef).getAccess();
-        Mockito.doReturn(DefType.COMPONENT).when(this.extendsDescriptor).getDefType();
-
-        this.expressionRefs = Sets.newHashSet();
-        this.expressionRefs.add(new PropertyReferenceImpl("v.privateAttribute", null));
-        this.attributeDefs = ImmutableMap.of(attrDesc, attrDef);
-        this.modelDefDescriptor = null;
-
-        setupTemplate(true);
-
-        try {
-            buildDefinition().validateReferences();
-        } catch (NoAccessException expected) {
-            return;
-        }
-        fail("Should have failed with a no access exception");
     }
 
     @Override
@@ -310,5 +238,6 @@ public abstract class BaseComponentDefImplUnitTest<I extends BaseComponentDefImp
         Mockito.doReturn(this.templateDef).when(this.templateDefDescriptor).getDef();
         Mockito.doReturn(this.templateDefDescriptor).when(this.templateDef).getDescriptor();
         Mockito.doReturn(isTemplate).when(this.templateDef).isTemplate();
+        Mockito.doReturn(GLOBAL_ACCESS).when(this.templateDef).getAccess();
     }
 }

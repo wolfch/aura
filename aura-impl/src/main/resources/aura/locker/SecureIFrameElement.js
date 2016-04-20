@@ -24,24 +24,27 @@ function SecureIFrameElement(el, key) {
             }
         }
     });
+    
     Object.defineProperties(o, {
         // Standard list of iframe's properties from:
         // https://developer.mozilla.org/en-US/docs/Web/API/HTMLIFrameElement
         // Note: ignoring 'contentDocument', 'contentWindow', 'sandbox' and 'srcdoc' from the list above.
-        height: SecureThing.createFilteredProperty(o, el, "height"),
-        width: SecureThing.createFilteredProperty(o, el, "width"),
-        name: SecureThing.createFilteredProperty(o, el, "name"),
-        src: SecureThing.createFilteredProperty(o, el, "src"),
+        height: SecureObject.createFilteredProperty(o, el, "height"),
+        width: SecureObject.createFilteredProperty(o, el, "width"),
+        name: SecureObject.createFilteredProperty(o, el, "name"),
+        src: SecureObject.createFilteredProperty(o, el, "src"),
 
         // Standard HTMLElement methods
         // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement#Methods
-        blur: SecureThing.createFilteredMethod(o, el, "blur"),
-        focus: SecureThing.createFilteredMethod(o, el, "focus")
+        blur: SecureObject.createFilteredMethod(o, el, "blur"),
+        focus: SecureObject.createFilteredMethod(o, el, "focus")
     });
+    
     // applying standard secure element properties
     SecureElement.addSecureProperties(o, el);
 
     setLockerSecret(o, "key", key);
     setLockerSecret(o, "ref", el);
-    return Object.seal(o);
+    
+    return o;
 }

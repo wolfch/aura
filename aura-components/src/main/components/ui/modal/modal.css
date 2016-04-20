@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+/* should be able to remove this next rule after ie11 support is dropped */
+.THIS {
+    position: fixed;
+}
+
 .THIS .hidden {
     display: none;
 }
@@ -140,3 +145,17 @@
     100% { transform:scale3d(1,1,1) }
 }
 
+/**** to/from center *****/
+@keyframes movefromcenter{
+    from {
+         -webkit-transform:scale3d(.97,.97,1);
+         transform:scale3d(.97,.97,1);
+    }
+}
+
+@keyframes movetocenter {
+    to { 
+        -webkit-transform:scale3d(.97,.97,1);
+        transform:scale3d(.97,.97,1);
+    }
+}

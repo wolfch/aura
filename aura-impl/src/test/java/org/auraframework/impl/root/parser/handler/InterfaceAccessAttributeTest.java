@@ -36,8 +36,8 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
 
     @Inject
     private ParserFactory parserFactory;
-
-    /***********************************************************************************
+	
+	/***********************************************************************************
      ******************* Tests for Internal Namespace start ****************************
      ************************************************************************************/
     
@@ -47,7 +47,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
                         NamespaceAccess.INTERNAL);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -62,7 +62,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access=''/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
                         NamespaceAccess.INTERNAL);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -83,7 +83,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='BLAH'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
                         NamespaceAccess.INTERNAL);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -104,7 +104,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='org.auraframework.impl.test.util.TestAccessMethods.invalid'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
                         NamespaceAccess.INTERNAL);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -127,7 +127,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='GLOBAL, BLAH, GLOBAL'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
                         NamespaceAccess.INTERNAL);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -149,7 +149,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
             String intfSource = "<aura:interface access='GLOBAL,org.auraframework.impl.test.util.TestAccessMethods.allowGlobal' />";
             DefDescriptor<InterfaceDef> descriptor = 
                     getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                            intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
+                    intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
                         NamespaceAccess.INTERNAL);
             Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
             
@@ -171,7 +171,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='org.auraframework.impl.test.util.TestAccessMethods.allowGlobal,AUTHENTICATED'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
                         NamespaceAccess.INTERNAL);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -196,7 +196,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='GLOBAL'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
                         NamespaceAccess.INTERNAL);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -209,7 +209,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='PUBLIC'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
                         NamespaceAccess.INTERNAL);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -223,7 +223,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='PRIVATE'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
                         NamespaceAccess.INTERNAL);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -243,7 +243,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='INTERNAL'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
                         NamespaceAccess.INTERNAL);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -256,7 +256,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='PRIVILEGED'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
                         NamespaceAccess.INTERNAL);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -275,7 +275,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='org.auraframework.impl.test.util.TestAccessMethods.allowGlobal'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
                         NamespaceAccess.INTERNAL);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -288,7 +288,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='org.auraframework.impl.test.util.TestAccessMethods.allowPublic'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
                         NamespaceAccess.INTERNAL);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -302,7 +302,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='org.auraframework.impl.test.util.TestAccessMethods.allowPrivate'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
                         NamespaceAccess.INTERNAL);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -315,7 +315,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='org.auraframework.impl.test.util.TestAccessMethods.allowPrivileged'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
                         NamespaceAccess.INTERNAL);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -328,7 +328,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='org.auraframework.impl.test.util.TestAccessMethods.allowInternal'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
                         NamespaceAccess.INTERNAL);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -347,7 +347,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='GLOBAL, PRIVATE'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
                         NamespaceAccess.INTERNAL);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -370,7 +370,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='PUBLIC, PUBLIC'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
                         NamespaceAccess.INTERNAL);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -388,7 +388,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='AUTHENTICATED'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
                         NamespaceAccess.INTERNAL);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -407,7 +407,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='UNAUTHENTICATED'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
                         NamespaceAccess.INTERNAL);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -432,7 +432,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='org.auraframework.impl.test.util.TestAccessMethods.allowAuthenticated'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
                         NamespaceAccess.INTERNAL);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -456,7 +456,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='AUTHENTICATED,UNAUTHENTICATED'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
                         NamespaceAccess.INTERNAL);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -479,7 +479,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='AUTHENTICATED,AUTHENTICATED'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
                         NamespaceAccess.INTERNAL);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -504,7 +504,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='AUTHENTICATED,GLOBAL'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
                         NamespaceAccess.INTERNAL);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -523,7 +523,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='AUTHENTICATED,PRIVATE'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
                         NamespaceAccess.INTERNAL);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -542,7 +542,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='AUTHENTICATED,PUBLIC'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
                         NamespaceAccess.INTERNAL);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -561,7 +561,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='AUTHENTICATED,PRIVILEGED'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
                         NamespaceAccess.INTERNAL);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -580,7 +580,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='AUTHENTICATED,INTERNAL'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_NAMESPACE+":testInterface",
                         NamespaceAccess.INTERNAL);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -608,7 +608,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, "privilegedNS:testInterface",
+                intfSource, "privilegedNS:testInterface",
                         NamespaceAccess.PRIVILEGED);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -623,7 +623,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access=''/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, "privilegedNS:testInterface",
+                intfSource, "privilegedNS:testInterface",
                         NamespaceAccess.PRIVILEGED);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -644,7 +644,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='BLAH'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, "privilegedNS:testInterface",
+                intfSource, "privilegedNS:testInterface",
                         NamespaceAccess.PRIVILEGED);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -665,7 +665,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='org.auraframework.impl.test.util.TestAccessMethods.invalid'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, "privilegedNS:testInterface",
+                intfSource, "privilegedNS:testInterface",
                         NamespaceAccess.PRIVILEGED);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -688,7 +688,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='GLOBAL, BLAH, GLOBAL'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, "privilegedNS:testInterface",
+                intfSource, "privilegedNS:testInterface",
                         NamespaceAccess.PRIVILEGED);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -710,7 +710,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
             String intfSource = "<aura:interface access='GLOBAL,org.auraframework.impl.test.util.TestAccessMethods.allowGlobal' />";
             DefDescriptor<InterfaceDef> descriptor = 
                     getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                            intfSource, "privilegedNS:testInterface",
+                    intfSource, "privilegedNS:testInterface",
                         NamespaceAccess.PRIVILEGED);
             Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
             
@@ -732,7 +732,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='org.auraframework.impl.test.util.TestAccessMethods.allowGlobal,AUTHENTICATED'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, "privilegedNS:testInterface",
+                intfSource, "privilegedNS:testInterface",
                         NamespaceAccess.PRIVILEGED);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -758,7 +758,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='GLOBAL'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, "privilegedNS:testInterface",
+                intfSource, "privilegedNS:testInterface",
                         NamespaceAccess.PRIVILEGED);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -771,7 +771,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='PUBLIC'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, "privilegedNS:testInterface",
+                intfSource, "privilegedNS:testInterface",
                         NamespaceAccess.PRIVILEGED);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -784,7 +784,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='PRIVATE'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, "privilegedNS:testInterface",
+                intfSource, "privilegedNS:testInterface",
                         NamespaceAccess.PRIVILEGED);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -804,7 +804,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='INTERNAL'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, "privilegedNS:testInterface",
+                intfSource, "privilegedNS:testInterface",
                         NamespaceAccess.PRIVILEGED);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -824,7 +824,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='PRIVILEGED'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, "privilegedNS:testInterface",
+                intfSource, "privilegedNS:testInterface",
                         NamespaceAccess.PRIVILEGED);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -842,7 +842,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='org.auraframework.impl.test.util.TestAccessMethods.allowGlobal'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, "privilegedNS:testInterface",
+                intfSource, "privilegedNS:testInterface",
                         NamespaceAccess.PRIVILEGED);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -861,7 +861,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='org.auraframework.impl.test.util.TestAccessMethods.allowPublic'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, "privilegedNS:testInterface",
+                intfSource, "privilegedNS:testInterface",
                         NamespaceAccess.PRIVILEGED);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -880,7 +880,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='org.auraframework.impl.test.util.TestAccessMethods.allowPrivate'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, "privilegedNS:testInterface",
+                intfSource, "privilegedNS:testInterface",
                         NamespaceAccess.PRIVILEGED);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -899,7 +899,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='org.auraframework.impl.test.util.TestAccessMethods.allowPrivileged'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, "privilegedNS:testInterface",
+                intfSource, "privilegedNS:testInterface",
                         NamespaceAccess.PRIVILEGED);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -918,7 +918,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='org.auraframework.impl.test.util.TestAccessMethods.allowInternal'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, "privilegedNS:testInterface",
+                intfSource, "privilegedNS:testInterface",
                         NamespaceAccess.PRIVILEGED);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -943,7 +943,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='GLOBAL, PRIVATE'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, "privilegedNS:testInterface",
+                intfSource, "privilegedNS:testInterface",
                         NamespaceAccess.PRIVILEGED);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -966,7 +966,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='PUBLIC, PUBLIC'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, "privilegedNS:testInterface",
+                intfSource, "privilegedNS:testInterface",
                         NamespaceAccess.PRIVILEGED);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -984,7 +984,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='AUTHENTICATED'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, "privilegedNS:testInterface",
+                intfSource, "privilegedNS:testInterface",
                         NamespaceAccess.PRIVILEGED);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1003,7 +1003,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='UNAUTHENTICATED'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, "privilegedNS:testInterface",
+                intfSource, "privilegedNS:testInterface",
                         NamespaceAccess.PRIVILEGED);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1028,7 +1028,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='org.auraframework.impl.test.util.TestAccessMethods.allowAuthenticated'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, "privilegedNS:testInterface",
+                intfSource, "privilegedNS:testInterface",
                         NamespaceAccess.PRIVILEGED);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1052,7 +1052,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='AUTHENTICATED,UNAUTHENTICATED'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, "privilegedNS:testInterface",
+                intfSource, "privilegedNS:testInterface",
                         NamespaceAccess.PRIVILEGED);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1075,7 +1075,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='AUTHENTICATED,AUTHENTICATED'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, "privilegedNS:testInterface",
+                intfSource, "privilegedNS:testInterface",
                         NamespaceAccess.PRIVILEGED);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1099,7 +1099,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='AUTHENTICATED,GLOBAL'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, "privilegedNS:testInterface",
+                intfSource, "privilegedNS:testInterface",
                         NamespaceAccess.PRIVILEGED);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1118,7 +1118,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='AUTHENTICATED,PRIVATE'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, "privilegedNS:testInterface",
+                intfSource, "privilegedNS:testInterface",
                         NamespaceAccess.PRIVILEGED);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1137,7 +1137,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='AUTHENTICATED,PUBLIC'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, "privilegedNS:testInterface",
+                intfSource, "privilegedNS:testInterface",
                         NamespaceAccess.PRIVILEGED);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1156,7 +1156,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='AUTHENTICATED,PRIVILEGED'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, "privilegedNS:testInterface",
+                intfSource, "privilegedNS:testInterface",
                         NamespaceAccess.PRIVILEGED);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1175,7 +1175,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='AUTHENTICATED,INTERNAL'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, "privilegedNS:testInterface",
+                intfSource, "privilegedNS:testInterface",
                         NamespaceAccess.PRIVILEGED);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1206,7 +1206,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
                         NamespaceAccess.CUSTOM);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1221,7 +1221,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access=''/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
                         NamespaceAccess.CUSTOM);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1242,7 +1242,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='BLAH'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
                         NamespaceAccess.CUSTOM);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1263,7 +1263,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='org.auraframework.impl.test.util.TestAccessMethods.invalid'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
                         NamespaceAccess.CUSTOM);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1286,7 +1286,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='GLOBAL, BLAH, GLOBAL'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
                         NamespaceAccess.CUSTOM);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1308,7 +1308,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
             String intfSource = "<aura:interface access='GLOBAL,org.auraframework.impl.test.util.TestAccessMethods.allowGlobal' />";
             DefDescriptor<InterfaceDef> descriptor = 
                     getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                            intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
+                    intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
                         NamespaceAccess.CUSTOM);
             Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
             
@@ -1330,7 +1330,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='org.auraframework.impl.test.util.TestAccessMethods.allowGlobal,AUTHENTICATED'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
                         NamespaceAccess.CUSTOM);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1355,7 +1355,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='GLOBAL'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
                         NamespaceAccess.CUSTOM);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1368,7 +1368,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='PUBLIC'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, "privilegedNS:testInterface",
+                intfSource, "privilegedNS:testInterface",
                         NamespaceAccess.PRIVILEGED);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1381,7 +1381,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='PRIVATE'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
                         NamespaceAccess.CUSTOM);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1401,7 +1401,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='INTERNAL'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
                         NamespaceAccess.CUSTOM);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1421,7 +1421,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='PRIVILEGED'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
                         NamespaceAccess.CUSTOM);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1445,7 +1445,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='org.auraframework.impl.test.util.TestAccessMethods.allowGlobal'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
                         NamespaceAccess.CUSTOM);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1464,7 +1464,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='org.auraframework.impl.test.util.TestAccessMethods.allowPublic'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
                         NamespaceAccess.CUSTOM);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1483,7 +1483,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='org.auraframework.impl.test.util.TestAccessMethods.allowPrivate'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
                         NamespaceAccess.CUSTOM);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1502,7 +1502,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='org.auraframework.impl.test.util.TestAccessMethods.allowPrivileged'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
                         NamespaceAccess.CUSTOM);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1521,7 +1521,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='org.auraframework.impl.test.util.TestAccessMethods.allowInternal'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
                         NamespaceAccess.CUSTOM);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1545,7 +1545,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='GLOBAL, PRIVATE'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
                         NamespaceAccess.CUSTOM);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1567,7 +1567,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='PUBLIC, PUBLIC'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
                         NamespaceAccess.CUSTOM);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1585,7 +1585,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='AUTHENTICATED'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
                         NamespaceAccess.CUSTOM);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1605,7 +1605,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='UNAUTHENTICATED'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, "privilegedNS:testInterface",
+                intfSource, "privilegedNS:testInterface",
                         NamespaceAccess.PRIVILEGED);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1629,7 +1629,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='org.auraframework.impl.test.util.TestAccessMethods.allowAuthenticated'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
                         NamespaceAccess.CUSTOM);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1652,7 +1652,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='AUTHENTICATED,UNAUTHENTICATED'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
                         NamespaceAccess.CUSTOM);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1675,7 +1675,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='AUTHENTICATED,AUTHENTICATED'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
                         NamespaceAccess.CUSTOM);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1698,7 +1698,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='AUTHENTICATED,GLOBAL'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
                         NamespaceAccess.CUSTOM);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1717,7 +1717,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='AUTHENTICATED,PRIVATE'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
                         NamespaceAccess.CUSTOM);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1736,7 +1736,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='AUTHENTICATED,PUBLIC'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
                         NamespaceAccess.CUSTOM);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1755,7 +1755,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='AUTHENTICATED,PRIVILEGED'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
                         NamespaceAccess.CUSTOM);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1774,7 +1774,7 @@ public class InterfaceAccessAttributeTest extends AuraImplTestCase {
         String intfSource = "<aura:interface access='AUTHENTICATED,INTERNAL'/>";
         DefDescriptor<InterfaceDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class,
-                        intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
+                intfSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testInterface",
                         NamespaceAccess.CUSTOM);
         Source<InterfaceDef> source = stringSourceLoader.getSource(descriptor);
         

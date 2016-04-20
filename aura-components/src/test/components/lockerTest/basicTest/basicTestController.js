@@ -30,18 +30,6 @@
                 + " to be a SecureWindow");
     },
     
-    testSecureElementFrozenAfterCreation_FromMarkup: function(cmp, event, helper) {
-        var testUtils = cmp.get("v.testUtils");
-        var div = cmp.find("content").getElement();
-        helper.doTestSecureElementFrozenAfterCreation(testUtils, div);
-    },
-    
-    testSecureElementFrozenAfterCreation_DynamicallyCreated: function(cmp, event, helper) {
-        var testUtils = cmp.get("v.testUtils");
-        var div = document.createElement("div");
-        helper.doTestSecureElementFrozenAfterCreation(testUtils, div);
-    },
-    
     testAppendDynamicallyCreatedDivToMarkup: function(cmp) {
         var testUtils = cmp.get("v.testUtils");
         var div = document.createElement("div");
@@ -71,6 +59,33 @@
         } catch (e) {
             testUtils.assertStartsWith("TypeError", e.toString(), "Unexpected error. Expected TypeError, got " + e);
         }
+    },
+
+    testSetTimeoutNonFunctionParamExploit: function(cmp) {
+        var testUtils = cmp.get("v.testUtils");
+        try {
+            setTimeout({ bind: function() { 
+                return function() { 
+                    alert(this); 
+                };
+            }});
+            testUtils.fail("setTimeout with a non-function parameter should throw error");
+        } catch (e) {
+            testUtils.assertStartsWith("TypeError", e.toString(), "Unexpected error. Expected TypeError, got " + e);
+        }
+    },
+
+    testComponentUnfilteredFromUserToSystemMode: function(cmp) {
+        var testUtils = cmp.get("v.testUtils");
+        var secureComponent = cmp.find("innerCmp");
+        // Make sure it's really a SecureComponent before setting
+        testUtils.assertStartsWith("SecureComponent", secureComponent.toString());
+        cmp.set("v.componentStore", secureComponent);
+    },
+
+    testLocationExposed: function(cmp) {
+        var testUtils = cmp.get("v.testUtils");
+        testUtils.assertDefined(location, "Expected location to be defined");
     },
 
 	testEvalBlocking : function(cmp, event, helper) {

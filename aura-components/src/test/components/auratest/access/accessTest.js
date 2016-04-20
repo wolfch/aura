@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 ({
+	
+	labels : ["UnAdaptableTest"],
+	
     testComponentCanUseAllAccessLevelsInMarkup:{
         test:function(cmp){
             var expected="PRIVATE\nPUBLIC\nINTERNAL\nGLOBAL";
@@ -146,15 +149,6 @@
 
                 var actual = cmp.get("v.output").getDef().getDescriptor().getQualifiedName();
                 $A.test.assertEquals(expected, actual);
-            },
-            function canAccessPrivateEvent(cmp) {
-                var expected = "markup://auratest:accessPrivateEvent";
-                cmp.set("v.testType", "privateEvent");
-
-                cmp.find("testEvent").getElement().click();
-
-                var actual = cmp.get("v.output").getDef().getDescriptor().getQualifiedName();
-                $A.test.assertEquals(expected, actual);
             }
         ]
     },
@@ -186,17 +180,6 @@
                cmp.find("testRemoteEvent").getElement().click();
 
                var actual = cmp.get("v.output").getDef().getDescriptor().getQualifiedName();
-               $A.test.assertEquals(expected, actual);
-           },
-           function canAccessPrivateEvent(cmp) {
-               // Cannot access remote private event
-               var expected = null;
-               cmp.set("v.testType", "privateEvent");
-               $A.test.expectAuraError("Access Check Failed!");
-
-               cmp.find("testRemoteEvent").getElement().click();
-
-               var actual = cmp.get("v.output");
                $A.test.assertEquals(expected, actual);
            }
        ]
@@ -343,9 +326,9 @@
         	$A.test.expectAuraError("Access Check Failed!");
         	var actual = this.componentCreated.get("v.privateAttribute");
         },
-        function cannotAccessPublicAttribute(cmp) {
-        	$A.test.expectAuraError("Access Check Failed!");
+        function canAccessPublicAttribute(cmp) {
         	var actual = this.componentCreated.get("v.publicAttribute");
+        	$A.test.assertEquals(actual, "PUBLIC");
         },
         function canAccessGlobalAttribute(cmp) {
         	var actual = this.componentCreated.get("v.globalAttribute");
@@ -356,17 +339,31 @@
     
     testCreateComponentWithPublicAccessOfPrivilegedNS:{
         test:[
-        function cannotCreateComponentWithPublicAccess(cmp){//Different
+        function canCreateComponentWithPublicAccess(cmp){
         	var completed = false;
-        	$A.test.expectAuraError("Access Check Failed!");
+        	var that = this;
             $A.createComponent(
             	"markup://testPrivilegedNS1:componentWithPublicAccess", 
             	{}, 
-            	function(newCmp){//newCmp will be null
+            	function(newCmp){
+            		$A.test.assertEquals(newCmp.getName(),"testPrivilegedNS1$componentWithPublicAccess");
+            		that.componentCreated = newCmp;
             		completed = true;
             	}
             );
             $A.test.addWaitFor(true, function(){ return completed; });
+        },
+        function cannotAccessPrivateAttribute(cmp) {
+        	$A.test.expectAuraError("Access Check Failed!");
+        	var actual = this.componentCreated.get("v.privateAttribute");
+        },
+        function canAccessPublicAttribute(cmp) {
+        	var actual = this.componentCreated.get("v.publicAttribute");
+        	$A.test.assertEquals(actual, "PUBLIC");
+        },
+        function canAccessGlobalAttribute(cmp) {
+        	var actual = this.componentCreated.get("v.globalAttribute");
+        	$A.test.assertEquals(actual, "GLOBAL");
         }
         ]
     },
@@ -392,8 +389,8 @@
         	var actual = this.componentCreated.get("v.privateAttribute");
         },
         function cannotAccessPublicAttribute(cmp) {
-        	$A.test.expectAuraError("Access Check Failed!");
         	var actual = this.componentCreated.get("v.publicAttribute");
+        	$A.test.assertEquals(actual, "PUBLIC");
         },
         function canAccessGlobalAttribute(cmp) {
         	var actual = this.componentCreated.get("v.globalAttribute");
@@ -451,7 +448,7 @@
            cmp.testMethods("INTERNAL");
            $A.test.assertEquals("internalMethod", cmp.get("v.output"));
        },
-       function canAccessGlobalMethod(cmp) {
+       function canAccessPrivateMethod(cmp) {
            cmp.testMethods("PRIVATE");
            $A.test.assertEquals("privateMethod", cmp.get("v.output"));
        }]
@@ -467,13 +464,13 @@
        }
    },
 
-   testCanAccessRemotePublicMethod: {
+   testCanNotAccessRemotePublicMethod: {
        attributes: {
            "testType": "PUBLIC"
        },
        test: function(cmp) {
+           $A.test.expectAuraError("Access Check Failed!");
            cmp.find("testRemoteMethods").getElement().click();
-           $A.test.assertEquals("publicMethod", cmp.find("remote").get("v.output"));
        }
    },
 

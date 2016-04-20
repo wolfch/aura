@@ -74,12 +74,22 @@
         var testUtils = cmp.get("v.testUtils");
         var result = document.querySelectorAll('*');
         //testUtils.assertTrue($A.util.isArray(result), "Expected document.querySelectorAll('*') to return an Array");
-        testUtils.assertStartsWith("SecureThing", result[0].toString(), "Expected document.querySelectorAll('*') to" +
-                " return SecureThing elements");
+        testUtils.assertStartsWith("SecureObject", result[0].toString(), "Expected document.querySelectorAll('*') to" +
+                " return SecureObject elements");
     },
     
     testDocumentBodyConstructorNotExposed: function(cmp) {
         var testUtils = cmp.get("v.testUtils");
         testUtils.assertUndefined(document.body.constructor, "document.body.constructor should not be defined in Locker");
+    },
+    
+    testCreateElementCoersionExploit: function(cmp) {
+        var testUtils = cmp.get("v.testUtils");
+        var el = document.createElement({ 
+            toLowerCase: function() { return 'a' }, 
+            toString: function() { return 'script' } 
+        }); 
+        testUtils.assertStartsWith("SecureScriptElement", el.toString(), "createElement string coersion exploit should be blocked" +
+                " and a SecureScriptElement should be returned, but got " + el.toString());
     }
 })

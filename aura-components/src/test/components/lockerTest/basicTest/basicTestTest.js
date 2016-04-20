@@ -71,18 +71,6 @@
         }
     },
 
-    testSecureElementFrozenAfterCreation_DynamicallyCreated: {
-        test: function(cmp) {
-            cmp.testSecureElementFrozenAfterCreation_DynamicallyCreated();
-        }
-    },
-
-    testSecureElementFrozenAfterCreation_FromMarkup: {
-        test: function(cmp) {
-            cmp.testSecureElementFrozenAfterCreation_FromMarkup();
-        }
-    },
-
     testAppendDynamicallyCreatedDivToMarkup: {
         test: function(cmp) {
             cmp.testAppendDynamicallyCreatedDivToMarkup();
@@ -101,7 +89,32 @@
         }
     },
 
+    /**
+     * See W-2974202 for original exploit.
+     */
+    testSetTimeoutNonFunctionParamExploit: {
+        test: function(cmp) {
+            cmp.testSetTimeoutNonFunctionParamExploit();
+        }
+    },
+
+    testComponentUnfilteredFromUserToSystemMode: {
+        test: function(cmp) {
+            cmp.testComponentUnfilteredFromUserToSystemMode();
+            var component = cmp.get("v.componentStore");
+            // Component should be unfiltered when returned to system mode
+            $A.test.assertStartsWith("markup://lockerTest:facet", component.toString());
+        }
+    },
+    
+    testLocationExposed: {
+        test: function(cmp) {
+            cmp.testLocationExposed();
+        }
+    },
+
     testAttemptToEvalToWindow: {
+        browsers: ["-IE11"],
         test: function(cmp) {
         	cmp.testEvalBlocking();
 

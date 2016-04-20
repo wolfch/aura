@@ -34,7 +34,9 @@ public class NamedAuraStorageUITest extends WebDriverTestCase {
                 String.format(baseComponentTag, "render='client' template='"+template.getDescriptorName()+"'", ""));
         
         openNoAura(getUrl(testCmp));
-        String jsErrors = (String)getAuraUITestingUtil().getRawEval("return window.$A.test.getAuraErrorMessage()");
+        waitForElement("Error mask is not visible.", findDomElement(By.cssSelector("div[id='auraErrorMask']")), true);
+        String jsErrors = getText(By.cssSelector("div[id='auraErrorMessage']"));
+
         assertNotNull("Expected to see JS errors while loading component.", jsErrors);
         assertTrue("Unexpected error message: "+jsErrors, jsErrors.contains("Storage named 'dup' already exists!"));
     }

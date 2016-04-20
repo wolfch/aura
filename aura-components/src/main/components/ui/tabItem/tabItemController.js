@@ -15,12 +15,6 @@
  */
 
 ({	
-	init: function (cmp, event, helper) {
-		helper.initializeHandlers(cmp);
-        if (!cmp.get('v.name')) {
-            cmp.set('v.name', cmp.get('v.title'));
-        }
-	},
 	addHandler: function (cmp, event, helper) {
         var params = event.getParam('arguments');
         helper.addHandler(cmp, params);
@@ -43,19 +37,12 @@
         $A.util.squash(evt, true);
     },
 
-    onfocus: function(cmp, evt, helper) {
+    onTabHover: function(cmp, evt, helper) {
         helper.handleHoverEvent(cmp, 'onTabHover');
     },
 
-    onmouseover: function(cmp, evt, helper) {
-        helper.handleHoverEvent(cmp, 'onTabHover');
-    },
-
-    onblur: function(cmp, evt, helper) {
-        helper.handleHoverEvent(cmp, 'onTabUnhover');
-    },
-
-    onmouseout: function(cmp, evt, helper) {
+    onTabUnhover: function(cmp, evt, helper) {
         helper.handleHoverEvent(cmp, 'onTabUnhover');
     }
+
 })// eslint-disable-line semi

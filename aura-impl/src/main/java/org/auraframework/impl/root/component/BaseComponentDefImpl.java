@@ -16,17 +16,10 @@
 
 package org.auraframework.impl.root.component;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import org.auraframework.Aura;
 import org.auraframework.adapter.ConfigAdapter;
 import org.auraframework.builder.BaseComponentDefBuilder;
@@ -79,13 +72,20 @@ import org.auraframework.throwable.quickfix.InvalidDefinitionException;
 import org.auraframework.throwable.quickfix.InvalidExpressionException;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.AuraTextUtil;
-import org.auraframework.util.javascript.JavascriptProcessingError;
 import org.auraframework.util.json.Json;
 
-import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public abstract class BaseComponentDefImpl<T extends BaseComponentDef> extends
         RootDefinitionImpl<T> implements BaseComponentDef, Serializable {
@@ -118,10 +118,8 @@ public abstract class BaseComponentDefImpl<T extends BaseComponentDef> extends
     private final Map<DefDescriptor<MethodDef>,MethodDef> methodDefs;
     private final List<LibraryDefRef> imports;
     private final List<AttributeDefRef> facets;
-    private final String code;
-    private final String minifiedCode;
     private final Set<PropertyReference> expressionRefs;
-    private final List<JavascriptProcessingError> codeErrors;
+
 
     private final RenderType render;
     private final WhitespaceBehavior whitespaceBehavior;
@@ -137,7 +135,10 @@ public abstract class BaseComponentDefImpl<T extends BaseComponentDef> extends
 
     private final int hashCode;
 
+    private JavascriptComponentClass javascriptClass;
+
     private transient Boolean localDeps = null;
+
 
     protected BaseComponentDefImpl(Builder<T> builder) {
         super(builder);
@@ -145,7 +146,7 @@ public abstract class BaseComponentDefImpl<T extends BaseComponentDef> extends
         this.controllerDescriptors = AuraUtil.immutableList(builder.controllerDescriptors);
         this.interfaces = AuraUtil.immutableSet(builder.interfaces);
         this.methodDefs = AuraUtil.immutableMap(builder.methodDefs);
-            this.extendsDescriptor = builder.extendsDescriptor;
+        this.extendsDescriptor = builder.extendsDescriptor;
         this.templateDefDescriptor = builder.templateDefDescriptor;
         this.events = AuraUtil.immutableMap(builder.events);
         this.eventHandlers = AuraUtil.immutableList(builder.eventHandlers);
@@ -170,10 +171,6 @@ public abstract class BaseComponentDefImpl<T extends BaseComponentDef> extends
         this.defaultFlavor = builder.defaultFlavor;
         this.hasFlavorableChild = builder.hasFlavorableChild;
         this.dynamicallyFlavorable = builder.dynamicallyFlavorable;
-
-        this.code = builder.code;
-        this.minifiedCode = builder.minifiedCode;
-        this.codeErrors = AuraUtil.immutableList(builder.codeErrors);
         this.expressionRefs = AuraUtil.immutableSet(builder.expressionRefs);
 
         if (getDescriptor() != null) {
@@ -413,6 +410,8 @@ public abstract class BaseComponentDefImpl<T extends BaseComponentDef> extends
                 throw new InvalidDefinitionException(String.format(
                         "Template %s must not be abstract", templateDefDescriptor), getLocation());
             }
+
+            checkAccess(templateDefDescriptor, mdr);
         }
 
         if (extendsDescriptor != null) {
@@ -498,6 +497,8 @@ public abstract class BaseComponentDefImpl<T extends BaseComponentDef> extends
                 }
             }
         }
+
+        initializeJavascriptClass();
     }
 
     /**
@@ -534,7 +535,7 @@ public abstract class BaseComponentDefImpl<T extends BaseComponentDef> extends
     @Override
     public void retrieveLabels() throws QuickFixException {
         retrieveLabels(expressionRefs);
-            }
+    }
 
     @Override
     public List<DependencyDef> getDependencies() {
@@ -1065,13 +1066,26 @@ public abstract class BaseComponentDefImpl<T extends BaseComponentDef> extends
 
     @Override
     public String getCode(boolean minify) throws QuickFixException {
-    	String js = minify && !AuraTextUtil.isNullEmptyOrWhitespace(minifiedCode) ? minifiedCode : code;
+    	String js = null;
+		initializeJavascriptClass();
+    	if (minify) {
+    		js = javascriptClass.getMinifiedCode();
+    	}
+    	if (js == null) {
+    		js = javascriptClass.getCode();
+    	}
     	if (isLockerRequired()) {
-    		js = JavascriptComponentClass.convertToLocker(js);
+    		js = convertToLocker(js);
     	}
     	return js;
     }
 
+    private void initializeJavascriptClass() throws QuickFixException {
+    	if (javascriptClass == null) {
+    		javascriptClass = new JavascriptComponentClass.Builder().setDefinition(this).build();
+    	}
+    }
+    
     /**
      * Return true if the definition is a component that needs to be locked.
      */
@@ -1094,11 +1108,52 @@ public abstract class BaseComponentDefImpl<T extends BaseComponentDef> extends
     	return requireLocker;
     }
 
-    @Override
-	public List<JavascriptProcessingError> getCodeErrors() {
-        return codeErrors;
+    private static final Pattern COMPONENT_CLASS_PATTERN = Pattern.compile("^\\$A\\.componentService\\.addComponentClass\\(\"([^\"]*)\",\\s*function\\s*\\(\\s*\\)\\s*\\{\\n*(.*)\\}\\);\\s*$",
+            Pattern.DOTALL | Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+
+    public static String convertToLocker(String code) {
+
+    	if (AuraTextUtil.isNullEmptyOrWhitespace(code)) {
+    		return code;
+    	}
+
+		Matcher matcher = COMPONENT_CLASS_PATTERN.matcher(code);
+
+        if (!matcher.matches()) {
+			return null;
+		}
+
+        String clientDescriptor = matcher.group(1);
+        String objectVariable = matcher.group(2);
+
+    	return makeLockerizedClass(clientDescriptor, objectVariable);
     }
 
+    private static String makeLockerizedClass(String clientDescriptor, String objectVariable) {
+
+    	StringBuilder out = new StringBuilder();
+
+    	out.append("$A.componentService.addComponentClass(");
+    	out.append('"').append(clientDescriptor).append('"');
+    	out.append(',');
+
+        // Key the def so we can transfer the key to component instances
+        // and escape the class objects for JavaScript strings
+        out.append("function() {\n");
+
+        out.append("  var def = $A.componentService.getDef(");
+    	out.append('"').append(clientDescriptor).append('"');
+    	out.append(");");
+
+        out.append("  var locker = $A.lockerService.createForDef(\n\"");
+        out.append(AuraTextUtil.escapeForJavascriptString(objectVariable));
+		out.append("\", def);\n");
+
+		out.append("  return locker.$result;\n");
+    	out.append("});\n");
+
+    	return out.toString();
+    }
     /**
      * @see ComponentDef#getRendererDescriptor()
      */
@@ -1135,6 +1190,7 @@ public abstract class BaseComponentDefImpl<T extends BaseComponentDef> extends
      * @return The primary renderer def. If multiple exist, this will be the remote one.
      * @throws QuickFixException
      */
+    @Override
     public RendererDef getRendererDef() throws QuickFixException {
         RendererDef def = null;
         if (rendererDescriptors != null) {
@@ -1310,11 +1366,9 @@ public abstract class BaseComponentDefImpl<T extends BaseComponentDef> extends
         public List<LibraryDefRef> imports;
 
 		public String code;
-		public String minifiedCode;
-		public List<JavascriptProcessingError> codeErrors;
-        public Set<PropertyReference> expressionRefs;
+		public Set<PropertyReference> expressionRefs;
 
-        public String render;
+		public String render;
         public WhitespaceBehavior whitespaceBehavior;
         public List<DependencyDef> dependencies;
         public List<ClientLibraryDef> clientLibraries;
@@ -1456,7 +1510,7 @@ public abstract class BaseComponentDefImpl<T extends BaseComponentDef> extends
             return this;
         }
 
-        @Override
+		@Override
 		public void addExpressionRef(PropertyReference propRef) {
             if (this.expressionRefs == null) {
             	this.expressionRefs = new HashSet<>();
@@ -1528,23 +1582,13 @@ public abstract class BaseComponentDefImpl<T extends BaseComponentDef> extends
         	this.code = code;
         }
 
-        @Override
-        public void setMinifiedCode(String minifiedCode) {
-        	this.minifiedCode = minifiedCode;
-        }
-
-        @Override
-        public void setCodeErrors(List<JavascriptProcessingError> codeErrors) {
-        	this.codeErrors = codeErrors;
-        }
-
         /**
          * Gets the methodDefs for this instance.
          *
          * @return The methodDefs.
          */
         public Map<DefDescriptor<MethodDef>, MethodDef> getMethodDefs() {
-            return this.methodDefs;
+             return this.methodDefs;
         }
 
         protected void finish() {
@@ -1561,10 +1605,8 @@ public abstract class BaseComponentDefImpl<T extends BaseComponentDef> extends
             if (extendsDescriptor == null) {
             	if (interfaces == null || !interfaces.contains(ROOT_MARKER)) {
             		extendsDescriptor = getDefaultExtendsDescriptor();
-        }
-    }
-
-            new JavascriptComponentClass(this).construct(this);
+            	}
+            }
         }
 
         public abstract DefDescriptor<T> getDefaultExtendsDescriptor();
@@ -1739,5 +1781,59 @@ public abstract class BaseComponentDefImpl<T extends BaseComponentDef> extends
     @Override
     public WhitespaceBehavior getWhitespaceBehavior() {
         return whitespaceBehavior;
+    }
+
+    // TODO: Separate Java/JS in distinct class fields. The current system is too ambiguous.
+
+    @Override
+    public ControllerDef getRemoteControllerDef() throws QuickFixException {
+    	if (controllerDescriptors != null) {
+	        for (DefDescriptor<ControllerDef> desc : controllerDescriptors) {
+	            ControllerDef def = desc.getDef();
+	            if (!def.isLocal()) {
+	                return def;
+	            }
+	        }
+    	}
+        return null;
+    }
+
+    @Override
+    public HelperDef getRemoteHelperDef() throws QuickFixException {
+    	if (helperDescriptors != null) {
+	    	for (DefDescriptor<HelperDef> desc : helperDescriptors) {
+	            HelperDef def = desc.getDef();
+	            if (!def.isLocal()) {
+	                return def;
+	            }
+	        }
+    	}
+        return null;
+    }
+
+    @Override
+    public RendererDef getRemoteRendererDef() throws QuickFixException {
+    	if (rendererDescriptors != null) {
+	        for (DefDescriptor<RendererDef> desc : rendererDescriptors) {
+	            RendererDef def = desc.getDef();
+	            if (!def.isLocal()) {
+	                return def;
+	            }
+	        }
+    	}
+        return null;
+    }
+
+    @Override
+    public ProviderDef getRemoteProviderDef() throws QuickFixException {
+    	if (providerDescriptors != null) {
+	        for (DefDescriptor<ProviderDef> desc : providerDescriptors) {
+	            ProviderDef def = desc.getDef();
+	            if (!def.isLocal()) {
+	                return def;
+	            }
+	        }
+    	}
+        return null;
     }
 }

@@ -15,6 +15,11 @@
     limitations under the License.
 
 -->
-<aura:component render="client" renderer="java://org.auraframework.impl.renderer.sampleJavaRenderers.TestOverridingRenderer">
-blah
-</aura:component>
+<aura:event type="COMPONENT"
+            access="PRIVILEGED"
+            description="Test Privileged Event.">
+
+    <aura:attribute name="Private" type="String" access="PRIVATE" default="PRIVATE"/>
+    <aura:attribute name="Public" type="String" access="PUBLIC" default="PUBLIC"/>
+    <aura:attribute name="Global" type="String" access="GLOBAL" default="GLOBAL"/>
+</aura:event>

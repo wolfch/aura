@@ -88,7 +88,7 @@ import java.util.Map;
  * -Dconfig=${AURA_HOME}/config -Daura.home=${AURA_HOME} -DPORT=9090
  * </code>
  *
- * Exception handling is dealt with in {@link #handleServletException} which should almost always be called when
+ * Exception handling is dealt with in {@link ServletUtilAdapter#handleServletException} which should almost always be called when
  * exceptions are caught. This routine will use {@link org.auraframework.adapter.ExceptionAdapter ExceptionAdapter} to
  * log and rewrite exceptions as necessary.
  */
@@ -239,7 +239,7 @@ public class AuraServlet extends AuraBaseServlet {
         // I would love for a simpler way to be figured out.
         //
         try {
-            tagName = tag.get(request);
+            tagName = getTagName(request);
             defType = defTypeParam.get(request, DefType.COMPONENT);
             if (tagName == null || tagName.isEmpty()) {
                 throw new AuraRuntimeException("Invalid request, tag must not be empty");
@@ -493,6 +493,16 @@ public class AuraServlet extends AuraBaseServlet {
         }
     }
 
+    /**
+     * Get tag name from params.
+     *
+     * @param request http request
+     * @return tag name param
+     */
+    protected String getTagName(HttpServletRequest request) {
+        return tag.get(request);
+    }
+
     @Inject
     public void setExceptionAdapter(ExceptionAdapter exceptionAdapter) {
         this.exceptionAdapter = exceptionAdapter;
@@ -531,5 +541,12 @@ public class AuraServlet extends AuraBaseServlet {
     @Inject
     public void setServerService(ServerService serverService) {
         this.serverService = serverService;
+    }
+
+    /**
+     * @param manifestUtil the manifestUtil to set
+     */
+    public void setManifestUtil(ManifestUtil manifestUtil) {
+        this.manifestUtil = manifestUtil;
     }
 }

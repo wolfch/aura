@@ -30,17 +30,13 @@ import org.junit.Test;
 
 import javax.inject.Inject;
 
+@UnAdaptableTest("when run in core, we throw error with different type.")
 public class EventAccessAttributeTest extends AuraImplTestCase {
 
     @Inject
     private ParserFactory parserFactory;
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-    }
-	
-    /***********************************************************************************
+	/***********************************************************************************
      ******************* Tests for Internal Namespace start ****************************
      ************************************************************************************/
     
@@ -50,7 +46,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
                         NamespaceAccess.INTERNAL);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -65,7 +61,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access=''/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
                         NamespaceAccess.INTERNAL);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -76,8 +72,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
             fail("Expect to die with InvalidAccessValueException");
         } catch (InvalidAccessValueException e) {
             //expected
-        	//W-2981494 strange error, disable this assert, see if that's the issue.
-            //assertTrue(e.getMessage().contains("Invalid access attribute value \"\""));
+            assertTrue(e.getMessage().contains("Invalid access attribute value \"\""));
         }
     }
     
@@ -87,7 +82,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='BLAH'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
                         NamespaceAccess.INTERNAL);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -108,7 +103,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='org.auraframework.impl.test.util.TestAccessMethods.invalid'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
                         NamespaceAccess.INTERNAL);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -131,7 +126,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='GLOBAL, BLAH, GLOBAL'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
                         NamespaceAccess.INTERNAL);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -153,7 +148,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
             String eventSource = "<aura:event type='COMPONENT' access='GLOBAL,org.auraframework.impl.test.util.TestAccessMethods.allowGlobal' />";
             DefDescriptor<EventDef> descriptor = 
                     getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                            eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
+                    eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
                         NamespaceAccess.INTERNAL);
             Source<EventDef> source = stringSourceLoader.getSource(descriptor);
             
@@ -175,7 +170,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='org.auraframework.impl.test.util.TestAccessMethods.allowGlobal,AUTHENTICATED'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
                         NamespaceAccess.INTERNAL);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -200,7 +195,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='GLOBAL'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
                         NamespaceAccess.INTERNAL);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -213,7 +208,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='PUBLIC'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
                         NamespaceAccess.INTERNAL);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -226,7 +221,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='PRIVATE'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
                         NamespaceAccess.INTERNAL);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -239,7 +234,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='INTERNAL'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
                         NamespaceAccess.INTERNAL);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -252,7 +247,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='PRIVILEGED'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
                         NamespaceAccess.INTERNAL);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -271,7 +266,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='org.auraframework.impl.test.util.TestAccessMethods.allowGlobal'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
                         NamespaceAccess.INTERNAL);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -284,7 +279,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='org.auraframework.impl.test.util.TestAccessMethods.allowPublic'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
                         NamespaceAccess.INTERNAL);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -298,7 +293,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='org.auraframework.impl.test.util.TestAccessMethods.allowPrivate'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
                         NamespaceAccess.INTERNAL);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -311,7 +306,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='org.auraframework.impl.test.util.TestAccessMethods.allowPrivileged'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
                         NamespaceAccess.INTERNAL);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -324,7 +319,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='org.auraframework.impl.test.util.TestAccessMethods.allowInternal'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
                         NamespaceAccess.INTERNAL);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -343,7 +338,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='GLOBAL, PRIVATE'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
                         NamespaceAccess.INTERNAL);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -366,7 +361,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='PUBLIC, PUBLIC'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
                         NamespaceAccess.INTERNAL);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -384,7 +379,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='AUTHENTICATED'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
                         NamespaceAccess.INTERNAL);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -403,7 +398,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='UNAUTHENTICATED'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
                         NamespaceAccess.INTERNAL);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -428,7 +423,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='org.auraframework.impl.test.util.TestAccessMethods.allowAuthenticated'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
                         NamespaceAccess.INTERNAL);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -452,7 +447,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='AUTHENTICATED,UNAUTHENTICATED'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
                         NamespaceAccess.INTERNAL);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -475,7 +470,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='AUTHENTICATED,AUTHENTICATED'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
                         NamespaceAccess.INTERNAL);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -500,7 +495,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='AUTHENTICATED,GLOBAL'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
                         NamespaceAccess.INTERNAL);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -519,7 +514,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='AUTHENTICATED,PRIVATE'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
                         NamespaceAccess.INTERNAL);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -538,7 +533,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='AUTHENTICATED,PUBLIC'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
                         NamespaceAccess.INTERNAL);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -557,7 +552,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='AUTHENTICATED,PRIVILEGED'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
                         NamespaceAccess.INTERNAL);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -576,7 +571,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='AUTHENTICATED,INTERNAL'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_NAMESPACE+":testEvent",
                         NamespaceAccess.INTERNAL);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -604,7 +599,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, "privilegedNS:testEvent",
+                eventSource, "privilegedNS:testEvent",
                         NamespaceAccess.PRIVILEGED);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -619,7 +614,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access=''/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, "privilegedNS:testEvent",
+                eventSource, "privilegedNS:testEvent",
                         NamespaceAccess.PRIVILEGED);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -640,7 +635,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='BLAH'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, "privilegedNS:testEvent",
+                eventSource, "privilegedNS:testEvent",
                         NamespaceAccess.PRIVILEGED);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -661,7 +656,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='org.auraframework.impl.test.util.TestAccessMethods.invalid'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, "privilegedNS:testEvent",
+                eventSource, "privilegedNS:testEvent",
                         NamespaceAccess.PRIVILEGED);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -684,7 +679,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='GLOBAL, BLAH, GLOBAL'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, "privilegedNS:testEvent",
+                eventSource, "privilegedNS:testEvent",
                         NamespaceAccess.PRIVILEGED);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -706,7 +701,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
             String eventSource = "<aura:event type='COMPONENT' access='GLOBAL,org.auraframework.impl.test.util.TestAccessMethods.allowGlobal' />";
             DefDescriptor<EventDef> descriptor = 
                     getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                            eventSource, "privilegedNS:testEvent",
+                    eventSource, "privilegedNS:testEvent",
                         NamespaceAccess.PRIVILEGED);
             Source<EventDef> source = stringSourceLoader.getSource(descriptor);
             
@@ -728,7 +723,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='org.auraframework.impl.test.util.TestAccessMethods.allowGlobal,AUTHENTICATED'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, "privilegedNS:testEvent",
+                eventSource, "privilegedNS:testEvent",
                         NamespaceAccess.PRIVILEGED);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -754,7 +749,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='GLOBAL'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, "privilegedNS:testEvent",
+                eventSource, "privilegedNS:testEvent",
                         NamespaceAccess.PRIVILEGED);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -767,7 +762,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='PUBLIC'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, "privilegedNS:testEvent",
+                eventSource, "privilegedNS:testEvent",
                         NamespaceAccess.PRIVILEGED);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -780,7 +775,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='PRIVATE'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, "privilegedNS:testEvent",
+                eventSource, "privilegedNS:testEvent",
                         NamespaceAccess.PRIVILEGED);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -793,7 +788,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='INTERNAL'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, "privilegedNS:testEvent",
+                eventSource, "privilegedNS:testEvent",
                         NamespaceAccess.PRIVILEGED);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -813,7 +808,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='PRIVILEGED'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, "privilegedNS:testEvent",
+                eventSource, "privilegedNS:testEvent",
                         NamespaceAccess.PRIVILEGED);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -831,7 +826,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='org.auraframework.impl.test.util.TestAccessMethods.allowGlobal'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, "privilegedNS:testEvent",
+                eventSource, "privilegedNS:testEvent",
                         NamespaceAccess.PRIVILEGED);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -850,7 +845,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='org.auraframework.impl.test.util.TestAccessMethods.allowPublic'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, "privilegedNS:testEvent",
+                eventSource, "privilegedNS:testEvent",
                         NamespaceAccess.PRIVILEGED);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -869,7 +864,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='org.auraframework.impl.test.util.TestAccessMethods.allowPrivate'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, "privilegedNS:testEvent",
+                eventSource, "privilegedNS:testEvent",
                         NamespaceAccess.PRIVILEGED);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -888,7 +883,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='org.auraframework.impl.test.util.TestAccessMethods.allowPrivileged'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, "privilegedNS:testEvent",
+                eventSource, "privilegedNS:testEvent",
                         NamespaceAccess.PRIVILEGED);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -907,7 +902,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='org.auraframework.impl.test.util.TestAccessMethods.allowInternal'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, "privilegedNS:testEvent",
+                eventSource, "privilegedNS:testEvent",
                         NamespaceAccess.PRIVILEGED);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -932,7 +927,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='GLOBAL, PRIVATE'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, "privilegedNS:testEvent",
+                eventSource, "privilegedNS:testEvent",
                         NamespaceAccess.PRIVILEGED);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -955,7 +950,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='PUBLIC, PUBLIC'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, "privilegedNS:testEvent",
+                eventSource, "privilegedNS:testEvent",
                         NamespaceAccess.PRIVILEGED);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -973,7 +968,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='AUTHENTICATED'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, "privilegedNS:testEvent",
+                eventSource, "privilegedNS:testEvent",
                         NamespaceAccess.PRIVILEGED);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -992,7 +987,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='UNAUTHENTICATED'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, "privilegedNS:testEvent",
+                eventSource, "privilegedNS:testEvent",
                         NamespaceAccess.PRIVILEGED);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1017,7 +1012,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='org.auraframework.impl.test.util.TestAccessMethods.allowAuthenticated'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, "privilegedNS:testEvent",
+                eventSource, "privilegedNS:testEvent",
                         NamespaceAccess.PRIVILEGED);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1041,7 +1036,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='AUTHENTICATED,UNAUTHENTICATED'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, "privilegedNS:testEvent",
+                eventSource, "privilegedNS:testEvent",
                         NamespaceAccess.PRIVILEGED);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1064,7 +1059,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='AUTHENTICATED,AUTHENTICATED'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, "privilegedNS:testEvent",
+                eventSource, "privilegedNS:testEvent",
                         NamespaceAccess.PRIVILEGED);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1088,7 +1083,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='AUTHENTICATED,GLOBAL'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, "privilegedNS:testEvent",
+                eventSource, "privilegedNS:testEvent",
                         NamespaceAccess.PRIVILEGED);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1107,7 +1102,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='AUTHENTICATED,PRIVATE'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, "privilegedNS:testEvent",
+                eventSource, "privilegedNS:testEvent",
                         NamespaceAccess.PRIVILEGED);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1126,7 +1121,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='AUTHENTICATED,PUBLIC'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, "privilegedNS:testEvent",
+                eventSource, "privilegedNS:testEvent",
                         NamespaceAccess.PRIVILEGED);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1145,7 +1140,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='AUTHENTICATED,PRIVILEGED'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, "privilegedNS:testEvent",
+                eventSource, "privilegedNS:testEvent",
                         NamespaceAccess.PRIVILEGED);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1164,7 +1159,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='AUTHENTICATED,INTERNAL'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, "privilegedNS:testEvent",
+                eventSource, "privilegedNS:testEvent",
                         NamespaceAccess.PRIVILEGED);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1195,7 +1190,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
                         NamespaceAccess.CUSTOM);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1210,7 +1205,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access=''/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
                         NamespaceAccess.CUSTOM);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1231,7 +1226,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='BLAH'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
                         NamespaceAccess.CUSTOM);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1252,7 +1247,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='org.auraframework.impl.test.util.TestAccessMethods.invalid'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
                         NamespaceAccess.CUSTOM);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1275,7 +1270,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='GLOBAL, BLAH, GLOBAL'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
                         NamespaceAccess.CUSTOM);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1297,7 +1292,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
             String eventSource = "<aura:event type='COMPONENT' access='GLOBAL,org.auraframework.impl.test.util.TestAccessMethods.allowGlobal' />";
             DefDescriptor<EventDef> descriptor = 
                     getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                            eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
+                    eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
                         NamespaceAccess.CUSTOM);
             Source<EventDef> source = stringSourceLoader.getSource(descriptor);
             
@@ -1319,7 +1314,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='org.auraframework.impl.test.util.TestAccessMethods.allowGlobal,AUTHENTICATED'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
                         NamespaceAccess.CUSTOM);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1344,7 +1339,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='GLOBAL'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
                         NamespaceAccess.CUSTOM);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1370,7 +1365,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='PRIVATE'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
                         NamespaceAccess.CUSTOM);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1383,7 +1378,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='INTERNAL'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
                         NamespaceAccess.CUSTOM);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1403,7 +1398,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='PRIVILEGED'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
                         NamespaceAccess.CUSTOM);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1427,7 +1422,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='org.auraframework.impl.test.util.TestAccessMethods.allowGlobal'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
                         NamespaceAccess.CUSTOM);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1446,7 +1441,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='org.auraframework.impl.test.util.TestAccessMethods.allowPublic'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
                         NamespaceAccess.CUSTOM);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1465,7 +1460,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='org.auraframework.impl.test.util.TestAccessMethods.allowPrivate'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
                         NamespaceAccess.CUSTOM);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1484,7 +1479,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='org.auraframework.impl.test.util.TestAccessMethods.allowPrivileged'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
                         NamespaceAccess.CUSTOM);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1503,7 +1498,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='org.auraframework.impl.test.util.TestAccessMethods.allowInternal'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
                         NamespaceAccess.CUSTOM);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1527,7 +1522,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='GLOBAL, PRIVATE'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
                         NamespaceAccess.CUSTOM);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1549,7 +1544,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='PUBLIC, PUBLIC'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
                         NamespaceAccess.CUSTOM);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1567,7 +1562,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='AUTHENTICATED'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
                         NamespaceAccess.CUSTOM);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1587,7 +1582,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='UNAUTHENTICATED'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, "privilegedNS:testEvent",
+                eventSource, "privilegedNS:testEvent",
                         NamespaceAccess.PRIVILEGED);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1611,7 +1606,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='org.auraframework.impl.test.util.TestAccessMethods.allowAuthenticated'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
                         NamespaceAccess.CUSTOM);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1634,7 +1629,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='AUTHENTICATED,UNAUTHENTICATED'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
                         NamespaceAccess.CUSTOM);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1657,7 +1652,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='AUTHENTICATED,AUTHENTICATED'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
                         NamespaceAccess.CUSTOM);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1680,7 +1675,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='AUTHENTICATED,GLOBAL'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
                         NamespaceAccess.CUSTOM);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1699,7 +1694,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='AUTHENTICATED,PRIVATE'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
                         NamespaceAccess.CUSTOM);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1718,7 +1713,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='AUTHENTICATED,PUBLIC'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
                         NamespaceAccess.CUSTOM);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1737,7 +1732,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='AUTHENTICATED,PRIVILEGED'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
                         NamespaceAccess.CUSTOM);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1756,7 +1751,7 @@ public class EventAccessAttributeTest extends AuraImplTestCase {
         String eventSource = "<aura:event type='COMPONENT' access='AUTHENTICATED,INTERNAL'/>";
         DefDescriptor<EventDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(EventDef.class,
-                        eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
+                eventSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testEvent",
                         NamespaceAccess.CUSTOM);
         Source<EventDef> source = stringSourceLoader.getSource(descriptor);
         

@@ -125,7 +125,7 @@
         if (referenceEl) {
             panelEl.style.opacity = '0';
             panelEl.style.display = 'block';
-            this.position(cmp, referenceEl, function() {
+            this.position(cmp, referenceEl, $A.getCallback(function() {
                 self.positioningLib.panelPositioning.reposition();
                 cmp.positioned = true;
                 requestAnimationFrame($A.getCallback(function() {
@@ -133,7 +133,7 @@
                     self.lib.panelLibCore.show(cmp, conf);
                 }));
                 
-            });
+            }));
         } else {
             this.lib.panelLibCore.show(cmp, conf);
         }
@@ -502,12 +502,9 @@
     },
     
     scopeScrollables: function (cmp) {
-        var dom = cmp.getElement();
-        var scrollables = dom.querySelectorAll('.scrollable');
-        for (var i = 0; i < scrollables.length; i++) {
-            this.lib.panelLibCore.scopeScroll(scrollables[i]);
-        }
+        this.lib.panelLibCore.scopeScrollables(cmp);
     },
+    
     startY : 0,
     iNoBounceEnabled : false,
     iNoBounce : function (el) {

@@ -20,8 +20,10 @@ import org.auraframework.integration.test.util.WebDriverTestCase;
 import org.auraframework.util.test.annotation.ThreadHostileTest;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.auraframework.util.test.annotation.UnAdaptableTest;
 import org.openqa.selenium.By;
 
+@UnAdaptableTest("We don't run access check test across browsers")
 @ThreadHostileTest("Tests modify what namespaces are Internal or not and locker service enabled")
 public class GetDefinitionAccessCheckUITest extends WebDriverTestCase {
 
@@ -58,7 +60,7 @@ public class GetDefinitionAccessCheckUITest extends WebDriverTestCase {
 
     @Ignore("TODO: (W-2799335): Disabled this test since $A.getDeifinitions() doesn't do access check for Event")
     @Test
-    public void testGetMutilpleDefinitionsWithoutAccess() throws Exception {
+    public void testGetMultipleDefinitionsWithoutAccess() throws Exception {
         getMockConfigAdapter().setNonInternalNamespace("clientApiTest");
         open("/clientApiTest/getDefinition.cmp");
         findDomElement(By.cssSelector(".getDefinitionsWithoutAccessButton")).click();

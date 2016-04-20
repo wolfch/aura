@@ -182,6 +182,7 @@ function lib(scrollUtil) { //eslint-disable-line no-unused-vars
                 panel = cmp.getElement(),
                 useTransition = config.useTransition,
                 closeButton,
+                endEvent = $A.getEvt("markup://ui:panelTransitionEnd"),
                 animEl = config.animationEl || panel;
 
             //make sure animation name is valid 
@@ -230,7 +231,7 @@ function lib(scrollUtil) { //eslint-disable-line no-unused-vars
                     }
                 }
 
-                $A.getEvt("markup://ui:panelTransitionEnd").setParams({
+                endEvent.setParams({
                     action: 'show', 
                     panelId: cmp.getGlobalId()
                 }).fire();
@@ -265,6 +266,7 @@ function lib(scrollUtil) { //eslint-disable-line no-unused-vars
                 panel = cmp.getElement(),
                 panelId = cmp.getGlobalId(),
                 useTransition = config.useTransition,
+                endEvent = $A.getEvt("markup://ui:panelTransitionEnd"),
                 animEl = config.animationEl || panel;
 
             //make sure animation name is valid 
@@ -289,7 +291,7 @@ function lib(scrollUtil) { //eslint-disable-line no-unused-vars
                     }
 
 
-                    $A.getEvt("markup://ui:panelTransitionEnd").setParams({
+                    endEvent.setParams({
                         action: 'hide', 
                         panelId: panelId
                     }).fire();
@@ -349,7 +351,7 @@ function lib(scrollUtil) { //eslint-disable-line no-unused-vars
                     }
                 }
             }
-            callback && callback();
+            callback && callback(panel);
         },
 
         _updateAVP: function(cmps, avp) {
@@ -474,6 +476,28 @@ function lib(scrollUtil) { //eslint-disable-line no-unused-vars
                     var focusables = this.getFocusables(el);
                     focusables.initial && focusables.initial.focus();
                 }
+            }
+        },
+
+        scopeScrollables: function (cmp) {
+            var self = this;
+            var dom = cmp.getElement();
+            var scrollables = dom.querySelectorAll('.scrollable');
+            var observerConfig = { attributes: true, childList: true, characterData: true, subtree: true };
+
+            for (var i = 0; i < scrollables.length; i++) {
+                this.scopeScroll(scrollables[i]);
+            }
+
+            // watch for changes to the subtree so that scroll can
+            // be re-scoped
+            if(!cmp._observer && !$A.util.isUndefinedOrNull(window.MutationObserver)) { //phantomjs check
+                cmp._observer = new MutationObserver($A.getCallback(function() {
+                    if(cmp.isValid()) {
+                        self.scopeScrollables(cmp);
+                    } 
+                }));
+                cmp._observer.observe(dom, observerConfig);
             }
         },
         

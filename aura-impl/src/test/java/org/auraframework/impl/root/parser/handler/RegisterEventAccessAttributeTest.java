@@ -45,7 +45,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA'  /></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -59,7 +59,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access=''/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -79,7 +79,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='BLAH'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -100,7 +100,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -121,7 +121,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='GLOBAL, BLAH, GLOBAL'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -142,7 +142,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='GLOBAL,org.auraframework.impl.test.util.TestAccessMethods.allowGlobal'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -163,7 +163,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='org.auraframework.impl.test.util.TestAccessMethods.allowGlobal,AUTHENTICATED'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -188,7 +188,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='GLOBAL'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -214,7 +214,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='PRIVATE'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -227,7 +227,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='INTERNAL'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -247,7 +247,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='PRIVILEGED'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -271,7 +271,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='org.auraframework.impl.test.util.TestAccessMethods.allowGlobal'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponnet",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponnet",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -290,7 +290,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='org.auraframework.impl.test.util.TestAccessMethods.allowPublic'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponnet",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponnet",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -309,7 +309,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='org.auraframework.impl.test.util.TestAccessMethods.allowPrivate'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponnet",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponnet",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -328,7 +328,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='org.auraframework.impl.test.util.TestAccessMethods.allowPrivileged'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponnet",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponnet",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -347,7 +347,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='org.auraframework.impl.test.util.TestAccessMethods.allowInternal'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponnet",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponnet",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -370,7 +370,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='GLOBAL, PRIVATE'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -392,7 +392,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='PUBLIC, PUBLIC'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -409,7 +409,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='AUTHENTICATED'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -452,7 +452,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='org.auraframework.impl.test.util.TestAccessMethods.allowAuthenticated'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -475,7 +475,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='AUTHENTICATED,UNAUTHENTICATED'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -498,7 +498,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='AUTHENTICATED,AUTHENTICATED'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -521,7 +521,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='AUTHENTICATED,GLOBAL'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -540,7 +540,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='AUTHENTICATED,PRIVATE'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -559,7 +559,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='AUTHENTICATED,PUBLIC'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -578,7 +578,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='AUTHENTICATED,PRIVILEGED'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -597,7 +597,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='AUTHENTICATED,INTERNAL'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponent",
+                cmpSource, StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE+":testcomponent",
                         NamespaceAccess.CUSTOM);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -620,7 +620,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA'  /></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testcomponent",
+                cmpSource, "privilegedNS:testcomponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -634,7 +634,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access=''/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testcomponent",
+                cmpSource, "privilegedNS:testcomponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -654,7 +654,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='BLAH'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testcomponent",
+                cmpSource, "privilegedNS:testcomponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -675,7 +675,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testcomponent",
+                cmpSource, "privilegedNS:testcomponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -696,7 +696,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='GLOBAL, BLAH, GLOBAL'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testcomponent",
+                cmpSource, "privilegedNS:testcomponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -717,7 +717,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='GLOBAL,org.auraframework.impl.test.util.TestAccessMethods.allowGlobal'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testcomponent",
+                cmpSource, "privilegedNS:testcomponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -738,7 +738,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='org.auraframework.impl.test.util.TestAccessMethods.allowGlobal,AUTHENTICATED'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testcomponent",
+                cmpSource, "privilegedNS:testcomponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -763,7 +763,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='GLOBAL'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testcomponent",
+                cmpSource, "privilegedNS:testcomponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -776,7 +776,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='PUBLIC'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testcomponent",
+                cmpSource, "privilegedNS:testcomponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -789,7 +789,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='PRIVATE'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testcomponent",
+                cmpSource, "privilegedNS:testcomponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -802,7 +802,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='INTERNAL'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testcomponent",
+                cmpSource, "privilegedNS:testcomponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -822,7 +822,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='PRIVILEGED'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testcomponent",
+                cmpSource, "privilegedNS:testcomponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -839,7 +839,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='org.auraframework.impl.test.util.TestAccessMethods.allowGlobal'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testcomponnet",
+                cmpSource, "privilegedNS:testcomponnet",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -858,7 +858,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='org.auraframework.impl.test.util.TestAccessMethods.allowPublic'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testcomponnet",
+                cmpSource, "privilegedNS:testcomponnet",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -877,7 +877,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='org.auraframework.impl.test.util.TestAccessMethods.allowPrivate'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testcomponnet",
+                cmpSource, "privilegedNS:testcomponnet",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -915,7 +915,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='org.auraframework.impl.test.util.TestAccessMethods.allowInternal'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testcomponnet",
+                cmpSource, "privilegedNS:testcomponnet",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -938,7 +938,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='GLOBAL, PRIVATE'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testcomponent",
+                cmpSource, "privilegedNS:testcomponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -960,7 +960,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='PUBLIC, PUBLIC'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testcomponent",
+                cmpSource, "privilegedNS:testcomponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -977,7 +977,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='AUTHENTICATED'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testcomponent",
+                cmpSource, "privilegedNS:testcomponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -997,7 +997,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='UNAUTHENTICATED'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testcomponent",
+                cmpSource, "privilegedNS:testcomponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1020,7 +1020,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='org.auraframework.impl.test.util.TestAccessMethods.allowAuthenticated'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testcomponent",
+                cmpSource, "privilegedNS:testcomponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1043,7 +1043,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='AUTHENTICATED,UNAUTHENTICATED'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testcomponent",
+                cmpSource, "privilegedNS:testcomponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1066,7 +1066,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='AUTHENTICATED,AUTHENTICATED'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testcomponent",
+                cmpSource, "privilegedNS:testcomponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1089,7 +1089,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='AUTHENTICATED,GLOBAL'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testcomponent",
+                cmpSource, "privilegedNS:testcomponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1108,7 +1108,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='AUTHENTICATED,PRIVATE'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testcomponent",
+                cmpSource, "privilegedNS:testcomponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1127,7 +1127,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='AUTHENTICATED,PUBLIC'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testcomponent",
+                cmpSource, "privilegedNS:testcomponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1146,7 +1146,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='AUTHENTICATED,PRIVILEGED'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testcomponent",
+                cmpSource, "privilegedNS:testcomponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1165,7 +1165,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='AUTHENTICATED,INTERNAL'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, "privilegedNS:testcomponent",
+                cmpSource, "privilegedNS:testcomponent",
                         NamespaceAccess.PRIVILEGED);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1188,7 +1188,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA'  /></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1202,7 +1202,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access=''/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1222,7 +1222,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='BLAH'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1243,7 +1243,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1264,7 +1264,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='GLOBAL, BLAH, GLOBAL'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1285,7 +1285,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='GLOBAL,org.auraframework.impl.test.util.TestAccessMethods.allowGlobal'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1306,7 +1306,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='org.auraframework.impl.test.util.TestAccessMethods.allowGlobal,AUTHENTICATED'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1331,7 +1331,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='GLOBAL'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1344,7 +1344,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='PUBLIC'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1357,7 +1357,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='PRIVATE'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1370,7 +1370,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='INTERNAL'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1383,7 +1383,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='PRIVILEGED'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1401,7 +1401,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='org.auraframework.impl.test.util.TestAccessMethods.allowGlobal'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponnet",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponnet",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1414,7 +1414,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='org.auraframework.impl.test.util.TestAccessMethods.allowPublic'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponnet",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponnet",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1427,7 +1427,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='org.auraframework.impl.test.util.TestAccessMethods.allowPrivate'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponnet",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponnet",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1440,7 +1440,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='org.auraframework.impl.test.util.TestAccessMethods.allowPrivileged'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponnet",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponnet",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1453,7 +1453,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='org.auraframework.impl.test.util.TestAccessMethods.allowInternal'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponnet",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponnet",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1470,7 +1470,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='GLOBAL, PRIVATE'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1492,7 +1492,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='PUBLIC, PUBLIC'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1509,7 +1509,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='AUTHENTICATED'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1529,7 +1529,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='UNAUTHENTICATED'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1552,7 +1552,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='org.auraframework.impl.test.util.TestAccessMethods.allowAuthenticated'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1575,7 +1575,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='AUTHENTICATED,UNAUTHENTICATED'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1598,7 +1598,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='AUTHENTICATED,AUTHENTICATED'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1621,7 +1621,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='AUTHENTICATED,GLOBAL'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1640,7 +1640,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='AUTHENTICATED,PRIVATE'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1659,7 +1659,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='AUTHENTICATED,PUBLIC'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1678,7 +1678,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='AUTHENTICATED,PRIVILEGED'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1697,7 +1697,7 @@ public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
         String cmpSource = "<aura:component><aura:registerEvent name='testevent' type='ui:keydown' description='For QA' access='AUTHENTICATED,INTERNAL'/></aura:component>";
         DefDescriptor<ComponentDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-                        cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponent",
+                cmpSource, StringSourceLoader.DEFAULT_NAMESPACE+":testcomponent",
                         NamespaceAccess.INTERNAL);
         Source<ComponentDef> source = stringSourceLoader.getSource(descriptor);
         

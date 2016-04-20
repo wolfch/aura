@@ -1323,6 +1323,11 @@ public class MasterDefRegistryImpl implements MasterDefRegistry {
             if (configAdapter.isInternalNamespace(referencingNamespace)) {
                 return null;
             }
+
+            // Both access of def and referencingNamespace are privileged so we allow
+            if (access.isPrivileged() && configAdapter.isPrivilegedNamespace(referencingNamespace)) {
+                return null;
+            }
         }
 
         DefDescriptor<?> desc = def.getDescriptor();
@@ -1363,6 +1368,11 @@ public class MasterDefRegistryImpl implements MasterDefRegistry {
                     // The caller and the def are not in the same namespace
                     status = String
                             .format("Access to %s '%s' from namespace '%s' in '%s(%s)' disallowed by MasterDefRegistry.assertAccess()",
+                                    defType.toString().toLowerCase(), target, referencingNamespace,
+                                    referencingDescriptor, referencingDescriptor.getDefType());
+                } else if (access.isPrivate()) {
+                    status = String
+                            .format("Access to %s '%s' with access PRIVATE from namespace '%s' in '%s(%s)' disallowed by MasterDefRegistry.assertAccess()",
                                     defType.toString().toLowerCase(), target, referencingNamespace,
                                     referencingDescriptor, referencingDescriptor.getDefType());
                 }

@@ -17,7 +17,6 @@ package org.auraframework.impl;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +57,6 @@ import org.auraframework.system.MasterDefRegistry;
 import org.auraframework.system.Message;
 import org.auraframework.throwable.AuraExecutionException;
 import org.auraframework.throwable.quickfix.QuickFixException;
-import org.auraframework.util.javascript.JavascriptProcessingError;
 import org.auraframework.util.json.JsonEncoder;
 import org.auraframework.util.json.JsonSerializationContext;
 
@@ -316,7 +314,7 @@ public class ServerServiceImpl implements ServerService {
         serializationService.write(svgDef, null, SVGDef.class, sb, Format.SVG.name());
         return sb.toString();
     }
-    
+
     @Override
     public void writeDefinitions(final Set<DefDescriptor<?>> dependencies, Writer out)
             throws IOException, QuickFixException {
@@ -330,7 +328,7 @@ public class ServerServiceImpl implements ServerService {
         final String uid = context.getUid(appDesc);
         final String key = "JS:" + mKey + uid;
 
-        String cached = context.getDefRegistry().getCachedString(uid, appDesc, key, 
+        String cached = context.getDefRegistry().getCachedString(uid, appDesc, key,
         		new Callable<String>() {
 		    		@Override
 					public String call() throws Exception {
@@ -354,14 +352,11 @@ public class ServerServiceImpl implements ServerService {
         MasterDefRegistry masterDefRegistry = context.getDefRegistry();
 
         StringBuilder sb = new StringBuilder();
-        List<JavascriptProcessingError> errors = new ArrayList<>();
-
 
         // Append component classes.
         Collection<BaseComponentDef> componentDefs = filterAndLoad(BaseComponentDef.class, dependencies, null);
         for (BaseComponentDef def : componentDefs) {
         	sb.append(def.getCode(minify));
-        	errors.addAll(def.getCodeErrors());
             masterDefRegistry.setClientClassLoaded(def.getDescriptor(), true);
         }
 
@@ -371,11 +366,10 @@ public class ServerServiceImpl implements ServerService {
         	List<IncludeDefRef> includeDefs = libraryDef.getIncludes();
 	        for (IncludeDefRef defRef : includeDefs) {
                 sb.append(defRef.getCode(minify));
-                errors.addAll(defRef.getCodeErrors());
                 masterDefRegistry.setClientClassLoaded(defRef.getDescriptor(), true);
-	        }
+            }
         }
-        
+
         sb.append("$A.clientService.initDefs({");
 
         // append component definitions
@@ -417,14 +411,6 @@ public class ServerServiceImpl implements ServerService {
 
         sb.append("});\n\n");
 
-        // if not production instance, add all errors found during compilation,
-        // even in DEV mode, so developers are informed of errors encountered in JS.
-        if (!Aura.getConfigAdapter().isProduction()) {
-            if (errors != null && !errors.isEmpty()) {
-                appendCommentedCodeErrors(errors, sb);
-                }
-            }
-        
         return sb.toString();
     }
 
@@ -476,28 +462,12 @@ public class ServerServiceImpl implements ServerService {
 	                }
             	}
             }
-            	
+
         } catch (QuickFixException qfe) {
             // This should never happen here, by the time we are filtering our set, all dependencies
             // MUST be loaded. If not, we have a serious bug that must be addressed.
             throw new IllegalStateException("Illegal state, QFE during write", qfe);
         }
         return out;
-    }
-
-    /**
-     * Loops through list of javascript errors and return commented text to display
-     *
-     * @param errors list of javascript syntax errors
-     * @return commented errors
-     */
-    private void appendCommentedCodeErrors(List<JavascriptProcessingError> errors, StringBuilder out) {
-        out
-            .append("/**")
-            .append(System.lineSeparator())
-        .append("Errors are preventing some components from being minimized")
-        .append(System.lineSeparator())
-        .append(errors)
-        .append("**/");
     }
 }
