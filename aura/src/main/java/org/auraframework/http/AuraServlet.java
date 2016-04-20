@@ -15,7 +15,21 @@
  */
 package org.auraframework.http;
 
-import com.google.common.collect.Maps;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringReader;
+import java.net.URI;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.http.HttpHeaders;
 import org.auraframework.adapter.ConfigAdapter;
 import org.auraframework.adapter.ExceptionAdapter;
@@ -25,6 +39,10 @@ import org.auraframework.def.BaseComponentDef;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.DefDescriptor.DefType;
+import org.auraframework.http.RequestParam.EnumParam;
+import org.auraframework.http.RequestParam.InvalidParamException;
+import org.auraframework.http.RequestParam.MissingParamException;
+import org.auraframework.http.RequestParam.StringParam;
 import org.auraframework.instance.Action;
 import org.auraframework.service.ContextService;
 import org.auraframework.service.DefinitionService;
@@ -38,23 +56,8 @@ import org.auraframework.throwable.ClientOutOfSyncException;
 import org.auraframework.throwable.SystemErrorException;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.json.JsonStreamReader;
-import org.auraframework.http.RequestParam.StringParam;
-import org.auraframework.http.RequestParam.EnumParam;
-import org.auraframework.http.RequestParam.InvalidParamException;
-import org.auraframework.http.RequestParam.MissingParamException;
 
-import javax.inject.Inject;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringReader;
-import java.net.URI;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
+import com.google.common.collect.Maps;
 
 /**
  * The servlet for initialization and actions in Aura.
@@ -123,6 +126,12 @@ public class AuraServlet extends AuraBaseServlet {
     private SerializationService serializationService;
     private LoggingService loggingService;
     private ServerService serverService;
+    private ManifestUtil manifestUtil;
+
+    @PostConstruct
+    public void setupManifestUtil() {
+        manifestUtil = new ManifestUtil(contextService, configAdapter);
+    }
 
     /**
      * Check for the nocache parameter and redirect as necessary.
@@ -281,7 +290,6 @@ public class AuraServlet extends AuraBaseServlet {
             throw new AuraRuntimeException(e);
         }
 
-        ManifestUtil manifestUtil = new ManifestUtil(contextService, configAdapter);
         return !manifestUtil.isManifestEnabled(request);
     }
 

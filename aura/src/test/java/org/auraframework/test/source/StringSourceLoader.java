@@ -137,4 +137,9 @@ public interface StringSourceLoader extends SourceLoader, InternalNamespaceSourc
      * @param source the loaded definition to remove.
      */
     void removeSource(StringSource<?> source);
+
+    /**
+     * Is a given namespace privileged?
+     */
+    boolean isPrivilegedNamespace(String namespace);
 }

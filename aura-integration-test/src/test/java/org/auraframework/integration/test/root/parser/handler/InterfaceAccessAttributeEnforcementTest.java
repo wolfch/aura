@@ -232,11 +232,11 @@ public class InterfaceAccessAttributeEnforcementTest extends AuraImplTestCase {
         //create interface with system namespace
         String interfaceSource = "<aura:interface/>";
         DefDescriptor<? extends Definition> interfaceDescriptor = getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class, interfaceSource,
-                StringSourceLoader.DEFAULT_PRIVILEGED_NAMESPACE + ":testinterface", false, true);
+                StringSourceLoader.DEFAULT_PRIVILEGED_NAMESPACE + ":testinterface", NamespaceAccess.PRIVILEGED);
         //create component implements the interface
         String source = "<aura:component implements='" + interfaceDescriptor.getNamespace() + ":" + interfaceDescriptor.getName() + "' /> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, source,
-                StringSourceLoader.DEFAULT_NAMESPACE + ":testcomponent", true);
+                StringSourceLoader.DEFAULT_NAMESPACE + ":testcomponent", NamespaceAccess.INTERNAL);
         descriptor.getDef();
     }
     @Test
@@ -244,11 +244,11 @@ public class InterfaceAccessAttributeEnforcementTest extends AuraImplTestCase {
         //create interface with custom namespace
         String interfaceSource = "<aura:interface/>";
         DefDescriptor<? extends Definition> interfaceDescriptor = getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class, interfaceSource,
-                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testinterface", false);
+                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testinterface", NamespaceAccess.CUSTOM);
         //create component implements the interface, the component is in a system namespace
         String source = "<aura:component implements='" + interfaceDescriptor.getNamespace() + ":" + interfaceDescriptor.getName() + "' /> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, source,
-                StringSourceLoader.DEFAULT_NAMESPACE + ":testcomponent", true);
+                StringSourceLoader.DEFAULT_NAMESPACE + ":testcomponent", NamespaceAccess.CUSTOM);
         descriptor.getDef();
     }
 

@@ -15,7 +15,7 @@
  */
 package org.auraframework.integration.test.components.ui.inputSmartNumber;
 
-import org.auraframework.test.util.WebDriverTestCase;
+import org.auraframework.integration.test.util.WebDriverTestCase;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -26,7 +26,6 @@ public class BaseInputSmartNumber extends WebDriverTestCase {
     protected final String URL;
 
     public BaseInputSmartNumber(String urlPath) {
-        super(urlPath);
         this.URL = urlPath;
     }
 

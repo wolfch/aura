@@ -25,7 +25,6 @@ import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
 
-import org.auraframework.Aura;
 import org.auraframework.adapter.ConfigAdapter;
 import org.auraframework.adapter.ExceptionAdapter;
 import org.auraframework.annotations.Annotations.ServiceComponent;

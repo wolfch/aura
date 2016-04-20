@@ -280,8 +280,8 @@ public class MockConfigAdapterImpl extends ConfigAdapterImpl implements MockConf
             return false;
         }
         
-        if(StringSourceLoader.getInstance().isPrivilegedNamespace(namespace) || SYSTEM_TEST_PRIVILEGED_NAMESPACES.contains(namespace)) {
-        	return true;
+        if(stringLoader.isPrivilegedNamespace(namespace) || SYSTEM_TEST_PRIVILEGED_NAMESPACES.contains(namespace)) {
+            return true;
         }
 
         if (super.isPrivilegedNamespace(namespace)) {

@@ -15,6 +15,8 @@
  */
 package org.auraframework.impl.root.parser.handler;
 
+import javax.inject.Inject;
+
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.Definition;
 import org.auraframework.def.EventDef;
@@ -26,9 +28,8 @@ import org.auraframework.system.Source;
 import org.auraframework.test.source.StringSourceLoader;
 import org.auraframework.test.source.StringSourceLoader.NamespaceAccess;
 import org.auraframework.throwable.quickfix.InvalidAccessValueException;
+import org.auraframework.util.test.annotation.UnAdaptableTest;
 import org.junit.Test;
-
-import javax.inject.Inject;
 
 @UnAdaptableTest("when run in core, we throw error with different type.")
 public class EventAccessAttributeTest extends AuraImplTestCase {

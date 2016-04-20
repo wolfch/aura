@@ -14,6 +14,19 @@
  * limitations under the License.
  */
 package org.auraframework.integration.test.http;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.inject.Inject;
+import javax.servlet.ServletConfig;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.SVGDef;
@@ -21,6 +34,7 @@ import org.auraframework.http.AuraBaseServlet;
 import org.auraframework.http.AuraResourceRewriteFilter;
 import org.auraframework.http.AuraResourceServlet;
 import org.auraframework.http.ManifestUtil;
+import org.auraframework.service.ContextService;
 import org.auraframework.service.DefinitionService;
 import org.auraframework.system.AuraContext;
 import org.auraframework.system.AuraContext.Mode;
@@ -35,23 +49,10 @@ import org.auraframework.util.FileMonitor;
 import org.auraframework.util.test.annotation.UnAdaptableTest;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.springframework.test.context.TestContextManager;
-
-import javax.inject.Inject;
-import javax.servlet.ServletConfig;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
+import org.springframework.test.context.TestContextManager;
 /**
  * Simple (non-integration) test case for {@link AuraResourceServlet}, most useful for exercising hard-to-reach error
  * conditions. I would like this test to be in the "aura" module (vice "aura-impl"), but the configuration there isn't
@@ -361,7 +362,7 @@ public class AuraResourceServletTest extends AuraTestCase {
 
         MockHttpServletResponse mockResponse = new MockHttpServletResponse();
         AuraResourceServlet servlet = getAuraResourceServlet();
-        doGet(servlet, mockRequest, mockResponse);
+        servlet.doGet(mockRequest, mockResponse);
 
         List<String> headers = mockResponse.getHeaders("etag");
         assertTrue("Failed to find expected value in header: " + headers, headers.contains(etag));
@@ -401,7 +402,7 @@ public class AuraResourceServletTest extends AuraTestCase {
 
         MockHttpServletResponse mockResponse = new MockHttpServletResponse();
         AuraResourceServlet servlet = getAuraResourceServlet();
-        doGet(servlet, mockRequest, mockResponse);
+        servlet.doGet(mockRequest, mockResponse);
 
         assertEquals(304, mockResponse.getStatus());
     }
@@ -428,7 +429,7 @@ public class AuraResourceServletTest extends AuraTestCase {
 
         MockHttpServletResponse mockResponse = new MockHttpServletResponse();
         AuraResourceServlet servlet = getAuraResourceServlet();
-        doGet(servlet, mockRequest, mockResponse);
+        servlet.doGet(mockRequest, mockResponse);
 
         List<String> headers = mockResponse.getHeaders("Content-Disposition");
         assertFalse("Failed to find any header for Content-Disposition", headers.isEmpty());

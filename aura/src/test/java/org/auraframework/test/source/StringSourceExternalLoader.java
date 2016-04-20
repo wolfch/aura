@@ -354,6 +354,15 @@ public class StringSourceExternalLoader implements StringSourceLoader {
         return access == NamespaceAccess.INTERNAL;
     }
 
+    @Override
+    public boolean isPrivilegedNamespace(String namespace) {
+        if (namespace == null) {
+            return false;
+        }
+        NamespaceAccess access = localAccess.get(namespace);
+        return access == NamespaceAccess.PRIVILEGED;
+    }
+
     private class RemoteStringSource<D extends Definition> extends StringSource<D> {
         private static final long serialVersionUID = 2891764196250418955L;
         NamespaceAccess access;

@@ -32,6 +32,8 @@ import org.auraframework.impl.javascript.controller.JavascriptControllerDef;
 import org.auraframework.impl.javascript.controller.JavascriptPseudoAction;
 import org.auraframework.instance.Action;
 import org.auraframework.system.AuraContext;
+import org.auraframework.throwable.quickfix.InvalidExpressionException;
+import org.auraframework.throwable.quickfix.QuickFixException;
 import org.junit.Test;
 
 /**

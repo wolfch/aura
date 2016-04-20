@@ -47,6 +47,7 @@ import org.auraframework.impl.system.DefDescriptorImpl;
 import org.auraframework.system.AuraContext;
 import org.auraframework.system.Location;
 import org.auraframework.system.Source;
+import org.auraframework.test.source.StringSourceLoader;
 import org.auraframework.throwable.quickfix.DefinitionNotFoundException;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
 import org.auraframework.throwable.quickfix.InvalidExpressionException;
@@ -237,7 +238,7 @@ public abstract class BaseComponentDefTest<T extends BaseComponentDef> extends R
                         vendor.makeLocation("filename1", 5, 5, 0)));
         serializeAndGoldFile(vendor.makeBaseComponentDefWithNulls(getDefClass(),
                 "aura:test", testAttributeDefs, null, null, vendor.makeLocation("filename1", 5, 5, 0), null,
-                null, null, null, null, null, null, false, false));
+                null, null, null, null, null, null, false, false, AuraContext.Access.INTERNAL));
     }
 
     public void testSerializeBasic() throws Exception {

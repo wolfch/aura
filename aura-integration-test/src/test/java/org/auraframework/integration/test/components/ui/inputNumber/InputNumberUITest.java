@@ -15,7 +15,9 @@
  */
 package org.auraframework.integration.test.components.ui.inputNumber;
 
+import org.auraframework.integration.test.components.ui.inputSmartNumber.BaseInputSmartNumber;
 import org.auraframework.integration.test.util.WebDriverTestCase;
+import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 

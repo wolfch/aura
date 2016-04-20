@@ -19,6 +19,7 @@ import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.integration.test.util.WebDriverTestCase;
 import org.junit.Test;
+import org.openqa.selenium.By;
 
 public class NamedAuraStorageUITest extends WebDriverTestCase {
     /**
