@@ -126,6 +126,7 @@ public class MasterDefRegistryImpl implements MasterDefRegistry {
     private final Cache<DefDescriptor<?>, Optional<? extends Definition>> defsCache;
     private final Cache<String, DependencyEntry> depsCache;
     private final Cache<String, String> stringsCache;
+    private final Cache<String, String> altStringsCache;
     private final Cache<String, Set<DefDescriptor<?>>> descriptorFilterCache;
     private final Cache<String, String> accessCheckCache;
 
@@ -173,6 +174,7 @@ public class MasterDefRegistryImpl implements MasterDefRegistry {
         this.defsCache = cachingService.getDefsCache();
         this.depsCache = cachingService.getDepsCache();
         this.stringsCache = cachingService.getStringsCache();
+        this.altStringsCache = cachingService.getAltStringsCache();
         this.descriptorFilterCache = cachingService.getDescriptorFilterCache();
         this.accessCheckCache = cachingService.<String, String>getCacheBuilder()
                 .setInitialSize(ACCESS_CHECK_CACHE_SIZE)
@@ -1426,11 +1428,20 @@ public class MasterDefRegistryImpl implements MasterDefRegistry {
 
     @Override
     public String getCachedString(String uid, DefDescriptor<?> descriptor, String key) {
+    	return getCachedString(stringsCache, uid, descriptor, key);
+    }
+
+    @Override
+    public String getAltCachedString(String uid, DefDescriptor<?> descriptor, String key) {
+    	return getCachedString(altStringsCache, uid, descriptor, key);
+    }
+
+    private String getCachedString(Cache<String, String> cache, String uid, DefDescriptor<?> descriptor, String key) {
         if (shouldCache(descriptor)) {
             DependencyEntry de = localDependencies.get(uid);
 
             if (de != null) {
-                return stringsCache.getIfPresent(getKey(de, descriptor, key));
+                return cache.getIfPresent(getKey(de, descriptor, key));
             }
         }
         return null;
@@ -1438,12 +1449,21 @@ public class MasterDefRegistryImpl implements MasterDefRegistry {
 
     @Override
     public String getCachedString(String uid, DefDescriptor<?> descriptor, String key, Callable<String> loader) throws QuickFixException, IOException {
+    	return getCachedString(stringsCache, uid, descriptor, key, loader);
+    }
+
+    @Override
+    public String getAltCachedString(String uid, DefDescriptor<?> descriptor, String key, Callable<String> loader) throws QuickFixException, IOException {
+    	return getCachedString(altStringsCache, uid, descriptor, key, loader);
+    }
+
+    private String getCachedString(Cache<String, String> cache, String uid, DefDescriptor<?> descriptor, String key, Callable<String> loader) throws QuickFixException, IOException {
     	if (shouldCache(descriptor)) {
 	        DependencyEntry de = localDependencies.get(uid);
 
 	        if (de != null) {
 	        	try {
-	        		return stringsCache.get(getKey(de, descriptor, key), loader);
+	        		return cache.get(getKey(de, descriptor, key), loader);
 	    		} catch (ExecutionException e) {
 	    			// Don't interfere if the callable caused these exceptions.
 	    		    Throwables.propagateIfInstanceOf(e.getCause(), IOException.class);

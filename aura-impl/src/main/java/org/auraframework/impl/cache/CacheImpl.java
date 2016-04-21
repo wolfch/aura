@@ -34,10 +34,10 @@ import java.util.concurrent.ExecutionException;
 public class CacheImpl<K, T> implements Cache<K, T> {
     private LoggingAdapter loggingAdapter;
 
-    private static class EvictionListener<K, T> implements RemovalListener<K, T> {
+    /** A default name string */
+    private static final String UNNAMED = "(unnamed)";
 
-        /** A default name string */
-        private static final String UNNAMED = "(unnamed)";
+    private static class EvictionListener<K, T> implements RemovalListener<K, T> {
 
         /** Interval at which to log cache stats in "normal" operation */
         private static final long ONE_DAY = 1000 * 60 * 60 * 24;
@@ -112,13 +112,15 @@ public class CacheImpl<K, T> implements Cache<K, T> {
     };
 
     private com.google.common.cache.Cache<K, T> cache;
+    private String name;
 
     CacheImpl(com.google.common.cache.Cache<K, T> cache) {
         this.cache = cache;
+        this.name = UNNAMED;
     }
-    
+
     @Override
-    public void logCacheStatus(String name, String extraMessage) {
+    public void logCacheStatus(String extraMessage) {
         LoggingContext loggingCtx = this.loggingAdapter.getLoggingContext();
         CacheStats stats = cache.stats();
         loggingCtx.logCacheInfo(name,
@@ -148,6 +150,7 @@ public class CacheImpl<K, T> implements Cache<K, T> {
         EvictionListener<K, T> listener = new EvictionListener<>(builder.name, this.loggingAdapter);
         cb.removalListener(listener);
         cache = cb.build();
+        name = builder.name;
         listener.setCache(cache);
     }
 
