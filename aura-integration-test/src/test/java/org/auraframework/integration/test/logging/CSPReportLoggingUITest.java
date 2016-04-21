@@ -42,7 +42,7 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 public class CSPReportLoggingUITest extends AbstractLoggingUITest {
 
     public CSPReportLoggingUITest(String name) {
-        super("LoggingContextImpl");
+        super(name, "LoggingContextImpl");
     }
 
     public void testReportCSPViolationForClientRenderedCSS() throws Exception {

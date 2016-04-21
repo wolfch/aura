@@ -89,8 +89,8 @@ public class AppCacheResourcesLoggingUITest extends AbstractLoggingUITest {
         UNCACHED, IDLE, CHECKING, DOWNLOADING, UPDATEREADY, OBSOLETE;
     }
 
-    public AppCacheResourcesLoggingUITest() {
-        super("LoggingContextImpl");
+    public AppCacheResourcesLoggingUITest(String name) {
+        super(name, "LoggingContextImpl");
     }
 
     @Override

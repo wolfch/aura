@@ -40,8 +40,8 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 @UnAdaptableTest("AbstractLoggingUITest has tag @ThreadHostileTest which is not supported in SFDC.")
 public class ErrorHandlingLoggingUITest extends AbstractLoggingUITest {
 
-    public ErrorHandlingLoggingUITest() {
-        super(ExceptionAdapterImpl.class);
+    public ErrorHandlingLoggingUITest(String name) {
+        super(name, ExceptionAdapterImpl.class);
     }
 
     public void testClientErrorIdMatchesLoggedErrorId() throws Exception {
