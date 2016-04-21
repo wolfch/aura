@@ -57,6 +57,7 @@ public class JavascriptControllerDefTest extends AuraImplTestCase {
         PropertyReference propertyReference = new PropertyReferenceImpl("$Label.section", null);
         JavascriptControllerDef.Builder builder = new JavascriptControllerDef.Builder();
         builder.addExpressionRef(propertyReference);
+        builder.setAccess(new DefinitionAccessImpl(AuraContext.Access.INTERNAL));
         ControllerDef controllerDef = builder.build();
 
         try {

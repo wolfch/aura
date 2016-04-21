@@ -248,7 +248,7 @@ public class InterfaceAccessAttributeEnforcementTest extends AuraImplTestCase {
         //create component implements the interface, the component is in a system namespace
         String source = "<aura:component implements='" + interfaceDescriptor.getNamespace() + ":" + interfaceDescriptor.getName() + "' /> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, source,
-                StringSourceLoader.DEFAULT_NAMESPACE + ":testcomponent", NamespaceAccess.CUSTOM);
+                StringSourceLoader.DEFAULT_NAMESPACE + ":testcomponent", NamespaceAccess.INTERNAL);
         descriptor.getDef();
     }
 
@@ -301,14 +301,13 @@ public class InterfaceAccessAttributeEnforcementTest extends AuraImplTestCase {
         //create interface with system namespace
         String interfaceSource = "<aura:interface/>";
         DefDescriptor<? extends Definition> interfaceDescriptor = getAuraTestingUtil().addSourceAutoCleanup(InterfaceDef.class, interfaceSource,
-                StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testinterface",
-                        NamespaceAccess.CUSTOM);
+                StringSourceLoader.DEFAULT_PRIVILEGED_NAMESPACE + ":testinterface", NamespaceAccess.PRIVILEGED);
         //create component implements the interface, the component is in a system namespace
         String source = "<aura:component implements='" + interfaceDescriptor.getNamespace() + ":" + interfaceDescriptor.getName() + "' /> ";
         DefDescriptor<? extends Definition> descriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, source,
                 StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testcomponent", NamespaceAccess.CUSTOM);
         try {
-        descriptor.getDef();
+            descriptor.getDef();
         	fail("application of custom namespace shouldn't be able to implements interface of privileged namespace");
         } catch(Exception e) {
         	//expect 

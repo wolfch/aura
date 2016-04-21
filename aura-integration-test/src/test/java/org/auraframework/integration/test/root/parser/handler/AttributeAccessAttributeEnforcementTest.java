@@ -1496,6 +1496,7 @@ public class AttributeAccessAttributeEnforcementTest extends AuraImplTestCase {
                         NamespaceAccess.CUSTOM);
         try {
             cmpDescriptor.getDef();
+            descriptor.getDef();
             fail("Attribute marked as PRIVATE cannot be accessed even in the same custom namespace");
         } catch(NoAccessException e) {
             String msg = e.getMessage();
