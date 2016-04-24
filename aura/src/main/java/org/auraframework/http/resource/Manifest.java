@@ -239,11 +239,6 @@ public class Manifest extends AuraResourceImpl {
     }
 
     @Inject
-    public void setDefinitionService(DefinitionService definitionService) {
-        this.definitionService = definitionService;
-    }
-
-    @Inject
     public void setLoggingService(LoggingService loggingService) {
         this.loggingService = loggingService;
     }

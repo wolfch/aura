@@ -56,13 +56,6 @@ public class DefinitionAccessImpl implements DefinitionAccess {
         parseAccess(namespace, access);
         defaultAccess(this.isInternalNamespace);
     }
-    
-    private DefinitionAccessImpl(boolean isInternalNamespace) {
-        this.namespace = null;
-        this.accessString = null;
-        this.isInternalNamespace=isInternalNamespace;
-        defaultAccess(isInternalNamespace);
-    }
 
     private void parseAccess(String namespace, String accessValue) throws InvalidAccessValueException {
         List<String> items = AuraTextUtil.splitSimpleAndTrim(accessValue, ",", 10);

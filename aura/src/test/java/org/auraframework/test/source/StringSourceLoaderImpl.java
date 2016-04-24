@@ -506,8 +506,9 @@ public class StringSourceLoaderImpl implements StringSourceLoader {
      * Expose privileged namespaces added in StringSourceLoader for testing
      *
      * @param namespace namespace
-     * @return true if included in {@link #privilegedNamespaces}
+     * @return true if namespace has privileged access
      */
+    @Override
     public boolean isPrivilegedNamespace(String namespace) {
         if (namespace == null) {
             return false;

@@ -87,7 +87,6 @@ public interface BaseComponentDef extends RootDefinition {
     ControllerDef getControllerDef() throws QuickFixException;
     HelperDef getHelperDef() throws QuickFixException;
     RendererDef getRendererDef() throws QuickFixException;
-    ProviderDef getProviderDef() throws QuickFixException;
 
     ControllerDef getLocalControllerDef() throws QuickFixException;
 

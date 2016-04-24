@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.auraframework.Aura;
 import org.auraframework.adapter.ConfigAdapter;
+import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.BaseComponentDef;
 import org.auraframework.def.ComponentDef;
@@ -51,6 +52,7 @@ import org.auraframework.util.json.JsonEncoder;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+@ServiceComponent
 public abstract class TemplateResource extends AuraResourceImpl {
     @Inject
     protected ConfigAdapter configAdapter;

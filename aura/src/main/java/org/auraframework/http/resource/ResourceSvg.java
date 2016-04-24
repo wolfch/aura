@@ -36,7 +36,6 @@ import java.io.IOException;
 public class ResourceSvg extends AuraResourceImpl {
     private static final StringParam lookup = new StringParam(AuraServlet.AURA_PREFIX + "lookup", 0, false);
 
-    private DefinitionService definitionService;
     private ServerService serverService;
 
     public ResourceSvg() {
@@ -82,11 +81,6 @@ public class ResourceSvg extends AuraResourceImpl {
     @Inject
     public void setServerService(ServerService serverService) {
         this.serverService = serverService;
-    }
-
-    @Inject
-    public void setDefinitionService(DefinitionService definitionService) {
-        this.definitionService = definitionService;
     }
 }
 
