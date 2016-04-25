@@ -721,11 +721,10 @@ public class ClientOutOfSyncUITest extends WebDriverTestCase {
      * Without persisting the component version on the client, the server would never know the client's version of
      * the component we're loading is out of date and after a page reload the old component would be displayed.
      *
-     * See W-2909975 for additional details.
      */
-    // This tests persistent storage, exclude on Safari based browsers
+    // This tests persistent storage, exclude on Safari-based browsers
     @ExcludeBrowsers({ BrowserType.SAFARI, BrowserType.IPAD, BrowserType.IPHONE })
-    public void _testReloadAfterMarkupChange() throws Exception {
+    public void testReloadAfterMarkupChange() throws Exception {
         DefDescriptor<ComponentDef> cmpDesc = addSourceAutoCleanup(
                 ComponentDef.class,
                 String.format(
