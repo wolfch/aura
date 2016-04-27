@@ -204,7 +204,7 @@
 	        
 		$A.test.addWaitForWithFailureMessage(true, function(){	
 			//this is the accepted delta in the positioning of the datePicker with respect to the inputDate
-			var epsilon = 15;
+			var epsilon = 30;
 	     
 		    datePickerRect = datePicker.getBoundingClientRect();
 		    inputDateRect = cmp.find('inputDate').getElement().getBoundingClientRect();
