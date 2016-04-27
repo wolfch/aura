@@ -114,9 +114,10 @@ public abstract class WebDriverTestCase extends IntegrationTestCase {
                 || allClasses.startsWith(oneClass + " ") || allClasses.endsWith(" " + oneClass);
     }
 
-    protected WebDriver currentDriver = null;
-    protected BrowserType currentBrowserType = null;
-    protected AuraUITestingUtil auraUITestingUtil;
+    private WebDriver currentDriver = null;
+    private BrowserType currentBrowserType = null;
+    private AuraUITestingUtil auraUITestingUtil;
+
     protected PerfWebDriverUtil perfWebDriverUtil;
 
     @Retention(RetentionPolicy.RUNTIME)
@@ -151,41 +152,11 @@ public abstract class WebDriverTestCase extends IntegrationTestCase {
         super(name);
     }
 
-    /**
-     * Setup specific to a test case but common for all browsers. Run only once per test case.
-     */
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-    }
-
     public String getBrowserTypeString() {
         if (this.currentBrowserType != null) {
             return "?browser=" + this.currentBrowserType.name();
         }
         return "";
-    }
-
-    /**
-     * Teardown common stuff shared across all browsers while running a test case. Run only once per test case.
-     */
-    @Override
-    public void tearDown() throws Exception {
-        super.tearDown();
-    }
-
-    /**
-     * Setup specific to a test run against a particular browser. Run once per test case, per browser.
-     */
-    public void perBrowserSetUp() {
-        // re-initialize driver pointer here because test analysis might need it after perBrowserTearDown
-        getDriver();
-    }
-
-    /**
-     * TearDown specific to a test run against a particular browser. Run once per test case, per browser.
-     */
-    protected void perBrowserTearDown() {
     }
 
     protected void superRunTest() throws Throwable {
@@ -194,7 +165,10 @@ public abstract class WebDriverTestCase extends IntegrationTestCase {
 
     public void runTestWithBrowser(BrowserType browserType) throws Throwable {
         Throwable failure = null;
-        currentBrowserType = browserType;
+        if (currentBrowserType != browserType) {
+            currentDriver = null;
+            currentBrowserType = browserType;
+        }
 
         if (isPerfTest()) {
             runPerfTests();
@@ -203,7 +177,9 @@ public abstract class WebDriverTestCase extends IntegrationTestCase {
 
         for (int i = 0; i <= FLAPPER_NUM_RETRIES; i++) {
             try {
-                perBrowserSetUp();
+                // re-initialize driver pointer here because test analysis might need it after perBrowserTearDown
+                getDriver();
+                setUp();
                 superRunTest();
                 return;
             } catch (Throwable th) {
@@ -217,7 +193,7 @@ public abstract class WebDriverTestCase extends IntegrationTestCase {
 
                 quitDriver();
             } finally {
-                perBrowserTearDown();
+                tearDown();
             }
         }
 
@@ -383,10 +359,10 @@ public abstract class WebDriverTestCase extends IntegrationTestCase {
             perfRunMode = PerfRunMode.WARMUP;
             // TODO: any metrics that should/could be measured for the first run
             try {
-                perBrowserSetUp();
+                setUp();
                 superRunTest();
             } finally {
-                perBrowserTearDown();
+                tearDown();
             }
         }
 
@@ -396,7 +372,7 @@ public abstract class WebDriverTestCase extends IntegrationTestCase {
             PerfRunsCollector runsCollector = new PerfRunsCollector();
             for (int i = 0; i < numPerfTimelineRuns; i++) {
                 try {
-                    perBrowserSetUp();
+                    setUp();
 
                     PerfMetricsCollector metricsCollector = new PerfMetricsCollector(this, perfRunMode);
                     metricsCollector.startCollecting();
@@ -409,12 +385,12 @@ public abstract class WebDriverTestCase extends IntegrationTestCase {
                     if (logger.isLoggable(Level.INFO)) {
                         runFiles.add(PerfResultsUtil.writeDevToolsLog(metrics.getDevToolsLog(), getGoldFileName() + '_'
                                 + (i + 1),
-                                auraUITestingUtil.getUserAgent()));
+                                getAuraUITestingUtil().getUserAgent()));
                         runFiles.add(PerfResultsUtil
                                 .writeGoldFile(metrics, getGoldFileName() + '_' + runNumber++, true));
                     }
                 } finally {
-                    perBrowserTearDown();
+                    tearDown();
                 }
             }
             // use the median run for timeline metrics so individual metrics and dev tools logs match
@@ -427,7 +403,7 @@ public abstract class WebDriverTestCase extends IntegrationTestCase {
             PerfRunsCollector runsCollector = new PerfRunsCollector();
             for (int i = 0; i < numPerfProfileRuns; i++) {
                 try {
-                    perBrowserSetUp();
+                    setUp();
 
                     PerfMetricsCollector metricsCollector = new PerfMetricsCollector(this, perfRunMode);
                     metricsCollector.startCollecting();
@@ -452,7 +428,7 @@ public abstract class WebDriverTestCase extends IntegrationTestCase {
                                 .writeGoldFile(metrics, getGoldFileName() + '_' + runNumber++, true));
                     }
                 } finally {
-                    perBrowserTearDown();
+                    tearDown();
                 }
             }
             // use the median run for profile metrics so individual metrics and .cpuprofile match
@@ -467,7 +443,7 @@ public abstract class WebDriverTestCase extends IntegrationTestCase {
             for (int i = 0; i < numPerfAuraRuns; i++) {
                 try {
                     // TODO: set stats mode for framework tests
-                    perBrowserSetUp();
+                    setUp();
 
                     PerfMetricsCollector metricsCollector = new PerfMetricsCollector(this, perfRunMode);
                     metricsCollector.startCollecting();
@@ -477,7 +453,7 @@ public abstract class WebDriverTestCase extends IntegrationTestCase {
                     PerfMetrics metrics = metricsCollector.stopCollecting();
                     runsCollector.addRun(metrics);
                 } finally {
-                    perBrowserTearDown();
+                    tearDown();
                 }
             }
             auraMetrics = runsCollector.getMedianMetrics();
@@ -493,7 +469,7 @@ public abstract class WebDriverTestCase extends IntegrationTestCase {
             }
             List<JSONObject> devToolsLog = allMetrics.getDevToolsLog();
             if (devToolsLog != null) {
-                PerfResultsUtil.writeDevToolsLog(devToolsLog, getGoldFileName(), auraUITestingUtil.getUserAgent());
+                PerfResultsUtil.writeDevToolsLog(devToolsLog, getGoldFileName(), getAuraUITestingUtil().getUserAgent());
             }
             Map<String, ?> jsProfilerData = allMetrics.getJSProfilerData();
             if (jsProfilerData != null) {
@@ -536,7 +512,7 @@ public abstract class WebDriverTestCase extends IntegrationTestCase {
 
     @SuppressWarnings("unchecked")
     public final Map<String, Map<String, Map<String, List<Object>>>> getAuraStats() {
-        return (Map<String, Map<String, Map<String, List<Object>>>>) auraUITestingUtil
+        return (Map<String, Map<String, Map<String, List<Object>>>>) getAuraUITestingUtil()
                 .getRawEval("return $A.PERFCORE.stats.get();");
     }
 
@@ -652,8 +628,8 @@ public abstract class WebDriverTestCase extends IntegrationTestCase {
         }
 
         description.append(String.format("\nBrowser: %s", currentBrowserType));
-        if (auraUITestingUtil != null) {
-            description.append("\nUser-Agent: " + auraUITestingUtil.getUserAgent());
+        if (getAuraUITestingUtil() != null) {
+            description.append("\nUser-Agent: " + getAuraUITestingUtil().getUserAgent());
         }
         if (currentDriver == null) {
             description.append("\nTest failed before WebDriver was initialized");
@@ -668,7 +644,7 @@ public abstract class WebDriverTestCase extends IntegrationTestCase {
                     .append("\nWebDriver: " + currentDriver);
             description.append("\nJS state: ");
             try {
-                String dump = (String) auraUITestingUtil
+                String dump = (String) getAuraUITestingUtil()
                         .getRawEval("return (window.$A && $A.test && $A.test.getDump())||'';");
                 if (dump.isEmpty()) {
                     description.append("no errors detected");
@@ -704,7 +680,7 @@ public abstract class WebDriverTestCase extends IntegrationTestCase {
             try {
                 description.append("\nApplication cache status: ");
                 description
-                        .append(auraUITestingUtil
+                        .append(getAuraUITestingUtil()
                                 .getRawEval(
                                         "var cache=window.applicationCache;return (cache===undefined || cache===null)?'undefined':cache.status;")
                                 .toString());
@@ -859,7 +835,7 @@ public abstract class WebDriverTestCase extends IntegrationTestCase {
              */
 
             logger.info(String.format("Requesting: %s", capabilities));
-            setCurrentDriver(provider.get(capabilities));
+            currentDriver = provider.get(capabilities);
 
             if (currentDriver == null) {
                 fail("Failed to get webdriver for " + currentBrowserType);
@@ -875,19 +851,18 @@ public abstract class WebDriverTestCase extends IntegrationTestCase {
             }
             logger.info(driverInfo);
 
-            auraUITestingUtil = new AuraUITestingUtil(currentDriver, Integer.parseInt(System.getProperty(
-                    "webdriver.timeout", "30")));
-            perfWebDriverUtil = new PerfWebDriverUtil(currentDriver, auraUITestingUtil);
+            auraUITestingUtil = null;
+            perfWebDriverUtil = new PerfWebDriverUtil(currentDriver, getAuraUITestingUtil());
         }
         return currentDriver;
     }
 
     public AuraUITestingUtil getAuraUITestingUtil() {
+        if(auraUITestingUtil == null){
+            auraUITestingUtil = new AuraUITestingUtil(getDriver(), Integer.parseInt(System.getProperty(
+                    "webdriver.timeout", "30")));
+        }
         return auraUITestingUtil;
-    }
-
-    protected void setCurrentDriver(WebDriver currentDriver) {
-        this.currentDriver = currentDriver;
     }
 
     /**
@@ -904,7 +879,8 @@ public abstract class WebDriverTestCase extends IntegrationTestCase {
             } catch (Exception e) {
                 Log.getLogger(getClass()).warn(currentDriver.toString(), e);
             }
-            setCurrentDriver(null);
+            currentDriver = null;
+            auraUITestingUtil = null;
         }
     }
 
@@ -1023,7 +999,7 @@ public abstract class WebDriverTestCase extends IntegrationTestCase {
         params.put("aura.mode", mode.name());
         params.put("aura.test", getQualifiedName());
         url = addUrlParams(url, params);
-        auraUITestingUtil.getRawEval("document._waitingForReload = true;");
+        getAuraUITestingUtil().getRawEval("document._waitingForReload = true;");
         try {
             openAndWait(url, waitForInit);
         } catch (TimeoutException e) {
@@ -1038,26 +1014,26 @@ public abstract class WebDriverTestCase extends IntegrationTestCase {
     }
 
     private void openAndWait(String url, boolean waitForInit) throws MalformedURLException, URISyntaxException {
-        auraUITestingUtil.getRawEval("document._waitingForReload = true;");
+        getAuraUITestingUtil().getRawEval("document._waitingForReload = true;");
         openRaw(url);
-        auraUITestingUtil.waitUntil(new ExpectedCondition<Boolean>() {
+        getAuraUITestingUtil().waitUntil(new ExpectedCondition<Boolean>() {
             @Override
             public Boolean apply(WebDriver d) {
-                Object ret = auraUITestingUtil.getRawEval("return !document._waitingForReload");
+                Object ret = getAuraUITestingUtil().getRawEval("return !document._waitingForReload");
                 if (ret != null && ((Boolean) ret).booleanValue()) {
                     return true;
                 }
                 return false;
             }
-        }, auraUITestingUtil.getTimeout(), "fail on loading url:" + url);
+        }, getAuraUITestingUtil().getTimeout(), "fail on loading url:" + url);
 
         if (waitForInit) {
-            auraUITestingUtil.waitForAuraInit(getAuraErrorsExpectedDuringInit());
+            getAuraUITestingUtil().waitForAuraInit(getAuraErrorsExpectedDuringInit());
         }
     }
 
     public void waitForAuraFrameworkReady() {
-        auraUITestingUtil.waitForAuraFrameworkReady(getAuraErrorsExpectedDuringInit());
+        getAuraUITestingUtil().waitForAuraFrameworkReady(getAuraErrorsExpectedDuringInit());
     }
 
     protected Set<String> getAuraErrorsExpectedDuringInit() {
@@ -1070,10 +1046,10 @@ public abstract class WebDriverTestCase extends IntegrationTestCase {
      * @throws AssertionFailedError if the provided javascript does not return a boolean.
      */
     public void waitForCondition(final String javascript, int timeoutInSecs) {
-        auraUITestingUtil.waitUntil(new ExpectedCondition<Boolean>() {
+        getAuraUITestingUtil().waitUntil(new ExpectedCondition<Boolean>() {
             @Override
             public Boolean apply(WebDriver d) {
-                return auraUITestingUtil.getBooleanEval(javascript);
+                return getAuraUITestingUtil().getBooleanEval(javascript);
             }
         }, timeoutInSecs, "fail on waiting for condition:" + javascript);
     }
@@ -1082,7 +1058,7 @@ public abstract class WebDriverTestCase extends IntegrationTestCase {
      * Wait for the provided javascript to evaluate to true. Make sure script has return statement.
      */
     public void waitForCondition(final String javascript) {
-        waitForCondition(javascript, auraUITestingUtil.getTimeout());
+        waitForCondition(javascript, getAuraUITestingUtil().getTimeout());
     }
 
     /**
@@ -1106,21 +1082,21 @@ public abstract class WebDriverTestCase extends IntegrationTestCase {
      * Wait for the exact text to be present for element.
      */
     public void waitForElementTextPresent(WebElement e, String text) {
-        waitForElementText(e, text, true, auraUITestingUtil.getTimeout(), true);
+        waitForElementText(e, text, true, getAuraUITestingUtil().getTimeout(), true);
     }
 
     /**
      * Wait for element to contains the text.
      */
     public void waitForElementTextContains(WebElement e, String text) {
-        waitForElementText(e, text, true, auraUITestingUtil.getTimeout(), false);
+        waitForElementText(e, text, true, getAuraUITestingUtil().getTimeout(), false);
     }
 
     /**
      * Wait for text to be absent for element.
      */
     public void waitForElementTextAbsent(WebElement e, String text) {
-        waitForElementText(e, text, false, auraUITestingUtil.getTimeout());
+        waitForElementText(e, text, false, getAuraUITestingUtil().getTimeout());
     }
 
     /**
@@ -1133,7 +1109,7 @@ public abstract class WebDriverTestCase extends IntegrationTestCase {
 
     private void waitForElementText(final WebElement e, final String text, final boolean isPresent, long timeout,
             final boolean checkFullText) {
-        auraUITestingUtil.waitUntil(new ExpectedCondition<Boolean>() {
+        getAuraUITestingUtil().waitUntil(new ExpectedCondition<Boolean>() {
             @Override
             public Boolean apply(WebDriver d) {
                 if (checkFullText == true) {
@@ -1146,29 +1122,29 @@ public abstract class WebDriverTestCase extends IntegrationTestCase {
     }
 
     protected void waitForElementAbsent(String msg, final WebElement e) {
-        waitForElement(msg, e, false, auraUITestingUtil.getTimeout());
+        waitForElement(msg, e, false, getAuraUITestingUtil().getTimeout());
     }
 
     protected void waitForElementAbsent(final WebElement e) {
-        waitForElement("Timed out (" + auraUITestingUtil.getTimeout() + "s) waiting for " + e + "to disappear.", e,
+        waitForElement("Timed out (" + getAuraUITestingUtil().getTimeout() + "s) waiting for " + e + "to disappear.", e,
                 false,
-                auraUITestingUtil.getTimeout());
+                getAuraUITestingUtil().getTimeout());
     }
 
     protected void waitForElementPresent(String msg, final WebElement e) {
-        waitForElement(msg, e, true, auraUITestingUtil.getTimeout());
+        waitForElement(msg, e, true, getAuraUITestingUtil().getTimeout());
     }
 
     protected void waitForElementPresent(final WebElement e) {
-        waitForElement("Timed out (" + auraUITestingUtil.getTimeout() + "s) waiting for " + e, e, true,
-                auraUITestingUtil.getTimeout());
+        waitForElement("Timed out (" + getAuraUITestingUtil().getTimeout() + "s) waiting for " + e, e, true,
+                getAuraUITestingUtil().getTimeout());
     }
 
     /**
      * short waitForElement to present or absent before executing the next command
      */
     protected void waitForElement(String msg, final WebElement e, final boolean isDisplayed) {
-        waitForElement(msg, e, isDisplayed, auraUITestingUtil.getTimeout());
+        waitForElement(msg, e, isDisplayed, getAuraUITestingUtil().getTimeout());
     }
 
     /**
@@ -1181,7 +1157,7 @@ public abstract class WebDriverTestCase extends IntegrationTestCase {
      * @param timeoutInSecs number of seconds to wait before erroring out
      */
     protected void waitForElement(String msg, final WebElement e, final boolean isDisplayed, int timeoutInSecs) {
-        auraUITestingUtil.waitUntil(new ExpectedCondition<Boolean>() {
+        getAuraUITestingUtil().waitUntil(new ExpectedCondition<Boolean>() {
             @Override
             public Boolean apply(WebDriver d) {
                 return isDisplayed == e.isDisplayed();
@@ -1196,7 +1172,7 @@ public abstract class WebDriverTestCase extends IntegrationTestCase {
      * @param locator By of element waiting for.
      */
     public void waitForElementAppear(String msg, final By locator) {
-        WebDriverWait wait = new WebDriverWait(getDriver(), auraUITestingUtil.getTimeout());
+        WebDriverWait wait = new WebDriverWait(getDriver(), getAuraUITestingUtil().getTimeout());
         wait.withMessage(msg);
         wait.ignoring(NoSuchElementException.class);
         wait.until(new ExpectedCondition<Boolean>() {
@@ -1219,7 +1195,7 @@ public abstract class WebDriverTestCase extends IntegrationTestCase {
      * @param locator By of element waiting for.
      */
     public void waitForElementDisappear(String msg, final By locator) {
-        WebDriverWait wait = new WebDriverWait(getDriver(), auraUITestingUtil.getTimeout());
+        WebDriverWait wait = new WebDriverWait(getDriver(), getAuraUITestingUtil().getTimeout());
         wait.withMessage(msg);
         wait.until(new ExpectedCondition<Boolean>() {
             @Override
@@ -1246,7 +1222,7 @@ public abstract class WebDriverTestCase extends IntegrationTestCase {
      */
     public void waitForComponentToChangeStatus(final String selectorToFindCmp, final String attr,
             final String itemAttrShouldContain, final boolean useBangOperator) {
-        auraUITestingUtil.waitUntil(new ExpectedCondition<Boolean>() {
+        getAuraUITestingUtil().waitUntil(new ExpectedCondition<Boolean>() {
             @Override
             public Boolean apply(WebDriver d) {
                 if (useBangOperator) {
@@ -1258,7 +1234,7 @@ public abstract class WebDriverTestCase extends IntegrationTestCase {
                             .contains(itemAttrShouldContain);
                 }
             }
-        }, auraUITestingUtil.getTimeout(), "fail on waiting for component to change status");
+        }, getAuraUITestingUtil().getTimeout(), "fail on waiting for component to change status");
     }
 
     /**
@@ -1268,37 +1244,37 @@ public abstract class WebDriverTestCase extends IntegrationTestCase {
      * @param expectedText - the expected text on that page.
      */
     public void waitForCarouselPageToChange(final WebElement page, final String expectedText) {
-        auraUITestingUtil.waitUntil(new ExpectedCondition<Boolean>() {
+        getAuraUITestingUtil().waitUntil(new ExpectedCondition<Boolean>() {
             @Override
             public Boolean apply(WebDriver d) {
                 String pageContent = page.getAttribute("innerHTML");
                 return pageContent.contains(expectedText);
             }
-        }, auraUITestingUtil.getTimeout(), "fail on waiting for Carousel Page to Change");
+        }, getAuraUITestingUtil().getTimeout(), "fail on waiting for Carousel Page to Change");
     }
 
     public void waitForAutoCompleteListVisible(final WebElement list, final boolean isVisible) {
-        auraUITestingUtil.waitUntil(new ExpectedCondition<Boolean>() {
+        getAuraUITestingUtil().waitUntil(new ExpectedCondition<Boolean>() {
             @Override
             public Boolean apply(WebDriver d) {
                 boolean isInvisible = hasCssClass(list, "invisible");
                 return isVisible != isInvisible;
             }
-        }, auraUITestingUtil.getTimeout(), "fail on waiting AutoCompleteList to be visible");
+        }, getAuraUITestingUtil().getTimeout(), "fail on waiting AutoCompleteList to be visible");
     }
 
     /**
      * Find first matching element in the DOM.
      */
     protected WebElement findDomElement(By locator) {
-        return auraUITestingUtil.findDomElement(locator);
+        return getAuraUITestingUtil().findDomElement(locator);
     }
 
     /**
      * Find list of matching element in the DOM.
      */
     protected List<WebElement> findDomElements(By locator) {
-        return auraUITestingUtil.findDomElements(locator);
+        return getAuraUITestingUtil().findDomElements(locator);
     }
 
     /**
@@ -1316,7 +1292,7 @@ public abstract class WebDriverTestCase extends IntegrationTestCase {
     }
 
     public Action shiftTab() {
-        Actions builder = new Actions(currentDriver);
+        Actions builder = new Actions(getDriver());
         builder.keyDown(Keys.SHIFT)
                 .sendKeys(Keys.TAB)
                 .keyUp(Keys.SHIFT);
@@ -1332,7 +1308,7 @@ public abstract class WebDriverTestCase extends IntegrationTestCase {
      */
     public void flick(By locator, int xOffset, int yOffset) {
         waitForElementAppear("Cannot locate element to flick: " + locator, locator);
-        WebElement element = auraUITestingUtil.findDomElement(locator);
+        WebElement element = getAuraUITestingUtil().findDomElement(locator);
         flick(element, xOffset, yOffset, FlickAction.SPEED_NORMAL);
     }
 
@@ -1393,6 +1369,12 @@ public abstract class WebDriverTestCase extends IntegrationTestCase {
     }
 
     protected void assertClassesSame(String message, String expected, String actual) {
-        auraUITestingUtil.assertClassesSame(message, expected, actual);
+        getAuraUITestingUtil().assertClassesSame(message, expected, actual);
+    }
+
+    @Override
+    public void runBare() throws Throwable {
+        logger.info(String.format("Running: %s.%s", getClass().getName(), getName()));
+        runTest();
     }
 }

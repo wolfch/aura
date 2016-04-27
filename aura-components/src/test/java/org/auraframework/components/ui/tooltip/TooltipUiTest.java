@@ -39,11 +39,11 @@ public class TooltipUiTest extends WebDriverTestCase {
 		WebElement trigger = findDomElement(By.cssSelector(".triggerClick"));
 
 		// open by sending enter key
-		auraUITestingUtil.pressEnter(trigger);
+		getAuraUITestingUtil().pressEnter(trigger);
 		waitForToolTipPresent();
 
 		// close by sending enter key
-		auraUITestingUtil.pressEnter(trigger);
+		getAuraUITestingUtil().pressEnter(trigger);
 		waitForToolTipAbsent();
 	}
 

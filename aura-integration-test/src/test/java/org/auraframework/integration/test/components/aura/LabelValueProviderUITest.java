@@ -43,8 +43,8 @@ public class LabelValueProviderUITest extends WebDriverTestCase {
     public void testEfficientActionRequests() throws Exception {
         TestLoggingAdapterController.beginCapture();
         open(URL);
-        auraUITestingUtil.waitForElementText(label1, "simplevalue1: Today", true);
-        
+        getAuraUITestingUtil().waitForElementText(label1, "simplevalue1: Today", true);
+
         Long callCount = 0L;
         boolean isLabelControllerCalled = false;
         for (Map<String, Object> log : TestLoggingAdapterController.endCapture()) {

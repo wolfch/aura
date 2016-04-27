@@ -54,6 +54,7 @@ import org.auraframework.def.Definition;
 import org.auraframework.def.TestCaseDef;
 import org.auraframework.def.TestSuiteDef;
 import org.auraframework.http.RequestParam.BooleanParam;
+import org.auraframework.http.RequestParam.IntegerParam;
 import org.auraframework.http.RequestParam.StringParam;
 import org.auraframework.service.ContextService;
 import org.auraframework.system.AuraContext;
@@ -79,7 +80,10 @@ import com.google.common.collect.Lists;
 public class AuraTestFilter implements Filter {
     private static final Log LOG = LogFactory.getLog(AuraTestFilter.class);
 
-    private static final String GET_URI = "/aura?aura.tag=%s:%s&aura.format=HTML&aura.deftype=%s&aura.mode=%s&aura.access=%s";
+    private static final int DEFAULT_JSTEST_TIMEOUT = 30;
+    private static final String BASE_URI = "/aura";
+    private static final String GET_URI = BASE_URI
+            + "?aura.tag=%s:%s&aura.format=HTML&aura.deftype=%s&aura.mode=%s&aura.access=%s";
 
     private static final StringParam contextConfig = new StringParam(AuraServlet.AURA_PREFIX + "context", 0, false);
 
@@ -96,6 +100,9 @@ public class AuraTestFilter implements Filter {
     // "testReset" is a signal to reset any mocks associated with the current TestContext, used primarily on the initial
     // request of a test to clean up in case a prior test did not clean up.
     private static final BooleanParam testReset = new BooleanParam(AuraServlet.AURA_PREFIX + "testReset", false);
+
+    // "testTimeout" sets the timeout for a test
+    private static final IntegerParam testTimeout = new IntegerParam(AuraServlet.AURA_PREFIX + "testTimeout", false);
 
     private static final Pattern bodyEndTagPattern = Pattern.compile("(?is).*(</body\\s*>).*");
     private static final Pattern htmlEndTagPattern = Pattern.compile("(?is).*(</html\\s*>).*");
@@ -131,23 +138,8 @@ public class AuraTestFilter implements Filter {
 
         // Check for requests to execute a JSTest, i.e. initial component GETs with particular parameters.
         if ("GET".equals(request.getMethod())) {
-            String contextPath = request.getContextPath();
-            String uri = request.getRequestURI();
-            String path;
-            if (uri.startsWith(contextPath)) {
-                path = uri.substring(contextPath.length());
-            } else {
-                path = uri;
-            }
-            Matcher matcher = AuraRewriteFilter.DESCRIPTOR_PATTERN.matcher(path);
-            if (matcher.matches()) {
-                // Extract the target component since AuraContext usually does not have the app descriptor set yet.
-                DefType type = "app".equals(matcher.group(3)) ? DefType.APPLICATION : DefType.COMPONENT;
-                String namespace = matcher.group(1);
-                String name = matcher.group(2);
-                DefDescriptor<?> targetDescriptor = Aura.getDefinitionService().getDefDescriptor(
-                        String.format("%s:%s", namespace, name), type.getPrimaryInterface());
-
+            DefDescriptor<?> targetDescriptor = getTargetDescriptor(request);
+            if (targetDescriptor != null) {
                 // Check if a single jstest is being requested.
                 String testToRun = jstestToRun.get(request);
                 if (testToRun != null && !testToRun.isEmpty()) {
@@ -186,14 +178,16 @@ public class AuraTestFilter implements Filter {
                                 // There was an error in the original response, so just write the response out.
                                 res.getWriter().write(capturedResponse);
                             } else {
-                                String testTag = buildJsTestScriptTag(targetDescriptor, testToRun, capturedResponse);
+                                int timeout = testTimeout.get(request, DEFAULT_JSTEST_TIMEOUT);
+                                String testTag = buildJsTestScriptTag(targetDescriptor, testToRun, timeout, capturedResponse);
                                 injectScriptTags(res.getWriter(), capturedResponse, testTag);
                             }
                             return;
                         }
                     case JS:
                         res.setCharacterEncoding(AuraBaseServlet.UTF_ENCODING);
-                        writeJsTestScript(res.getWriter(), targetDescriptor, testToRun);
+                        int timeout = testTimeout.get(request, DEFAULT_JSTEST_TIMEOUT);
+                        writeJsTestScript(res.getWriter(), targetDescriptor, testToRun, timeout);
                         return;
                     default:
                         // Pass it on.
@@ -213,7 +207,8 @@ public class AuraTestFilter implements Filter {
 
                     mode = mode.toString().endsWith("DEBUG") ? Mode.AUTOJSTESTDEBUG : Mode.AUTOJSTEST;
 
-                    String qs = String.format("descriptor=%s:%s&defType=%s", namespace, name, type.name());
+                    String qs = String.format("descriptor=%s&defType=%s", targetDescriptor.getDescriptorName(),
+                            targetDescriptor.getDefType().name());
                     String testName = null;
                     if (jstestAppRequest != null && !jstestAppRequest.isEmpty()) {
                         testName = jstestAppRequest;
@@ -433,7 +428,7 @@ public class AuraTestFilter implements Filter {
         return responseWrapper.getCapturedResponseString();
     }
 
-    private String buildJsTestScriptTag(DefDescriptor<?> targetDescriptor, String testName, String original) {
+    private String buildJsTestScriptTag(DefDescriptor<?> targetDescriptor, String testName, int timeout, String original) {
         String tag = "";
 
         // Inject test framework script tag if it isn't on page already. Unlikely, but framework may not
@@ -446,9 +441,9 @@ public class AuraTestFilter implements Filter {
         }
 
         // Inject tag to load and execute test.
-        String suiteSrcUrl = String.format("/%s/%s.%s?aura.jstestrun=%s&aura.format=JS&aura.nonce=%s",
+        String suiteSrcUrl = String.format("/%s/%s.%s?aura.jstestrun=%s&aura.format=JS&aura.testTimeout=%s&aura.nonce=%s",
                 targetDescriptor.getNamespace(), targetDescriptor.getName(),
-                targetDescriptor.getDefType() == DefType.APPLICATION ? "app" : "cmp", testName,
+                targetDescriptor.getDefType() == DefType.APPLICATION ? "app" : "cmp", testName, timeout,
                 System.nanoTime());
         tag = tag + String.format("\n<script src='%s'></script>\n", suiteSrcUrl);
         return tag;
@@ -473,7 +468,7 @@ public class AuraTestFilter implements Filter {
         out.append(originalResponse.substring(insertionPoint));
     }
 
-    private void writeJsTestScript(PrintWriter out, DefDescriptor<?> targetDescriptor, String testName)
+    private void writeJsTestScript(PrintWriter out, DefDescriptor<?> targetDescriptor, String testName, int testTimeout)
             throws IOException {
         TestSuiteDef suiteDef;
         TestCaseDef testDef;
@@ -487,10 +482,49 @@ public class AuraTestFilter implements Filter {
         }
 
         // TODO: Inject test framework here, before the test suite code, separately from framework code.
-        final int testTimeout = 90; // TODO: support TestCaseDef override for timeout
         out.append(String.format("(function(suite){$A.test.run('%s',suite,%s);})(", testName,
                 testTimeout));
         out.append(suiteDef.getCode());
         out.append("\n);"); // handle trailing single-line comments with newline
+    }
+
+    private DefDescriptor<?> getTargetDescriptor(HttpServletRequest request) {
+        String namespace = null;
+        String name = null;
+        DefType type = null;
+
+        try {
+            String contextPath = request.getContextPath();
+            String uri = request.getRequestURI();
+            String path;
+            if (uri.startsWith(contextPath)) {
+                path = uri.substring(contextPath.length());
+            } else {
+                path = uri;
+            }
+
+            if (BASE_URI.equals(path)) {
+                String[] tagName = AuraServlet.tag.get(request).split(":", 2);
+                type = AuraServlet.defTypeParam.get(request, DefType.COMPONENT);
+                namespace = tagName[0];
+                name = tagName[1];
+            }
+            if (name == null) {
+                Matcher matcher = AuraRewriteFilter.DESCRIPTOR_PATTERN.matcher(path);
+                if (matcher.matches()) {
+                    type = "app".equals(matcher.group(3)) ? DefType.APPLICATION : DefType.COMPONENT;
+                    namespace = matcher.group(1);
+                    name = matcher.group(2);
+                }
+            }
+
+            if (name != null) {
+                return Aura.getDefinitionService().getDefDescriptor(
+                        String.format("%s:%s", namespace, name), type.getPrimaryInterface());
+            }
+        } catch (Throwable t) {
+            // Ignore. Pass request onto core servlets.
+        }
+        return null;
     }
 }
