@@ -428,7 +428,7 @@ ComponentDefStorage.prototype.clear = function(metricsPayload) {
             // log that we're clearing
             metricsPayload = $A.util.apply({}, metricsPayload);
             metricsPayload["evicted"] = "all";
-            $A.metricsService.transaction("aura", "defsEvicted", { "context": metricsPayload });
+            $A.metricsService.transaction("aura", "evictedDefs", { "context": metricsPayload });
 
             $A.warning("ComponentDefStorage.clearAll: clearing all defs, actions, and context.loaded");
 
