@@ -406,7 +406,7 @@ Test.Aura.Util.UtilTest = function() {
     function format(){
         [Fact]
         function ThrowsIfFormatStringIsNotConvertibleToString(){
-            var expected="$A.util.format(): 'formatString' must be a String.";
+            var expected="$A.util.format(): 'formatString' must be convertible to String.";
 
             var actual=Record.Exception(function(){
                 auraMock(function(){
