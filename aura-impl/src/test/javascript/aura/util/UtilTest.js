@@ -37,7 +37,13 @@ Test.Aura.Util.UtilTest = function() {
             Bitset:{},
             NumberFormat:{},
             Aura: Aura,
-            $A:{ns:{},assert:Stubs.GetMethod(function(condition,message){if(!condition)throw message;})},
+            $A:{
+                ns:{},
+                assert:Stubs.GetMethod(function(condition,message){if(!condition)throw message;}),
+                util:{
+                    isString: function(arg) { return (typeof arg === 'string' || arg instanceof String); }
+                }
+            },
             navigator:{userAgent:''}
          })(function(){
             [Import("aura-impl/src/main/resources/aura/util/Util.js")]

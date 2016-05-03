@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (C) 2016 salesforce.com, inc.
+    Copyright (C) 2013 salesforce.com, inc.
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -16,13 +16,6 @@
 
 -->
 <aura:component>
-    <aura:attribute name="value" type="Decimal" default=""/>
-    <aura:attribute name="max" type="Decimal" default="99999999999999"/>
-    <aura:attribute name="min" type="Decimal" default="-99999999999999"/>
-    <aura:attribute name="disabled" type="Boolean" default="false"/>
-
-    Input:
-    <ui:inputSmartNumber aura:id="input" value="{! v.value }" updateOn="keyup"
-            max="{! v.max }" min="{! v.min }" disabled="{! v.disabled }"/>
-    <p>v.value: <span class="vvalue">{!v.value}</span></p>
+    <aura:attribute name='textValue' type='String'/>
+    <ui:outputTextArea value='{!v.textValue}' linkify="true" aura:id='textAreaComp'/>
 </aura:component>
