@@ -23,6 +23,7 @@
     },
 
     testGvpsPersistedToStorage: {
+        labels : ["flapper"], // TODO replace isActionPending with wait for GVP to write
         test: [
         function getLabelFromServer(cmp) {
             // Requesting a label the client doesn't know about will force a server trip and save the label to storage
@@ -65,6 +66,7 @@
     },
 
     testGvpsLoadedFromStorageWhenOffline: {
+        labels : ["flapper"], // TODO replace isActionPending with wait for GVP to write
         test: [
         function getLabelFromServer(cmp) {
             // Requesting a label the client doesn't know about will force a server trip and save the label to storage
