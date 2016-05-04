@@ -15,9 +15,21 @@
  */
 package org.auraframework.impl.context;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+
 import org.apache.log4j.Logger;
 import org.auraframework.adapter.ComponentLocationAdapter;
 import org.auraframework.adapter.ConfigAdapter;
@@ -56,21 +68,10 @@ import org.auraframework.system.SourceListener;
 import org.auraframework.system.SourceLoader;
 import org.auraframework.throwable.AuraRuntimeException;
 import org.auraframework.util.FileMonitor;
-import org.auraframework.util.ServiceLocator;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 @ServiceComponent
 public class AuraRegistryProviderImpl implements RegistryAdapter, SourceListener {
@@ -367,7 +368,7 @@ public class AuraRegistryProviderImpl implements RegistryAdapter, SourceListener
 
     protected Collection<ComponentLocationAdapter> getAllComponentLocationAdapters() {
         List<ComponentLocationAdapter> ret = Lists.newArrayList();
-        ret.addAll(ServiceLocator.get().getAll(ComponentLocationAdapter.class));
+        //ret.addAll(ServiceLocator.get().getAll(ComponentLocationAdapter.class));
         ret.addAll(locationAdapters);
 
         String prop = System.getProperty("aura.componentDir");

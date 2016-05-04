@@ -15,7 +15,12 @@
  */
 package org.auraframework.impl.controller;
 
-import com.google.common.collect.Lists;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import javax.inject.Inject;
+
 import org.auraframework.adapter.ExceptionAdapter;
 import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.def.ActionDef;
@@ -41,12 +46,8 @@ import org.auraframework.system.Annotations.Key;
 import org.auraframework.system.AuraContext;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
-import javax.inject.Inject;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import com.google.common.collect.Lists;
 
-@org.springframework.stereotype.Component("org.auraframework.impl.controller.ComponentController")
 @ServiceComponent
 public class ComponentController implements Controller {
 

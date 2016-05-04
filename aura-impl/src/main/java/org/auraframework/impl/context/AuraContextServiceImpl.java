@@ -179,9 +179,7 @@ public class AuraContextServiceImpl implements ContextService {
 
     private DefRegistry<?>[] getRegistries(Mode mode, Authentication access, Set<SourceLoader> loaders) {
         List<DefRegistry<?>> ret = new ArrayList<>();
-        Collection<RegistryAdapter> oldProviders = AuraImpl.getRegistryAdapters();
         ret.addAll(addRegistriesFromProviders(providers, mode, access, loaders));
-        ret.addAll(addRegistriesFromProviders(oldProviders, mode, access, loaders));
         return ret.toArray(new DefRegistry[ret.size()]);
     }
 
