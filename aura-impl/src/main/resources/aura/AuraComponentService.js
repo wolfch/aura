@@ -1765,7 +1765,6 @@ AuraComponentService.prototype.pruneDefsFromStorage = function(requiredSpaceKb) 
                 "storageCurrentSize" : currentSize,
                 "storageRequiredSize" : newSize
             };
-
             return self.clearDefsFromStorage(metricsPayload);
 
 
