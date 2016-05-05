@@ -15,17 +15,17 @@
  */
 ({
 
-	render: function(component, helper) {
+    render: function (component, helper) {
         var domId = component.get('v.domId');
-		if (!domId) {
+        if (!domId) {
             var globalId = component.getGlobalId();
-			helper.setAttribute(component, {key: 'domId', value: globalId});
-		}
+            helper.setAttribute(component, {key: 'domId', value: globalId});
+        }
 
-		return this.superRender();
-	},
+        return this.superRender();
+    },
 
-	afterRender: function(component, helper) {
+    afterRender: function (component, helper) {
         helper.lib.interactive.addDomEvents(component);
         this.superAfterRender();
 
@@ -38,7 +38,7 @@
         concreteHelper.updateAriaRequired(component);
     },
 
-    rerender: function(component) {
+    rerender: function (component) {
         // Allow override of helper methods.
         var concreteCmp = component.getConcreteComponent();
         var concreteHelper = concreteCmp.getDef().getHelper();
@@ -50,8 +50,8 @@
         this.superRerender();
     },
 
-    unrender: function(component, helper) {
-        helper.lib.interactive.removeDomEventsFromMap(component);
+    unrender: function (component, helper) {
+        helper.lib.interactive.removeDomEventsFromMap(component, helper.getInputElement(component));
         this.superUnrender();
     }
 })// eslint-disable-line semi
