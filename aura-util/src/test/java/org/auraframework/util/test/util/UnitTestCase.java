@@ -15,8 +15,19 @@
  */
 package org.auraframework.util.test.util;
 
-import com.google.common.collect.Sets;
-import junit.framework.TestCase;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Set;
+import java.util.Stack;
+import java.util.logging.Logger;
+
 import org.auraframework.AuraConfiguration;
 import org.auraframework.util.IOUtil;
 import org.auraframework.util.adapter.SourceControlAdapter;
@@ -35,6 +46,10 @@ import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+
+import com.google.common.collect.Sets;
+
+import junit.framework.TestCase;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -43,18 +58,6 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 import javax.inject.Inject;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Set;
-import java.util.Stack;
-import java.util.logging.Logger;
 
 /**
  * Base class for all aura tests.
@@ -285,7 +288,7 @@ public abstract class UnitTestCase extends TestCase {
     /**
      * Get a resource file for use in tests. If resource is not loaded from the filesystem, write it to a temp file and
      * use that.
-     * 
+     *
      * @param resourceName
      * @return File containing the resource content
      * @throws IOException
@@ -349,6 +352,16 @@ public abstract class UnitTestCase extends TestCase {
         if (message == null || !message.endsWith(messageEndsWith)) {
             fail(String.format("Unexpected end of message.  Expected message ending with: [%s], but got message: [%s]",
                     messageEndsWith, message));
+        }
+    }
+
+    protected void assertExceptionMessageContains(Throwable t, Class<? extends Throwable> clazz,
+            String messageContains) {
+        assertExceptionType(t, clazz);
+        String message = t.getMessage();
+        if (message == null || !message.contains(messageContains)) {
+            fail(String.format("Unexpected content of message.  Expected message contains: [%s], but got message: [%s]",
+                    messageContains, message));
         }
     }
 

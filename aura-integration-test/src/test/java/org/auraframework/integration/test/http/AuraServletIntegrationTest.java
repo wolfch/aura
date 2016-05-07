@@ -50,7 +50,8 @@ public class AuraServletIntegrationTest extends IntegrationTestCase {
         contextService.startContext(Mode.PROD, Format.HTML, Authentication.AUTHENTICATED, desc);
         assertTrue(new ManifestUtil(contextService, configAdapter).isManifestEnabled());
         String url = servletUtilAdapter.getManifestUrl(contextService.getCurrentContext(), null);
-        assertEquals("/l/%7B%22mode%22%3A%22PROD%22%2C%22app%22%3A%22appCache%3Anopreload%22%2C%22test%22%3A%22org.auraframework.integration.test.http.AuraServletIntegrationTest.testGetManifestWithoutPreloads%22%7D/app.manifest", url);
+        assertEquals("/l/%7B%22mode%22%3A%22PROD%22%2C%22app%22%3A%22appCache%3Anopreload%22%2C%22test%22%3A%22org.auraframework.integration.test.http.AuraServletIntegrationTest.testGetManifestWithoutPreloads%22" + 
+        		getLockerServiceContextValue() + "%7D/app.manifest", url);
     }
 
     /**
@@ -63,6 +64,11 @@ public class AuraServletIntegrationTest extends IntegrationTestCase {
                 "appCache:withpreload", ApplicationDef.class);
         contextService.startContext(Mode.PROD, Format.HTML, Authentication.AUTHENTICATED, desc);
         String url = servletUtilAdapter.getManifestUrl(contextService.getCurrentContext(), null);
-        assertEquals("/l/%7B%22mode%22%3A%22PROD%22%2C%22app%22%3A%22appCache%3Awithpreload%22%2C%22test%22%3A%22org.auraframework.integration.test.http.AuraServletIntegrationTest.testGetManifestWithPreloads%22%7D/app.manifest", url);
+        assertEquals("/l/%7B%22mode%22%3A%22PROD%22%2C%22app%22%3A%22appCache%3Awithpreload%22%2C%22test%22%3A%22org.auraframework.integration.test.http.AuraServletIntegrationTest.testGetManifestWithPreloads%22" + 
+        		getLockerServiceContextValue() + "%7D/app.manifest", url);
     }
+    
+	private String getLockerServiceContextValue() {
+		return configAdapter.isLockerServiceEnabled() ? "%2C%22ls%22%3A%22E%22" : "";
+	}
 }

@@ -4,6 +4,9 @@
      * verification to the controller and helper files, which operate in user mode.
      */
 
+    // LockerService not supported on older IE
+    browsers: ["-IE8", "-IE9", "-IE10", "-IE11"],
+
     setUp: function(cmp) {
         cmp.set("v.testUtils", $A.test);
     },
@@ -34,16 +37,28 @@
             });
         }
     },
-    
+
     testLocationExposedOnWindow: {
         test: function(cmp) {
             cmp.testLocationExposedOnWindow();
         }
     },
-    
+
     testNavigatorExposedOnWindow: {
         test: function(cmp) {
             cmp.testNavigatorExposedOnWindow();
+        }
+    },
+
+    testWhitelistedGlobalAttributeExposedOnWindow: {
+        test: function(cmp) {
+            cmp.testWhitelistedGlobalAttributeExposedOnWindow();
+        }
+    },
+
+    testHostedDefinedGlobalsExposedOnWindow: {
+        test: function(cmp) {
+            cmp.testHostedDefinedGlobalsExposedOnWindow();
         }
     }
 })

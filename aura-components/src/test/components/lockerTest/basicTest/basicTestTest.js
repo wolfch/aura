@@ -4,19 +4,22 @@
      * verification to the controller and helper files, which operate in user mode.
      */
 
+    // LockerService not supported on older IE
+    browsers: ["-IE8", "-IE9", "-IE10", "-IE11"],
+
     setUp: function(cmp) {
         cmp.set("v.testUtils", $A.test);
     },
 
-    testCannotAccessDocumentBodyFromHelper: {
+    testCanAccessDocumentBodyFromHelper: {
         test: function(cmp) {
-            cmp.helper.testCannotAccessDocumentBodyFromHelper($A.test);
+            cmp.helper.testCanAccessDocumentBodyFromHelper($A.test);
         }
     },
 
-    testAlertExposed: {
+    testCanAccessDocumentHeadFromHelper: {
         test: function(cmp) {
-            cmp.testAlertExposed();
+            cmp.helper.testCanAccessDocumentHeadFromHelper($A.test);
         }
     },
 
@@ -84,6 +87,8 @@
     },
 
     testDefineGetterExploit: {
+        // Remove UnAdaptableTest label when unsafe-eval and unsafe-inline are added back to CSP
+        labels: ["UnAdaptableTest"],
         test: function(cmp) {
             cmp.testDefineGetterExploit();
         }
@@ -106,7 +111,7 @@
             $A.test.assertStartsWith("markup://lockerTest:facet", component.toString());
         }
     },
-    
+
     testLocationExposed: {
         test: function(cmp) {
             cmp.testLocationExposed();

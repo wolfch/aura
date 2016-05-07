@@ -666,11 +666,13 @@ public class AuraContextImpl implements AuraContext {
                                 entry.getKey().getQualifiedName()), entry.getValue());
                     }
                 }
+                
                 if (loadedStrings.size() > 0) {
                     json.writeMapKey("loaded");
                     json.writeMap(loadedStrings);
                 }
             }
+            
             if (style == EncodingStyle.Css) {
                 // add contextual CSS information
                 if (styleContext == null) {
@@ -689,6 +691,7 @@ public class AuraContextImpl implements AuraContext {
                     json.writeMapEntry("requestedLocales", locales);
                 }
             }
+            
             if (style == EncodingStyle.Full) {
                 String contextPath = getContextPath();
                 if (!contextPath.isEmpty()) {
@@ -696,12 +699,19 @@ public class AuraContextImpl implements AuraContext {
                     json.writeMapEntry("contextPath", contextPath);
                 }
             }
+            
+
             if (testContextAdapter != null) {
                 TestContext testContext = testContextAdapter.getTestContext();
                 if (testContext != null) {
                     json.writeMapEntry("test", testContext.getName());
                 }
             }
+            
+            if (configAdapter.isLockerServiceEnabled()) {
+                json.writeMapEntry("ls", "E");
+            }
+            
             json.writeMapEnd();
         } catch (IOException ioe) {
             // This can't possibly happen.

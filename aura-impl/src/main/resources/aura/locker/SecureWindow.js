@@ -28,8 +28,10 @@
  * @param {Object}
  *            key - the key to apply to the secure window
  */
-function SecureWindow(win, key) {
+function SecureWindow(win, key, globalAttributeWhitelist) {
 	"use strict";
+	
+    var hostedDefinedGlobals = ["alert", "clearInterval", "clearTimeout", "confirm", "console", "location", "Node"];
 
 	var o = Object.create(null, {
 		document: {
@@ -51,6 +53,10 @@ function SecureWindow(win, key) {
 			enumerable: true,
 			value: SecureNavigator(win.navigator, key)
 		},
+		XMLHttpRequest: {
+			enumerable: true,
+			value: SecureXMLHttpRequest(key)
+		},
 		setTimeout: {
 			enumerable: true,
 			value: function (callback) {
@@ -70,14 +76,33 @@ function SecureWindow(win, key) {
 		}
 	});
 
-
-	Object.defineProperties(o, {
-		addEventListener: SecureElement.createAddEventListenerDescriptor(o, win, key),
-		location: SecureObject.createFilteredProperty(o, win, "location")
-	});
+	SecureElement.addSecureGlobalEventHandlers(o, win, key);
+	SecureElement.addEventTargetMethods(o, win, key);
 
 	setLockerSecret(o, "key", key);
 	setLockerSecret(o, "ref", win);
+
+	// Has to happen last because it depends on the secure getters defined above that require the object to be keyed
+	globalAttributeWhitelist.forEach(function(name) {
+		if (!o[name] && name !== "Object") {
+			// These are direct passthrough's and should never be wrapped in a SecureObject
+			Object.defineProperty(o, name, {
+				enumerable: true,
+				value: win[name]
+			});
+		}
+	});
+
+	hostedDefinedGlobals.forEach(function(name) {
+		if (!o[name]) {
+			// These are direct passthrough's and should never be wrapped in a SecureObject
+			var value = win[name];
+			Object.defineProperty(o, name, {
+				enumerable: true,
+				value: value.bind ? value.bind(win) : value
+			});
+		}
+	});
 
 	return o;
 }

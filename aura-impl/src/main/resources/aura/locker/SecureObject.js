@@ -28,6 +28,9 @@ function SecureObject(thing, key) {
 
 	setLockerSecret(o, "key", key);
 	setLockerSecret(o, "ref", thing);
+
+	$A.lockerService.markOpaque(o);
+
 	return Object.seal(o);
 }
 
@@ -85,6 +88,7 @@ SecureObject.filterEverything = function (st, raw) {
 			var key = getLockerSecret(st, "key");
 			var hasAccess = $A.lockerService.util.hasAccess(st, raw);
 			$A.assert(key, "A secure object should always have a key.");
+
 			if ($A.util.isAction(raw)) {
 				swallowed = hasAccess ?
 						SecureAction(raw, key) : SecureObject(raw, key);
@@ -94,8 +98,13 @@ SecureObject.filterEverything = function (st, raw) {
 						SecureComponent(raw, key) : SecureComponentRef(raw, key);
 				mutated = raw !== swallowed;
 			} else if (SecureObject.isDOMElementOrNode(raw)) {
-				swallowed = hasAccess ?
-						SecureElement(raw, key) : SecureObject(raw, key);
+				swallowed = hasAccess || raw === document.body || raw === document.head ? SecureElement(raw, key) : SecureObject(raw, key);
+				mutated = true;
+			} else if (raw instanceof Aura.Event.Event) {
+				swallowed = hasAccess ? SecureAuraEvent(raw, key) : SecureObject(raw, key);
+				mutated = true;
+			} else if (raw instanceof Event) {
+				swallowed = hasAccess ? SecureDOMEvent(raw, key) : SecureObject(raw, key);
 				mutated = true;
 			} else if ($A.lockerService.util.isKeyed(raw)) {
 				swallowed = SecureObject(raw, key);
@@ -131,7 +140,8 @@ SecureObject.unfilterEverything = function(st, value) {
 		// wrapping functions to guarantee that they run in user-mode, usually
 		// callback functions privided by non-privilege code.
 		return function () {
-			var fnReturnedValue = value.apply(SecureObject.filterEverything(st, this), SecureObject.filterEverything(st, SecureObject.ArrayPrototypeSlice.call(arguments)));
+			var filteredArguments = SecureObject.filterEverything(st, SecureObject.ArrayPrototypeSlice.call(arguments));
+			var fnReturnedValue = value.apply(SecureObject.filterEverything(st, this), filteredArguments);
 			return SecureObject.unfilterEverything(st, fnReturnedValue);
 		};
 	}
@@ -158,10 +168,26 @@ SecureObject.unfilterEverything = function(st, value) {
 SecureObject.createFilteredMethod = function(st, raw, methodName, options) {
 	"use strict";
 
+	// Do not expose properties that the raw object does not actually support
+	if (!(methodName in raw)) {
+		if (options && options.ignoreNonexisting) {
+			return undefined;
+		} else {
+			throw new $A.auraError("Underlying raw object " + raw + " does not support method: " + methodName);
+		}
+	}
+
 	return {
 		enumerable: true,
 		value : function() {
-			var fnReturnedValue = raw[methodName].apply(raw, SecureObject.unfilterEverything(st, SecureObject.ArrayPrototypeSlice.call(arguments)));
+			var args = SecureObject.ArrayPrototypeSlice.call(arguments);
+
+			if (options && options.beforeCallback) {
+				options.beforeCallback.apply(raw, args);
+			}
+
+			var unfilteredArgs = SecureObject.unfilterEverything(st, args);
+			var fnReturnedValue = raw[methodName].apply(raw, unfilteredArgs);
 
 			if (options && options.afterCallback) {
 				fnReturnedValue = options.afterCallback(fnReturnedValue);
@@ -175,6 +201,15 @@ SecureObject.createFilteredMethod = function(st, raw, methodName, options) {
 SecureObject.createFilteredProperty = function(st, raw, propertyName, options) {
 	"use strict";
 
+	// Do not expose properties that the raw object does not actually support
+	if (!(propertyName in raw)) {
+		if (options && options.ignoreNonexisting) {
+			return undefined;
+		} else {
+			throw new $A.auraError("Underlying raw object " + raw + " does not support property: " + propertyName);
+		}
+	}
+
 	var descriptor = {
 		enumerable: true
 	};
@@ -186,6 +221,10 @@ SecureObject.createFilteredProperty = function(st, raw, propertyName, options) {
 
 	if (!options || options.writable !== false) {
 		descriptor.set = function(value) {
+			if (options && options.beforeSetCallback) {
+				value = options.beforeSetCallback(value);
+			}
+
 			raw[propertyName] = SecureObject.unfilterEverything(st, value);
 
 			if (options && options.afterSetCallback) {
@@ -195,6 +234,24 @@ SecureObject.createFilteredProperty = function(st, raw, propertyName, options) {
 	}
 
 	return descriptor;
+};
+
+SecureObject.addIfSupported = function(behavior, st, element, name, options) {
+	options = options || {};
+	options.ignoreNonexisting = true;
+
+	var prop = behavior(st, element, name, options);
+	if (prop) {
+		Object.defineProperty(st, name, prop);
+	}
+};
+
+SecureObject.addPropertyIfSupported = function(st, raw, name, options) {
+	SecureObject.addIfSupported(SecureObject.createFilteredProperty, st, raw, name, options);
+};
+
+SecureObject.addMethodIfSupported = function(st, raw, name, options) {
+	SecureObject.addIfSupported(SecureObject.createFilteredMethod, st, raw, name, options);
 };
 
 SecureObject.FunctionPrototypeBind = Function.prototype.bind;

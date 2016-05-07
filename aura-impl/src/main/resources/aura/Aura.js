@@ -187,6 +187,7 @@ window['$A'] = {};
 //#include aura.locker.SecureDocument
 //#include aura.locker.SecureAura
 //#include aura.locker.SecureNavigator
+//#include aura.locker.SecureXMLHttpRequest
 //#include aura.locker.SecureWindow
 //#include aura.locker.SecureAuraEvent
 //#include aura.locker.SecureAction
@@ -631,22 +632,51 @@ AuraInstance.prototype.initAsync = function(config) {
                 $A.clientService.reloadFunction();
                 return;
             }
-            if (!window["$$safe-eval$$"] && !regexpDetectURLProcotolSegment.test(config["host"])) {
+
+            if (config["safeEvalWorker"] && !window["$$safe-eval$$"] && !regexpDetectURLProcotolSegment.test(config["host"])) {
                 throw new $A.auraError("Aura(): Failed to initialize locker worker.", null, $A.severity.QUIET);
             }
+
             $A.clientService.initHost(config["host"]);
             $A.setLanguage();
 
             $A.metricsService.initialize();
 
-            // Restore component definitions from AuraStorage into memory (if persistent)
-            $A.componentService.restoreDefsFromStorage($A.getContext()).then(function () {
+
+            // the final step in initAsync: trigger the getApplication action
+            function getApplication() {
                 $A.clientService.loadComponent(config["descriptor"], config["attributes"], $A.initPriv, config["deftype"]);
-            });
+            }
+
+            // actions depend on defs depend on GVP (labels). so load the, in dependency order and skip
+            // loading depending items if anything fails to load.
+
+            // start by enabling the actions filter if relevant. populatePersistedActionsFilter() populates it,
+            // called only if GVP + defs are loaded.
+            $A.clientService.setupPersistedActionsFilter();
+
+            if (!context.globalValueProviders.LOADED_FROM_PERSISTENT_STORAGE) {
+                $A.log("Aura.initAsync: GVP not loaded from storage so not loading defs or actions either");
+                getApplication();
+            } else {
+                $A.componentService.restoreDefsFromStorage(context)
+                    .then(function() {
+                        return $A.clientService.populatePersistedActionsFilter();
+                    })
+                    .then(
+                        undefined, /* noop */
+                        function(e) {
+                            $A.log("Aura.initAsync: failed to load defs or actions from storage", e);
+                            // do not rethrow
+                        }
+                    )
+                    .then(getApplication, getApplication);
+            }
         });
     }
 
-    if (!window['$$safe-eval$$'] && !regexpDetectURLProcotolSegment.test(config["host"])) {
+    // DCHASMAN We are temporarily allowing config["safeEvalWorker"] to determine if we use safeEval
+    if (config["safeEvalWorker"] && !window['$$safe-eval$$'] && !regexpDetectURLProcotolSegment.test(config["host"])) {
         // safe eval worker is an iframe that enables the page to run arbitrary evaluation,
         // if this iframe is still loading, we should wait for it before continue with
         // initialization, in the other hand, if the iframe is not available, we create it,

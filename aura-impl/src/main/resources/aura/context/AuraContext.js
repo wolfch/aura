@@ -30,6 +30,10 @@ Aura.Context.AuraContext = function AuraContext(config, initCallback) {
     if (this.loaded === undefined) {
         this.loaded = {};
     }
+
+    // make a shallow-copy to use when the context is reset
+    this.loadedOriginal = $A.util.apply({}, this.loaded);
+
     this.fwuid = config["fwuid"];
     this.num = 0;
 
@@ -46,7 +50,7 @@ Aura.Context.AuraContext = function AuraContext(config, initCallback) {
     this.allowedGlobals = config["allowedGlobals"];
     this.globals = config["globals"];
     this.enableAccessChecks=true;
-    this.isLockerServiceEnabled=false;
+    this.isLockerServiceEnabled=this["isLockerServiceEnabled"]=false;
 
     // JBUCH: TOGGLE LOGGING OFF BY DEFAULT IN PROD MODE
     this.logAccessFailures= true
@@ -279,9 +283,10 @@ Aura.Context.AuraContext.prototype.merge = function(otherContext) {
         throw new $A.auraError("framework mismatch", null, $A.severity.QUIET);
     }
 
-    this.enableAccessChecks=otherContext["enableAccessChecks"];
+    // JBUCH: CRUC DISABLED IN 204 FOR INTERNAL TEAMS
+    //this.enableAccessChecks=otherContext["enableAccessChecks"];
 
-    this["isLockerServiceEnabled"] = otherContext["lockerEnabled"];
+    this.isLockerServiceEnabled = this["isLockerServiceEnabled"] = otherContext["lockerEnabled"];
 
     this.globalValueProviders.merge(otherContext["globalValueProviders"]);
     $A.localizationService.init();
@@ -593,6 +598,13 @@ Aura.Context.AuraContext.prototype.findLoaded = function(descriptor) {
  */
 Aura.Context.AuraContext.prototype.getLoaded = function() {
     return this.loaded;
+};
+
+/**
+ * Reset the loaded set to its original value at launch.
+ */
+Aura.Context.AuraContext.prototype.resetLoaded = function() {
+    this.loaded = $A.util.apply({}, this.loadedOriginal);
 };
 
 /**

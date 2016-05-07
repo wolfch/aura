@@ -344,7 +344,7 @@ public class ServletUtilAdapterImpl implements ServletUtilAdapter {
         }
 
         ret.add(configAdapter.getJSLibsURL());
-
+        
         ret.addAll(getClientLibraryUrls(context, ClientLibraryDef.Type.JS));
         // framework js should be after other client libraries
         ret.add(configAdapter.getAuraJSURL());
