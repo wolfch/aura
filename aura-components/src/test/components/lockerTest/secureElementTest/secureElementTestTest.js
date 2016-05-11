@@ -8,19 +8,18 @@
     browsers: ["-IE8", "-IE9", "-IE10", "-IE11"],
 
     // TODO(tbliss): make these lists on SecureElement accessible here for maintainablility
-    ElementPropertiesWhitelist: ['childElementCount', 'classList', 'className', 'id', 'tagName', 'innerHTML'],
-    ElementProperitesBlacklist: ['attributes', 'firstElementChild', 'lastElementChild', 'namespaceURI',
+    ElementPropertiesWhitelist: ['attributes', 'childElementCount', 'classList', 'className', 'id', 'tagName', 'innerHTML'],
+    ElementProperitesBlacklist: ['firstElementChild', 'lastElementChild', 'namespaceURI',
                                  'nextElementSibling', 'previousElementSibling'],
 
-    HTMLPropertiesWhitelist: ['accessKey', 'accessKeyLabel', 'contentEditable', 'isContentEditable',
-                              'contextMenu', 'dataset', 'dir', 'draggable', 'dropzone', 'hidden', 'lang', 'spellcheck',
-                              'style', 'tabIndex', 'title'],
-    
+    HTMLPropertiesWhitelist: ['accessKey', 'contentEditable', 'isContentEditable',
+                              'dataset', 'dir', 'lang', 'spellcheck', 'style', 'tabIndex', 'title'],
+
     HTMLPropertiesBlacklist: [],
 
     OtherPropertiesWhitelist: ["childNodes", "children", "ownerDocument", "parentNode", "offsetParent"],
 
-    MethodsWhitelist: ["appendChild", "addEventListener", "removeEventListener", "dispatchEvent",
+    MethodsWhitelist: ["appendChild", "replaceChild", "insertBefore", "addEventListener", "removeEventListener", "dispatchEvent",
                        "getAttribute", "setAttribute", "blur", "click", "focus"],
 
     setUp: function(cmp) {
@@ -55,10 +54,26 @@
             cmp.testExposedMethods(this.MethodsWhitelist);
         }
     },
-    
+
     testFramesBlocked: {
         test: function(cmp) {
             cmp.testFramesBlocked();
+        }
+    },
+
+    /**
+     * removeEventListener() is special in SecureElement, so besides verifying it's exposed,
+     * it also needs to be verified working correctly.
+     */
+    testRemoveEventListener: {
+        test: function(cmp) {
+            cmp.testRemoveEventListener(false);
+        }
+    },
+
+    testRemoveEventListenerWithUseCapture: {
+        test: function(cmp) {
+            cmp.testRemoveEventListener(true);
         }
     }
 })

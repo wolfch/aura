@@ -15,13 +15,6 @@
     limitations under the License.
 
 -->
-<aura:component isTemplate="true" extends="aura:template">
-    <aura:set attribute="auraPreInitBlock">
-        <!--  persistence must be true so persistent actions filter is exercised -->
-        <auraStorage:init name="actions"
-                          maxSize="4096"
-                          defaultExpiration="3600"
-                          persistent="true"
-                          clearStorageOnInit="true" />
-    </aura:set>
-</aura:component>
+<aura:event type="APPLICATION">
+    <aura:attribute name="sourceComponentId" type="String" description="GlobalId of the inputDate or inputDateTime component firing the event"/>
+</aura:event>

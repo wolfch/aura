@@ -43,7 +43,7 @@ SecureObject.isDOMElementOrNode = function(el) {
 		(typeof el.nodeType === "number" && typeof el.nodeName === "string"));
 };
 
-SecureObject.filterEverything = function (st, raw) {
+SecureObject.filterEverything = function (st, raw, options) {
 	"use strict";
 
 	var t = typeof raw;
@@ -71,11 +71,18 @@ SecureObject.filterEverything = function (st, raw) {
 			swallowed = [];
 			for (var n = 0; n < raw.length; n++) {
 				var newValue = SecureObject.filterEverything(st, raw[n]);
+				
 				// TODO: NaN !== NaN
-				swallowed.push(newValue);
+				
+				if (!options || options.filterOpaque !== true || !$A.lockerService.isOpaque(newValue)) {
+					swallowed.push(newValue);
+				}
+				
 				mutated = mutated || (newValue !== raw[n]);
 			}
+			
 			setLockerSecret(swallowed, "ref", raw);
+			
 			// Decorate with .item() to preserve NodeList shape
 			if (isNodeList) {
 				Object.defineProperty(swallowed, "item", {
@@ -98,7 +105,14 @@ SecureObject.filterEverything = function (st, raw) {
 						SecureComponent(raw, key) : SecureComponentRef(raw, key);
 				mutated = raw !== swallowed;
 			} else if (SecureObject.isDOMElementOrNode(raw)) {
-				swallowed = hasAccess || raw === document.body || raw === document.head ? SecureElement(raw, key) : SecureObject(raw, key);
+				if (hasAccess || raw === document.body || raw === document.head) {
+					swallowed = SecureElement(raw, key);
+				} else if (!options || options.filterOpaque !== true) {
+					swallowed = SecureObject(raw, key);
+				} else {
+					swallowed = undefined;
+				}
+
 				mutated = true;
 			} else if ($A.lockerService.util.isKeyed(raw)) {
 				swallowed = SecureObject(raw, key);
@@ -162,6 +176,15 @@ SecureObject.unfilterEverything = function(st, value) {
 SecureObject.createFilteredMethod = function(st, raw, methodName, options) {
 	"use strict";
 
+	// Do not expose properties that the raw object does not actually support
+	if (!(methodName in raw)) {
+		if (options && options.ignoreNonexisting) {
+			return undefined;
+		} else {
+			throw new $A.auraError("Underlying raw object " + raw + " does not support method: " + methodName);
+		}
+	}
+	
 	return {
 		enumerable: true,
 		value : function() {
@@ -178,21 +201,36 @@ SecureObject.createFilteredMethod = function(st, raw, methodName, options) {
 				fnReturnedValue = options.afterCallback(fnReturnedValue);
 			}
 
-			return SecureObject.filterEverything(st, fnReturnedValue);
+			return SecureObject.filterEverything(st, fnReturnedValue, options);
 		}
 	};
 };
 
 SecureObject.createFilteredProperty = function(st, raw, propertyName, options) {
 	"use strict";
+	
+	// Do not expose properties that the raw object does not actually support
+	if (!(propertyName in raw)) {
+		if (options && options.ignoreNonexisting) {
+			return undefined;
+		} else {
+			throw new $A.auraError("Underlying raw object " + raw + " does not support property: " + propertyName);
+		}
+	}
 
 	var descriptor = {
 		enumerable: true
 	};
 
 	descriptor.get = function() {
-		var value = options && options.returnValue ? options.returnValue : raw[propertyName];
-		return SecureObject.filterEverything(st, value);
+		var value = raw[propertyName];
+		
+		if (options && options.afterGetCallback) {
+			// The caller wants to handle the property value
+			return options.afterGetCallback(value);
+		} else {
+			return SecureObject.filterEverything(st, value, options);
+		}
 	};
 
 	if (!options || options.writable !== false) {
@@ -210,6 +248,24 @@ SecureObject.createFilteredProperty = function(st, raw, propertyName, options) {
 	}
 
 	return descriptor;
+};
+
+SecureObject.addIfSupported = function(behavior, st, element, name, options) {
+	options = options || {};
+	options.ignoreNonexisting = true;
+	
+	var prop = behavior(st, element, name, options);
+	if (prop) {
+		Object.defineProperty(st, name, prop);
+	}
+};
+
+SecureObject.addPropertyIfSupported = function(st, raw, name, options) {
+	SecureObject.addIfSupported(SecureObject.createFilteredProperty, st, raw, name, options);
+};
+
+SecureObject.addMethodIfSupported = function(st, raw, name, options) {
+	SecureObject.addIfSupported(SecureObject.createFilteredMethod, st, raw, name, options);
 };
 
 SecureObject.FunctionPrototypeBind = Function.prototype.bind;

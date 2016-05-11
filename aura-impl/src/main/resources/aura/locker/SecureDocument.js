@@ -31,7 +31,7 @@ function SecureDocument(doc, key) {
         $A.lockerService.trust(st, el);
         return SecureElement(el, key);
     }
-    
+
     function createElement(tag, namespace) {
     	// Insure that no object to string coercion tricks can be applied to evade tag name based logic
         tag = tag + "";
@@ -54,7 +54,7 @@ function SecureDocument(doc, key) {
             value: function(tag) {
                 return createElement(tag, "http://www.w3.org/1999/xhtml");
             }
-        },       
+        },
         createElementNS: {
             value: function(namespace, tag) {
                 return createElement(tag, namespace);
@@ -82,7 +82,7 @@ function SecureDocument(doc, key) {
             }
         }
     });
-    
+
 	SecureElement.addSecureGlobalEventHandlers(o, doc, key);
 	SecureElement.addEventTargetMethods(o, doc, key);
 
@@ -90,22 +90,23 @@ function SecureDocument(doc, key) {
         body: SecureObject.createFilteredProperty(o, doc, "body"),
         head: SecureObject.createFilteredProperty(o, doc, "head"),
 
-        childNodes: SecureObject.createFilteredProperty(o, doc, "childNodes"),
+        childNodes: SecureObject.createFilteredProperty(o, doc, "childNodes", { filterOpaque: true }),
 
         nodeType: SecureObject.createFilteredProperty(o, doc, "nodeType"),
 
-        getElementById: SecureObject.createFilteredMethod(o, doc, "getElementById"),
-        getElementsByClassName: SecureObject.createFilteredMethod(o, doc, "getElementsByClassName"),
-        getElementsByName: SecureObject.createFilteredMethod(o, doc, "getElementsByName"),
-        getElementsByTagName: SecureObject.createFilteredMethod(o, doc, "getElementsByTagName"),
+        getElementById: SecureObject.createFilteredMethod(o, doc, "getElementById", { filterOpaque: true }),
+        getElementsByClassName: SecureObject.createFilteredMethod(o, doc, "getElementsByClassName", { filterOpaque: true }),
+        getElementsByName: SecureObject.createFilteredMethod(o, doc, "getElementsByName", { filterOpaque: true }),
+        getElementsByTagName: SecureObject.createFilteredMethod(o, doc, "getElementsByTagName", { filterOpaque: true }),
 
-        querySelector: SecureObject.createFilteredMethod(o, doc, "querySelector"),
-        querySelectorAll: SecureObject.createFilteredMethod(o, doc, "querySelectorAll"),
+        querySelector: SecureObject.createFilteredMethod(o, doc, "querySelector", { filterOpaque: true }),
+        querySelectorAll: SecureObject.createFilteredMethod(o, doc, "querySelectorAll", { filterOpaque: true }),
 
         title: SecureObject.createFilteredProperty(o, doc, "title"),
 
-        // DCHASMAN TODO W-2839646 Figure out how much we want to filter cookie access???
-        cookie: SecureObject.createFilteredProperty(o, doc, "cookie")
+        cookie: SecureObject.createFilteredProperty(o, doc, "cookie", {
+            writable: false
+        })
     });
 
     setLockerSecret(o, "key", key);

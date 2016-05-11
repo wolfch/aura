@@ -125,11 +125,13 @@ function lib() { //eslint-disable-line no-unused-vars
 	     * When we unrender the component, we should delete our entries in the map so
 	     * the Map doesn't continiously grow.
 	     */
-	    removeDomEventsFromMap:  function(component) {
-	        var globalId = component.getGlobalId();
-	        if(this.domEventMap.hasOwnProperty(globalId)) {
-	            this.domEventMap[globalId] = undefined;
-	        }
+	    removeDomEventsFromMap:  function(component, element) {
+                var globalId = (element instanceof HTMLElement) ?
+                    $A.componentService.getRenderingComponentForElement(element).getGlobalId() : component.getGlobalId();
+
+                if (this.domEventMap.hasOwnProperty(globalId)) {
+                    delete this.domEventMap[globalId];
+                }
 	    },
 
 	    /**

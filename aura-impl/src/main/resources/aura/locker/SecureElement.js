@@ -60,6 +60,19 @@ function SecureElement(el, key) {
 				return child;
 			}
 		},
+
+		replaceChild : {
+			value : function(newChild, oldChild) {
+				$A.lockerService.util.verifyAccess(o, newChild, { verifyNotOpaque: true });
+				$A.lockerService.util.verifyAccess(o, oldChild, { verifyNotOpaque: true });
+
+				if (!runIfRunnable(newChild)) {
+					el.replaceChild(getLockerSecret(newChild, "ref"), getLockerSecret(oldChild, "ref"));
+				}
+				
+				return oldChild;
+			}
+		},
 		
 		insertBefore : {
 			value : function(newNode, referenceNode) {
@@ -76,22 +89,10 @@ function SecureElement(el, key) {
 	});
 
 	Object.defineProperties(o, {
-		childNodes : SecureObject.createFilteredProperty(o, el, "childNodes"),
-		children : SecureObject.createFilteredProperty(o, el, "children"),
+		compareDocumentPosition: SecureObject.createFilteredMethod(o, el, "compareDocumentPosition"),
 
-		firstChild : SecureObject.createFilteredProperty(o, el, "firstChild"),
-		lastChild : SecureObject.createFilteredProperty(o, el, "lastChild"),
-
-        compareDocumentPosition: SecureObject.createFilteredMethod(o, el, "compareDocumentPosition"),
-
-		getAttribute: SecureObject.createFilteredMethod(o, el, "getAttribute"),
-		setAttribute: SecureObject.createFilteredMethod(o, el, "setAttribute"),
-
-        getElementsByClassName: SecureObject.createFilteredMethod(o, el, "getElementsByClassName"),
-        getElementsByTagName: SecureObject.createFilteredMethod(o, el, "getElementsByTagName"),
-
-		ownerDocument : SecureObject.createFilteredProperty(o, el, "ownerDocument"),
-		parentNode : SecureObject.createFilteredProperty(o, el, "parentNode"),
+		ownerDocument: SecureObject.createFilteredProperty(o, el, "ownerDocument"),
+		parentNode: SecureObject.createFilteredProperty(o, el, "parentNode", { filterOpaque: true }),
 
         nodeName: SecureObject.createFilteredProperty(o, el, "nodeName"),
         nodeType: SecureObject.createFilteredProperty(o, el, "nodeType"),
@@ -103,40 +104,91 @@ function SecureElement(el, key) {
         	}	
     	}),
 
-		// Standard HTMLElement methods
-		// https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement#Methods
-		blur: SecureObject.createFilteredMethod(o, el, "blur"),
-		click: SecureObject.createFilteredMethod(o, el, "click"),
-		focus: SecureObject.createFilteredMethod(o, el, "focus"),
+        cloneNode: {
+        	value : function(deep) {
+        		// We need to clone only nodes that can be accessed to and prune the rest
+        		var root = el.cloneNode(false);
+        		
+        		function cloneChildren(parent, parentClone) {
+	        		var childNodes = parent.childNodes;
+	        		for (var i = 0; i < childNodes.length; i++) {
+	        			var child = childNodes[i];
+	        			if ($A.lockerService.util.hasAccess(o, child, { verifyNotOpaque: true })) {
+	        				var childClone = child.cloneNode(false);
+	        				parentClone.appendChild(childClone);
+	        				$A.lockerService.trust(o, childClone);
+	            			cloneChildren(child, childClone);
+	        			}
+	        		}
+        		}
+        		
+        		if (deep) {
+        			cloneChildren(el, root);
+        		}
+        		
+        		return SecureElement(root, key);
+        	}
+        },
 
-		innerHTML : SecureObject.createFilteredProperty(o, el, "innerHTML", { 
-			returnValue: "", 
-			beforeSetCallback: function(value) {				
-				// Do not allow innerHTML on shared elements (body/head)
-				if (isSharedElement(el)) {
-		            throw new $A.auraError("SecureElement.innerHTML cannot be used with " + el.tagName + " elements!");
-				}
-				
-				/*jslint sub: true */
-				return DOMPurify["sanitize"](value);
-			},
-			afterSetCallback: function() {
-				// DCHASMAN TODO We need these to then depth first traverse/visit and $A.lockerServer.trust() all of the new nodes!
-				if (el.firstChild) {
-					$A.lockerService.trust(o, el.firstChild);
-				}
-			} 
-		}),
+        textContent: SecureObject.createFilteredProperty(o, el, "textContent", { 
+        	afterGetCallback: function() { return ""; } 
+        })
+	});
+	
+	// Conditionally add things that not all Node types support
+	SecureObject.addPropertyIfSupported(o, el, "attributes", { 
+		writable: false,
+		afterGetCallback: function(attributes) {
+			// Secure attributes
+			var secureAttributes = [];			
+			for (var i = 0; i < attributes.length; i++) {
+				var attribute = attributes[i];
+				secureAttributes.push({
+					name: attribute.name,
+					value: SecureObject.filterEverything(o, attribute.value)
+				});
+			}
 
-        cloneNode: SecureObject.createFilteredMethod(o, el, "cloneNode", { afterCallback: function(fnReturnedValue) {
-			// DCHASMAN TODO We need these to then depth first traverse/visit and $A.lockerServer.trust() all of the new nodes!
-			$A.lockerService.trust(o, fnReturnedValue);
-			return fnReturnedValue;
-		} }),
-
-        textContent: SecureObject.createFilteredProperty(o, el, "textContent", { returnValue: "" })
+			return secureAttributes;
+		}
+	});
+	
+	["childNodes", "children", "firstChild", "lastChild", "getAttribute", "setAttribute", "removeAttribute"].forEach(function(name) {
+		SecureObject.addPropertyIfSupported(o, el, name, { filterOpaque: true });
 	});
 
+	["getElementsByClassName", "getElementsByTagName", "getBoundingClientRect", "getClientRects", "blur", "click", "focus"].forEach(function(name) {
+		SecureObject.addMethodIfSupported(o, el, name, { filterOpaque: true });
+	});
+
+	SecureObject.addPropertyIfSupported(o, el, "innerHTML", { 
+    	afterGetCallback: function() { return ""; },
+		beforeSetCallback: function(value) {				
+			// Do not allow innerHTML on shared elements (body/head)
+			if (isSharedElement(el)) {
+	            throw new $A.auraError("SecureElement.innerHTML cannot be used with " + el.tagName + " elements!");
+			}
+			
+			/*jslint sub: true */
+			return DOMPurify["sanitize"](value);
+		},
+		afterSetCallback: function() {
+			// $A.lockerServer.trust() all of the new nodes!
+			function trust(node, children) {
+				if (node) {
+					$A.lockerService.trust(o, node);
+				}
+
+        		for (var i = 0; i < children.length; i++) {
+        			var child = children[i];
+        			trust(child, child.childNodes);
+        		}
+			}
+			
+			trust(undefined, el.childNodes);
+		} 
+	});
+	
 	// applying standard secure element properties
 	SecureElement.addSecureProperties(o, el);
 	SecureElement.addSecureGlobalEventHandlers(o, el, key);
@@ -144,7 +196,7 @@ function SecureElement(el, key) {
 
 	SecureElement.addElementSpecificProperties(o, el);
 	SecureElement.addElementSpecificMethods(o, el);
-
+	
 	setLockerSecret(o, "key", key);
 	setLockerSecret(o, "ref", el);
 
@@ -156,7 +208,7 @@ SecureElement.addSecureProperties = function(se, raw) {
 		// Standard Element interface represents an object of a Document.
 		// https://developer.mozilla.org/en-US/docs/Web/API/Element#Properties
 		'childElementCount', 'classList', 'className', 'id', 'tagName',
-		// Note: ignoring 'attributes', 'children', 'firstElementChild', 'innerHTML', 'lastElementChild', 'namespaceURI',
+		// Note: ignoring 'firstElementChild', 'lastElementChild', 'namespaceURI',
 		//      'nextElementSibling' and 'previousElementSibling' from the list above.
 
 		// Standard HTMLElement interface represents any HTML element
@@ -165,11 +217,11 @@ SecureElement.addSecureProperties = function(se, raw) {
 		'contextMenu', 'dataset', 'dir', 'draggable', 'dropzone', 'hidden', 'lang', 'spellcheck',
 		'style', 'tabIndex', 'title',
 		
-		'offsetHeight', 'offsetLeft', 'offsetParent', 'offsetTop', 'offsetWidth'
+		'offsetHeight', 'offsetLeft', 'offsetParent', 'offsetTop', 'offsetWidth', 'nodeValue'
 		
 		// DCHASMAN TODO This list needs to be revisted as it is missing a ton of valid attributes!
 	].forEach(function (name) {
-		Object.defineProperty(se, name, SecureObject.createFilteredProperty(se, raw, name));
+		SecureObject.addPropertyIfSupported(se, raw, name);
 	});
 };
 
@@ -215,13 +267,20 @@ SecureElement.createAddEventListenerDescriptor = function(st, el, key) {
 				return; // by spec, missing callback argument does not throw, just ignores it.
 			}
 
-			var sCallback = function(e) {
-				var se = SecureDOMEvent(e, key);
-				callback.call(st, se);
-			};
-
-			// Back reference for removeEventListener() support
-			setLockerSecret(callback, "sCallback", sCallback);
+			var sCallback = getLockerSecret(callback, "sCallback");
+			if (!sCallback) {
+				sCallback = function(e) {
+					$A.lockerService.util.verifyAccess(st, callback, { verifyNotOpaque: true });
+					
+					var se = SecureDOMEvent(e, key);
+					callback.call(st, se);
+				};
+	
+				// Back reference for removeEventListener() support
+				setLockerSecret(callback, "sCallback", sCallback);
+				
+				$A.lockerService.trust(st, callback);
+			}
 			
 			el.addEventListener(event, sCallback, useCapture);
 		}
@@ -249,7 +308,7 @@ SecureElement.addElementSpecificProperties = function(se, el) {
 		var whitelist = SecureElement.elementSpecificAttributeWhitelists[tagName];
 		if (whitelist) {
 			whitelist.forEach(function(name) {
-				Object.defineProperty(se, name, SecureObject.createFilteredProperty(se, el, name));
+				SecureObject.addPropertyIfSupported(se, el, name);
 			});
 		}
 	}
@@ -261,7 +320,7 @@ SecureElement.addElementSpecificMethods = function(se, el) {
 		var whitelist = SecureElement.elementSpecificMethodWhitelists[tagName];
 		if (whitelist) {
 			whitelist.forEach(function(name) {
-				Object.defineProperty(se, name, SecureObject.createFilteredMethod(se, el, name));
+				SecureObject.addMethodIfSupported(se, el, name);
 			});
 		}
 	}
@@ -321,5 +380,6 @@ SecureElement.elementSpecificAttributeWhitelists = {
 };
 
 SecureElement.elementSpecificMethodWhitelists = {
+	"CANVAS": ["getContext", "toDataURL", "toBlob"],
 	"SVG": ["createSVGRect"]
 };

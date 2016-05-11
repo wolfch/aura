@@ -221,14 +221,7 @@ function LockerService() {
 	    "DataView",
 
 	    // Misc
-	    "alert",
-	    "clearInterval",
-	    "clearTimeout",
-	    "confirm",
-	    "console",
-	    "Intl",
-	    "location",
-	    "Node"
+	    "Intl"
 	];
 
 	var nsKeys = {};
@@ -291,8 +284,9 @@ function LockerService() {
 			var psuedoKeySymbol = JSON.stringify(key);
 			var env = keyToEnvironmentMap[psuedoKeySymbol];
 			if (!env && !doNotCreate) {
-				env = keyToEnvironmentMap[psuedoKeySymbol] = SecureWindow(window, key);
+				env = keyToEnvironmentMap[psuedoKeySymbol] = SecureWindow(window, key, whitelist);
 			}
+			
 			return env;
 		},
 
@@ -316,11 +310,11 @@ function LockerService() {
 				Object.getOwnPropertyNames(window).forEach(function (name) {
 					// apply whitelisting to the lockerShadows
 					// TODO: recursive to cover WindowPrototype properties as well
-					if (whitelist.indexOf(name) === -1) {
-						lockerShadows[name] = undefined;
-					}
+					var value = whitelist.indexOf(name) >= 0 ? window[name] : undefined;
+					lockerShadows[name] = value;
 				});
 			}
+			
 			try {				
 				locker = {
 					"$envRec": envRec,
@@ -329,6 +323,7 @@ function LockerService() {
 			} catch (x) {
 				throw new Error("Unable to create locker IIFE: " + x);
 			}
+			
 			Object.freeze(locker);
 			lockers.push(locker);
 			return locker;
