@@ -15,21 +15,21 @@
  */
 package org.auraframework.http;
 
-import org.apache.http.HttpHeaders;
-import org.auraframework.adapter.ConfigAdapter;
-import org.auraframework.adapter.ServletUtilAdapter;
-import org.auraframework.util.IOUtil;
-import org.auraframework.util.resource.ResourceLoader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.activation.MimetypesFileTypeMap;
 import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+import org.apache.http.HttpHeaders;
+import org.auraframework.adapter.ConfigAdapter;
+import org.auraframework.util.IOUtil;
+import org.auraframework.util.resource.ResourceLoader;
 
 public class AuraFrameworkServlet extends AuraBaseServlet {
     private static final long serialVersionUID = 4464645638180535126L;
@@ -46,7 +46,6 @@ public class AuraFrameworkServlet extends AuraBaseServlet {
     public final static String RESOURCES_FORMAT = "%s/auraFW/resources/%s/%s";
 
     private ConfigAdapter configAdapter;
-    private ServletUtilAdapter servletUtilAdapter;
     
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -236,12 +235,7 @@ public class AuraFrameworkServlet extends AuraBaseServlet {
     }
 
     @Inject
-    void setConfigAdapter(ConfigAdapter configAdapter) {
+    public void setConfigAdapter(ConfigAdapter configAdapter) {
         this.configAdapter = configAdapter;
-    }
-
-    @Inject
-    void setServletUtilAdapter(ServletUtilAdapter servletUtilAdapter) {
-        this.servletUtilAdapter = servletUtilAdapter;
     }
 }

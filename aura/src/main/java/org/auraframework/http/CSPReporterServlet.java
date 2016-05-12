@@ -56,7 +56,6 @@ public class CSPReporterServlet extends HttpServlet {
     public static final String VIOLATED_DIRECTIVE = "violated-directive";
     public static final String EFFECTIVE_DIRECTIVE = "effective-directive";
 
-    @Inject
     private LoggingService loggingService;
 
     @Override
@@ -89,5 +88,10 @@ public class CSPReporterServlet extends HttpServlet {
                 loggingService.release();
             }
         }
+    }
+
+    @Inject
+    public void setLoggingService(LoggingService loggingService) {
+        this.loggingService = loggingService;
     }
 }

@@ -65,9 +65,10 @@ public class DesignOptionDefHandler extends ParentedTagHandler<DesignOptionDef, 
             error("Attribute '%s' is required on <%s>", ATTRIBUTE_KEY, TAG);
         }
         String value = getAttributeValue(ATTRIBUTE_VALUE);
+        String access = getAttributeValue(ATTRIBUTE_ACCESS);
         builder.setKey(key);
         builder.setValue(value);
-        builder.setAccess(readAccessAttribute());
+        builder.setAccess(access);
     }
 
     @Override

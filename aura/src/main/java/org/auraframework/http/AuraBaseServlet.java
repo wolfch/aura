@@ -74,8 +74,7 @@ public abstract class AuraBaseServlet extends HttpServlet {
     public static final String OUTDATED_MESSAGE = "OUTDATED";
     protected final static StringParam csrfToken = new StringParam(AURA_PREFIX + "token", 0, true);
 
-    @Inject
-    private ServletUtilAdapter servletUtilAdapter;
+    protected ServletUtilAdapter servletUtilAdapter;
 
 //    public static String getToken() {
 //        return ConfigAdapter().getCSRFToken();
@@ -105,11 +104,20 @@ public abstract class AuraBaseServlet extends HttpServlet {
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
+        processInjection(config);
+    }
+    
+    public void processInjection(ServletConfig config) {
         SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this, config.getServletContext());
     }
 
     @Deprecated
     protected void send404(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         servletUtilAdapter.send404(getServletConfig().getServletContext(), request, response);
+    }
+    
+    @Inject
+    public void setServletUtilAdapter(ServletUtilAdapter servletUtilAdapter) {
+        this.servletUtilAdapter = servletUtilAdapter;
     }
 }

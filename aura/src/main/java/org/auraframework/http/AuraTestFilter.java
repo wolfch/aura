@@ -27,6 +27,7 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.inject.Inject;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -38,8 +39,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpStatus;
@@ -76,7 +75,8 @@ import org.auraframework.util.json.JsonEncoder;
 import org.auraframework.util.json.JsonReader;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import javax.inject.Inject;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 
 /**
  * Supports test framework functionality, primarily for jstest mocks.
@@ -118,20 +118,36 @@ public class AuraTestFilter implements Filter {
     // TODO: DELETE this once all existing tests have been updated to have attributes.
     private boolean ENABLE_FREEFORM_TESTS = Boolean.parseBoolean(System.getProperty("aura.jstest.free"));
 
-    @Inject
     private TestContextAdapter testContextAdapter;
-
-    @Inject
     private ContextService contextService;
-
-    @Inject
     private DefinitionService definitionService;
-
-    @Inject
     private ConfigAdapter configAdapter;
+    private ExceptionAdapter exceptionAdapter;
 
     @Inject
-    private ExceptionAdapter exceptionAdapter;
+    public void setTestContextAdapter(TestContextAdapter testContextAdapter) {
+        this.testContextAdapter = testContextAdapter;
+    }
+
+    @Inject
+    public void setContextService(ContextService contextService) {
+        this.contextService = contextService;
+    }
+
+    @Inject
+    public void setDefinitionService(DefinitionService definitionService) {
+        this.definitionService = definitionService;
+    }
+
+    @Inject
+    public void setConfigAdapter(ConfigAdapter configAdapter) {
+        this.configAdapter = configAdapter;
+    }
+
+    @Inject
+    public void setExceptionAdapter(ExceptionAdapter exceptionAdapter) {
+        this.exceptionAdapter = exceptionAdapter;
+    }
 
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws ServletException,
@@ -268,6 +284,10 @@ public class AuraTestFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         servletContext = filterConfig.getServletContext();
+        processInjection(filterConfig);
+    }
+    
+    public void processInjection(FilterConfig filterConfig) {
         SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this, servletContext);
     }
 

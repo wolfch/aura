@@ -119,7 +119,6 @@ public class AuraServlet extends AuraBaseServlet {
     private final static StringParam nocacheParam = new StringParam("nocache", 0, false);
 
     private ExceptionAdapter exceptionAdapter;
-    private ServletUtilAdapter servletUtilAdapter;
     private ContextService contextService;
     private DefinitionService definitionService;
     private ConfigAdapter configAdapter;
@@ -522,11 +521,6 @@ public class AuraServlet extends AuraBaseServlet {
     @Inject
     public void setExceptionAdapter(ExceptionAdapter exceptionAdapter) {
         this.exceptionAdapter = exceptionAdapter;
-    }
-
-    @Inject
-    public void setServletUtilAdapter(ServletUtilAdapter servletUtilAdapter) {
-        this.servletUtilAdapter = servletUtilAdapter;
     }
 
     @Inject

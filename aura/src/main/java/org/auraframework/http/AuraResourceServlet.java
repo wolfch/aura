@@ -24,7 +24,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.auraframework.adapter.ServletUtilAdapter;
 import org.auraframework.service.ContextService;
 import org.auraframework.system.AuraContext;
 import org.auraframework.system.AuraResource;
@@ -50,7 +49,6 @@ public class AuraResourceServlet extends AuraBaseServlet {
 
     private final Map<String,AuraResource> nameToResource = Maps.newHashMap();
 
-    protected ServletUtilAdapter servletUtilAdapter;
     private ContextService contextService;
 
     private void addResource(AuraResource resource) {
@@ -105,11 +103,6 @@ public class AuraResourceServlet extends AuraBaseServlet {
         servletUtilAdapter.setCSPHeaders(context.getApplicationDescriptor(), request, response);
 
         resource.write(request, response, context);
-    }
-
-    @Inject
-    public void setServletUtilAdapter(ServletUtilAdapter servletUtilAdapter) {
-        this.servletUtilAdapter = servletUtilAdapter;
     }
 
     @Inject

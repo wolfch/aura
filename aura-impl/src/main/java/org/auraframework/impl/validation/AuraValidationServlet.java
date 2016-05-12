@@ -15,11 +15,18 @@
  */
 package org.auraframework.impl.validation;
 
-import com.google.common.base.Charsets;
-import com.google.common.collect.Lists;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.Set;
+
+import javax.inject.Inject;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.auraframework.adapter.ServletUtilAdapter;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.http.AuraBaseServlet;
 import org.auraframework.service.ContextService;
@@ -27,26 +34,16 @@ import org.auraframework.system.AuraContext;
 import org.auraframework.util.json.JsonEncoder;
 import org.auraframework.util.validation.ValidationError;
 
-import javax.inject.Inject;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.Set;
+import com.google.common.base.Charsets;
+import com.google.common.collect.Lists;
 
 /**
  * Servlet used as endpoint for the Aura ValidationClient
  */
 public class AuraValidationServlet extends AuraBaseServlet {
-
+    private static final long serialVersionUID = 1L;
     private static final Log LOG = LogFactory.getLog(AuraValidationServlet.class);
 
-    @Inject
-    private ServletUtilAdapter servletUtilAdapter;
-
-    @Inject
     private ContextService contextService;
 
     @Override
@@ -108,6 +105,9 @@ public class AuraValidationServlet extends AuraBaseServlet {
             response.getOutputStream().write(data);
         }
     }
-
-    private static final long serialVersionUID = 1L;
+    
+    @Inject
+    public void setContextService(ContextService contextService) {
+        this.contextService = contextService;
+    }
 }

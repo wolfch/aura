@@ -15,7 +15,21 @@
  */
 package org.auraframework.http;
 
-import com.google.common.collect.Maps;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.inject.Inject;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -44,21 +58,7 @@ import org.auraframework.util.AuraTextUtil;
 import org.auraframework.util.json.JsonReader;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import javax.inject.Inject;
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import com.google.common.collect.Maps;
 
 public class AuraContextFilter implements Filter {
     public static final EnumParam<AuraContext.Mode> mode = new EnumParam<>(AuraServlet.AURA_PREFIX
@@ -82,9 +82,8 @@ public class AuraContextFilter implements Filter {
 
     private static final Log LOG = LogFactory.getLog(AuraContextFilter.class);
 
-    protected static final AuraTestFilter testFilter = new AuraTestFilter();
+    private AuraTestFilter testFilter;
 
-    @Inject
     private AuraDeprecated auraDeprecated; // force initialization of Aura
 
     private ContextService contextService;
@@ -116,6 +115,15 @@ public class AuraContextFilter implements Filter {
     @Inject
     public void setSerializationService(SerializationService service) {
         serializationService = service;
+    }
+
+    @Inject
+    public void setAuraTestFilter(AuraTestFilter testFilter) {
+        this.testFilter = testFilter;
+    }
+
+    public AuraTestFilter getAuraTestFilter() {
+        return testFilter;
     }
 
     @Override
@@ -350,18 +358,23 @@ public class AuraContextFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this, filterConfig.getServletContext());
+        processInjection(filterConfig);
         String dirConfig = filterConfig.getInitParameter("componentDir");
         if (!AuraTextUtil.isNullEmptyOrWhitespace(dirConfig)) {
             componentDir = filterConfig.getServletContext().getRealPath("/") + dirConfig;
         }
         testFilter.init(filterConfig);
     }
+    
+    public void processInjection(FilterConfig filterConfig) {
+        SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this, filterConfig.getServletContext());
+    }
 
     public AuraDeprecated getAuraDeprecated() {
         return auraDeprecated;
     }
-
+    
+    @Inject
     public void setAuraDeprecated(AuraDeprecated auraDeprecated) {
         this.auraDeprecated = auraDeprecated;
     }
