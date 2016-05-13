@@ -15,10 +15,9 @@
  */
 package org.auraframework.http;
 
-import com.google.common.net.HttpHeaders;
-import org.auraframework.service.LoggingService;
-import org.auraframework.util.json.JsonReader;
-import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.servlet.ServletConfig;
@@ -26,9 +25,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.util.Map;
+
+import org.auraframework.service.LoggingService;
+import org.auraframework.util.json.JsonReader;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+
+import com.google.common.net.HttpHeaders;
 
 /**
  * Endpoint for reporting Content Security Policy violations,
@@ -61,6 +63,10 @@ public class CSPReporterServlet extends HttpServlet {
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
+        processInjection(config);
+    }
+    
+    public void processInjection(ServletConfig config) {
         SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this, config.getServletContext());
     }
 
