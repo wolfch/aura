@@ -16,10 +16,10 @@
 package org.auraframework.def;
 
 /**
- * Similar to {@link TokenDescriptorProvider}, except this is for providing dynamic token values via a map instead a
- * descriptor.
+ * Base interface for Token providers
  */
-public interface TokenMapProviderDef extends Definition, TokenProviderDef {
-    @Override
-    DefDescriptor<TokenMapProviderDef> getDescriptor();
+public interface TokenProviderDef {
+    Class<?> getProviderClass();
+
+    Class<?> getProviderType();
 }

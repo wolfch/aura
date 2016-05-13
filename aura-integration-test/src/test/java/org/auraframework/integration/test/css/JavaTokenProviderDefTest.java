@@ -15,18 +15,22 @@
  */
 package org.auraframework.integration.test.css;
 
-import javax.inject.Inject;
-
 import org.auraframework.Aura;
 import org.auraframework.annotations.Annotations.ServiceComponentProvider;
-import org.auraframework.def.*;
+import org.auraframework.def.DefDescriptor;
+import org.auraframework.def.TokenDescriptorProvider;
+import org.auraframework.def.TokensDef;
 import org.auraframework.impl.css.StyleTestCase;
 import org.auraframework.impl.java.provider.TestTokenDescriptorProvider;
 import org.auraframework.service.DefinitionService;
 import org.auraframework.service.InstanceService;
 import org.auraframework.system.Annotations.Provider;
-import org.auraframework.throwable.quickfix.*;
+import org.auraframework.throwable.quickfix.DefinitionNotFoundException;
+import org.auraframework.throwable.quickfix.InvalidDefinitionException;
+import org.auraframework.throwable.quickfix.QuickFixException;
 import org.junit.Test;
+
+import javax.inject.Inject;
 
 public class JavaTokenProviderDefTest extends StyleTestCase {
     
@@ -41,7 +45,7 @@ public class JavaTokenProviderDefTest extends StyleTestCase {
         assertEquals(expected, concrete);
     }
 
-    @ServiceComponentProvider
+    @Provider
     public static final class P1 implements TokenDescriptorProvider {
         @Override
         public DefDescriptor<TokensDef> provide() throws QuickFixException {
@@ -49,7 +53,7 @@ public class JavaTokenProviderDefTest extends StyleTestCase {
         }
     }
 
-    @ServiceComponentProvider
+    @Provider
     public static final class P2 implements TokenDescriptorProvider {
         @Override
         public DefDescriptor<TokensDef> provide() throws QuickFixException {
@@ -70,7 +74,7 @@ public class JavaTokenProviderDefTest extends StyleTestCase {
         assertEquals(expected, concrete);
     }
 
-    @ServiceComponentProvider
+    @Provider
     public static final class ProviderThrowsOnInstantiate implements TokenDescriptorProvider {
         public ProviderThrowsOnInstantiate() {
             throw new RuntimeException("error");
@@ -113,7 +117,7 @@ public class JavaTokenProviderDefTest extends StyleTestCase {
         }
     }
 
-    @ServiceComponentProvider
+    @Provider
     public static final class ProviderConstructorArg implements TokenDescriptorProvider {
         public ProviderConstructorArg(String s) {
         }
@@ -134,7 +138,7 @@ public class JavaTokenProviderDefTest extends StyleTestCase {
         }
     }
 
-    @ServiceComponentProvider
+    @Provider
     public static final class ProviderPrivateConstructor implements TokenDescriptorProvider {
         private ProviderPrivateConstructor() {
         }
@@ -155,7 +159,7 @@ public class JavaTokenProviderDefTest extends StyleTestCase {
         }
     }
 
-    @ServiceComponentProvider
+    @Provider
     public static final class ProviderNonexistent implements TokenDescriptorProvider {
 
         @Override
@@ -184,7 +188,7 @@ public class JavaTokenProviderDefTest extends StyleTestCase {
             definitionService.getDefinition(addSeparateTokens(tokens().descriptorProvider("java://" + MissingInterface.class.getName()))).getConcreteDescriptor();
             fail("expected to get an exception");
         } catch (Exception e) {
-            checkExceptionContains(e, InvalidDefinitionException.class, "Provider must implement");
+            checkExceptionContains(e, InvalidDefinitionException.class, "must implement");
         }
     }
 

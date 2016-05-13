@@ -15,8 +15,6 @@
  */
 package org.auraframework.impl.java.provider;
 
-import java.util.List;
-
 import org.auraframework.builder.DefBuilder;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.Definition;
@@ -26,10 +24,12 @@ import org.auraframework.system.SourceLoader;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
+import java.util.List;
+
 /**
  * Base class for java provider def factories.
  */
-abstract class AbstractJavaProviderDefFactory<D extends Definition> extends BaseJavaDefFactory<D> {
+public abstract class AbstractJavaProviderDefFactory<D extends Definition> extends BaseJavaDefFactory<D> {
     public AbstractJavaProviderDefFactory() {
         this(null);
     }
