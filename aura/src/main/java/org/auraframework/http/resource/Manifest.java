@@ -16,7 +16,15 @@
 
 package org.auraframework.http.resource;
 
-import com.google.common.collect.Maps;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.auraframework.adapter.ConfigAdapter;
 import org.auraframework.adapter.ExceptionAdapter;
 import org.auraframework.annotations.Annotations.ServiceComponent;
@@ -28,22 +36,14 @@ import org.auraframework.def.DefDescriptor.DefType;
 import org.auraframework.http.ManifestUtil;
 import org.auraframework.instance.Component;
 import org.auraframework.service.ContextService;
-import org.auraframework.service.DefinitionService;
 import org.auraframework.service.InstanceService;
-import org.auraframework.service.LoggingService;
 import org.auraframework.service.RenderingService;
 import org.auraframework.system.AuraContext;
 import org.auraframework.system.AuraContext.Format;
 import org.auraframework.throwable.ClientOutOfSyncException;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.Map;
+import com.google.common.collect.Maps;
 
 @ServiceComponent
 public class Manifest extends AuraResourceImpl {
@@ -54,9 +54,7 @@ public class Manifest extends AuraResourceImpl {
     private ConfigAdapter configAdapter;
     private InstanceService instanceService;
     private RenderingService renderingService;
-    private DefinitionService definitionService;
     private ManifestUtil manifestUtil;
-    private LoggingService loggingService;
     private ExceptionAdapter exceptionAdapter;
     private ContextService contextService;
 
@@ -226,38 +224,28 @@ public class Manifest extends AuraResourceImpl {
     public void setConfigAdapter(ConfigAdapter configAdapter) {
         this.configAdapter = configAdapter;
     }
-
+    
     @Inject
     public void setInstanceService(InstanceService instanceService) {
         this.instanceService = instanceService;
     }
-
+    
     @Inject
     public void setRenderingService(RenderingService renderingService) {
         this.renderingService = renderingService;
     }
-
-    public void setManifestUtil(ManifestUtil manifestUtil) {
-        this.manifestUtil = manifestUtil;
-    }
-
-    @Inject
-    public void setLoggingService(LoggingService loggingService) {
-        this.loggingService = loggingService;
-    }
-
+    
     @Inject
     public void setExceptionAdapter(ExceptionAdapter exceptionAdapter) {
         this.exceptionAdapter = exceptionAdapter;
     }
-
+    
     @Inject
     public void setContextService(ContextService contextService) {
         this.contextService = contextService;
     }
-
-    /* Avoiding Unused Variable */
-    public LoggingService getLoggingService() {
-        return this.loggingService;
+    
+    public void setManifestUtil(ManifestUtil manifestUtil) {
+        this.manifestUtil = manifestUtil;
     }
 }
