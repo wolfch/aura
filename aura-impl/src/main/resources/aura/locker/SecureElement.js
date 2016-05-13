@@ -18,7 +18,7 @@
 
 function SecureElement(el, key) {
 	"use strict";
-
+	
 	function isSharedElement(element) {
 		return element === document.body || element === document.head;
 	}
@@ -43,6 +43,11 @@ function SecureElement(el, key) {
 			trustNodes(child, child.childNodes);
 		}
 	}
+	
+	var o = SecureObject.getCached(el);
+	if (o) {
+		return o;
+	}
 
 	// A secure element can have multiple forms, this block allows us to apply
 	// some polymorphic behavior to SecureElement depending on the tagName
@@ -52,14 +57,21 @@ function SecureElement(el, key) {
 		throw new $A.auraError("The deprecated FRAME element is not supported in LockerService!");
 
 	case "IFRAME":
-		return SecureIFrameElement(el, key);
+		o = SecureIFrameElement(el, key);
+		break;
 
 	case "SCRIPT":
-		return SecureScriptElement(key, el);
+		o = SecureScriptElement(key, el);
+		break;
+	}
+	
+	if (o) {
+		SecureObject.addToCache(el, o);
+		return o;
 	}
 
 	// SecureElement is it then!
-	var o = Object.create(null, {
+	o = Object.create(null, {
 		toString : {
 			value : function() {
 				return "SecureElement: " + el + "{ key: " + JSON.stringify(key) + " }";
@@ -117,7 +129,7 @@ function SecureElement(el, key) {
 			}
 		}
 	});
-
+	
 	Object.defineProperties(o, {
 		removeChild : SecureObject.createFilteredMethod(o, el, "removeChild", {
 			beforeCallback : function(child) {
@@ -240,6 +252,8 @@ function SecureElement(el, key) {
 
 	setLockerSecret(o, "key", key);
 	setLockerSecret(o, "ref", el);
+	
+	SecureObject.addToCache(el, o);
 
 	return o;
 }
