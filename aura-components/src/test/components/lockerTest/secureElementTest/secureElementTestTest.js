@@ -8,9 +8,8 @@
     browsers: ["-IE8", "-IE9", "-IE10", "-IE11"],
 
     // TODO(tbliss): make these lists on SecureElement accessible here for maintainablility
-    ElementPropertiesWhitelist: ['attributes', 'childElementCount', 'classList', 'className', 'id', 'tagName', 'innerHTML'],
-    ElementProperitesBlacklist: ['firstElementChild', 'lastElementChild', 'namespaceURI',
-                                 'nextElementSibling', 'previousElementSibling'],
+    ElementPropertiesWhitelist: ['attributes', 'childElementCount', 'classList', 'className', 'id', 'tagName', 'innerHTML', 'namespaceURI'],
+    ElementProperitesBlacklist: ['firstElementChild', 'lastElementChild', 'nextElementSibling', 'previousElementSibling'],
 
     HTMLPropertiesWhitelist: ['accessKey', 'contentEditable', 'isContentEditable',
                               'dataset', 'dir', 'lang', 'spellcheck', 'style', 'tabIndex', 'title'],
@@ -74,6 +73,25 @@
     testRemoveEventListenerWithUseCapture: {
         test: function(cmp) {
             cmp.testRemoveEventListener(true);
+        }
+    },
+
+    /**
+     * The actual test code is in renderer where users can have SecureObject references.
+     */
+    testCallAppendChildWithOpaqueReference: {
+        attributes:{"testInRenderer": "testCallAppendChildWithOpaqueReference"},
+        test: function(cmp) {
+            var actual = cmp.get("v.text");
+            $A.test.assertStartsWith("Error: Access denied", actual);
+        }
+    },
+
+    testCallRemoveChildWithOpaqueReference: {
+        attributes:{"testInRenderer": "testCallRemoveChildWithOpaqueReference"},
+        test: function(cmp) {
+            var actual = cmp.get("v.text");
+            $A.test.assertStartsWith("Error: Access denied", actual);
         }
     }
 })

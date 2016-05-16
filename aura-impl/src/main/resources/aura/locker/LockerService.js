@@ -48,12 +48,12 @@ function lazyInitInlinedSafeEvalWorkaround() {
 	          }
 	          if (options.useStrict) {
 	              // forcing strict mode
-	              src = 'return (function(){\n"use strict";\n' + src + '\n})()';
+	              src = 'return (function(window){\n"use strict";\n' + src + '\n})(arguments[0])';
 	          } else {
 	              // forcing the value of `this` for non-strict code to prevent leaking
 	              // the safeEval.html's window reference
-	              src = 'return (function(){\n' + src + '\n}).call(arguments[0])';
-	          }          
+	              src = 'return (function(window){\n' + src + '\n}).call(arguments[0],arguments[0])';
+	          }
 	          for (var i = 0; i < options.levels; i++) {
 	              src = 'with(arguments[' + i + ']||{}){' + src + '}';
 	          }
@@ -104,7 +104,7 @@ function lazyInitInlinedSafeEvalWorkaround() {
 	        	  if (o === undefined) {
 	        		  return;
 	        	  }
-	        	  
+
 	              o.defineProperty(o.prototype, '__defineGetter__', {
 	                  value: function (key, fn) {
 	                      return o.defineProperty(this, key, {
@@ -286,7 +286,7 @@ function LockerService() {
 			if (!env && !doNotCreate) {
 				env = keyToEnvironmentMap[psuedoKeySymbol] = SecureWindow(window, key, whitelist);
 			}
-			
+
 			return env;
 		},
 
@@ -314,16 +314,12 @@ function LockerService() {
 					lockerShadows[name] = value;
 				});
 			}
-			
-			try {				
-				locker = {
-					"$envRec": envRec,
-					"$result": window['$$safe-eval$$'](code, optionalSourceURL, envRec, lockerShadows)
-				};
-			} catch (x) {
-				throw new Error("Unable to create locker IIFE: " + x);
-			}
-			
+
+			locker = {
+				"$envRec": envRec,
+				"$result": window['$$safe-eval$$'](code, optionalSourceURL, envRec, lockerShadows)
+			};
+
 			Object.freeze(locker);
 			lockers.push(locker);
 			return locker;
@@ -364,7 +360,8 @@ function LockerService() {
 				return event;
 			}
 			// if the component is secure, the event have to be secure.
-			return SecureAuraEvent(event, getLockerSecret(component, "key"));
+			var key = getLockerSecret(component, "key");
+			return event instanceof Aura.Event.Event ? SecureAuraEvent(event, key) : SecureDOMEvent(event, key);
 		},
 
 		unwrap : function(st) {
