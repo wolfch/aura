@@ -108,16 +108,6 @@ function SecureElement(el, key) {
 	});
 
 	Object.defineProperties(o, {
-		compareDocumentPosition : SecureObject.createFilteredMethod(o, el, "compareDocumentPosition"),
-
-		ownerDocument : SecureObject.createFilteredProperty(o, el, "ownerDocument"),
-		parentNode : SecureObject.createFilteredProperty(o, el, "parentNode", {
-			filterOpaque : true
-		}),
-
-		nodeName : SecureObject.createFilteredProperty(o, el, "nodeName"),
-		nodeType : SecureObject.createFilteredProperty(o, el, "nodeType"),
-
 		removeChild : SecureObject.createFilteredMethod(o, el, "removeChild", {
 			beforeCallback : function(child) {
 				// Verify that the passed in child is not opaque!
@@ -158,7 +148,7 @@ function SecureElement(el, key) {
 
 		textContent : SecureObject.createFilteredProperty(o, el, "textContent", {
 			afterGetCallback : function() {
-				return "";
+				return getLockerSecret(o.cloneNode(true), "ref").textContent;
 			}
 		})
 	});
@@ -181,23 +171,29 @@ function SecureElement(el, key) {
 		}
 	});
 
-	[ "childNodes", "children", "firstChild", "lastChild", "getAttribute", "setAttribute", "removeAttribute", "getAttributeNS", "setAttributeNS",
-			"removeAttributeNS" ].forEach(function(name) {
+	SecureObject.addPropertyIfSupported(o, el, "innerText", {
+		afterGetCallback : function() {
+			return getLockerSecret(o.cloneNode(true), "ref").innerText;
+		}
+	});
+
+	[ "childNodes", "children", "firstChild", "lastChild", "getAttribute", "nodeName", "nodeType", "parentNode", "parentElement", "ownerDocument",
+			"setAttribute", "removeAttribute", "getAttributeNS", "setAttributeNS", "removeAttributeNS" ].forEach(function(name) {
 		SecureObject.addPropertyIfSupported(o, el, name, {
 			filterOpaque : true
 		});
 	});
 
-	[ "getElementsByClassName", "getElementsByTagName", "getElementsByTagNameNS", "querySelector", "querySelectorAll", "getBoundingClientRect", "getClientRects", "blur", "click", "focus" ]
-			.forEach(function(name) {
-				SecureObject.addMethodIfSupported(o, el, name, {
-					filterOpaque : true
-				});
-			});
+	[ "compareDocumentPosition", "getElementsByClassName", "getElementsByTagName", "getElementsByTagNameNS", "querySelector", "querySelectorAll",
+			"getBoundingClientRect", "getClientRects", "blur", "click", "focus" ].forEach(function(name) {
+		SecureObject.addMethodIfSupported(o, el, name, {
+			filterOpaque : true
+		});
+	});
 
 	SecureObject.addPropertyIfSupported(o, el, "innerHTML", {
 		afterGetCallback : function() {
-			return "";
+			return getLockerSecret(o.cloneNode(true), "ref").innerHTML;
 		},
 		beforeSetCallback : function(value) {
 			// Do not allow innerHTML on shared elements (body/head)
@@ -205,7 +201,12 @@ function SecureElement(el, key) {
 				throw new $A.auraError("SecureElement.innerHTML cannot be used with " + el.tagName + " elements!");
 			}
 
-			return DOMPurify["sanitize"](value);
+			// Allow SVG <use> element 
+			var config = {
+				ADD_TAGS : [ "use" ]
+			};
+			
+			return DOMPurify["sanitize"](value, config);
 		},
 		afterSetCallback : function() {
 			// $A.lockerServer.trust() all of the new nodes!
