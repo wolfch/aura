@@ -93,5 +93,23 @@
             var actual = cmp.get("v.text");
             $A.test.assertStartsWith("Error: Access denied", actual);
         }
+    },
+
+    testInnerHTMLSupportsUseTagForSvgElement: {
+        test: function(cmp) {
+            cmp.testInnerHTMLSupportsUseTagForSvgElement();
+        }
+    },
+    
+    testTextContent: {
+        test: function(cmp) {
+            cmp.testTextContent();
+        }
+    },
+    
+    testInnerText: {
+        test: function(cmp) {
+            cmp.testInnerText();
+        }
     }
 })
