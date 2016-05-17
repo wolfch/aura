@@ -32,6 +32,17 @@ function SecureElement(el, key) {
 		}
 		return isRunnable;
 	}
+	
+	function trustNodes(node, children) {
+		if (node) {
+			$A.lockerService.trust(o, node);
+		}
+
+		for (var i = 0; i < children.length; i++) {
+			var child = children[i];
+			trustNodes(child, child.childNodes);
+		}
+	}
 
 	// A secure element can have multiple forms, this block allows us to apply
 	// some polymorphic behavior to SecureElement depending on the tagName
@@ -149,6 +160,9 @@ function SecureElement(el, key) {
 		textContent : SecureObject.createFilteredProperty(o, el, "textContent", {
 			afterGetCallback : function() {
 				return getLockerSecret(o.cloneNode(true), "ref").textContent;
+			},
+			afterSetCallback : function() {
+				trustNodes(undefined, el.childNodes);
 			}
 		})
 	});
@@ -174,6 +188,9 @@ function SecureElement(el, key) {
 	SecureObject.addPropertyIfSupported(o, el, "innerText", {
 		afterGetCallback : function() {
 			return getLockerSecret(o.cloneNode(true), "ref").innerText;
+		},
+		afterSetCallback : function() {
+			trustNodes(undefined, el.childNodes);
 		}
 	});
 
@@ -203,25 +220,13 @@ function SecureElement(el, key) {
 
 			// Allow SVG <use> element 
 			var config = {
-				ADD_TAGS : [ "use" ]
+				"ADD_TAGS" : [ "use" ]
 			};
 			
 			return DOMPurify["sanitize"](value, config);
 		},
 		afterSetCallback : function() {
-			// $A.lockerServer.trust() all of the new nodes!
-			function trust(node, children) {
-				if (node) {
-					$A.lockerService.trust(o, node);
-				}
-
-				for (var i = 0; i < children.length; i++) {
-					var child = children[i];
-					trust(child, child.childNodes);
-				}
-			}
-
-			trust(undefined, el.childNodes);
+			trustNodes(undefined, el.childNodes);
 		}
 	});
 
