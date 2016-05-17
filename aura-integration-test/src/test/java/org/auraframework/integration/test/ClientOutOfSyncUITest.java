@@ -35,6 +35,7 @@ import org.auraframework.def.RendererDef;
 import org.auraframework.def.StyleDef;
 import org.auraframework.def.TokensDef;
 import org.auraframework.integration.test.util.WebDriverTestCase;
+import org.auraframework.test.util.WebDriverUtil.BrowserType;
 import org.auraframework.util.test.annotation.ThreadHostileTest;
 import org.junit.Ignore;
 import org.junit.Test;

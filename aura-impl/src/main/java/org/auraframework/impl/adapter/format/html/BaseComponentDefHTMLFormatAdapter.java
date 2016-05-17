@@ -15,8 +15,13 @@
  */
 package org.auraframework.impl.adapter.format.html;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import java.io.IOException;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.concurrent.ThreadSafe;
+import javax.inject.Inject;
+
 import org.auraframework.adapter.ConfigAdapter;
 import org.auraframework.adapter.ServletUtilAdapter;
 import org.auraframework.annotations.Annotations.ServiceComponent;
@@ -37,11 +42,8 @@ import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.javascript.Literal;
 import org.auraframework.util.json.JsonEncoder;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.concurrent.ThreadSafe;
-import javax.inject.Inject;
-import java.io.IOException;
-import java.util.Map;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 @ThreadSafe
 @ServiceComponent
@@ -100,18 +102,16 @@ public abstract class BaseComponentDefHTMLFormatAdapter<T extends BaseComponentD
                 attributes.put("defaultBodyClass", "");
                 attributes.put("autoInitialize", "false");
             } else {
-                ServletUtilAdapter servletUtilAdapter = Aura.getServletUtilAdapter();
-
                 if (manifestUtil.isManifestEnabled()) {
                     attributes.put("manifest", servletUtilAdapter.getManifestUrl(context, componentAttributes));
                 }
 
                 sb.setLength(0);
-                writeHtmlScripts(servletUtilAdapter.getBaseScripts(context, componentAttributes), sb);
+                writeHtmlScripts(context, servletUtilAdapter.getBaseScripts(context, componentAttributes), false, sb);
                 attributes.put("auraBaseScriptTags", sb.toString());
 
                 sb.setLength(0);
-                writeHtmlScripts(servletUtilAdapter.getFrameworkScripts(context, true, componentAttributes), true, sb);
+                writeHtmlScripts(context, servletUtilAdapter.getFrameworkScripts(context, true, componentAttributes), true, sb);
                 attributes.put("auraNamespacesScriptTags", sb.toString());
 
                 if(mode != Mode.PROD && mode != Mode.PRODDEBUG &&

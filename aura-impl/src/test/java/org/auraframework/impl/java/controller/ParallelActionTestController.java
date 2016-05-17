@@ -15,6 +15,8 @@
  */
 package org.auraframework.impl.java.controller;
 
+import java.io.IOException;
+
 import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.ds.servicecomponent.Controller;
 import org.auraframework.system.Annotations.AuraEnabled;
@@ -23,8 +25,6 @@ import org.auraframework.system.Annotations.Key;
 import org.auraframework.throwable.ClientOutOfSyncException;
 import org.auraframework.util.json.Json;
 import org.auraframework.util.json.JsonSerializable;
-
-import java.io.IOException;
 
 @ServiceComponent
 public class ParallelActionTestController implements Controller {
@@ -74,7 +74,7 @@ public class ParallelActionTestController implements Controller {
     /**
      * Object to represent return value for controller.
      */
-    class Record implements JsonSerializable {
+    static class Record implements JsonSerializable {
         Integer counterValue;
 
         Record(Integer counter) {

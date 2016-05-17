@@ -15,8 +15,12 @@
  */
 package org.auraframework.impl.adapter.format.html;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import java.io.IOException;
+import java.util.Map;
+
+import javax.annotation.concurrent.ThreadSafe;
+import javax.inject.Inject;
+
 import org.auraframework.adapter.ConfigAdapter;
 import org.auraframework.adapter.ServletUtilAdapter;
 import org.auraframework.annotations.Annotations.ServiceComponent;
@@ -37,10 +41,8 @@ import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.javascript.Literal;
 import org.auraframework.util.json.JsonEncoder;
 
-import javax.annotation.concurrent.ThreadSafe;
-import javax.inject.Inject;
-import java.io.IOException;
-import java.util.Map;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 @ThreadSafe
 @ServiceComponent
@@ -77,14 +79,13 @@ public abstract class BaseComponentHTMLFormatAdapter<T extends BaseComponent<?, 
             writeHtmlStyle(configAdapter.getResetCssURL(), sb);
             attributes.put("auraResetTags", sb.toString());
 
-            ServletUtilAdapter servletUtilAdapter = Aura.getServletUtilAdapter();
 
             sb.setLength(0);
             writeHtmlStyles(servletUtilAdapter.getStyles(context), sb);
             attributes.put("auraStyleTags", sb.toString());
 
             sb.setLength(0);
-            writeHtmlScripts(servletUtilAdapter.getScripts(context, true, componentAttributes), sb);
+            writeHtmlScripts(context, servletUtilAdapter.getScripts(context, true, componentAttributes), false, sb);
             DefDescriptor<StyleDef> styleDefDesc = templateDef.getStyleDescriptor();
             if (styleDefDesc != null) {
                 attributes.put("auraInlineStyle", styleDefDesc.getDef().getCode());

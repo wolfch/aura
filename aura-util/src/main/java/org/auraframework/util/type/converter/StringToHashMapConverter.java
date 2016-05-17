@@ -15,14 +15,14 @@
  */
 package org.auraframework.util.type.converter;
 
+import java.io.IOException;
+import java.util.HashMap;
+
 import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.util.AuraTextUtil;
 import org.auraframework.util.json.JsonStreamReader;
 import org.auraframework.util.type.Converter;
 import org.springframework.context.annotation.Lazy;
-
-import java.io.IOException;
-import java.util.HashMap;
 
 
 @Lazy

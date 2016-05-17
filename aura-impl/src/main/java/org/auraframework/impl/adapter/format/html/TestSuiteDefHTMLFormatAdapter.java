@@ -15,7 +15,12 @@
  */
 package org.auraframework.impl.adapter.format.html;
 
-import com.google.common.collect.Maps;
+import java.io.IOException;
+import java.util.Map;
+
+import javax.annotation.concurrent.ThreadSafe;
+import javax.inject.Inject;
+
 import org.auraframework.adapter.ServletUtilAdapter;
 import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.def.ComponentDef;
@@ -29,10 +34,7 @@ import org.auraframework.system.AuraContext;
 import org.auraframework.throwable.AuraError;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
-import javax.annotation.concurrent.ThreadSafe;
-import javax.inject.Inject;
-import java.io.IOException;
-import java.util.Map;
+import com.google.common.collect.Maps;
 
 @ThreadSafe
 @ServiceComponent
@@ -65,14 +67,12 @@ public class TestSuiteDefHTMLFormatAdapter extends HTMLFormatAdapter<TestSuiteDe
         attribs.put("autoInitialize", "false");
         attribs.put("bodyClass", " ");
 
-        ServletUtilAdapter servletUtilAdapter = Aura.getServletUtilAdapter();
-
         StringBuilder sb = new StringBuilder();
         writeHtmlStyles(servletUtilAdapter.getStyles(context), sb);
         attribs.put("auraStyleTags", sb.toString());
 
         sb = new StringBuilder();
-        writeHtmlScripts(servletUtilAdapter.getScripts(context, true, attributes), sb);
+        writeHtmlScripts(context, servletUtilAdapter.getScripts(context, true, attributes), false, sb);
         attribs.put("auraScriptTags", sb.toString());
 
         sb = new StringBuilder();
