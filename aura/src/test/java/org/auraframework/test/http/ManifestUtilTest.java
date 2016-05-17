@@ -137,25 +137,14 @@ public class ManifestUtilTest extends UnitTestCase {
         AuraContext context = Mockito.mock(AuraContext.class);
         Mockito.when(contextService.getCurrentContext()).thenReturn(context);
         ManifestUtil manifestUtil = new ManifestUtil(contextService, configAdapter);
-        String value;
-        long time;
+        String value = "";
+        long time = 0;
+        int i;
 
-        value = manifestUtil.updateManifestCookieValue("");
-        time = checkManifestCookieValue(value, 1, 0);
-        value = manifestUtil.updateManifestCookieValue(value);
-        time = checkManifestCookieValue(value, 2, time);
-        value = manifestUtil.updateManifestCookieValue(value);
-        time = checkManifestCookieValue(value, 3, time);
-        value = manifestUtil.updateManifestCookieValue(value);
-        time = checkManifestCookieValue(value, 4, time);
-        value = manifestUtil.updateManifestCookieValue(value);
-        time = checkManifestCookieValue(value, 5, time);
-        value = manifestUtil.updateManifestCookieValue(value);
-        time = checkManifestCookieValue(value, 6, time);
-        value = manifestUtil.updateManifestCookieValue(value);
-        time = checkManifestCookieValue(value, 7, time);
-        value = manifestUtil.updateManifestCookieValue(value);
-        time = checkManifestCookieValue(value, 8, time);
+        for (i = 1; i < 17; i++) {
+            value = manifestUtil.updateManifestCookieValue(value);
+            time = checkManifestCookieValue(value, i, time);
+        }
         value = manifestUtil.updateManifestCookieValue(value);
         assertNull("Did not expire cookie " + value, value);
     }

@@ -77,9 +77,12 @@ public abstract class BaseComponentHTMLFormatAdapter<T extends BaseComponent<?, 
             writeHtmlStyle(configAdapter.getResetCssURL(), sb);
             attributes.put("auraResetTags", sb.toString());
 
+            ServletUtilAdapter servletUtilAdapter = Aura.getServletUtilAdapter();
+
             sb.setLength(0);
             writeHtmlStyles(servletUtilAdapter.getStyles(context), sb);
             attributes.put("auraStyleTags", sb.toString());
+
             sb.setLength(0);
             writeHtmlScripts(servletUtilAdapter.getScripts(context, true, componentAttributes), sb);
             DefDescriptor<StyleDef> styleDefDesc = templateDef.getStyleDescriptor();

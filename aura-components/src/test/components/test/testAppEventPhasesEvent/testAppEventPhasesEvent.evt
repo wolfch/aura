@@ -15,10 +15,8 @@
     limitations under the License.
 
 -->
-<aura:component extensible="true" support="GA" description="Displays &#8220;Unsupported&#8221; if the short attribute is set to true.">
-    <aura:attribute name="short" type="Boolean" default="false" description="A short message that displays &#8220;Unsupported&#8221; if true, or &#8220;This field isn't currently supported.&#8221; otherwise. "/>
-        <aura:if isTrue="{!v.short}">
-            Unsupported
-            <aura:set attribute="else">This field isn't currently supported.</aura:set>
-        </aura:if>
-</aura:component>
+<aura:event type="APPLICATION">
+    <aura:attribute name="sourceId" type="String"/>
+    <aura:attribute name="actions" type="Object[]"/>
+    <aura:attribute name="skipLog" type="Boolean"/>
+</aura:event>

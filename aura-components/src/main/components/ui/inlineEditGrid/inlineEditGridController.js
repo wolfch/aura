@@ -14,30 +14,25 @@
  * limitations under the License.
  */
 ({
-	init : function(cmp) {
+	init : function(cmp, evt, helper) {
 		var columns = cmp.get("v.columns");
 		var headers = cmp.get("v.headerColumns");
+		var itemVar = cmp.get("v.itemVar");
 		
-		cmp.set("v.stale", {});
+		for (var i = 0; i < columns.length; i++) {
+			helper.initializeCellStates(columns[i], itemVar);
+		}
+		
+		cmp.set("v.editedItems", {});
 		
 		cmp.find("grid").set("v.columns", columns);
 		cmp.find("grid").set("v.headerColumns", headers);
 	},
 	
-	handleColumnsChange : function(cmp) {
-		var newColumns = cmp.get("v.columns");
-		cmp.find("grid").set("v.columns", newColumns);
-	},
-	
-	handleHeaderChange : function(cmp) {
-		var newHeaders = cmp.get("v.headerColumns");
-		cmp.find("grid").set("v.headerColumns", newHeaders);
-	},
-	
+	/* TODO: save and cancel footer is being moved out of this component */
 	save : function() {
 		// Fire save event
-		//console.log("The following objects have been modified: ");
-		//console.log(cmp.get("v.stale"));
+		// TODO: Implement
 	},
 	
 	cancel : function(cmp, evt, helper) {
@@ -83,15 +78,50 @@
 		var items = cmp.get("v.items");
 		var item = items[payload.index];
 		
+		// TODO: Move into preprocessing logic when items are initially set
+		item.status = item.status || {};
+		
 		// Save copy old item for reset
-		helper.cacheStaleItem(cmp, item, payload.index);
+		helper.cacheEditedItem(cmp, item, payload.index);
 		
 		// Update UI
 		// TODO: Better status passing from container to cell
-		item[payload.key] = payload.value;
-		item.status[payload.key] = true;
+		item.data[payload.key] = payload.value;
+		if (!item.status[payload.key]) {
+			item.status[payload.key] = {};
+		}
+		item.status[payload.key].edited = true;
+
+		// Sample status update
+		if ($A.util.isUndefinedOrNull(payload.value)) {
+			item.status[payload.key].hasErrors = true;
+		}
 		
 		cmp.set("v.items", items);
 		cmp._panelCmp.hide();
+	},
+	
+	/* Passthrough handlers & methods */
+	handleSort : function(cmp, evt, helper) {
+		helper.bubbleEvent(cmp, evt, 'onSort');
+	},
+	
+	handleColumnResize : function(cmp, evt, helper) {
+		helper.bubbleEvent(cmp, evt, 'onColumnResize');
+	},
+	
+	appendItems : function(cmp, evt) {
+		var items = evt.getParam('arguments').items;
+		cmp.find("grid").appendItems(items);
+	},
+	
+	resizeColumns : function(cmp, evt) {
+		var widths = evt.getParam('arguments').widths;
+		cmp.find("grid").resizeColumns(widths);
+	},
+	
+	sort : function(cmp, evt) {
+		var sortBy = evt.getParam('arguments').sortBy;
+		cmp.find("grid").sort(sortBy);
 	}
 })// eslint-disable-line semi

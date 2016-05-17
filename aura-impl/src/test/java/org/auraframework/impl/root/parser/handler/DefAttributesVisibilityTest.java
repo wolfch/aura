@@ -210,7 +210,7 @@ public abstract class DefAttributesVisibilityTest extends AuraImplTestCase {
         @Override
         @Before
         public void setUp() throws Exception {
-            publicAttrs = Sets.newHashSet("action", "description", "event", "name", "value");
+            publicAttrs = Sets.newHashSet("action", "description", "event", "name", "value", "phase");
             internalAttrs = Sets.newHashSet();
             super.setUp();
         }

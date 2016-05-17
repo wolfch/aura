@@ -65,6 +65,8 @@ public class TestSuiteDefHTMLFormatAdapter extends HTMLFormatAdapter<TestSuiteDe
         attribs.put("autoInitialize", "false");
         attribs.put("bodyClass", " ");
 
+        ServletUtilAdapter servletUtilAdapter = Aura.getServletUtilAdapter();
+
         StringBuilder sb = new StringBuilder();
         writeHtmlStyles(servletUtilAdapter.getStyles(context), sb);
         attribs.put("auraStyleTags", sb.toString());

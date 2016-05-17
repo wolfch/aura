@@ -14,6 +14,31 @@
  * limitations under the License.
  */
 ({
+	cellStatuses : ['edited', 'disabled', 'hasErrors'],
+	
+	initializeCellStates : function(cellComponentDef, itemVar) {
+		var values = cellComponentDef.attributes.values;
+		
+		// May need some sort of interface to make sure we have these values?
+		if (values.name) {
+			var name = values.name.value;
+			
+			for (var i = 0; i < this.cellStatuses.length; i++) {
+				var status = this.cellStatuses[i];
+				if (!values[status]) {
+					values[status] = this.generateStatusExpressionObj(itemVar, name, status);
+				}
+			}
+		}
+	},
+	
+	generateStatusExpressionObj : function(itemVar, name, status) {
+		return {
+			descriptor : status,
+			value : '{!' + itemVar + '.status.' + name + '.' + status + '}'
+		};
+	},
+	
 	createEditPanel : function(cmp, newPanelBody, referenceElement) {
 		var config = {
 	        referenceElement: referenceElement,
@@ -21,7 +46,6 @@
 	        closeOnClickOut: true,
 	        useTransition: false,
 	        showPointer: false,
-	        boundingElement: window,
 	        inside: true,
 	        pad: 0,
 	        padTop: 0,
@@ -66,31 +90,48 @@
 		//}
 	},
 	
-	cacheStaleItem : function(cmp, item, index) {
-		var stale = cmp.get("v.stale");
+	/* TODO: caching and reset functionality is being moved to data manager */
+	cacheEditedItem : function(cmp, item, index) {
+		var editedItems = cmp.get("v.editedItems");
 
-		if (!stale[index]) {
-			stale[index] = JSON.parse(JSON.stringify(item));
+		if (!editedItems[index]) {
+			editedItems[index] = JSON.parse(JSON.stringify(item));
 		}
 		
-		cmp.set("v.stale", stale);
+		cmp.set("v.editedItems", editedItems);
 	},
 	
 	reset : function(cmp) {
+		this.resetStatuses(cmp);
+		this.popAllEditedItems(cmp);
+	},
+	
+	resetStatuses : function(cmp) {
 		var items = cmp.get("v.items");
 		
 		for (var i = 0; i < items.length; i++) {
-			items[i].status = {};
+			for (var key in items[i].status) {
+				items[i].status[key].edited = false;
+				items[i].status[key].hasErrors = false;
+			}
 			items[i].errors = {};
 		}
+	},
+	
+	popAllEditedItems : function(cmp) {
+		var items = cmp.get("v.items");
+		var editedItems = cmp.get("v.editedItems");
 		
-		var stale = cmp.get("v.stale");
-		
-		for (var index in stale) {
-			items[index] = stale[index];
+		for (var index in editedItems) {
+			items[index] = editedItems[index];
 		}
 		
 		cmp.set("v.items", items);
-		cmp.set("v.stale", {});
+		cmp.set("v.editedItems", {});
+	},
+	
+	/* UTILITY FUNCTIONS */
+	bubbleEvent : function(cmp, evt, eventName) {
+		cmp.getEvent(eventName).setParams(evt.getParams()).fire();
 	}
 })// eslint-disable-line semi

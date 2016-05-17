@@ -29,10 +29,10 @@ import java.io.IOException;
 @ServiceComponent
 public class ParallelActionTestController implements Controller {
 
-    private int recordObjCounter = 0;
+    private static int recordObjCounter = 0;
 
-    @AuraEnabled
-    public void executeInForeground() {
+	@AuraEnabled
+	public static void executeInForeground() {
 
     }
 
@@ -44,16 +44,16 @@ public class ParallelActionTestController implements Controller {
         return null;
     }
 
-    @AuraEnabled
-    @BackgroundAction
-    public void executeInBackground() {
+	@AuraEnabled
+	@BackgroundAction
+	public static void executeInBackground() {
 
-    }
+	}
 
-    @AuraEnabled
-    public Record executeInForegroundWithReturn(@Key("i") int i) {
-        return new Record(i);
-    }
+	@AuraEnabled
+	public static Record executeInForegroundWithReturn(@Key("i")int i) {
+		return new Record(i);
+	}
 
     @AuraEnabled
     @BackgroundAction
@@ -62,7 +62,12 @@ public class ParallelActionTestController implements Controller {
     }
 
     @AuraEnabled
-    public void throwsClientOutOfSyncException() {
+    public static String executeInForegroundWithStringReturn(@Key("s")String s) {
+        return s;
+    }
+
+    @AuraEnabled
+    public static void throwsClientOutOfSyncException() {
         throw new ClientOutOfSyncException("Testing Exception.");
     }
 

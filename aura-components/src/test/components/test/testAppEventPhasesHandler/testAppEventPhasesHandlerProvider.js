@@ -13,5 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-.uiOutputRadio{
-}
+({
+    provide : function(component) {
+        var desc = component.get("v.provideByHandler");
+        if (desc) {
+            $A.logger.info("provide " + desc + " in " + component.get("v.logId"));
+            return desc;
+        }
+        return component;
+    }
+})

@@ -100,6 +100,8 @@ public abstract class BaseComponentDefHTMLFormatAdapter<T extends BaseComponentD
                 attributes.put("defaultBodyClass", "");
                 attributes.put("autoInitialize", "false");
             } else {
+                ServletUtilAdapter servletUtilAdapter = Aura.getServletUtilAdapter();
+
                 if (manifestUtil.isManifestEnabled()) {
                     attributes.put("manifest", servletUtilAdapter.getManifestUrl(context, componentAttributes));
                 }

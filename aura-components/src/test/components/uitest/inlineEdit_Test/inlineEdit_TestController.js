@@ -20,9 +20,11 @@
 		
 		for (var i = 0; i < 10; i++) {
 			items.push({
-				id : i,
-				name : "Name" + i,
-				grade : i,
+				data : {
+					id : i,
+					name : "Name" + i,
+					grade : i
+				},
 				status : {},
 				errors : {}
 			});
@@ -32,5 +34,20 @@
 		
 		// Generate edit layouts:
 		cmp.find("grid").set("v.editLayouts", helper.EDIT_LAYOUTS);
+	},
+	
+	appendItem : function(cmp, evt, helper) {
+		var i = Math.floor(Math.random() * 100);
+		cmp.find("grid").appendItems([
+		    {
+		    	data : {
+		    		id : i,
+		    		name : "Name" + i,
+		    		grade : i
+		    	},
+		    	status : {},
+		    	errors : {}
+		    }
+		]);
 	}
 })// eslint-disable-line semi
