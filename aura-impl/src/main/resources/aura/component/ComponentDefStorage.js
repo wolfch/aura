@@ -448,7 +448,6 @@ ComponentDefStorage.prototype.clear = function(metricsPayload) {
                     function(e) {
                         $A.warning("ComponentDefStorage.clear: failure clearing actions store", e);
                         metricsPayload["actionsError"] = true;
-                        $A.metricsService.transactionUpdate("aura", "evictedDefs", { "context": metricsPayload });
                         // do not rethrow to return to resolve state
                     }
                 );
@@ -461,7 +460,6 @@ ComponentDefStorage.prototype.clear = function(metricsPayload) {
                 function(e) {
                     $A.warning("ComponentDefStorage.clear: failure clearing cmp def store", e);
                     metricsPayload["componentDefStorageError"] = true;
-                    $A.metricsService.transactionUpdate("aura", "evictedDefs", { "context": metricsPayload });
                     // do not rethrow to return to resolve state
                 }
             );
