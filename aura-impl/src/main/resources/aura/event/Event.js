@@ -63,6 +63,7 @@ Aura.Event.Event.prototype.getDef = function(){
  * Sets wether the event can bubble or not
  * @param {Boolean} bubble The param wether this event should bubble or not
  * The default is false
+ * @platform
  * @export
  */
 Aura.Event.Event.prototype.stopPropagation = function() {
