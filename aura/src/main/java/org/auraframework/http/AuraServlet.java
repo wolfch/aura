@@ -23,8 +23,8 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -127,10 +127,15 @@ public class AuraServlet extends AuraBaseServlet {
     private ServerService serverService;
     private ManifestUtil manifestUtil;
 
-    @PostConstruct
-    public void setupManifestUtil() {
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+    	super.init(config);
         manifestUtil = new ManifestUtil(contextService, configAdapter);
     }
+    
+//    @PostConstruct
+//    public void setupManifestUtil() {
+//    }
 
     /**
      * Check for the nocache parameter and redirect as necessary.
