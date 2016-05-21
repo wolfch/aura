@@ -123,5 +123,11 @@
         test: function(cmp) {
             cmp.testSvgGetBBox();
         }
+    },
+
+    testScalarExpression: {
+        test: function(cmp) {
+            cmp.testScalarExpression();
+        }
     }
 })
