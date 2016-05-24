@@ -51,12 +51,6 @@ public abstract class AbstractPerfTestCase extends WebDriverTestCase {
 
     private String testName;
 
-//    public AbstractPerfTestCase(String name) {
-//        super();
-//        // needs to temporarily be set to something non-null as getName() should never return null
-//        testName = name;
-//    }
-
     public void setTestName(String testName) {
         this.testName = testName;
     }

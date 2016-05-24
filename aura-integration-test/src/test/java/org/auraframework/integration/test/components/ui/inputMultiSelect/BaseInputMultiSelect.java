@@ -29,8 +29,7 @@ public class BaseInputMultiSelect extends WebDriverTestCase {
     private final String optionLocatorString = "//select[1]/option[text()='%s']";
 
     public BaseInputMultiSelect(String urlPath) {
-        super();
-        setName(urlPath);
+    	this.setName(urlPath);
         this.URL = urlPath;
     }
 

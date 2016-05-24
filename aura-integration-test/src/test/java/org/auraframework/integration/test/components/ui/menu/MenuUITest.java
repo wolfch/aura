@@ -20,6 +20,7 @@ import org.auraframework.integration.test.util.WebDriverTestCase.TargetBrowsers;
 import org.auraframework.test.util.WebDriverUtil.BrowserType;
 import org.auraframework.util.test.annotation.PerfTest;
 import org.auraframework.util.test.annotation.UnAdaptableTest;
+import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Keys;
@@ -45,6 +46,7 @@ public class MenuUITest extends WebDriverTestCase {
     /**
      * Test that verify's interaction with Action Menu.
      */
+    @Test
     public void testActionMenu() throws Exception {
         testActionMenuForApp(MENUTEST_APP, "");
     }
@@ -52,20 +54,24 @@ public class MenuUITest extends WebDriverTestCase {
     /**
      * Test that verify's interaction with Action Menu with image is trigger link.
      */
+    @Test
     public void testActionMenuWithImageTrigger() throws Exception {
         testActionMenuForApp(MENUTEST_APP, "Image", false);
     }
 
+    @Test
     public void testActionMenuNestedMenuItems() throws Exception {
         testActionMenuForApp(MENUTEST_APP, "Nested");
     }
 
     // Test case for W-2181713
     @Flapper
+    @Test
     public void testActionMenuAttachToBodySet() throws Exception {
         testActionMenuForApp(MENUTEST_ATTACHTOBODY_APP, "");
     }
 
+    @Test
     public void testActionMenuGeneratedFromMetaData() throws Exception {
         testActionMenuForApp(MENUTEST_METADATA_APP, "");
     }
@@ -120,23 +126,28 @@ public class MenuUITest extends WebDriverTestCase {
         }
     }
 
+    @Test
     public void testActionMenuWithImageTriggerViaKeyboardInteraction() throws Exception {
         testActionMenuViaKeyboardInteractionForApp(MENUTEST_APP, "Image", false);
     }
 
+    @Test
     public void testActionMenuViaKeyboardInteraction() throws Exception {
         testActionMenuViaKeyboardInteractionForApp(MENUTEST_APP, "");
     }
 
     // Test case for W-2234265
+    @Test
     public void testActionMenuAttachToBodySetViaKeyboardInteraction() throws Exception {
         testActionMenuViaKeyboardInteractionForApp(MENUTEST_ATTACHTOBODY_APP, "");
     }
 
+    @Test
     public void testOpenMenuViaKeyboardDownKey() throws Exception {
     	openMenuViaKeyboardAndTestActionMenu(MENUTEST_APP, Keys.DOWN, "actionItem1", "actionItem3");
     }
     
+    @Test
     public void testOpenMenuViaKeyboardReturn() throws Exception {
     	openMenuViaKeyboardAndTestActionMenu(MENUTEST_APP, Keys.RETURN, "trigger", "actionItem2");
     }
@@ -244,12 +255,14 @@ public class MenuUITest extends WebDriverTestCase {
     @PerfTest
     // Timing issue on firefox when trying to click on non clickable element
     @ExcludeBrowsers({BrowserType.FIREFOX})
+    @Test
     public void testCheckboxMenu() throws Exception {
         testMenuCheckboxForApp(MENUTEST_APP);
     }
 
     // Timing issue on firefox when trying to click on non clickable element
     @ExcludeBrowsers({BrowserType.FIREFOX})
+    @Test
     public void testCheckboxMenuGeneratedFromMetaData() throws Exception {
         testMenuCheckboxForApp(MENUTEST_METADATA_APP);
     }
@@ -414,6 +427,7 @@ public class MenuUITest extends WebDriverTestCase {
     /**
      * Test case for W-1575100
      */
+    @Test
     public void testMenuExpandCollapse() throws Exception {
         open(MENUTEST_APP);
         WebDriver driver = this.getDriver();
@@ -440,6 +454,7 @@ public class MenuUITest extends WebDriverTestCase {
     // This fails in jenkins now and passes locally. 
     @UnAdaptableTest
     @Flapper
+    @Test
     public void testMenuPositionWhenMenuItemAttachToBody() throws Exception {
         open(MENUTEST_ATTACHTOBODY_APP);
 
@@ -518,6 +533,7 @@ public class MenuUITest extends WebDriverTestCase {
     /*
      * Test case for: W-1559070
      */
+    @Test
     public void testRemovingMenuDoesNotThrowJsError() throws Exception {
         open(MENUTEST_APP);
         WebDriver driver = this.getDriver();
@@ -537,6 +553,7 @@ public class MenuUITest extends WebDriverTestCase {
      * Test case to check double clicking on Menu Trigger link component within 350ms with disableDoubleClicks attribute
      * set disregards the 2nd click. Test case for W-1855568
      */
+    @Test
     public void testDoubleClickOnMenuTrigger() throws Exception {
         open(MENUTEST_APP);
         String label = "doubleClick";
@@ -552,6 +569,7 @@ public class MenuUITest extends WebDriverTestCase {
     /**
      * Test case for W-2315592 Components extends menuItem get's focus
      */
+    @Test
     public void testFocusForExtendedMenuItem() throws Exception {
         open("/uitest/menu_extendMenuItem.app");
         WebDriver driver = this.getDriver();
@@ -582,6 +600,7 @@ public class MenuUITest extends WebDriverTestCase {
     /**
      * Test case to allow bubbling of event with menu Bug: W-2368359
      */
+    @Test
     public void testStopClickPropagationByDefault() throws Exception {
         open(MENUTEST_EVENTBUBBLING_APP);
         WebDriver driver = this.getDriver();
@@ -599,6 +618,7 @@ public class MenuUITest extends WebDriverTestCase {
     /**
      * Test case to Stop bubbling of event when StopClickPropogoation attribute is set Bug: W-2368359
      */
+    @Test
     public void testStopClickPropagationIsSet() throws Exception {
         open(MENUTEST_EVENTBUBBLING_APP + "?stopClickPropagation=true");
         WebDriver driver = this.getDriver();

@@ -15,9 +15,10 @@
  */
 package org.auraframework.impl.css.parser.plugin;
 
-import com.salesforce.omakase.ast.declaration.UrlFunctionValue;
 import org.auraframework.impl.AuraImplTestCase;
 import org.junit.Test;
+
+import com.salesforce.omakase.ast.declaration.UrlFunctionValue;
 
 public class UrlCacheBustingPluginTest extends AuraImplTestCase {
 

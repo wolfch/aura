@@ -24,9 +24,6 @@ import org.junit.Test;
 /**
  * Automation to verify the handling of urls by AuraRewriteFilter.
  * AuraRewriteFilter forwards requests to AuraServlet.
- * 
- * 
- * @since 0.0.125
  */
 public class AuraRewriteFilterHttpTest extends AuraHttpTestCase {
     @AuraTestLabels("auraSanity")

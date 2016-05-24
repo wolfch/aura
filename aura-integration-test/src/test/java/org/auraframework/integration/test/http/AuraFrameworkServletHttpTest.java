@@ -41,8 +41,6 @@ import java.util.Date;
  * Automation to verify the implementation of AuraFrameworkServlet. AuraFrameworkServlet responds to requests of pattern
  * /auraFW/* This config is stored in aura/dist/config/web.xml for aura running on jetty. In SFDC build, the config is
  * in main-sfdc/config/aura.conf AuraFrameworkServlet sets resources to be cached for 45 days.
- *
- * @since 0.0.298
  */
 public class AuraFrameworkServletHttpTest extends AuraHttpTestCase {
     public final String sampleBinaryResourcePath = "/auraFW/resources/aura/auraIdeLogo.png";
@@ -324,7 +322,7 @@ public class AuraFrameworkServletHttpTest extends AuraHttpTestCase {
      * Verify that AuraFrameworkServlet responds successfully to valid request for a text resource.
      */
     @Test
-    public void _testRequestTextResourceWithNonce() throws Exception {
+    public void testRequestTextResourceWithNonce() throws Exception {
         HttpGet get = obtainNoncedGetMethod(sampleTextResourcePathWithNonce, false);
         HttpResponse response = perform(get);
         SimpleDateFormat df = getHttpDateFormat();
@@ -349,7 +347,7 @@ public class AuraFrameworkServletHttpTest extends AuraHttpTestCase {
      * Verify that AuraFrameworkServlet responds successfully to valid request for a text resource.
      */
     @Test
-    public void _testRequestTextResourceShortExpire() throws Exception {
+    public void testRequestTextResourceShortExpire() throws Exception {
         HttpGet get = obtainGetMethod(sampleTextResourcePath);
         HttpResponse httpResponse = perform(get);
         int statusCode = getStatusCode(httpResponse);

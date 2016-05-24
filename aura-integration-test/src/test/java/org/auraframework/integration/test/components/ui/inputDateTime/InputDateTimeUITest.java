@@ -19,6 +19,7 @@ package org.auraframework.integration.test.components.ui.inputDateTime;
 import org.auraframework.integration.test.util.WebDriverTestCase;
 import org.auraframework.integration.test.util.WebDriverTestCase.ExcludeBrowsers;
 import org.auraframework.test.util.WebDriverUtil.BrowserType;
+import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
@@ -48,6 +49,7 @@ public class InputDateTimeUITest extends WebDriverTestCase {
      * - check if focus is back to inputTimeBox after pressing ESCAPE on timePicker
      * @throws Exception
      */
+    @Test
     public void testTPFocusOnClosingWithEscapeKey() throws Exception {
         open(URL);
         checkTPFocusOnClosingWithKey(Keys.ESCAPE);
@@ -58,6 +60,7 @@ public class InputDateTimeUITest extends WebDriverTestCase {
      * - check if focus is back to inputTimeBox after pressing ENTER on timePicker
      * @throws Exception
      */
+    @Test
     public void testTPFocusOnClosingWithEnterKey() throws Exception {
         open(URL);
         checkTPFocusOnClosingWithKey(Keys.ENTER);
@@ -68,6 +71,7 @@ public class InputDateTimeUITest extends WebDriverTestCase {
      * - check if focus is back to inputTimeBox after pressing SPACE on timePicker
      * @throws Exception
      */
+    @Test
     public void testTPFocusOnClosingWithSpaceKey() throws Exception {
         open(URL);
         checkTPFocusOnClosingWithKey(Keys.ESCAPE);
@@ -80,6 +84,7 @@ public class InputDateTimeUITest extends WebDriverTestCase {
      * - Check if inputTimePicker disappears
      * @throws Exception
      */
+    @Test
     public void testTPCloseWithClick() throws Exception {
          open(URL);
 
@@ -98,6 +103,7 @@ public class InputDateTimeUITest extends WebDriverTestCase {
      * - Check if inputTimePicker turns visible
      * @throws Exception
      */
+    @Test
     public void testTPClickToOpenWithEmptyInput() throws Exception {
         open(URL);
 
@@ -113,6 +119,7 @@ public class InputDateTimeUITest extends WebDriverTestCase {
      * - check if input time box is empty
      * @throws Exception
      */
+    @Test
     public void testSelectTimeFromTP() throws Exception {
         open(URL);
 
@@ -136,6 +143,7 @@ public class InputDateTimeUITest extends WebDriverTestCase {
      * - check if input time box is empty
      * @throws Exception
      */
+    @Test
     public void testSelectDateSetDefaultTime() throws Exception {
         open(URL);
 
@@ -161,6 +169,7 @@ public class InputDateTimeUITest extends WebDriverTestCase {
      * - move to the previous time value and see it's 12:00 PM
      * @throws Exception
      */
+    @Test
     public void testTPUpArrow() throws Exception {
         open(URL);
 
@@ -173,6 +182,7 @@ public class InputDateTimeUITest extends WebDriverTestCase {
      * - move to the next time value and see it's 12:30 PM
      * @throws Exception
      */
+    @Test
     public void testTPDownArrow() throws Exception {
         open(URL);
 
@@ -185,6 +195,7 @@ public class InputDateTimeUITest extends WebDriverTestCase {
      * - move to the previous time value and see it's 12:00 PM
      * @throws Exception
      */
+    @Test
     public void testTPLeftArrow() throws Exception {
         open(URL);
 
@@ -197,6 +208,7 @@ public class InputDateTimeUITest extends WebDriverTestCase {
      * - move to the next time value and see it's 12:30 PM
      * @throws Exception
      */
+    @Test
     public void testTPRightArrow() throws Exception {
         open(URL);
 

@@ -31,7 +31,6 @@ public class DesignLayoutComponentDefHandlerTest extends AuraImplTestCase {
     private final static String VALID_COMPONENT = "ui:button";
     private final static String ANOTHER_VALID_COMPONENT = "ui:input";
 
-
     @Test
     public void testLayoutComponentWithInvalidComponent() throws Exception {
         try {

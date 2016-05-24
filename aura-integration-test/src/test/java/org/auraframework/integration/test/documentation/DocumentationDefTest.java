@@ -76,7 +76,6 @@ public class DocumentationDefTest extends AuraImplTestCase {
 
 	/** Test to track that we only validate that an example ref is valid
 	 * when following the ref to load the definition.
-	 * @throws Exception
 	 */
 	@Test
 	public void testInvalidComponentRefForExample() throws Exception{

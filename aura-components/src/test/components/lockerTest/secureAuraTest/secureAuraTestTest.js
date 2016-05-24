@@ -5,7 +5,7 @@
      */
 
     // LockerService not supported on older IE
-    browsers: ["-IE8", "-IE9", "-IE10", "-IE11"],
+    browsers: ["-IE8", "-IE9", "-IE10"],
 
     setUp: function(cmp) {
         cmp.set("v.testUtils", $A.test);
@@ -23,7 +23,7 @@
             // Few notes
             // (1) These are only @platform APIs exposed in Aura.js, not everything you can potentially get to from $A
             // (2) @platform APIs not exposed: localizationService, reportError, getToken, set, getReference, run, error (deprecated)
-            var exposedAPIs = ["util", "warning", "getCallback", "get", "getRoot", "log"];
+            var exposedAPIs = ["util", "warning", "getCallback", "get", "getRoot", "log", "localizationService"];
             cmp.testPlatformExposedAPIs(exposedAPIs);
         }
     },

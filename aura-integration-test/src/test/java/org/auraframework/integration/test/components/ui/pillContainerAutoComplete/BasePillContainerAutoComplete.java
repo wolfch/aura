@@ -15,15 +15,15 @@
  */
 package org.auraframework.integration.test.components.ui.pillContainerAutoComplete;
 
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.util.List;
+
 import org.auraframework.integration.test.util.WebDriverTestCase;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
-
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.util.List;
 
 public class BasePillContainerAutoComplete extends WebDriverTestCase {
 
@@ -32,8 +32,7 @@ public class BasePillContainerAutoComplete extends WebDriverTestCase {
     public static final String LISTCONTENT_LOCATOR = ".visible";
     
     public BasePillContainerAutoComplete(String urlPath) {
-        super();
-        setName(urlPath);
+    	this.setName(urlPath);
         this.CMP_URL = urlPath;
     }
     

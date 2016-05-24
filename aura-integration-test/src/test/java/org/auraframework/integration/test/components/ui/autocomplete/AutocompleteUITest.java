@@ -15,8 +15,8 @@
  */
 package org.auraframework.integration.test.components.ui.autocomplete;
 
-import org.auraframework.test.util.WebDriverUtil.BrowserType;
 import org.auraframework.integration.test.util.WebDriverTestCase.ExcludeBrowsers;
+import org.auraframework.test.util.WebDriverUtil.BrowserType;
 
 /**
  * UI test to test autocomplete component. Excluding IE7 and IE8 because component uses html5 specific tags

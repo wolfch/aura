@@ -26,6 +26,7 @@ import java.util.List;
  * expressiony test
  */
 public class PropertyReferenceImplTest extends UnitTestCase {
+
     @Test
     public void testExpression() throws Exception {
         Location loc = new Location("expressionism", 456);

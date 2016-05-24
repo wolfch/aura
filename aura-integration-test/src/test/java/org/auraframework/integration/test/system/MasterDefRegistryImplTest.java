@@ -109,8 +109,6 @@ public class MasterDefRegistryImplTest extends AuraImplTestCase {
     @Mock
     Cache<String, String> mockAccessCheckCache;
 
-
-
     private DefRegistry<?>[] getRegistries(Mode mode, Authentication access, Set<SourceLoader> loaders,
                                            boolean asMocks) {
         List<DefRegistry<?>> ret = Lists.newArrayList();
@@ -1042,8 +1040,8 @@ public class MasterDefRegistryImplTest extends AuraImplTestCase {
         verify(mockAccessCheckCache).getIfPresent(anyString());
     }
 
-    @Test
     @UnAdaptableTest("this pass when you run it as unit test in Eclipse. but fail in core autobuild : W-2967041")
+    @Test
     public void testAssertAccess_StoreAccessInfoInCacheIfNotPresent() throws Exception {
         DefDescriptor<ComponentDef> desc = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
                 String.format(baseComponentTag, "", ""), StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testComp",
@@ -1122,8 +1120,8 @@ public class MasterDefRegistryImplTest extends AuraImplTestCase {
         assertFalse("nsCmp is not in cache", isInExistsCache(nsCmpDef, mdri3));
     }
 
-    @Test
     @UnAdaptableTest("namespace start with 'c' means something special in core")
+    @Test
     public void testDefsCache() throws Exception {
         MasterDefRegistry mdr = getAuraMDR();
         MasterDefRegistryImpl mdri = (MasterDefRegistryImpl) mdr;
@@ -1175,8 +1173,8 @@ public class MasterDefRegistryImplTest extends AuraImplTestCase {
         assertFalse("nsCmp is not in cache", isInDefsCache(nsCmpDef, mdri2));
     }
 
-    @Test
     @UnAdaptableTest("namesapce start with c means something special in core")
+    @Test
     public void testDescriptorFilterCache() throws Exception {
         MasterDefRegistry mdr = getAuraMDR();
         MasterDefRegistryImpl mdri = (MasterDefRegistryImpl) mdr;

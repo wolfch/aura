@@ -30,7 +30,6 @@ import java.io.IOException;
  * This class provides automation for Java models.
  */
 public class JavaModelTest extends AuraImplTestCase {
-
     @Test
     public void testSerializeMetadata() throws Exception {
         JavaModelDefFactory factory = new JavaModelDefFactory();

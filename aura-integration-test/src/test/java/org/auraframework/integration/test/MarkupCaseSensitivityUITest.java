@@ -44,7 +44,7 @@ public class MarkupCaseSensitivityUITest extends AbstractErrorUITestCase {
 	private final String outputDivClass = "div_output";
 	private final String testLibButtonClass = "button_tryOutLibs";
 	
-
+    @Test
 	public void testDummy() {
 		return;
 	}

@@ -15,14 +15,6 @@
  */
 package org.auraframework.impl;
 
-import com.ibm.icu.text.NumberFormat;
-import org.auraframework.impl.service.testdata.LocalizationServiceTestData;
-import org.auraframework.service.LocalizationService;
-import org.auraframework.test.util.AuraTestCase;
-import org.auraframework.util.number.AuraNumberFormat;
-import org.auraframework.util.test.annotation.UnAdaptableTest;
-import org.junit.Test;
-
 import javax.inject.Inject;
 import java.math.BigDecimal;
 import java.text.DateFormat;
@@ -33,6 +25,15 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
+
+import org.auraframework.impl.service.testdata.LocalizationServiceTestData;
+import org.auraframework.service.LocalizationService;
+import org.auraframework.test.util.AuraTestCase;
+import org.auraframework.util.number.AuraNumberFormat;
+import org.auraframework.util.test.annotation.UnAdaptableTest;
+import org.junit.Test;
+
+import com.ibm.icu.text.NumberFormat;
 
 /**
  * Tests for LocalizationServiceImpl.

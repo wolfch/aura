@@ -22,10 +22,6 @@ import org.junit.Test;
 /**
  * Unit test to verify the functioning of HtmlTag class. HtmlTag is an Enum of
  * all allowed HTML tags in aura component markup.
- * 
- * 
- * 
- * @since 0.0.156
  */
 public class HtmlTagTest extends AuraImplTestCase {
     /**

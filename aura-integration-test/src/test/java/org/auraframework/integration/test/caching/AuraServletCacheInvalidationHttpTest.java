@@ -15,6 +15,9 @@
  */
 package org.auraframework.integration.test.caching;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpPost;
@@ -36,15 +39,8 @@ import org.junit.Test;
 
 import javax.inject.Inject;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Test class to verify that clientside cache is invalidated by Aura Servlet.
- * 
- * @hierarchy Aura.Caching
- * @priority high
- * @userStorySyncIdOrName a07B0000000Dj10
  */
 @ThreadHostileTest("relies on getLastMod")
 public class AuraServletCacheInvalidationHttpTest extends AuraHttpTestCase {

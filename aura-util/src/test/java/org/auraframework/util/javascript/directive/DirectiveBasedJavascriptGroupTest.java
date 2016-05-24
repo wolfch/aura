@@ -151,8 +151,8 @@ public class DirectiveBasedJavascriptGroupTest extends UnitTestCase {
     /**
      * Make sure the processor regeneration stops when there are errors in the source file
      */
-    @Test
     @Ignore
+    @Test
     public void testJavascriptReGenerationFails() throws Exception {
         File file = getResourceFile("/testdata/javascript/testJavascriptReGenerationFails.js");
         DirectiveBasedJavascriptGroup jg = new DirectiveBasedJavascriptGroup("regenerationFail", file.getParentFile(),

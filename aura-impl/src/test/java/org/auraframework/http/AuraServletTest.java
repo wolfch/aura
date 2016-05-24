@@ -335,6 +335,7 @@ public class AuraServletTest extends UnitTestCase {
         Mockito.verify(servletUtilAdapter).send404(Mockito.any(), Mockito.eq(request), Mockito.eq(response));
     }
 
+    @Test
     public void testDoGet_NoCacheNoPath() throws Exception {
         contextService.startContext(Mode.PROD, Format.HTML, Authentication.AUTHENTICATED);
         Mockito.when(servletUtilAdapter.actionServletGetPre(Mockito.any(), Mockito.any())).thenReturn(false);

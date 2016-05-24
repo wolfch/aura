@@ -15,6 +15,10 @@
  */
 package org.auraframework.integration.test.java.controller;
 
+import java.io.File;
+import java.io.FileReader;
+import java.util.logging.Logger;
+
 import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.ds.servicecomponent.Controller;
 import org.auraframework.system.Annotations.AuraEnabled;
@@ -24,10 +28,6 @@ import org.auraframework.test.testsetrunner.TestSetRunnerState;
 import org.auraframework.throwable.AuraHandledException;
 import org.auraframework.util.json.JsonReader;
 import org.auraframework.util.test.util.UnitTestCase;
-
-import java.io.File;
-import java.io.FileReader;
-import java.util.logging.Logger;
 
 @ServiceComponent
 public class PerfController implements Controller {

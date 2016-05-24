@@ -32,9 +32,6 @@ import java.util.Map;
 /**
  * Tests to verify AttributeSetImpl class. Component/Application instances are assigned an AttributeSet. A
  * component/application instances relies on its AttributeSet to decide the value of its attributes.
- * 
- * 
- * @since 138
  */
 public class AttributeSetImplTest extends AuraImplTestCase {
     /**

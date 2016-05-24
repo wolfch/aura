@@ -48,6 +48,8 @@ import org.auraframework.adapter.LocalizationAdapter;
 import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.def.BaseComponentDef;
 import org.auraframework.def.DefDescriptor;
+import org.auraframework.def.InterfaceDef;
+import org.auraframework.def.RootDefinition;
 import org.auraframework.expression.PropertyReference;
 import org.auraframework.impl.javascript.AuraJavascriptGroup;
 import org.auraframework.impl.source.AuraResourcesHashingGroup;
@@ -55,6 +57,7 @@ import org.auraframework.impl.util.AuraImplFiles;
 import org.auraframework.impl.util.BrowserInfo;
 import org.auraframework.instance.BaseComponent;
 import org.auraframework.service.ContextService;
+import org.auraframework.service.DefinitionService;
 import org.auraframework.service.InstanceService;
 import org.auraframework.system.AuraContext;
 import org.auraframework.system.AuraContext.Mode;
@@ -115,6 +118,9 @@ public class ConfigAdapterImpl implements ConfigAdapter {
     @Inject
     private LocalizationAdapter localizationAdapter;
 
+    @Inject
+    private DefinitionService definitionService;
+    
     @Inject
     private InstanceService instanceService;
 
@@ -745,6 +751,21 @@ public class ConfigAdapterImpl implements ConfigAdapter {
 		return true;
 	}
 
+	@Override
+	public boolean requireLocker(RootDefinition def) {
+        boolean requireLocker = !isInternalNamespace(def.getDescriptor().getNamespace());
+		if (!requireLocker) {
+            DefDescriptor<InterfaceDef> requireLockerDescr = definitionService.getDefDescriptor("aura:requireLocker", InterfaceDef.class);
+        	try {
+				requireLocker = def.isInstanceOf(requireLockerDescr);
+			} catch (QuickFixException e) {
+				throw new AuraRuntimeException(e);
+			}
+    	} 
+        
+		return requireLocker;
+	}
+	
 	protected boolean isSafeEvalWorkerURI(String uri) {
         return uri.endsWith("/lockerservice/safeEval.html");
 	}

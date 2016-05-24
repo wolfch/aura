@@ -46,10 +46,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-
-import com.google.common.collect.Sets;
-
-import junit.framework.TestCase;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -57,7 +53,11 @@ import org.springframework.test.context.TestContextManager;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
+import com.google.common.collect.Sets;
+
 import javax.inject.Inject;
+
+import junit.framework.TestCase;
 
 /**
  * Base class for all aura tests.
@@ -138,6 +138,11 @@ public abstract class UnitTestCase extends TestCase {
 
     @Override
     public void runBare() throws Throwable {
+        // Support Spring injection in legacy runners
+        if (applicationContext == null) {
+            TestContextManager testContextManager = new TestContextManager(getClass());
+            testContextManager.prepareTestInstance(this);
+        }
         logger.info(String.format("Running: %s.%s", getClass().getName(), getName()));
         super.runBare();
     }

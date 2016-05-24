@@ -22,7 +22,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
 public class AuraClientServiceUITest extends WebDriverTestCase {
-
     @ThreadHostileTest("ConfigAdapter modified, can't tolerate other tests.")
     @Test
     public void testCsrfTokenSavedOnBootstrap() throws Exception {

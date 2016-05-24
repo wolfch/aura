@@ -15,16 +15,16 @@
  */
 package org.auraframework.util.javascript;
 
-import org.auraframework.util.IOUtil;
-import org.auraframework.util.test.util.UnitTestCase;
-import org.auraframework.util.text.Hash;
-import org.junit.Test;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+
+import org.auraframework.util.IOUtil;
+import org.auraframework.util.test.util.UnitTestCase;
+import org.auraframework.util.text.Hash;
+import org.junit.Test;
 
 /**
  * Tests for CommonJavascriptGroupImpl class {@link CommonJavascriptGroupImpl}. This class has implementation of some

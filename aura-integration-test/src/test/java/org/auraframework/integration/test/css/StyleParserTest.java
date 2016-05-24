@@ -340,8 +340,7 @@ public class StyleParserTest extends AuraImplTestCase {
     /**
      * Context path should be prepended to any /auraFW url in css url function
      */
-    // TODO: Flapping Test.
-    @Ignore
+    @Ignore("flapper")
     @Test
     public void testUrlFunctionContextPath() throws Exception {
         if (contextService.isEstablished()) {

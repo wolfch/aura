@@ -37,8 +37,6 @@ import java.util.Map;
  * Test class to perform sanity tests on AuraServlet with all possible modes.
  *
  * This should be killed.
- *
- * @hierarchy Aura.Configuration
  */
 public class AuraFormatsHttpTest extends AuraHttpTestCase {
     @Inject

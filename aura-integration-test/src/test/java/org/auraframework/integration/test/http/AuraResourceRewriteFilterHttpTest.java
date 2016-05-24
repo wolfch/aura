@@ -24,9 +24,6 @@ import org.junit.Test;
  * Tests for ResourceRewriteFilter handling. The tests don't validate the
  * response content, but just whether the request is forwarded to the
  * AuraResourceServlet.
- * 
- * 
- * @since 0.0.92
  */
 public class AuraResourceRewriteFilterHttpTest extends AuraHttpTestCase {
     /**

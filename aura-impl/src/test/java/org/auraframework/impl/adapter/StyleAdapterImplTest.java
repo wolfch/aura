@@ -19,6 +19,7 @@ import com.google.common.collect.Lists;
 import com.salesforce.omakase.ast.declaration.Declaration;
 import com.salesforce.omakase.broadcast.annotation.Observe;
 import com.salesforce.omakase.plugin.Plugin;
+
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.StyleDef;
 import org.auraframework.impl.adapter.format.css.StyleDefCSSFormatAdapter;
@@ -26,9 +27,10 @@ import org.auraframework.impl.css.StyleTestCase;
 import org.auraframework.impl.util.AuraUtil;
 import org.junit.Test;
 
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 /**
  * Functional tests for {@link StyleAdapterImpl}.

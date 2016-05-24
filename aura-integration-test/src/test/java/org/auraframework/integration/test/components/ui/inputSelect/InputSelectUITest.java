@@ -15,14 +15,15 @@
  */
 package org.auraframework.integration.test.components.ui.inputSelect;
 
+import java.util.List;
+
 import org.auraframework.integration.test.util.WebDriverTestCase;
 import org.auraframework.test.util.WebDriverUtil.BrowserType;
 import org.auraframework.util.test.annotation.PerfTest;
+import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
-
-import java.util.List;
 
 public class InputSelectUITest extends WebDriverTestCase {
 
@@ -40,6 +41,7 @@ public class InputSelectUITest extends WebDriverTestCase {
      * @throws Exception
      */
     @PerfTest
+    @Test
     public void testSelectingOption() throws Exception {
         selectId = "dynamicSelect";
         open(DYNAMIC_SELECT_URL);
@@ -63,6 +65,7 @@ public class InputSelectUITest extends WebDriverTestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testSelectingFirstOption() throws Exception {
         selectId = "dynamicSelect";
         open(DYNAMIC_SELECT_URL);
@@ -86,6 +89,7 @@ public class InputSelectUITest extends WebDriverTestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testSelectingLastOption() throws Exception {
         selectId = "dynamicSelect";
         open(DYNAMIC_SELECT_URL);
@@ -104,6 +108,7 @@ public class InputSelectUITest extends WebDriverTestCase {
         verifyOptionDeselected("Option2");
     }
 
+    @Test
     public void testSelectOptionInIteration() throws Exception {
         selectId = "InputSelectIteration";
         open(NESTED_SELECT_URL);
@@ -122,6 +127,7 @@ public class InputSelectUITest extends WebDriverTestCase {
         verifyOptionDeselected("Toronto");
     }
 
+    @Test
     public void testSelectOptionInCondition() throws Exception {
         selectId = "InputSelectRenderIf";
         open(NESTED_SELECT_URL + "?condition=true");
@@ -144,6 +150,7 @@ public class InputSelectUITest extends WebDriverTestCase {
         verifyOptionDeselected("Toronto");
     }
 
+    @Test
     public void testSelectOptionInGroup() throws Exception {
         selectId = "InputSelectOptionGroup";
         open(NESTED_SELECT_URL);

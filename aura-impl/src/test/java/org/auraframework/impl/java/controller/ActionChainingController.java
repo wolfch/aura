@@ -17,11 +17,9 @@ package org.auraframework.impl.java.controller;
 
 import com.google.common.collect.Lists;
 import org.auraframework.annotations.Annotations.ServiceComponent;
-import org.auraframework.def.ActionDef;
 import org.auraframework.ds.servicecomponent.Controller;
 import org.auraframework.instance.Action;
 import org.auraframework.service.ContextService;
-import org.auraframework.service.InstanceService;
 import org.auraframework.service.SerializationService;
 import org.auraframework.system.Annotations.AuraEnabled;
 import org.auraframework.system.Annotations.Key;
@@ -38,9 +36,6 @@ public class ActionChainingController implements Controller {
 
     @Inject
     private SerializationService serializationService;
-
-    @Inject
-    private InstanceService instanceService;
 
     private int i = 0;
 
@@ -80,15 +75,6 @@ public class ActionChainingController implements Controller {
         Action currentAction = contextService.getCurrentContext().getCurrentAction();
         Collection<Action> actions = serializationService.readCollection(new StringReader(chainedActions),
                 Action.class);
-        currentAction.add(Lists.newArrayList(actions));
-    }
-
-    @AuraEnabled
-    public void infiniteChain() throws Exception {
-        Action currentAction = contextService.getCurrentContext().getCurrentAction();
-        Action actions = instanceService.getInstance(
-                "java://org.auraframework.java.controller.ActionChainingController/ACTION$infiniteChain",
-                ActionDef.class, null);
         currentAction.add(Lists.newArrayList(actions));
     }
 }

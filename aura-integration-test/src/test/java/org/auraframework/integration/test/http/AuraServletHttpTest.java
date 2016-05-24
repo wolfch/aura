@@ -55,9 +55,6 @@ import org.junit.Test;
 
 /**
  * Automation to verify the handling of AuraServlet requests.
- *
- *
- * @since 0.0.139
  */
 public class AuraServletHttpTest extends AuraHttpTestCase {
 
@@ -622,9 +619,10 @@ public class AuraServletHttpTest extends AuraHttpTestCase {
      * Verify providing invalid DefDescriptor format to the aura.tag param results in the proper handled Exception and
      * not an AuraUnhandledException.
      */
+	@UnAdaptableTest("PROD mode will likely be handled differently by the ExceptionAdapter")
     @Test
-    @UnAdaptableTest("UI will be different")
-    public void testInvalidDefDescriptorFormatExploit() throws Exception {
+    public void testInvalidDefDescriptorFormatExploitInProdMode()
+			throws Exception {
         String url = "/aura?aura.tag=any:thing%3Csvg%3E%3Cscript%3E0%3C1%3Ealert(document.domain)%3C%2Fscript%3E.app";
         HttpGet get = obtainGetMethod(url + "&aura.mode=PROD");
         HttpResponse httpResponse = perform(get);

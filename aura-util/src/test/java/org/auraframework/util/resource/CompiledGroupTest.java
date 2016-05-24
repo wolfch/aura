@@ -18,8 +18,8 @@
  */
 package org.auraframework.util.resource;
 
-import org.auraframework.util.test.util.UnitTestCase;
 import org.junit.Test;
+import org.auraframework.util.test.util.UnitTestCase;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

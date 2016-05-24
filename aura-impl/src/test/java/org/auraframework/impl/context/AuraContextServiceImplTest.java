@@ -33,8 +33,7 @@ public class AuraContextServiceImplTest extends AuraImplTestCase {
     private ContextAdapter contextAdapter;
 
     public AuraContextServiceImplTest() {
-        super();
-        setShouldSetupContext(false);
+    	this.setShouldSetupContext(false);
     }
 
     @Test

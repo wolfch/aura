@@ -15,8 +15,8 @@
  */
 package org.auraframework.integration.test.root.component;
 
-import org.auraframework.def.AttributeDefRef;
 import org.auraframework.impl.AuraImplTestCase;
+import org.auraframework.def.AttributeDefRef;
 import org.auraframework.impl.expression.PropertyReferenceImpl;
 import org.auraframework.instance.AttributeSet;
 import org.auraframework.instance.Component;

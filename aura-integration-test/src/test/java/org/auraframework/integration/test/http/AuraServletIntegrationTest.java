@@ -40,6 +40,7 @@ public class AuraServletIntegrationTest extends IntegrationTestCase {
 
     @Inject
     private ServletUtilAdapter servletUtilAdapter;
+
     /**
      * check manifest URL when context has no preloads.
      */

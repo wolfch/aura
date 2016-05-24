@@ -165,7 +165,6 @@ public class ComponentJSTestSuite extends TestSuite {
 
     public static class ComponentTestCase extends WebDriverTestCase {
         private ComponentTestCase(ComponentTestSuite suite, TestCaseDef caseDef) {
-            super();
             this.setName(String.format("%s$%s", suite.getName(), caseDef.getName()));
             this.suite = suite;
             this.caseDef = caseDef;

@@ -36,7 +36,7 @@ public abstract class AbstractLoggingUITest extends WebDriverTestCase {
     protected LoggingTestAppender appender;
 
     public AbstractLoggingUITest(String name) {
-        setName(name);
+    	this.setName(name);
         logger = Logger.getRootLogger();
     }
 

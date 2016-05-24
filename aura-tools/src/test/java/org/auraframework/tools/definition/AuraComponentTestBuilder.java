@@ -15,6 +15,12 @@
  */
 package org.auraframework.tools.definition;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+
 import org.auraframework.Aura;
 import org.auraframework.adapter.ComponentLocationAdapter;
 import org.auraframework.def.DefDescriptor;
@@ -23,15 +29,6 @@ import org.auraframework.def.Definition;
 import org.auraframework.impl.source.DescriptorFileMapper;
 import org.auraframework.system.SourceListener;
 import org.auraframework.util.IOUtil;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
 
 /**
  * A class to build a temporary components folder to allow for read/write tests.

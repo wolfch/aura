@@ -37,6 +37,7 @@ public class BaseInputSmartNumber extends WebDriverTestCase {
     protected final String EVENTLIST_SEL = ".eventList li";
 
     public BaseInputSmartNumber(String urlPath) {
+        this.setName(urlPath);
         this.URL = urlPath;
     }
 

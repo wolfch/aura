@@ -23,7 +23,6 @@ import org.auraframework.def.IncludeDefRef;
 import org.auraframework.def.LibraryDef;
 import org.auraframework.impl.def.DefinitionTest;
 import org.auraframework.impl.root.library.IncludeDefRefImpl;
-import org.auraframework.impl.root.library.IncludeDefRefImpl.Builder;
 import org.junit.Test;
 import org.mockito.Answers;
 import org.mockito.Mock;

@@ -15,15 +15,16 @@
  */
 package org.auraframework.impl.util;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-import org.auraframework.impl.AuraImplTestCase;
-import org.junit.Test;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import org.auraframework.impl.AuraImplTestCase;
+import org.junit.Test;
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 
 public class AuraUtilTest extends AuraImplTestCase {
     @Test

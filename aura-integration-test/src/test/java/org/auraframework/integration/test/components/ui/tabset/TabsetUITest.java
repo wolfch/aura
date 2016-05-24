@@ -15,8 +15,11 @@
  */
 package org.auraframework.integration.test.components.ui.tabset;
 
+import java.util.List;
+
 import org.auraframework.integration.test.util.WebDriverTestCase;
 import org.auraframework.test.util.WebDriverUtil.BrowserType;
+import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
@@ -24,8 +27,6 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
-
-import java.util.List;
 
 public class TabsetUITest extends WebDriverTestCase {
     private final String URL = "/uitest/tabset_Test.cmp";
@@ -279,6 +280,7 @@ public class TabsetUITest extends WebDriverTestCase {
      */
     @ExcludeBrowsers({ BrowserType.ANDROID_PHONE, BrowserType.ANDROID_TABLET, BrowserType.IPHONE, BrowserType.IPAD,
             BrowserType.IE8, BrowserType.IE7 })
+    @Test
     public void testLeftRightUpDownArrows() throws Exception {
         open(createURL("basic", "false"));
 
@@ -290,6 +292,7 @@ public class TabsetUITest extends WebDriverTestCase {
     /**
      * Test that will verify that when a tab closes, the active element is moved to either the correct element.
      */
+    @Test
     public void testFocusOnClose_MovesToAnotherElement() throws Exception {
         open(createURL("basic", "true"));
         NUMBER_OF_TABS = 7;
@@ -306,6 +309,7 @@ public class TabsetUITest extends WebDriverTestCase {
     /**
      * Test verifying that if an element that is not active is closed, then focus is not lost
      */
+    @Test
     public void testFocusOnClose_NonCurrentElementDoesntLoseFocus() throws Exception {
         open(createURL("basic", "true"));
         NUMBER_OF_TABS = 7;
@@ -318,6 +322,7 @@ public class TabsetUITest extends WebDriverTestCase {
     /**
      * Dynamically create a component, verify it and make sure that it still acts as a normal component
      */
+    @Test
     public void testFocusOnClose_DynamicTabGeneration() throws Exception {
         String tabName = "Dynamic";
         String tabBody = "Dynamically generated";
@@ -332,6 +337,7 @@ public class TabsetUITest extends WebDriverTestCase {
     /**
      * Verifying that nestedTabs work the same as normal tabs
      */
+    @Test
     public void testNestedTabsDelete() throws Exception {
         open(createURL("nestedTabs", "false"));
         WebElement el = findDomElement(By.partialLinkText("inner tab 1"));
@@ -360,6 +366,7 @@ public class TabsetUITest extends WebDriverTestCase {
      */
     @ExcludeBrowsers({ BrowserType.SAFARI, BrowserType.ANDROID_PHONE, BrowserType.ANDROID_TABLET, BrowserType.IPHONE,
             BrowserType.IPAD })
+    @Test
     public void testTabbingInTabSet() throws Exception {
         open(createURL("tab", "true"));
 
@@ -396,6 +403,7 @@ public class TabsetUITest extends WebDriverTestCase {
      */
     @ExcludeBrowsers({ BrowserType.SAFARI, BrowserType.ANDROID_PHONE, BrowserType.ANDROID_TABLET, BrowserType.IPHONE,
             BrowserType.IPAD })
+    @Test
     public void testOverflowKeyboardInteraction() throws Exception { 	
     	open("/uitest/tabset_Test.cmp?renderItem=overflow");
     	overflowKeyboardNav(5, false, Keys.ARROW_LEFT);
@@ -410,6 +418,7 @@ public class TabsetUITest extends WebDriverTestCase {
      */
     @ExcludeBrowsers({ BrowserType.SAFARI, BrowserType.ANDROID_PHONE, BrowserType.ANDROID_TABLET, BrowserType.IPHONE,
         BrowserType.IPAD })
+    @Test
     public void testOverflowKeyboardInteractionWithTab() throws Exception { 	
     	open("/uitest/tabset_Test.cmp?renderItem=overflow");
     	overflowKeyboardNav(6, true, Keys.ENTER);

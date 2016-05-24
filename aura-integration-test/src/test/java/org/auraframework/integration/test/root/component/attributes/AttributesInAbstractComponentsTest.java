@@ -25,8 +25,6 @@ import java.util.ArrayList;
 
 /**
  * Automation to verify how attributes behave in abstract components.
- * 
- * @since 0.0.139
  */
 public class AttributesInAbstractComponentsTest extends AuraImplTestCase {
     private final String abstractCmpMarkup = "<aura:component abstract='true'>%s</aura:component>";
@@ -34,8 +32,6 @@ public class AttributesInAbstractComponentsTest extends AuraImplTestCase {
 
     /**
      * Setting inherited attribute's value using value assignment in <aura:set>
-     * 
-     * @throws Exception
      */
     @Test
     public void testSettingAttributeValuesInChildComponent() throws Exception {
@@ -56,8 +52,6 @@ public class AttributesInAbstractComponentsTest extends AuraImplTestCase {
 
     /**
      * Setting inherited attribute's value in body of <aura:set></aura:set>
-     * 
-     * @throws Exception
      */
     @Test
     public void testSettingAttributeUsingSetBodyInChildComponent() throws Exception {

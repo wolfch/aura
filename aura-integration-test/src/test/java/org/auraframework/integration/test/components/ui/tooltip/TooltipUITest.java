@@ -24,7 +24,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
 @ExcludeBrowsers({ BrowserType.ANDROID_PHONE, BrowserType.ANDROID_TABLET, BrowserType.IPHONE, BrowserType.IPAD, BrowserType.IE7, BrowserType.IE8})
-public class TooltipUiTest extends WebDriverTestCase {
+public class TooltipUITest extends WebDriverTestCase {
 	private final String URL_FULL_CMP = "/uitest/tooltip_FullTest.cmp";
 
 	/**

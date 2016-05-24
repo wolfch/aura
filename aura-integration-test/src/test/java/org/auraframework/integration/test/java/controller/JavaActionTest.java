@@ -35,6 +35,7 @@ import org.auraframework.impl.java.model.JavaValueDef;
 import org.auraframework.instance.Action;
 import org.auraframework.instance.Action.State;
 import org.auraframework.service.CachingService;
+import org.auraframework.service.InstanceService;
 import org.auraframework.system.LoggingContext.KeyValueLogger;
 import org.auraframework.throwable.AuraUnhandledException;
 import org.auraframework.throwable.quickfix.QuickFixException;
@@ -48,6 +49,9 @@ public class JavaActionTest extends AuraImplTestCase {
 
     @Inject
     private CachingService cachingService;
+
+    @Inject
+    private InstanceService instanceService;
 
     /**
      * Tests to verify the APIs on Action to mark actions as storable.

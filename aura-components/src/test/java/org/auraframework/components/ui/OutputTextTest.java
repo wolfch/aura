@@ -23,10 +23,6 @@ import org.junit.Test;
 
 /**
  * This test has automation to verify implementation of ui:ouputText component.
- * 
- * @userStory a07T0000001isvq
- * @hierarchy Aura.Components.UI.OutputText
- * @priority medium
  */
 public class OutputTextTest extends AuraImplTestCase {
     /**
@@ -45,6 +41,5 @@ public class OutputTextTest extends AuraImplTestCase {
         } catch (InvalidDefinitionException e) {
             assertNotNull(e);
         }
-
     }
 }

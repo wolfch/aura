@@ -15,8 +15,8 @@
  */
 package org.auraframework.integration.test.json;
 
-import org.auraframework.system.AuraContext.Mode;
 import org.auraframework.integration.test.util.WebDriverTestCase;
+import org.auraframework.system.AuraContext.Mode;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -27,10 +27,6 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 /**
  * Sanity check to verify the behavior of native Json function Json.parse().
  * Aura JS library uses native JSON object in PROD mode.
- *
- * @userStory a07B0000000Kx2A
- *
- * @since 0.0.160
  */
 public class NativeJsonSanityCheckUITest extends WebDriverTestCase {
     /**

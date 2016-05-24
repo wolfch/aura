@@ -15,6 +15,9 @@
  */
 package org.auraframework.integration.test.root.event.locationchange;
 
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+
 import org.auraframework.integration.test.util.WebDriverTestCase;
 import org.auraframework.integration.test.util.WebDriverTestCase.ExcludeBrowsers;
 import org.auraframework.test.util.WebDriverUtil.BrowserType;
@@ -22,9 +25,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 
 /**
  * Tests that Verify the mechanics of Browser History Management. Location Change event is an APPLICATION event.

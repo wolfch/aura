@@ -28,6 +28,7 @@ import org.auraframework.throwable.quickfix.InvalidExpressionException;
 import org.junit.Test;
 
 public class BrowserValueProviderTest extends AuraImplTestCase {
+
     private interface BrowserProperty {
         final PropertyReference isTablet = new PropertyReferenceImpl(
                 BrowserValueProvider.IS_TABLET, null);

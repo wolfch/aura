@@ -36,7 +36,6 @@ import java.util.Set;
  * Abstract component validation
  */
 public class AbstractComponentDefTest extends AuraImplTestCase {
-
     /**
      * Abstract component extends regular component.
      * 

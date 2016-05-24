@@ -20,10 +20,10 @@ import com.google.common.collect.Lists;
 import junit.framework.TestSuite;
 
 import org.auraframework.integration.test.ComponentJSTestSuite;
+import org.auraframework.integration.test.util.WebDriverTestCase;
 import org.auraframework.system.Annotations.AuraEnabled;
 import org.auraframework.system.Annotations.Model;
 import org.auraframework.test.util.WebDriverProvider;
-import org.auraframework.integration.test.util.WebDriverTestCase;
 import org.auraframework.test.util.WebDriverUtil;
 import org.auraframework.test.util.WebDriverUtil.BrowserType;
 import org.auraframework.util.ServiceLocator;

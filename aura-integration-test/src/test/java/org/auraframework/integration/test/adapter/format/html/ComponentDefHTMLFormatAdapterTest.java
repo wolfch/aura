@@ -23,8 +23,6 @@ import org.junit.Test;
 
 /**
  * Tests for BaseComponentDefHTMLFormatAdapter, as it relates to ComponentDef
- * 
- * @since 0.0.224
  */
 public class ComponentDefHTMLFormatAdapterTest extends BaseComponentDefHTMLFormatAdapterTest<ComponentDef> {
     @Override

@@ -15,14 +15,14 @@
  */
 package org.auraframework.integration.test.error;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.assertThat;
+
 import org.auraframework.integration.test.util.WebDriverTestCase.TargetBrowsers;
 import org.auraframework.system.AuraContext.Mode;
 import org.auraframework.test.util.WebDriverUtil.BrowserType;
 import org.junit.Test;
 import org.openqa.selenium.By;
-
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.assertThat;
 
 /**
  * ComponentClassErrorTest is mainly for verifying error message when we error out from component's helper/renderer
@@ -31,7 +31,6 @@ import static org.junit.Assert.assertThat;
  */
 @TargetBrowsers({ BrowserType.GOOGLECHROME })
 public class ComponentClassErrorUITest extends AbstractErrorUITestCase {
-
     /* Test with dynamic created component */
     // create componentClassParent.cmp in controller dynamically, expect it to error out from render
     @Test

@@ -28,6 +28,9 @@ import org.auraframework.def.ControllerDef;
 import org.auraframework.def.JavaControllerDef;
 import org.auraframework.instance.Action;
 import org.auraframework.integration.test.logging.AbstractLoggingTest;
+import org.auraframework.service.ContextService;
+import org.auraframework.service.InstanceService;
+import org.auraframework.service.LoggingService;
 import org.auraframework.service.ServerService;
 import org.auraframework.system.Message;
 import org.auraframework.util.test.annotation.UnAdaptableTest;
@@ -46,6 +49,15 @@ public class JavaControllerLoggingTest extends AbstractLoggingTest {
 
     @Inject
     private ServerService serverService;
+    
+    @Inject
+    private InstanceService instanceService;
+
+    @Inject
+    private ContextService contextService;
+
+    @Inject
+    private LoggingService loggingService;
 
     @Test
     public void testParamLogging_NoParams() throws Exception {

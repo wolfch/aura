@@ -25,6 +25,7 @@ import org.auraframework.impl.AuraImplTestCase;
 import org.auraframework.instance.Component;
 import org.auraframework.throwable.AuraRuntimeException;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
+import org.junit.Test;
 
 import com.google.common.collect.Maps;
 
@@ -32,7 +33,7 @@ import com.google.common.collect.Maps;
  * Integration tests for Java provider
  */
 public class JavaProviderIntegrationTest extends AuraImplTestCase {
-
+    @Test
     public void testConcreteProviderInjection() throws Exception {
         Map<String, Object> attributes = Maps.newHashMap();
 
@@ -43,6 +44,7 @@ public class JavaProviderIntegrationTest extends AuraImplTestCase {
                 component.getDescriptor().getQualifiedName(), "markup://test:test_Provider_Concrete_Sub");
     }
 
+    @Test
     public void testConcreteProviderNull() throws Exception {
         Map<String, Object> attributes = Maps.newHashMap();
 
@@ -53,6 +55,7 @@ public class JavaProviderIntegrationTest extends AuraImplTestCase {
                 component.getDescriptor().getQualifiedName(), "markup://test:test_Provider_Concrete");
     }
 
+    @Test
     public void testConcreteProviderNotComponent() throws Exception {
         Map<String, Object> attributes = Maps.newHashMap();
 
@@ -65,6 +68,7 @@ public class JavaProviderIntegrationTest extends AuraImplTestCase {
         }
     }
 
+    @Test
     public void testConcreteProviderComponentNotFound() throws Exception {
         Map<String, Object> attributes = Maps.newHashMap();
 
@@ -81,6 +85,7 @@ public class JavaProviderIntegrationTest extends AuraImplTestCase {
     /**
      * Verify that abstract component's provider returns a component which extends the abstract class
      */
+    @Test
     public void testJavaProviderProvidesExtentingCmpWhenAbstractCmpGetsInstantiated() throws Exception {
         Component component = Aura.getInstanceService().getInstance("test:test_Provider_AbstractBasic",
                 ComponentDef.class);
@@ -89,6 +94,7 @@ public class JavaProviderIntegrationTest extends AuraImplTestCase {
                 "markup://test:test_Provider_AbstractBasicExtends", actual);
     }
 
+    @Test
     public void testComponentConfigProvider() throws Exception{
         String targetProvider = "java://org.auraframework.impl.java.provider.TestComponentConfigProvider";
         DefDescriptor<ProviderDef> javaProviderDefDesc = definitionService.getDefDescriptor(targetProvider, ProviderDef.class);
@@ -97,6 +103,7 @@ public class JavaProviderIntegrationTest extends AuraImplTestCase {
         assertEquals(targetProvider, actual.getDescriptor().getQualifiedName());
     }
 
+    @Test
     public void testComponentDescriptorProvider() throws Exception{
         String targetProvider = "java://org.auraframework.impl.java.provider.TestComponentDescriptorProvider";
         DefDescriptor<ProviderDef> javaProviderDefDesc = definitionService.getDefDescriptor(targetProvider, ProviderDef.class);
@@ -108,6 +115,7 @@ public class JavaProviderIntegrationTest extends AuraImplTestCase {
     /**
      * Verify InvalidDefinitionException is thrown when Java provider doesn't use Provider annotation.
      */
+    @Test
     public void testExceptionIsThrownWhenJavaProviderWithoutAnnotation() throws Exception {
         DefDescriptor<ProviderDef> javaPrvdrDefDesc = definitionService.getDefDescriptor(
                 "java://org.auraframework.impl.java.provider.TestProviderWithoutAnnotation", ProviderDef.class);
@@ -122,6 +130,7 @@ public class JavaProviderIntegrationTest extends AuraImplTestCase {
     /**
      * Verify InvalidDefinitionException is thrown when Java provider doesn't implement Provider interface.
      */
+    @Test
     public void testExceptionIsThrownWhenJavaProviderWithoutImplementingInterface() throws Exception {
         String targetProvider = "java://org.auraframework.impl.java.provider.TestProviderWithoutImplementingInterface";
         DefDescriptor<ProviderDef> javaProviderDefDesc = definitionService.getDefDescriptor(targetProvider, ProviderDef.class);
@@ -136,6 +145,7 @@ public class JavaProviderIntegrationTest extends AuraImplTestCase {
     /**
      * Verify the original exception from provide() method is thrown out.
      */
+    @Test
     public void testExceptionFromProvideIsThrownOut() throws Exception {
         String resourceSource = "<aura:component provider='java://org.auraframework.impl.java.provider.TestProviderThrowsExceptionDuringProvide'></aura:component>";
         DefDescriptor<ComponentDef> cmpDefDesc = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, resourceSource);

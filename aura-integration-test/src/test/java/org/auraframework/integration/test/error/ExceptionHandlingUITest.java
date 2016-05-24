@@ -41,6 +41,7 @@ import javax.inject.Inject;
  */
 @UnAdaptableTest
 public class ExceptionHandlingUITest extends WebDriverTestCase {
+
     private static final String baseAppTag = "<aura:application access='GLOBAL' %s>%s</aura:application>";
 
     private static final String errorBoxPath = "//div[@class='auraMsgMask auraForcedErrorBox']//div[@id='auraErrorMessage']";

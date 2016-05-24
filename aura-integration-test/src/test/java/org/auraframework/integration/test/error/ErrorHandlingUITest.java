@@ -25,7 +25,6 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 
 public class ErrorHandlingUITest extends AbstractErrorUITestCase {
-
     /**
      * In prod mode, the error message has three lines:<br>
      *   Something has gone wrong. [MESSAGES]<br>
@@ -63,6 +62,7 @@ public class ErrorHandlingUITest extends AbstractErrorUITestCase {
     /**
      * Verify that error message box displays via $A.error.
      */
+    @Test
     public void testErrorMessageDisplayAndCloseViaAError() throws Exception {
         open("/auratest/errorHandlingApp.app", Mode.PROD);
         assertErrorMaskIsNotVisible();
@@ -587,6 +587,7 @@ public class ErrorHandlingUITest extends AbstractErrorUITestCase {
     /**
      * Verify that client error is handled by default handler when custom handler has error.
      */
+    @Test
     public void testErrorIsHandledByDefaultHandlerWhenCustomHandlerHasError() throws Exception {
         // the error is handled by custom error but an error is thrown from custom handler
         open("/auratest/errorHandlingApp.app?handleSystemError=true&throwErrorInHandler=true", Mode.PROD);

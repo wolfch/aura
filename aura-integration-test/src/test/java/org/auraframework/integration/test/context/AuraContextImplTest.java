@@ -73,8 +73,7 @@ public class AuraContextImplTest extends AuraImplTestCase {
     private JsonSerializerFactory jsonSerializerFactory;
 
     public AuraContextImplTest() {
-        super();
-        setShouldSetupContext(false);
+    	this.setShouldSetupContext(false);
     }
 
     @Override
@@ -437,8 +436,8 @@ public class AuraContextImplTest extends AuraImplTestCase {
         contextService.registerGlobal(name, writable, defaultValue);
     }
 
-    @Test
     @UnAdaptableTest("Browser in context's GVP is different in OSS")
+    @Test
     public void testSerializeWithRegisteredGlobal() throws Exception {
         final String name = "someNewValue";
         registerGlobal(name, true, "some default value");

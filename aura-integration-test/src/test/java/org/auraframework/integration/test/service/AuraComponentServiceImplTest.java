@@ -30,5 +30,4 @@ public class AuraComponentServiceImplTest extends AuraImplTestCase {
         attributes.put("attr", "yo");
         assertNotNull(instanceService.getInstance("test:child1", ComponentDef.class, attributes));
     }
-
 }

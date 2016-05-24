@@ -33,15 +33,10 @@ import java.util.List;
  * Aura.ComponentDefRef[](@link aura.impl.type.ComponentDefRefArrayTypeDef) Unit
  * tests for attributes of type {@link Component}, {@link ComponentDefRef}, and
  * {@link ComponentDefRefArrayTypeDef}
- *
- * @userStory a07B0000000MniV
  */
 public class AuraComponentAttributeTypeTest extends AuraImplTestCase {
-
     /**
      * Postive test case.
-     *
-     * @throws Exception
      */
     @Test
     public void testUsageOfComponentDefRefArray() throws Exception {
@@ -70,8 +65,6 @@ public class AuraComponentAttributeTypeTest extends AuraImplTestCase {
     /**
      * Verify that not initializing attribute of type Aura.ComponentDefRef[]
      * works fine.
-     *
-     * @throws Exception
      */
     @Test
     public void testEmptyBodyForComponentDefRefArray() throws Exception {
@@ -86,8 +79,6 @@ public class AuraComponentAttributeTypeTest extends AuraImplTestCase {
 
     /**
      * Verify that Aura.ComponentDefRef is not a valid attribute type.
-     *
-     * @throws Exception
      */
     @Test
     public void testComponentDefRefIsNotValidType() throws Exception {
@@ -122,8 +113,6 @@ public class AuraComponentAttributeTypeTest extends AuraImplTestCase {
     /**
      * Verify that invalid markup in body of Attribute of type
      * Aura.ComponentDefRef[] is handled.
-     *
-     * @throws Exception
      */
     @Test
     public void testMarkupValidationInComponentDefRefArray() throws Exception {

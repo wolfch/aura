@@ -38,6 +38,7 @@ import javax.servlet.http.HttpServletResponse;
  * for now.
  */
 public class ManifestTest extends UnitTestCase {
+
     /**
      * Name is API!.
      */

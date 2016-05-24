@@ -28,7 +28,6 @@ import org.openqa.selenium.By;
  */
 @CheckAccessibility(false)
 public class TokensSanityUITest extends WebDriverTestCase {
-
     /**
      * Using token variables in CSS
      */

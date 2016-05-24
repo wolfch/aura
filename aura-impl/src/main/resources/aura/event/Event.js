@@ -82,10 +82,17 @@ Aura.Event.Event.prototype.getPhase = function(){
  * Sets whether the event can bubble or not. This will throw 
  * an error if called in the "default" phase.
  * The default is false.
+ * @platform
  * @export
  */
 Aura.Event.Event.prototype.stopPropagation = function() {
-    $A.assert(this.getPhase() !== "default", "stopPropagation() is not supported in the 'default' phase");
+    var eventExecutionType = this.getEventExecutionType();
+
+    // stopPropagation was introduced before this assertion and may be used
+    // in non-bubbling component events
+    $A.assert(eventExecutionType !== "COMPONENT" || 
+        eventExecutionType !== "APPLICATION" ||
+        this.getPhase() !== "default", "stopPropagation() is not supported in the 'default' phase");
     this.eventStopPropagation = true;
 };
 

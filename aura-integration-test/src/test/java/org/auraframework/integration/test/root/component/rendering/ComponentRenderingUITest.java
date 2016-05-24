@@ -35,14 +35,9 @@ import org.openqa.selenium.WebDriver;
  * to render it. If render = 'client', the aura servlet assumes the component
  * should be rendered clientside. In context of tests, Applications and
  * components can be used interchangeably.
- * 
- * @hierarchy Aura.Components.Renderer
- * @priority high
- * @userStory a07B0000000EWWg
  */
 @AuraTestLabels("auraSanity")
 public class ComponentRenderingUITest extends WebDriverTestCase {
-
     /**
      * Verify that text, expressions and HTML can be rendered serverside. Text,
      * Expression and Html are the basic building blocks of aura. These can be

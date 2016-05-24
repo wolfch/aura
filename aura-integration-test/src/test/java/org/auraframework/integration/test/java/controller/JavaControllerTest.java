@@ -34,7 +34,6 @@ import org.junit.Test;
  * Integration tests for java Controllers.
  */
 public class JavaControllerTest extends AuraImplTestCase {
-
     //TODO: Enable this after merging uitier branch
     @Test
     @Ignore
@@ -153,8 +152,8 @@ public class JavaControllerTest extends AuraImplTestCase {
     /**
      * Verify Java controller can NOT be accessed in non-internal (custom) namespace.
      */
-    @Test
     @UnAdaptableTest("namespace start with c means something special in core")
+    @Test
     public void testUsingJavaControllerInExternalNamespace() throws Exception {
         String cmpMarkup = "<aura:component controller='java://org.auraframework.components.test.java.controller.TestController'></aura:component>";
         DefDescriptor<ComponentDef> cmpDefDesc = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,

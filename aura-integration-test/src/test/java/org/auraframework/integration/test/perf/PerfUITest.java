@@ -24,7 +24,6 @@ import org.junit.Test;
  */
 @PerfTest
 public final class PerfUITest extends WebDriverTestCase {
-
     @Test
     public void testLabel() throws Exception {
         openTotallyRaw("/ui/label.cmp?label=foo");

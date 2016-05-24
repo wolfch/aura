@@ -15,11 +15,11 @@
  */
 package org.auraframework.util.adapter;
 
-import org.auraframework.util.test.util.UnitTestCase;
-import org.junit.Test;
-
 import java.io.File;
 import java.io.IOException;
+
+import org.auraframework.util.test.util.UnitTestCase;
+import org.junit.Test;
 
 public class GitSourceControlAdapterTest extends UnitTestCase {
     @Test

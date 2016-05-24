@@ -31,8 +31,6 @@ import org.junit.Test;
  * data. Attributes of this type can be declared like to <aura:attribute
  * name="xyz" type="java://org.auraframework.util.type.CustomPairType"
  * default="abc"/>
- * 
- * @since 0.0.248
  */
 public class CustomDataTypeTest extends AuraImplTestCase {
     @Test

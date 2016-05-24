@@ -15,15 +15,15 @@
  */
 package org.auraframework.integration.test.validation;
 
-import com.google.common.collect.Maps;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.http.client.methods.HttpRequestBase;
 import org.auraframework.integration.test.util.AuraHttpTestCase;
 import org.auraframework.util.json.Json;
 import org.junit.Test;
 
-import java.util.List;
-import java.util.Map;
+import com.google.common.collect.Maps;
 
 public final class ValidationHttpTest extends AuraHttpTestCase {
 

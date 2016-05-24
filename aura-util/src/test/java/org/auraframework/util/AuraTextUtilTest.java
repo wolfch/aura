@@ -15,11 +15,11 @@
  */
 package org.auraframework.util;
 
-import org.auraframework.util.test.util.UnitTestCase;
-import org.junit.Test;
-
 import java.util.Arrays;
 import java.util.List;
+
+import org.auraframework.util.test.util.UnitTestCase;
+import org.junit.Test;
 
 public class AuraTextUtilTest extends UnitTestCase {
     /**

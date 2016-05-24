@@ -23,7 +23,6 @@ import org.auraframework.throwable.quickfix.QuickFixException;
 import org.junit.Test;
 
 public class MethodDefHandlerTest extends AuraImplTestCase {
-    
     //sanity test : positive case
     @Test
     public void testBasicMethod() throws QuickFixException  {

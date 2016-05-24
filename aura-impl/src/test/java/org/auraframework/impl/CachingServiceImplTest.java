@@ -52,6 +52,7 @@ import java.util.Set;
 import java.util.concurrent.locks.Lock;
 
 public class CachingServiceImplTest extends AuraImplTestCase {
+
 	private class Log4jCaptureAppender extends AppenderSkeleton {
 
 		List<LoggingEvent> events;

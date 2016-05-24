@@ -179,6 +179,7 @@ public class JavascriptComponentClassTest extends AuraImplTestCase {
     	this.goldFileText(javascriptClass.getCode());
     }
 
+    @Test
     public void testWriteClassForLockerComponentMinified() throws Exception {
         // Fake a non-internal namespace so component is put in Locker
         Mockito.doReturn("nonInternal").when(descriptor).getNamespace();
@@ -197,6 +198,7 @@ public class JavascriptComponentClassTest extends AuraImplTestCase {
         this.goldFileText(javascriptClass.getMinifiedCode());
     }
 
+    @Test
     public void testWriteClassForLockerComponentUnminified() throws Exception {
         // Fake a non-internal namespace so component is put in Locker
         Mockito.doReturn("nonInternal").when(descriptor).getNamespace();

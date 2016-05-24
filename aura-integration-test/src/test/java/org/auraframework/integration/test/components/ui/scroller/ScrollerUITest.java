@@ -19,6 +19,7 @@ package org.auraframework.integration.test.components.ui.scroller;
 import org.auraframework.integration.test.util.WebDriverTestCase;
 import org.auraframework.integration.test.util.WebDriverTestCase.TargetBrowsers;
 import org.auraframework.test.util.WebDriverUtil.BrowserType;
+import org.junit.Test;
 
 /**
  * Test basic scroller
@@ -32,6 +33,7 @@ public class ScrollerUITest extends WebDriverTestCase{
     //private static final String SCROLLER_CMP4 = "/uitest/scrollerNative.cmp";
     //private WebDriver driver;
 
+    @Test
     public void testScrollingWorkflow() throws Exception {
         open(SCROLLER_CMP1);
         /*

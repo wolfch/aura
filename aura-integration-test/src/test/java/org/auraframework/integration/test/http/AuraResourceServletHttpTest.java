@@ -40,7 +40,6 @@ import org.junit.Test;
  * components in a given namespace. It is also used to load CSS
  */
 public class AuraResourceServletHttpTest extends AuraHttpTestCase {
-
     /**
      * Verify style def ordering for components included as facets. Create a chain of components as facet and verify the
      * order of css(Style Defs)
@@ -274,6 +273,7 @@ public class AuraResourceServletHttpTest extends AuraHttpTestCase {
         assertTrue("SVG source should not have been returned.", response.isEmpty());
     }
 
+    @Test
     public void testInlineJSNoCacheHeaders() throws Exception {
         String url = "/l/" + AuraTextUtil.urlencode(getSimpleContext(Format.JS, false)) + "/inline.js";
 

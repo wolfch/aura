@@ -28,7 +28,6 @@ import org.junit.Test;
 
 @UnAdaptableTest("namespace start with c means something special in core")
 public class RegisterEventAccessAttributeEnforcementTest extends AuraImplTestCase {
-
     /**
      * Default Access Tests for a component include another component which register a custom event in its markup starts
      */

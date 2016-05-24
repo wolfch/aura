@@ -45,6 +45,7 @@ public class RegistrySerializerTest extends UnitTestCase {
         super.tearDown();
     }
 
+    @Test
     public void testNullOutput() {
         RegistrySerializer rs = new RegistrySerializer(null, actb.getComponentsPath().toFile(), null, null);
         try {

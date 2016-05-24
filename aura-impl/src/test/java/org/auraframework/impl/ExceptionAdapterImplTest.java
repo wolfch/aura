@@ -32,7 +32,7 @@ import org.junit.Test;
 @UnAdaptableTest("SFDCExceptionAdapter is used on SFDC side. No need to run this in autobuild.")
 public class ExceptionAdapterImplTest extends AuraImplTestCase {
 
-    private Logger logger;
+    private Logger logger = Logger.getLogger(ExceptionAdapterImpl.class);
     private LoggingTestAppender appender;
 
     @Inject

@@ -21,8 +21,6 @@ import org.auraframework.def.EventDef;
 import org.auraframework.impl.AuraImplTestCase;
 import org.junit.Test;
 
-/**
- */
 public class EventDefDescriptorTest extends AuraImplTestCase {
     @Test
     public void testGetDefType() throws Exception {

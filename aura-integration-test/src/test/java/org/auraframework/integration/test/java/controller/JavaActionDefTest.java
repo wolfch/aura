@@ -25,7 +25,6 @@ import org.auraframework.impl.java.controller.JavaActionDef;
 import org.junit.Test;
 
 public class JavaActionDefTest extends AuraImplTestCase {
-
     /**
      * Verify Java action without background annotation is not background
      */

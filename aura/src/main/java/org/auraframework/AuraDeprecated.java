@@ -15,5 +15,11 @@
  */
 package org.auraframework;
 
+/**
+ * This interface is used only for Spring initialization of the static fields of
+ * {@link Aura} Once the static fields on {@link Aura} have been refactored,
+ * {@link Aura} and this interface will be removed.
+ */
+@Deprecated
 public interface AuraDeprecated {
 }

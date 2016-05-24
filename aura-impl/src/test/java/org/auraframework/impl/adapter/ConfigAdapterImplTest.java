@@ -262,6 +262,7 @@ public class ConfigAdapterImplTest extends UnitTestCase {
                 impl.isInternalNamespace(namespace.toUpperCase()));
     }
 
+    @Test
     public void testAddInternalNamespacesWithBadArguments() {
         ConfigAdapterImpl impl = new ConfigAdapterImpl(IOUtil.newTempDir(getName()), localizationAdapter, instanceService, contextService, fileMonitor);
         impl.addInternalNamespace(null);

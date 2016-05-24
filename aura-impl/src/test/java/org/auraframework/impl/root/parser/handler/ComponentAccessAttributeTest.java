@@ -37,7 +37,6 @@ public class ComponentAccessAttributeTest extends AuraImplTestCase {
     @Inject
     private ParserFactory parserFactory;
 
-	
 	/***********************************************************************************
      ****** Tests for Custom (non-internal, non-privileged) Namespace start ************
      ************************************************************************************/

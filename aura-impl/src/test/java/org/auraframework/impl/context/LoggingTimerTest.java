@@ -22,6 +22,7 @@ import org.junit.Test;
 import java.lang.reflect.Field;
 
 public class LoggingTimerTest extends UnitTestCase {
+
     @Test
     public void testTimer() throws Exception {
         Timer timer = new Timer("foo");

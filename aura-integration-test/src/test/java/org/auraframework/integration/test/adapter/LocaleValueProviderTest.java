@@ -247,6 +247,7 @@ public class LocaleValueProviderTest extends AuraImplTestCase {
      * Test to verify getValue returns null for undefined property
      * @throws Exception
      */
+    @Test
 	public void testGetValueUndefinedProperty() throws Exception {
         AuraContext context = contextService.getCurrentContext();
         context.setRequestedLocales(Arrays.asList(Locale.UK));

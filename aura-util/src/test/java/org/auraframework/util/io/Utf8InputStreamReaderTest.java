@@ -15,17 +15,18 @@
  */
 package org.auraframework.util.io;
 
-import com.google.common.base.Charsets;
-import org.auraframework.util.Utf8InputStreamReader;
-import org.auraframework.util.test.util.UnitTestCase;
-import org.junit.Test;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.util.Arrays;
+
+import org.auraframework.util.Utf8InputStreamReader;
+import org.auraframework.util.test.util.UnitTestCase;
+import org.junit.Test;
+
+import com.google.common.base.Charsets;
 
 /**
  * Test cases for the Utf8InputStreamReader

@@ -30,6 +30,7 @@ import org.junit.Test;
 
 import javax.inject.Inject;
 import org.auraframework.util.test.annotation.UnAdaptableTest;
+import org.junit.Test;
 
 @UnAdaptableTest("when run in core, we throw error with different type.")
 public class AttributeAccessAttributeTest extends AuraImplTestCase {
@@ -37,7 +38,6 @@ public class AttributeAccessAttributeTest extends AuraImplTestCase {
     @Inject
     private ParserFactory parserFactory;
 
-	
 	/***********************************************************************************
 	 ******************* Tests for Custom Namespace start ****************************
 	 ************************************************************************************/
@@ -55,6 +55,7 @@ public class AttributeAccessAttributeTest extends AuraImplTestCase {
         Definition def = parser.parse(descriptor, source);
         def.validateDefinition();
     }
+
     @Test
 	public void testAttributeWithEmptyAccessCustomNamespace() throws Exception {
     	String cmpSource = "<aura:component><aura:attribute name='testattribute' type='String' access=''/></aura:component>";
@@ -74,6 +75,7 @@ public class AttributeAccessAttributeTest extends AuraImplTestCase {
         	assertTrue(e.getMessage().contains("Invalid access attribute value \"\""));
         }
     }
+
     @Test
 	public void testAttributeWithInvalidAccessCustomNamespace() throws Exception {
     	String cmpSource = "<aura:component><aura:attribute name='testattribute' type='String' access='BLAH'/></aura:component>";
@@ -93,6 +95,7 @@ public class AttributeAccessAttributeTest extends AuraImplTestCase {
         	assertTrue(e.getMessage().contains("Invalid access attribute value \"BLAH\""));
         }
     }
+
     @Test
 	public void testAttributeWithInvalidAccessMethodCustomNamespace() throws Exception {
     	String cmpSource = "<aura:component><aura:attribute name='testattribute' type='String' access='org.auraframework.impl.test.util.TestAccessMethods.invalid'/></aura:component>";
@@ -114,6 +117,7 @@ public class AttributeAccessAttributeTest extends AuraImplTestCase {
         	assertTrue(e.getMessage().contains(expectedMsg));
         }
     }
+
     @Test
 	public void testAttributeWithInvalidAndValidAccessCustomNamespace() throws Exception {
 		String cmpSource = "<aura:component><aura:attribute name='testattribute' type='String' access='GLOBAL, BLAH, GLOBAL'/></aura:component>";
@@ -134,6 +138,7 @@ public class AttributeAccessAttributeTest extends AuraImplTestCase {
         	assertTrue(e.getMessage().contains(expectedMsg));
         }
     }
+
     @Test
 	public void testAttributeWithStaticAccessAndAccessMethodCustomNamespace() throws Exception {
 		String cmpSource = "<aura:component><aura:attribute name='testattribute' type='String' access='GLOBAL,org.auraframework.impl.test.util.TestAccessMethods.allowGlobal'/></aura:component>";
@@ -154,6 +159,7 @@ public class AttributeAccessAttributeTest extends AuraImplTestCase {
         	assertTrue(e.getMessage().contains(expectedMsg));
         }
     }
+
     @Test
 	public void testAttributeWithAuthenticationAndAccessMethodCustomNamespace() throws Exception {
 		String cmpSource = "<aura:component><aura:attribute name='testattribute' type='String' access='org.auraframework.impl.test.util.TestAccessMethods.allowGlobal,AUTHENTICATED'/></aura:component>";
@@ -192,6 +198,7 @@ public class AttributeAccessAttributeTest extends AuraImplTestCase {
         Definition def = parser.parse(descriptor, source);
         def.validateDefinition();
     }
+
     @Test
 	public void testAttributeWithPublicAccessCustomNamespace() throws Exception {
 		String cmpSource = "<aura:component><aura:attribute name='testattribute' type='String' access='PUBLIC'/></aura:component>";
@@ -205,6 +212,7 @@ public class AttributeAccessAttributeTest extends AuraImplTestCase {
         Definition def = parser.parse(descriptor, source);
         def.validateDefinition();
     }
+
     @Test
 	public void testAttributeWithPrivateAccessCustomNamespace() throws Exception {
 		String cmpSource = "<aura:component><aura:attribute name='testattribute' type='String' access='PRIVATE'/></aura:component>";
@@ -218,6 +226,7 @@ public class AttributeAccessAttributeTest extends AuraImplTestCase {
         Definition def = parser.parse(descriptor, source);
         def.validateDefinition();
     }
+
     @Test
 	public void testAttributeWithInternalAccessCustomNamespace() throws Exception {
 		String cmpSource = "<aura:component><aura:attribute name='testattribute' type='String' access='INTERNAL'/></aura:component>";
@@ -238,6 +247,7 @@ public class AttributeAccessAttributeTest extends AuraImplTestCase {
 	    	assertTrue(e.getMessage().contains(expectedMsg));
 	    }
     }
+
     @Test
 	public void testAttributeWithPrivilegedAccessCustomNamespace() throws Exception {
 		String cmpSource = "<aura:component><aura:attribute name='testattribute' type='String' access='PRIVILEGED'/></aura:component>";
@@ -281,6 +291,7 @@ public class AttributeAccessAttributeTest extends AuraImplTestCase {
         	assertTrue("Getting this message instead:"+e.getMessage(), e.getMessage().contains(expectedMsg));
         }
     }
+
     @Test
 	public void testAttributeWithPublicAccessMethodCustomNamespace() throws Exception {
 		String cmpSource = "<aura:component><aura:attribute name='testattribute' type='String' access='org.auraframework.impl.test.util.TestAccessMethods.allowPublic'/></aura:component>";
@@ -300,6 +311,7 @@ public class AttributeAccessAttributeTest extends AuraImplTestCase {
         	assertTrue("Getting this message instead:"+e.getMessage(), e.getMessage().contains(expectedMsg));
         }
     }
+
     @Test
 	public void testAttributeWithPrivateAccessMethodCustomNamespace() throws Exception {
 		String cmpSource = "<aura:component><aura:attribute name='testattribute' type='String' access='org.auraframework.impl.test.util.TestAccessMethods.allowPrivate'/></aura:component>";
@@ -319,6 +331,7 @@ public class AttributeAccessAttributeTest extends AuraImplTestCase {
         	assertTrue("Getting this message instead:"+e.getMessage(), e.getMessage().contains(expectedMsg));
         }
     }
+
     @Test
 	public void testAttributeWithPrivilegedAccessMethodCustomNamespace() throws Exception {
 		String cmpSource = "<aura:component><aura:attribute name='testattribute' type='String' access='org.auraframework.impl.test.util.TestAccessMethods.allowPrivileged'/></aura:component>";
@@ -338,6 +351,7 @@ public class AttributeAccessAttributeTest extends AuraImplTestCase {
         	assertTrue("Getting this message instead:"+e.getMessage(), e.getMessage().contains(expectedMsg));
         }
     }
+
     @Test
 	public void testAttributeWithInternalAccessMethodCustomNamespace() throws Exception {
 		String cmpSource = "<aura:component><aura:attribute name='testattribute' type='String' access='org.auraframework.impl.test.util.TestAccessMethods.allowInternal'/></aura:component>";
@@ -380,6 +394,7 @@ public class AttributeAccessAttributeTest extends AuraImplTestCase {
         	assertTrue("Getting this message instead:"+e.getMessage(), e.getMessage().contains(expectedMsg));
         }
     }
+	
 	/*
 	 * this verify we can put two same valid access value together 
 	 */
@@ -420,6 +435,7 @@ public class AttributeAccessAttributeTest extends AuraImplTestCase {
 	    	assertTrue(e.getMessage().contains(expectedMsg));
 	    }
     }
+
     @Test
 	public void testComponentWithUnAuthenticationCustomNamespace() throws Exception {
 		String cmpSource = "<aura:component><aura:attribute name='testattribute' type='String' access='UNAUTHENTICATED'/></aura:component>";
@@ -531,6 +547,7 @@ public class AttributeAccessAttributeTest extends AuraImplTestCase {
         	assertTrue("Getting this message instead:"+e.getMessage(), e.getMessage().contains(expectedMsg));
         }
     }
+
     @Test
 	public void testAttributeWithAuthenticatedAndPrivateAccessCustomNamespace() throws Exception {
 		String cmpSource = "<aura:component><aura:attribute name='testattribute' type='String' access='AUTHENTICATED,PRIVATE'/></aura:component>";
@@ -550,6 +567,7 @@ public class AttributeAccessAttributeTest extends AuraImplTestCase {
         	assertTrue("Getting this message instead:"+e.getMessage(), e.getMessage().contains(expectedMsg));
         }
     }
+
     @Test
 	public void testAttributeWithAuthenticatedAndPublicAccessCustomNamespace() throws Exception {
 		String cmpSource = "<aura:component><aura:attribute name='testattribute' type='String' access='AUTHENTICATED,PUBLIC'/></aura:component>";
@@ -569,6 +587,7 @@ public class AttributeAccessAttributeTest extends AuraImplTestCase {
         	assertTrue("Getting this message instead:"+e.getMessage(), e.getMessage().contains(expectedMsg));
         }
     }
+
     @Test
 	public void testAttributeWithAuthenticatedAndPrivilegedAccessCustomNamespace() throws Exception {
 		String cmpSource = "<aura:component><aura:attribute name='testattribute' type='String' access='AUTHENTICATED,PRIVILEGED'/></aura:component>";
@@ -588,6 +607,7 @@ public class AttributeAccessAttributeTest extends AuraImplTestCase {
         	assertTrue("Getting this message instead:"+e.getMessage(), e.getMessage().contains(expectedMsg));
         }
     }
+
     @Test
 	public void testAttributeWithAuthenticatedAndInternalAccessCustomNamespace() throws Exception {
 		String cmpSource = "<aura:component><aura:attribute name='testattribute' type='String' access='AUTHENTICATED,INTERNAL'/></aura:component>";
@@ -624,6 +644,7 @@ public class AttributeAccessAttributeTest extends AuraImplTestCase {
         Definition def = parser.parse(descriptor, source);
         def.validateDefinition();
     }
+
     @Test
 	public void testAttributeWithEmptyAccessPrivilegedNamespace() throws Exception {
     	String cmpSource = "<aura:component><aura:attribute name='testattribute' type='String' access=''/></aura:component>";
@@ -643,6 +664,7 @@ public class AttributeAccessAttributeTest extends AuraImplTestCase {
         	assertTrue(e.getMessage().contains("Invalid access attribute value \"\""));
         }
     }
+
     @Test
 	public void testAttributeWithInvalidAccessPrivilegedNamespace() throws Exception {
     	String cmpSource = "<aura:component><aura:attribute name='testattribute' type='String' access='BLAH'/></aura:component>";
@@ -662,6 +684,7 @@ public class AttributeAccessAttributeTest extends AuraImplTestCase {
         	assertTrue(e.getMessage().contains("Invalid access attribute value \"BLAH\""));
         }
     }
+
     @Test
 	public void testAttributeWithInvalidAccessMethodPrivilegedNamespace() throws Exception {
     	String cmpSource = "<aura:component><aura:attribute name='testattribute' type='String' access='org.auraframework.impl.test.util.TestAccessMethods.invalid'/></aura:component>";
@@ -683,6 +706,7 @@ public class AttributeAccessAttributeTest extends AuraImplTestCase {
         	assertTrue(e.getMessage().contains(expectedMsg));
         }
     }
+
     @Test
 	public void testAttributeWithInvalidAndValidAccessPrivilegedNamespace() throws Exception {
 		String cmpSource = "<aura:component><aura:attribute name='testattribute' type='String' access='GLOBAL, BLAH, GLOBAL'/></aura:component>";
@@ -703,6 +727,7 @@ public class AttributeAccessAttributeTest extends AuraImplTestCase {
         	assertTrue(e.getMessage().contains(expectedMsg));
         }
     }
+
     @Test
 	public void testAttributeWithStaticAccessAndAccessMethodPrivilegedNamespace() throws Exception {
 		String cmpSource = "<aura:component><aura:attribute name='testattribute' type='String' access='GLOBAL,org.auraframework.impl.test.util.TestAccessMethods.allowGlobal'/></aura:component>";
@@ -723,6 +748,7 @@ public class AttributeAccessAttributeTest extends AuraImplTestCase {
         	assertTrue(e.getMessage().contains(expectedMsg));
         }
     }
+
     @Test
 	public void testAttributeWithAuthenticationAndAccessMethodPrivilegedNamespace() throws Exception {
 		String cmpSource = "<aura:component><aura:attribute name='testattribute' type='String' access='org.auraframework.impl.test.util.TestAccessMethods.allowGlobal,AUTHENTICATED'/></aura:component>";
@@ -761,6 +787,7 @@ public class AttributeAccessAttributeTest extends AuraImplTestCase {
         Definition def = parser.parse(descriptor, source);
         def.validateDefinition();
     }
+
     @Test
 	public void testAttributeWithPublicAccessPrivilegedNamespace() throws Exception {
 		String cmpSource = "<aura:component><aura:attribute name='testattribute' type='String' access='PUBLIC'/></aura:component>";
@@ -774,6 +801,7 @@ public class AttributeAccessAttributeTest extends AuraImplTestCase {
         Definition def = parser.parse(descriptor, source);
         def.validateDefinition();
     }
+
     @Test
 	public void testAttributeWithPrivateAccessPrivilegedNamespace() throws Exception {
 		String cmpSource = "<aura:component><aura:attribute name='testattribute' type='String' access='PRIVATE'/></aura:component>";
@@ -787,6 +815,7 @@ public class AttributeAccessAttributeTest extends AuraImplTestCase {
         Definition def = parser.parse(descriptor, source);
         def.validateDefinition();
     }
+
     @Test
 	public void testAttributeWithInternalAccessPrivilegedNamespace() throws Exception {
 		String cmpSource = "<aura:component><aura:attribute name='testattribute' type='String' access='INTERNAL'/></aura:component>";
@@ -807,6 +836,7 @@ public class AttributeAccessAttributeTest extends AuraImplTestCase {
 	    	assertTrue(e.getMessage().contains(expectedMsg));
 	    }
     }
+
     @Test
 	public void testAttributeWithPrivilegedAccessPrivilegedNamespace() throws Exception {
 		String cmpSource = "<aura:component><aura:attribute name='testattribute' type='String' access='PRIVILEGED'/></aura:component>";
@@ -843,6 +873,7 @@ public class AttributeAccessAttributeTest extends AuraImplTestCase {
         	assertTrue("Getting this message instead:"+e.getMessage(), e.getMessage().contains(expectedMsg));
         }
     }
+
     @Test
 	public void testAttributeWithPublicAccessMethodPrivilegedNamespace() throws Exception {
 		String cmpSource = "<aura:component><aura:attribute name='testattribute' type='String' access='org.auraframework.impl.test.util.TestAccessMethods.allowPublic'/></aura:component>";
@@ -862,6 +893,7 @@ public class AttributeAccessAttributeTest extends AuraImplTestCase {
         	assertTrue("Getting this message instead:"+e.getMessage(), e.getMessage().contains(expectedMsg));
         }
     }
+
     @Test
 	public void testAttributeWithPrivateAccessMethodPrivilegedNamespace() throws Exception {
 		String cmpSource = "<aura:component><aura:attribute name='testattribute' type='String' access='org.auraframework.impl.test.util.TestAccessMethods.allowPrivate'/></aura:component>";
@@ -881,6 +913,7 @@ public class AttributeAccessAttributeTest extends AuraImplTestCase {
         	assertTrue("Getting this message instead:"+e.getMessage(), e.getMessage().contains(expectedMsg));
         }
     }
+
     @Test
 	public void testAttributeWithPrivilegedAccessMethodPrivilegedNamespace() throws Exception {
 		String cmpSource = "<aura:component><aura:attribute name='testattribute' type='String' access='org.auraframework.impl.test.util.TestAccessMethods.allowPrivileged'/></aura:component>";
@@ -900,6 +933,7 @@ public class AttributeAccessAttributeTest extends AuraImplTestCase {
         	assertTrue("Getting this message instead:"+e.getMessage(), e.getMessage().contains(expectedMsg));
         }
     }
+
     @Test
 	public void testAttributeWithInternalAccessMethodPrivilegedNamespace() throws Exception {
 		String cmpSource = "<aura:component><aura:attribute name='testattribute' type='String' access='org.auraframework.impl.test.util.TestAccessMethods.allowInternal'/></aura:component>";
@@ -942,6 +976,7 @@ public class AttributeAccessAttributeTest extends AuraImplTestCase {
         	assertTrue("Getting this message instead:"+e.getMessage(), e.getMessage().contains(expectedMsg));
         }
     }
+
 	/*
 	 * this verify we can put two same valid access value together 
 	 */
@@ -982,6 +1017,7 @@ public class AttributeAccessAttributeTest extends AuraImplTestCase {
 	    	assertTrue(e.getMessage().contains(expectedMsg));
 	    }
     }
+
     @Test
 	public void testComponentWithUnAuthenticationPrivilegedNamespace() throws Exception {
 		String cmpSource = "<aura:component><aura:attribute name='testattribute' type='String' access='UNAUTHENTICATED'/></aura:component>";
@@ -1093,6 +1129,7 @@ public class AttributeAccessAttributeTest extends AuraImplTestCase {
         	assertTrue("Getting this message instead:"+e.getMessage(), e.getMessage().contains(expectedMsg));
         }
     }
+
     @Test
 	public void testAttributeWithAuthenticatedAndPrivateAccessPrivilegedNamespace() throws Exception {
 		String cmpSource = "<aura:component><aura:attribute name='testattribute' type='String' access='AUTHENTICATED,PRIVATE'/></aura:component>";
@@ -1112,6 +1149,7 @@ public class AttributeAccessAttributeTest extends AuraImplTestCase {
         	assertTrue("Getting this message instead:"+e.getMessage(), e.getMessage().contains(expectedMsg));
         }
     }
+
     @Test
 	public void testAttributeWithAuthenticatedAndPublicAccessPrivilegedNamespace() throws Exception {
 		String cmpSource = "<aura:component><aura:attribute name='testattribute' type='String' access='AUTHENTICATED,PUBLIC'/></aura:component>";
@@ -1131,6 +1169,7 @@ public class AttributeAccessAttributeTest extends AuraImplTestCase {
         	assertTrue("Getting this message instead:"+e.getMessage(), e.getMessage().contains(expectedMsg));
         }
     }
+
     @Test
 	public void testAttributeWithAuthenticatedAndPrivilegedAccessPrivilegedNamespace() throws Exception {
 		String cmpSource = "<aura:component><aura:attribute name='testattribute' type='String' access='AUTHENTICATED,PRIVILEGED'/></aura:component>";
@@ -1150,6 +1189,7 @@ public class AttributeAccessAttributeTest extends AuraImplTestCase {
         	assertTrue("Getting this message instead:"+e.getMessage(), e.getMessage().contains(expectedMsg));
         }
     }
+
     @Test
 	public void testAttributeWithAuthenticatedAndInternalAccessPrivilegedNamespace() throws Exception {
 		String cmpSource = "<aura:component><aura:attribute name='testattribute' type='String' access='AUTHENTICATED,INTERNAL'/></aura:component>";
@@ -1186,6 +1226,7 @@ public class AttributeAccessAttributeTest extends AuraImplTestCase {
         Definition def = parser.parse(descriptor, source);
         def.validateDefinition();
     }
+
     @Test
     public void testAttributeWithEmptyAccessInternalNamespace() throws Exception {
         String cmpSource = "<aura:component><aura:attribute name='testattribute' type='String' access=''/></aura:component>";
@@ -1205,6 +1246,7 @@ public class AttributeAccessAttributeTest extends AuraImplTestCase {
             assertTrue(e.getMessage().contains("Invalid access attribute value \"\""));
         }
     }
+
     @Test
     public void testAttributeWithInvalidAccessInternalNamespace() throws Exception {
         String cmpSource = "<aura:component><aura:attribute name='testattribute' type='String' access='BLAH'/></aura:component>";
@@ -1224,6 +1266,7 @@ public class AttributeAccessAttributeTest extends AuraImplTestCase {
             assertTrue(e.getMessage().contains("Invalid access attribute value \"BLAH\""));
         }
     }
+
     @Test
     public void testAttributeWithInvalidAccessMethodInternalNamespace() throws Exception {
         String cmpSource = "<aura:component><aura:attribute name='testattribute' type='String' access='org.auraframework.impl.test.util.TestAccessMethods.invalid'/></aura:component>";
@@ -1245,6 +1288,7 @@ public class AttributeAccessAttributeTest extends AuraImplTestCase {
             assertTrue(e.getMessage().contains(expectedMsg));
         }
     }
+
     @Test
     public void testAttributeWithInvalidAndValidAccessInternalNamespace() throws Exception {
         String cmpSource = "<aura:component><aura:attribute name='testattribute' type='String' access='GLOBAL, BLAH, GLOBAL'/></aura:component>";
@@ -1265,6 +1309,7 @@ public class AttributeAccessAttributeTest extends AuraImplTestCase {
             assertTrue(e.getMessage().contains(expectedMsg));
         }
     }
+
     @Test
     public void testAttributeWithStaticAccessAndAccessMethodInternalNamespace() throws Exception {
         String cmpSource = "<aura:component><aura:attribute name='testattribute' type='String' access='GLOBAL,org.auraframework.impl.test.util.TestAccessMethods.allowGlobal'/></aura:component>";
@@ -1285,6 +1330,7 @@ public class AttributeAccessAttributeTest extends AuraImplTestCase {
             assertTrue(e.getMessage().contains(expectedMsg));
         }
     }
+
     @Test
     public void testAttributeWithAuthenticationAndAccessMethodInternalNamespace() throws Exception {
         String cmpSource = "<aura:component><aura:attribute name='testattribute' type='String' access='org.auraframework.impl.test.util.TestAccessMethods.allowGlobal,AUTHENTICATED'/></aura:component>";
@@ -1695,6 +1741,4 @@ public class AttributeAccessAttributeTest extends AuraImplTestCase {
             assertTrue("Getting this message instead:"+e.getMessage(), e.getMessage().contains(expectedMsg));
         }
     }
-	
-	
 }

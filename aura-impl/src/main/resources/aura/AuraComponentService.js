@@ -150,8 +150,8 @@ AuraComponentService.prototype.getAttributeProviderForElement = function(element
 };
 
 /**
- * Returns an iterator over components from cmp to the root through 
- * the value provider chain. The iterator emits an array of the component extension 
+ * Returns an iterator over components from cmp to the root through
+ * the value provider chain. The iterator emits an array of the component extension
  * hierarchy for each concrete component.
  * Example: [Cmp, SuperCmp, SuperSuperCmp] -> [CmpCVP, SuperCmpCVP] -> CmpCVPCVP
  * @param {Component} cmp The source component
@@ -164,7 +164,7 @@ AuraComponentService.prototype.getComponentValueProviderHierarchy = (function() 
         do {
             if(!cmp.isValid()) {
                 // signal an invalid hiearchy to the caller
-                return undefined; 
+                return undefined;
             }
             cmp = cmp.getSuper();
             if(cmp) {
@@ -228,7 +228,7 @@ AuraComponentService.prototype.getComponentValueProviderHierarchy = (function() 
         this.return = function(value) {
             if(!done) {
                 done = true;
-                current = value; 
+                current = value;
             }
             return {
                 value: current,
@@ -288,7 +288,7 @@ AuraComponentService.prototype.createComponent = function(type, attributes, call
 
     var config = {
         "componentDef" : this.createDescriptorConfig(type),
-        "attributes"   : { "valueProvider": $A.getContext().getCurrentAccess(), "values" : attributes },
+        "attributes"   : { "values" : attributes },
         "localId"      : attributes && attributes["aura:id"],
         "flavor"       : (attributes && attributes["aura:flavor"]),
         "skipCreationPath": true
@@ -367,10 +367,6 @@ AuraComponentService.prototype.createComponentFromConfig = function(config) {
 
     if (!config["attributes"] ) {
         config["attributes"] = {};
-    }
-
-    if(!config["attributes"]["valueProvider"]) {
-        config["attributes"]["valueProvider"] = $A.getContext().getCurrentAccess();
     }
 
     return this.createComponentPriv(config);
@@ -454,10 +450,6 @@ AuraComponentService.prototype.newComponent = function(config, attributeValuePro
  */
 AuraComponentService.prototype.newComponentDeprecated = function(config, attributeValueProvider, localCreation, doForce){
     $A.assert(config, "config is required in ComponentService.newComponentDeprecated(config)");
-
-    if(!attributeValueProvider) {
-        attributeValueProvider = $A.getContext().getCurrentAccess();
-    }
 
     if ($A.util.isArray(config)){
         return this.newComponentArray(config, attributeValueProvider, localCreation, doForce);
@@ -668,10 +660,6 @@ AuraComponentService.prototype.newComponentAsync = function(callbackScope, callb
     var overallStatus="SUCCESS";
     var statusList=[];
     var collected=0;
-
-    if(!attributeValueProvider) {
-        attributeValueProvider = $A.getContext().getCurrentAccess();
-    }
 
     function collectComponent(newComponent,status,statusMessage,index){
         components[index]=newComponent;
@@ -1601,9 +1589,9 @@ AuraComponentService.prototype.buildDependencyGraph = function() {
 
     var promises = [];
     var actionStorage = Action.getStorage();
-    var actionsGetAll = actionStorage ? actionStorage.getAll() : Promise["resolve"]([]);
+    var actionsGetAll = actionStorage ? actionStorage.getAll(true) : Promise["resolve"]([]);
     promises.push(actionsGetAll);
-    promises.push(this.componentDefStorage.getAll());
+    promises.push(this.componentDefStorage.getAll(true));
 
     // promise will reject if either getAll rejects
     return Promise.all(promises).then(function (results) {

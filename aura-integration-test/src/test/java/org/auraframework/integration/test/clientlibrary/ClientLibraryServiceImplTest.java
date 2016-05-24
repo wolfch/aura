@@ -36,7 +36,6 @@ import org.auraframework.system.AuraContext;
 import org.auraframework.system.AuraContext.Authentication;
 import org.auraframework.system.AuraContext.Format;
 import org.auraframework.system.AuraContext.Mode;
-import org.auraframework.throwable.NoContextException;
 import org.auraframework.util.test.annotation.UnAdaptableTest;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -72,12 +71,13 @@ public class ClientLibraryServiceImplTest extends AuraImplTestCase {
      * Verify the ClientLibraryService used by Aura Standalone. It is important that ClientLibraryServiceImpl is used
      * for aura standalone.
      */
-    @Test
     @UnAdaptableTest
+    @Test
     public void testClientLibraryService() {
         assertTrue(clientLibraryService instanceof ClientLibraryServiceImpl);
     }
 
+    @Test
     public void testContextPath() throws Exception {
         AuraContext context = contextService.getCurrentContext();
         DefDescriptor<ApplicationDef> appDesc = definitionService
@@ -98,27 +98,6 @@ public class ClientLibraryServiceImplTest extends AuraImplTestCase {
                     fail("Context path was not prepended to Aura urls");
                 }
             }
-        }
-    }
-
-    @Test
-    public void testGetResolvedUrl() {
-        assertNull(clientLibraryService.getResolvedUrl(null));
-
-        // Null name and null type
-        ClientLibraryDef nullsClientLibrary = vendor.makeClientLibraryDef(null, null,
-                null, null, null);
-        assertNull(clientLibraryService.getResolvedUrl(nullsClientLibrary));
-    }
-
-    @Test
-    public void testGetUrlsWithoutEstablishingContext() throws Exception {
-        contextService.endContext();
-        try {
-            clientLibraryService.getUrls(null, Type.JS);
-            fail("Should not be able to getUrls() without a context.");
-        } catch (Exception e) {
-            checkExceptionFull(e, NoContextException.class, "AuraContext was not established");
         }
     }
 

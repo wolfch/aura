@@ -47,7 +47,6 @@ public class StyleContextSerializationTest extends AuraImplTestCase {
     @Inject
     private ServletUtilAdapter servletUtilAdapter;
 
-
     @UnAdaptableTest("core add info about if we are on desktop, we don't")
     /** test that the css url includes the client/browser, no extra true conditions */
     @Test

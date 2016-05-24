@@ -29,7 +29,6 @@ import org.auraframework.util.test.annotation.ThreadHostileTest;
  */
 @ThreadHostileTest("The logs can be messed up when running with other tests.")
 public abstract class AbstractLoggingTest extends AuraImplTestCase {
-
     private Logger logger;
     private Level originalLevel;
     protected LoggingTestAppender appender;

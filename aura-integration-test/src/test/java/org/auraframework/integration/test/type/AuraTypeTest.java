@@ -15,13 +15,6 @@
  */
 package org.auraframework.integration.test.type;
 
-import org.auraframework.def.AttributeDef;
-import org.auraframework.def.ComponentDef;
-import org.auraframework.def.DefDescriptor;
-import org.auraframework.impl.AuraImplTestCase;
-import org.auraframework.instance.BaseComponent;
-import org.junit.Test;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -29,17 +22,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.auraframework.def.AttributeDef;
+import org.auraframework.def.ComponentDef;
+import org.auraframework.def.DefDescriptor;
+import org.auraframework.impl.AuraImplTestCase;
+import org.auraframework.instance.BaseComponent;
+import org.junit.Test;
+
 /**
  * Test to check aura types
- * 
- * @hierarchy Aura.Mobile Web
- * @userStorySyncIdOrName a07B0000000EQgW
  */
 public class AuraTypeTest extends AuraImplTestCase {
     /**
      * Test Aura Data Types.
-     * 
-     * @throws Exception
      */
     @Test
     public void testAuraConverter() throws Exception {

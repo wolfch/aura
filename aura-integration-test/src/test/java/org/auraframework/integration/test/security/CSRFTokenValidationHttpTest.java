@@ -41,8 +41,6 @@ import java.util.Map;
  * by the AuraServlet. A CSRF token is generated with the very first request and
  * sent back to the Client. Every subsequent request from the client has the
  * CSRF token embedded as a request parameter.
- * 
- * @hierarchy Aura.Security
  */
 public class CSRFTokenValidationHttpTest extends AuraHttpTestCase {
     @Inject

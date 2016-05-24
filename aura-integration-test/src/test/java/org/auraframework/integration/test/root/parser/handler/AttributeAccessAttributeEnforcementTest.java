@@ -27,11 +27,6 @@ import org.auraframework.throwable.quickfix.QuickFixException;
 import org.junit.Test;
 
 public class AttributeAccessAttributeEnforcementTest extends AuraImplTestCase {
-    
-    public AttributeAccessAttributeEnforcementTest() throws Exception {
-        super();
-    }       
-    
     /**
      * Privileged access tests start.
      * for component inside custom namespace, we do not allow to have attribute with access='Privileged'

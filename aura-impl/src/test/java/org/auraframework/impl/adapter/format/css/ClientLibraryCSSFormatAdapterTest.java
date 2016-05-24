@@ -28,9 +28,8 @@ import java.io.IOException;
 import static org.mockito.Mockito.spy;
 
 public class ClientLibraryCSSFormatAdapterTest extends AuraImplTestCase {
-    public ClientLibraryCSSFormatAdapterTest() {
-        super();
-        setShouldSetupContext(false);
+    public ClientLibraryCSSFormatAdapterTest(){
+    	this.setShouldSetupContext(false);
     }
 
     @Test

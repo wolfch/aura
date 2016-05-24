@@ -227,7 +227,7 @@ public class IntegrationServiceImplTest extends AuraImplTestCase {
      * W-2370679: this test pass, but adding handler function like this doesn't work.
      */
     @Test
-    public void testInjectingComponentWithAttributeAndEventHandlers() throws Exception {
+    public void testAttributesAndEvents() throws Exception {
         String attributeMarkup = "<aura:attribute name='strAttr' type='String'/>"
                 + "<aura:attribute name='booleanAttr' type='Boolean'/>";
         String eventsMarkup = "<aura:registerevent name='press' type='ui:press'/>"
@@ -317,6 +317,7 @@ public class IntegrationServiceImplTest extends AuraImplTestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testInjectingNonExistingComponent() throws Exception {
         Map<String, Object> attributes = Maps.newHashMap();
         Appendable out = new StringBuffer();
@@ -333,6 +334,7 @@ public class IntegrationServiceImplTest extends AuraImplTestCase {
     /**
      * Verify that only component defs can be injected.
      */
+    @Test
     public void testInjectingApplications() throws Exception {
         String validApp = "test:laxSecurity";
         Map<String, Object> attributes = Maps.newHashMap();

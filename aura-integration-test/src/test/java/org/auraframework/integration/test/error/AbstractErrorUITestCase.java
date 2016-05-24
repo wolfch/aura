@@ -16,9 +16,10 @@
 
 package org.auraframework.integration.test.error;
 
-import org.auraframework.integration.test.util.WebDriverTestCase;
 import java.util.Arrays;
 import java.util.List;
+
+import org.auraframework.integration.test.util.WebDriverTestCase;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 

@@ -27,7 +27,6 @@ import org.auraframework.util.test.annotation.ThreadHostileTest;
 import org.junit.Test;
 
 public class DefDescriptorImplTest extends AuraImplTestCase {
-
     @Test
     public void testControllerDescriptorString() {
         DefDescriptor<ControllerDef> descriptor = definitionService.getDefDescriptor("java://foo.Bar", ControllerDef.class);

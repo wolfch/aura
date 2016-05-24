@@ -15,13 +15,6 @@
  */
 package org.auraframework.integration.test.java.type;
 
-import org.auraframework.impl.AuraImplTestCase;
-import org.auraframework.impl.expression.PropertyReferenceImpl;
-import org.auraframework.instance.Component;
-import org.auraframework.instance.Model;
-import org.auraframework.throwable.AuraRuntimeException;
-import org.junit.Test;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -30,6 +23,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.auraframework.impl.AuraImplTestCase;
+import org.auraframework.impl.expression.PropertyReferenceImpl;
+import org.auraframework.instance.Component;
+import org.auraframework.instance.Model;
+import org.auraframework.throwable.AuraRuntimeException;
+import org.junit.Test;
 
 /**
  * This class has automation to verify the implementation of @Type() annotation in models.

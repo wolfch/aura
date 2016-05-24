@@ -265,8 +265,8 @@ public class AuraResourceServletTest extends AuraTestCase {
      *
      * FIXME: this test should not be here.... it should be on MDR.
      */
-    @Test
     @UnAdaptableTest("W-2929438")
+    @Test
     public void testJsCacheClearedOnSourceChange() throws Exception {
         DefDescriptor<ApplicationDef> appDesc = definitionService.getDefDescriptor("appCache:withpreload", ApplicationDef.class);
         AuraContext context = contextService
@@ -303,8 +303,8 @@ public class AuraResourceServletTest extends AuraTestCase {
     /**
      * Verify cache of SVG definitions is cleared on source change in DEV mode.
      */
-    @Test
     @UnAdaptableTest("W-2929438")
+    @Test
     public void testSvgCacheClearedOnSourceChange() throws Exception {
         DefDescriptor<ApplicationDef> appDesc = definitionService.getDefDescriptor("appCache:withpreload", ApplicationDef.class);
         AuraContext context = contextService
@@ -439,8 +439,8 @@ public class AuraResourceServletTest extends AuraTestCase {
     /**
      * Verify that context path is prepended on all Aura urls in appcache manifest
      */
-    @Test
     @UnAdaptableTest("W-2929438")
+    @Test
     public void testManifestContentWithContextPath() throws Exception {
         if (contextService.isEstablished()) {
             contextService.endContext();
@@ -474,8 +474,8 @@ public class AuraResourceServletTest extends AuraTestCase {
     /**
      * Verify framework UID exists in auraFW javascript urls in appcache manifest
      */
-    @Test
     @UnAdaptableTest("W-2929438")
+    @Test
     public void testManifestFwJsUrlContainsFWId() throws Exception {
         // Arrange
         if (contextService.isEstablished()) {

@@ -18,6 +18,7 @@ package org.auraframework.integration.test.java.controller;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.auraframework.def.ActionDef;
@@ -32,6 +33,7 @@ import org.auraframework.impl.javascript.controller.JavascriptControllerDef;
 import org.auraframework.impl.javascript.controller.JavascriptPseudoAction;
 import org.auraframework.instance.Action;
 import org.auraframework.system.AuraContext;
+import org.auraframework.throwable.quickfix.DefinitionNotFoundException;
 import org.auraframework.throwable.quickfix.InvalidExpressionException;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.junit.Test;
@@ -147,4 +149,22 @@ public class JavascriptControllerDefTest extends AuraImplTestCase {
 
         assertThat(action, instanceOf(JavascriptPseudoAction.class));
     }
+
+    /**
+     *  TODO: Created in master but not yet compilable in UI-tier
+    @Test
+    public void testCreateActionThrowsExceptionWhenCreatingNonExsitingAction() throws Exception {
+        String controllerJs = "({ function1: function(arg) {} })";
+        DefDescriptor<ControllerDef> controllerDesc = addSourceAutoCleanup(ControllerDef.class, controllerJs);
+        ControllerDef controllerDef = definitionService.getDefinition(controllerDesc);
+
+        try {
+            controllerDef.createAction("nonExistingAction", new HashMap<String, Object>());
+            fail("Should not be able to create an instance of the non-existing client action");
+        } catch (Exception e) {
+            String expectMessage = String.format("No ACTION named %s/ACTION$nonExistingAction found", controllerDesc.getQualifiedName());
+            checkExceptionFull(e, DefinitionNotFoundException.class, expectMessage);
+        }
+    }
+    */
 }

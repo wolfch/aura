@@ -197,7 +197,6 @@ public class ComponentPerfTestSuite extends TestSuite {
         private final Throwable cause;
 
         private FailTestCase(DefDescriptor<?> descriptor, Throwable cause) {
-            super();
             this.setName(descriptor.getQualifiedName());
             this.cause = cause;
         }

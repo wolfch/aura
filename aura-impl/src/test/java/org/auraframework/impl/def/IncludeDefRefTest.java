@@ -113,7 +113,7 @@ public class IncludeDefRefTest extends DefinitionTest<IncludeDefRef> {
     }
 
     @Test
-    public void testValidateReferencesNonexportedCodeIsInvalid() throws Exception {
+    public void testValidateDefintionExportIsJs() throws Exception {
         String name = "invalidSource";
         DefDescriptor<IncludeDef> includeDesc = getAuraTestingUtil().addSourceAutoCleanup(IncludeDef.class,
                 "function(){}", name);
@@ -133,6 +133,7 @@ public class IncludeDefRefTest extends DefinitionTest<IncludeDefRef> {
         }
     }
 
+    @Test
     public void testInvalidTryToBreakOut() throws Exception {
         String source = "function(){\n}}) alert('watch out')";
 
@@ -156,6 +157,7 @@ public class IncludeDefRefTest extends DefinitionTest<IncludeDefRef> {
         }
     }
 
+    @Test
     public void testExtraCurlyBrace() throws Exception {
         String source = "var a=66;\n}";
 
@@ -180,6 +182,7 @@ public class IncludeDefRefTest extends DefinitionTest<IncludeDefRef> {
         }
     }
 
+    @Test
     public void testUnClosed() throws Exception {
         // Put the error online to to avoid running into fluctuation in client descriptor length.
         // During hrh course of the test, several "dummy" descriptors are created an not cleaned.
@@ -205,6 +208,7 @@ public class IncludeDefRefTest extends DefinitionTest<IncludeDefRef> {
         }
     }
 
+    @Test
     public void testWarningIgnoredForNonStandardJsDoc() throws Exception {
         String source = "function(){return 'x'}\n/*!\n * @version 1\n */";
 

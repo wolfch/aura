@@ -58,8 +58,7 @@ public class ClientLibraryDefImplTest extends AuraImplTestCase {
     }
 
     @Test
-    public void testValidation() throws Exception {
-
+    public void testValidationNullName() throws Exception {
         String name = null;
         try {
             ClientLibraryDef def = vendor.makeClientLibraryDef(name, ClientLibraryDef.Type.JS,
@@ -72,6 +71,7 @@ public class ClientLibraryDefImplTest extends AuraImplTestCase {
         }
     }
 
+    @Test
     public void testValidationEmptyName() throws Exception {
         String name = "";
         try {
@@ -85,6 +85,7 @@ public class ClientLibraryDefImplTest extends AuraImplTestCase {
         }
     }
 
+    @Test
     public void testValidationWhenTypeIsNull() throws Exception {
         Type type = null;
         try {
@@ -97,6 +98,7 @@ public class ClientLibraryDefImplTest extends AuraImplTestCase {
         }
     }
 
+    @Test
     public void testValidationWhenParentDescriptorIsNull() throws Exception {
         DefDescriptor<ComponentDef> parentDescriptor = null;
         try {
@@ -146,7 +148,7 @@ public class ClientLibraryDefImplTest extends AuraImplTestCase {
 
 
     @Test
-    public void testComparingLibraryDefs() throws Exception{
+    public void testComparingLibraryDefsIdentical() throws Exception{
         ClientLibraryDef cdf1 = getElement("<aura:clientLibrary name='HTML5Shiv' type='JS'/>");
         assertFalse(cdf1.equals(null));
         assertFalse(cdf1.equals(""));
@@ -156,6 +158,7 @@ public class ClientLibraryDefImplTest extends AuraImplTestCase {
                 cdf1.equals(sameLibraryTag));
     }
 
+    @Test
     public void testComparingLibraryDefsDifferentModes() throws Exception{
         //When two components include same library for different modes, the final clientLibrary set should include for both modes
         ClientLibraryDef sameLibraryButDifferentModes1 = getElement("<aura:clientLibrary name='HTML5Shiv' type='JS' modes='DEV'/>");
@@ -164,6 +167,7 @@ public class ClientLibraryDefImplTest extends AuraImplTestCase {
                 sameLibraryButDifferentModes1.equals(sameLibraryButDifferentModes2));
     }
 
+    @Test
     public void testComparingLibraryDefsDifferentTypes() throws Exception{
         ClientLibraryDef sameNameButDifferentType1 = getElement("<aura:clientLibrary name='MyLib' type='CSS'/>");
         ClientLibraryDef sameNameButDifferentType2 = getElement("<aura:clientLibrary name='MyLib' type='JS'/>");
@@ -171,6 +175,7 @@ public class ClientLibraryDefImplTest extends AuraImplTestCase {
                 sameNameButDifferentType1.equals(sameNameButDifferentType2));
     }
 
+    @Test
     public void testComparingLibraryDefsDifferentNames() throws Exception{
         ClientLibraryDef differentName1 = getElement("<aura:clientLibrary name='MyLib1' type='JS'/>");
         ClientLibraryDef differentName2 = getElement("<aura:clientLibrary name='MyLib2' type='JS'/>");
@@ -178,6 +183,7 @@ public class ClientLibraryDefImplTest extends AuraImplTestCase {
                 differentName1.equals(differentName2));
     }
 
+    @Test
     public void testComparingLibraryDefsEnclosedModes() throws Exception{
         ClientLibraryDef sameButAllMode = getElement("<aura:clientLibrary name='MyLib' type='JS' />");
         ClientLibraryDef sameButDifferentMode = getElement("<aura:clientLibrary name='MyLib' type='JS' modes='PTEST' />");

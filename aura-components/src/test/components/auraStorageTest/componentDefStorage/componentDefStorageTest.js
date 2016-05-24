@@ -44,7 +44,7 @@
                  // If defs are being pruned because the defs have gone over the storage maxSize we need to tweak the
                  // size of ComponentDefStorage in the test template.
                  var defs = undefined;
-                 $A.storageService.getStorage("ComponentDefStorage").getAll()
+                 $A.storageService.getStorage("ComponentDefStorage").getAll(true)
                      .then(function(items) {
                          items = items || [];
                          items = items.map(function(item) {
@@ -72,7 +72,15 @@
         var found = false;
 
         function checkDefStorage(desc) {
-            $A.storageService.getStorage("ComponentDefStorage").getAll()
+            var storage = $A.storageService.getStorage("ComponentDefStorage");
+
+            // def storage may not exist until the XHR is back and the def is stored
+            if (!storage) {
+                window.setTimeout(function() { checkDefStorage(desc); }, 250);
+                return;
+            }
+
+            storage.getAll(true)
                 .then(function(items) {
                     items = items || [];
                     for (var i = 0; i < items.length; i++) {

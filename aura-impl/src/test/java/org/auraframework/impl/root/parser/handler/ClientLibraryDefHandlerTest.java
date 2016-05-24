@@ -155,6 +155,7 @@ public class ClientLibraryDefHandlerTest extends AuraImplTestCase {
      * throwing error when containing invalid tags.
      * TODO(W-2970463): update the test when the item is done.
      */
+    @Test
     public void testInvalidAttributeInLibraryTag() throws Exception {
         String cmpMarkup =
                 "<aura:component>" +
@@ -162,7 +163,7 @@ public class ClientLibraryDefHandlerTest extends AuraImplTestCase {
                 "</aura:component>";
         StringSource<ComponentDef> source = new StringSource<>(fileMonitor, descriptor, cmpMarkup
                 ,"myID", Format.XML);
-        ComponentDef cd = new ComponentXMLParser().parse(descriptor, source);
+        ComponentDef cd = componentXMLParser.parse(descriptor, source);
         cd.validateDefinition();
         List<ClientLibraryDef> clientLibrarys = cd.getClientLibraries();
         ClientLibraryDef clientLibraryDef = clientLibrarys.get(0);

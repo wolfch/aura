@@ -15,6 +15,9 @@
  */
 package org.auraframework.test.perf;
 
+import java.util.List;
+import java.util.Map;
+
 import org.auraframework.integration.test.util.WebDriverTestCase.TargetBrowsers;
 import org.auraframework.test.perf.core.AbstractPerfTestCase;
 import org.auraframework.test.perf.metrics.PerfMetricsCollector;
@@ -24,9 +27,6 @@ import org.auraframework.util.test.perf.metrics.PerfRunsCollector;
 import org.json.JSONObject;
 import org.junit.Ignore;
 import org.junit.Test;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * Miscellaneous tests for the perf framework.
