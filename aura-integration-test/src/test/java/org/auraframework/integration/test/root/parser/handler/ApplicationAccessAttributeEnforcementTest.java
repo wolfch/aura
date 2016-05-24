@@ -31,7 +31,7 @@ public class ApplicationAccessAttributeEnforcementTest extends AuraImplTestCase 
 
     @Inject
     DefinitionService definitionService;
-    
+
     /**
      * Default Access Tests start
      */
@@ -236,7 +236,7 @@ public class ApplicationAccessAttributeEnforcementTest extends AuraImplTestCase 
         try {
             definitionService.getDefinition(descriptor);
         	fail("application of custom namespace shouldn't be able to extends application of system namespace");
-        } catch (Exception e) {
+        } catch(Exception e) {
         	//expect 
     		//System.out.println(e.getMessage());
     		//Access to application 'string:testapplication1' from namespace 'cstring' in 'markup://cstring:testapplicationChild2(APPLICATION)' disallowed by MasterDefRegistry.assertAccess()
@@ -305,7 +305,7 @@ public class ApplicationAccessAttributeEnforcementTest extends AuraImplTestCase 
         try {
             definitionService.getDefinition(descriptor);
         	fail("application of custom namespace shouldn't be able to extends application of another custom namespace");
-        } catch (Exception e) {
+        } catch(Exception e) {
         	//expect 
     		//System.out.println(e.getMessage());
     		//Access to application 'string:testapplication1' from namespace 'cstring' in 'markup://cstring:testapplicationChild2(APPLICATION)' disallowed by MasterDefRegistry.assertAccess()
@@ -500,7 +500,7 @@ public class ApplicationAccessAttributeEnforcementTest extends AuraImplTestCase 
         try {
             definitionService.getDefinition(descriptor);
         	fail("application of custom namespace shouldn't be able to extends application of system namespace");
-        } catch (Exception e) {
+        } catch(Exception e) {
         	//expect 
     		//System.out.println(e.getMessage());
     		//Access to application 'string:testapplication1' from namespace 'cstring' in 'markup://cstring:testapplicationChild2(APPLICATION)' disallowed by MasterDefRegistry.assertAccess()
@@ -569,7 +569,7 @@ public class ApplicationAccessAttributeEnforcementTest extends AuraImplTestCase 
         try {
             definitionService.getDefinition(descriptor);
         	fail("application of custom namespace shouldn't be able to extends application of another custom namespace");
-        } catch (Exception e) {
+        } catch(Exception e) {
         	//expect 
     		//System.out.println(e.getMessage());
     		//Access to application 'string:testapplication1' from namespace 'cstring' in 'markup://cstring:testapplicationChild2(APPLICATION)' disallowed by MasterDefRegistry.assertAccess()

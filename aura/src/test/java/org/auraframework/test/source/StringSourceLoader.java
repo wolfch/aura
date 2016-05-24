@@ -15,12 +15,11 @@
  */
 package org.auraframework.test.source;
 
-import javax.annotation.Nullable;
-
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.Definition;
 import org.auraframework.system.InternalNamespaceSourceLoader;
 import org.auraframework.system.SourceLoader;
+import javax.annotation.Nullable;
 
 /**
  * This source loader allows tests to load and unload source from strings.

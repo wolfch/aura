@@ -21,7 +21,6 @@ import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.SVGDef;
 import org.auraframework.http.AuraServlet;
 import org.auraframework.http.RequestParam.StringParam;
-import org.auraframework.service.DefinitionService;
 import org.auraframework.service.ServerService;
 import org.auraframework.system.AuraContext;
 import org.auraframework.system.AuraContext.Format;

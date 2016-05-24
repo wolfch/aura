@@ -31,12 +31,13 @@ import org.junit.Test;
 import javax.inject.Inject;
 import org.auraframework.util.test.annotation.UnAdaptableTest;
 
+
 @UnAdaptableTest("when run in core, we throw error with different type.")
 public class InterfaceAccessAttributeTest extends AuraImplTestCase {
 
     @Inject
     private ParserFactory parserFactory;
-	
+
 	/***********************************************************************************
      ******************* Tests for Internal Namespace start ****************************
      ************************************************************************************/

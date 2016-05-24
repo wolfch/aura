@@ -39,6 +39,7 @@ import org.auraframework.util.json.JsonEncoder;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import javax.annotation.Nullable;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -64,6 +65,9 @@ public class AuraTestingUtil {
         this.definitionService = definitionService;
         this.configAdapter = configAdapter;
         this.contextService = contextService;
+    }
+
+    public AuraTestingUtil() {
     }
 
     public void tearDown() {
@@ -105,8 +109,8 @@ public class AuraTestingUtil {
         	Source<T> res = context.getDefRegistry().getSource(descriptor);
             if (res != null) {
                 return res;
-            }
         }
+    }
         return stringSourceLoader.getSource(descriptor);
     }
 

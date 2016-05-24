@@ -60,8 +60,8 @@ public class DesignLayoutDefHandlerTest extends AuraImplTestCase {
             assertExceptionMessageStartsWith(e, InvalidDefinitionException.class, String.format("Layout with name %s already defined", name));
         }
     }
-	
-	@Test
+
+    @Test
     public void testLayoutInNonInternalNS() throws Exception {
         try {
             setupDesignLayoutDef(LAYOUT, false);

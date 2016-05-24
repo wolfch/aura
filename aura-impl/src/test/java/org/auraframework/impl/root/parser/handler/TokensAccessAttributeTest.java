@@ -26,12 +26,12 @@ import org.auraframework.system.Source;
 import org.auraframework.test.source.StringSourceLoader;
 import org.auraframework.test.source.StringSourceLoader.NamespaceAccess;
 import org.auraframework.throwable.quickfix.InvalidAccessValueException;
-import org.junit.Before;
 import org.junit.Test;
 
 import javax.inject.Inject;
 
 import org.auraframework.util.test.annotation.UnAdaptableTest;
+
 
 @UnAdaptableTest("when run in core, we throw error with different type.")
 // Tokens not supported in custom, namespaces at this time
@@ -40,11 +40,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
     @Inject
     private ParserFactory parserFactory;
 
-    @Before
-	public void setup() {
-        configAdapter.addPrivilegedNamespace("privilegedNS");
-	}
-		
+	    
     /***********************************************************************************
      ******************* Tests for Internal Namespace start ****************************
      ************************************************************************************/
@@ -55,7 +51,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens />";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
+                tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
                         NamespaceAccess.INTERNAL);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -70,7 +66,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access=''/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
+                tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
                         NamespaceAccess.INTERNAL);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -91,7 +87,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='BLAH'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
+                tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
                         NamespaceAccess.INTERNAL);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -112,7 +108,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='org.auraframework.impl.test.util.TestAccessMethods.invalid'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
+                tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
                         NamespaceAccess.INTERNAL);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -135,7 +131,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='GLOBAL, BLAH, GLOBAL'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
+                tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
                         NamespaceAccess.INTERNAL);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -157,7 +153,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
             String tokenSource = "<aura:tokens access='GLOBAL,org.auraframework.impl.test.util.TestAccessMethods.allowGlobal' />";
             DefDescriptor<TokensDef> descriptor = 
                     getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                            tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
+                    tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
                         NamespaceAccess.INTERNAL);
             Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
             
@@ -179,7 +175,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='org.auraframework.impl.test.util.TestAccessMethods.allowGlobal,AUTHENTICATED'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
+                tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
                         NamespaceAccess.INTERNAL);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -204,7 +200,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='GLOBAL'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
+                tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
                         NamespaceAccess.INTERNAL);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -217,7 +213,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='PUBLIC'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
+                tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
                         NamespaceAccess.INTERNAL);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -230,7 +226,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='PRIVATE'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
+                tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
                         NamespaceAccess.INTERNAL);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -243,7 +239,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='INTERNAL'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
+                tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
                         NamespaceAccess.INTERNAL);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -256,7 +252,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='PRIVILEGED'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
+                tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
                         NamespaceAccess.INTERNAL);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -275,7 +271,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='org.auraframework.impl.test.util.TestAccessMethods.allowGlobal'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
+                tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
                         NamespaceAccess.INTERNAL);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -288,7 +284,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='org.auraframework.impl.test.util.TestAccessMethods.allowPublic'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
+                tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
                         NamespaceAccess.INTERNAL);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -302,7 +298,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='org.auraframework.impl.test.util.TestAccessMethods.allowPrivate'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
+                tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
                         NamespaceAccess.INTERNAL);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -315,7 +311,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='org.auraframework.impl.test.util.TestAccessMethods.allowPrivileged'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
+                tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
                         NamespaceAccess.INTERNAL);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -328,7 +324,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='org.auraframework.impl.test.util.TestAccessMethods.allowInternal'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
+                tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
                         NamespaceAccess.INTERNAL);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -347,7 +343,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='GLOBAL, PRIVATE'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
+                tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
                         NamespaceAccess.INTERNAL);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -370,7 +366,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='PUBLIC, PUBLIC'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
+                tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
                         NamespaceAccess.INTERNAL);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -388,7 +384,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='AUTHENTICATED'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
+                tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
                         NamespaceAccess.INTERNAL);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -407,7 +403,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='UNAUTHENTICATED'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
+                tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
                         NamespaceAccess.INTERNAL);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -432,7 +428,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='org.auraframework.impl.test.util.TestAccessMethods.allowAuthenticated'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
+                tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
                         NamespaceAccess.INTERNAL);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -456,7 +452,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='AUTHENTICATED,UNAUTHENTICATED'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
+                tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
                         NamespaceAccess.INTERNAL);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -479,7 +475,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='AUTHENTICATED,AUTHENTICATED'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
+                tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
                         NamespaceAccess.INTERNAL);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -504,7 +500,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='AUTHENTICATED,GLOBAL'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
+                tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
                         NamespaceAccess.INTERNAL);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -523,7 +519,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='AUTHENTICATED,PRIVATE'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
+                tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
                         NamespaceAccess.INTERNAL);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -542,7 +538,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='AUTHENTICATED,PUBLIC'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
+                tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
                         NamespaceAccess.INTERNAL);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -561,7 +557,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='AUTHENTICATED,PRIVILEGED'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
+                tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
                         NamespaceAccess.INTERNAL);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -580,7 +576,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='AUTHENTICATED,INTERNAL'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
+                tokenSource, StringSourceLoader.DEFAULT_NAMESPACE+":testTokens",
                         NamespaceAccess.INTERNAL);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -608,7 +604,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, "privilegedNS:testTokens",
+                tokenSource, "privilegedNS:testTokens",
                         NamespaceAccess.PRIVILEGED);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -623,7 +619,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access=''/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, "privilegedNS:testTokens",
+                tokenSource, "privilegedNS:testTokens",
                         NamespaceAccess.PRIVILEGED);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -644,7 +640,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='BLAH'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, "privilegedNS:testTokens",
+                tokenSource, "privilegedNS:testTokens",
                         NamespaceAccess.PRIVILEGED);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -665,7 +661,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='org.auraframework.impl.test.util.TestAccessMethods.invalid'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, "privilegedNS:testTokens",
+                tokenSource, "privilegedNS:testTokens",
                         NamespaceAccess.PRIVILEGED);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -688,7 +684,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='GLOBAL, BLAH, GLOBAL'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, "privilegedNS:testTokens",
+                tokenSource, "privilegedNS:testTokens",
                         NamespaceAccess.PRIVILEGED);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -710,7 +706,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
             String tokenSource = "<aura:tokens access='GLOBAL,org.auraframework.impl.test.util.TestAccessMethods.allowGlobal' />";
             DefDescriptor<TokensDef> descriptor = 
                     getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                            tokenSource, "privilegedNS:testTokens",
+                    tokenSource, "privilegedNS:testTokens",
                         NamespaceAccess.PRIVILEGED);
             Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
             
@@ -732,7 +728,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='org.auraframework.impl.test.util.TestAccessMethods.allowGlobal,AUTHENTICATED'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, "privilegedNS:testTokens",
+                tokenSource, "privilegedNS:testTokens",
                         NamespaceAccess.PRIVILEGED);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -758,7 +754,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='GLOBAL'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, "privilegedNS:testTokens",
+                tokenSource, "privilegedNS:testTokens",
                         NamespaceAccess.PRIVILEGED);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -771,7 +767,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='PUBLIC'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, "privilegedNS:testTokens",
+                tokenSource, "privilegedNS:testTokens",
                         NamespaceAccess.PRIVILEGED);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -784,7 +780,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='PRIVATE'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, "privilegedNS:testTokens",
+                tokenSource, "privilegedNS:testTokens",
                         NamespaceAccess.PRIVILEGED);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -797,7 +793,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='INTERNAL'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, "privilegedNS:testTokens",
+                tokenSource, "privilegedNS:testTokens",
                         NamespaceAccess.PRIVILEGED);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -817,7 +813,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='PRIVILEGED'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, "privilegedNS:testTokens",
+                tokenSource, "privilegedNS:testTokens",
                         NamespaceAccess.PRIVILEGED);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -835,7 +831,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='org.auraframework.impl.test.util.TestAccessMethods.allowGlobal'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, "privilegedNS:testTokens",
+                tokenSource, "privilegedNS:testTokens",
                         NamespaceAccess.PRIVILEGED);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -854,7 +850,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='org.auraframework.impl.test.util.TestAccessMethods.allowPublic'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, "privilegedNS:testTokens",
+                tokenSource, "privilegedNS:testTokens",
                         NamespaceAccess.PRIVILEGED);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -873,7 +869,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='org.auraframework.impl.test.util.TestAccessMethods.allowPrivate'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, "privilegedNS:testTokens",
+                tokenSource, "privilegedNS:testTokens",
                         NamespaceAccess.PRIVILEGED);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -892,7 +888,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='org.auraframework.impl.test.util.TestAccessMethods.allowPrivileged'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, "privilegedNS:testTokens",
+                tokenSource, "privilegedNS:testTokens",
                         NamespaceAccess.PRIVILEGED);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -911,7 +907,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='org.auraframework.impl.test.util.TestAccessMethods.allowInternal'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, "privilegedNS:testTokens",
+                tokenSource, "privilegedNS:testTokens",
                         NamespaceAccess.PRIVILEGED);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -936,7 +932,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='GLOBAL, PRIVATE'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, "privilegedNS:testTokens",
+                tokenSource, "privilegedNS:testTokens",
                         NamespaceAccess.PRIVILEGED);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -959,7 +955,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='PUBLIC, PUBLIC'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, "privilegedNS:testTokens",
+                tokenSource, "privilegedNS:testTokens",
                         NamespaceAccess.PRIVILEGED);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -977,7 +973,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='AUTHENTICATED'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, "privilegedNS:testTokens",
+                tokenSource, "privilegedNS:testTokens",
                         NamespaceAccess.PRIVILEGED);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -996,7 +992,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='UNAUTHENTICATED'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, "privilegedNS:testTokens",
+                tokenSource, "privilegedNS:testTokens",
                         NamespaceAccess.PRIVILEGED);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1021,7 +1017,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='org.auraframework.impl.test.util.TestAccessMethods.allowAuthenticated'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, "privilegedNS:testTokens",
+                tokenSource, "privilegedNS:testTokens",
                         NamespaceAccess.PRIVILEGED);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1045,7 +1041,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='AUTHENTICATED,UNAUTHENTICATED'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, "privilegedNS:testTokens",
+                tokenSource, "privilegedNS:testTokens",
                         NamespaceAccess.PRIVILEGED);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1068,7 +1064,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='AUTHENTICATED,AUTHENTICATED'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, "privilegedNS:testTokens",
+                tokenSource, "privilegedNS:testTokens",
                         NamespaceAccess.PRIVILEGED);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1092,7 +1088,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='AUTHENTICATED,GLOBAL'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, "privilegedNS:testTokens",
+                tokenSource, "privilegedNS:testTokens",
                         NamespaceAccess.PRIVILEGED);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1111,7 +1107,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='AUTHENTICATED,PRIVATE'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, "privilegedNS:testTokens",
+                tokenSource, "privilegedNS:testTokens",
                         NamespaceAccess.PRIVILEGED);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1130,7 +1126,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='AUTHENTICATED,PUBLIC'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, "privilegedNS:testTokens",
+                tokenSource, "privilegedNS:testTokens",
                         NamespaceAccess.PRIVILEGED);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1149,7 +1145,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='AUTHENTICATED,PRIVILEGED'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, "privilegedNS:testTokens",
+                tokenSource, "privilegedNS:testTokens",
                         NamespaceAccess.PRIVILEGED);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         
@@ -1168,7 +1164,7 @@ public class TokensAccessAttributeTest extends AuraImplTestCase {
         String tokenSource = "<aura:tokens access='AUTHENTICATED,INTERNAL'/>";
         DefDescriptor<TokensDef> descriptor = 
                 getAuraTestingUtil().addSourceAutoCleanup(TokensDef.class,
-                        tokenSource, "privilegedNS:testTokens",
+                tokenSource, "privilegedNS:testTokens",
                         NamespaceAccess.PRIVILEGED);
         Source<TokensDef> source = stringSourceLoader.getSource(descriptor);
         

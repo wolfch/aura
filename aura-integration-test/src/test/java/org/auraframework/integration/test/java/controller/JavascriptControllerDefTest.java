@@ -18,7 +18,6 @@ package org.auraframework.integration.test.java.controller;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.auraframework.def.ActionDef;
@@ -33,7 +32,6 @@ import org.auraframework.impl.javascript.controller.JavascriptControllerDef;
 import org.auraframework.impl.javascript.controller.JavascriptPseudoAction;
 import org.auraframework.instance.Action;
 import org.auraframework.system.AuraContext;
-import org.auraframework.throwable.quickfix.DefinitionNotFoundException;
 import org.auraframework.throwable.quickfix.InvalidExpressionException;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.junit.Test;

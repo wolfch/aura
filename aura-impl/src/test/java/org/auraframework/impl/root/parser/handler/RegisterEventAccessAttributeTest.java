@@ -31,6 +31,7 @@ import org.junit.Test;
 import javax.inject.Inject;
 import org.auraframework.util.test.annotation.UnAdaptableTest;
 
+
 @UnAdaptableTest("when run in core, we throw error with different type.")
 public class RegisterEventAccessAttributeTest extends AuraImplTestCase {
     @Inject

@@ -24,7 +24,6 @@ import org.auraframework.adapter.RegistryAdapter;
 import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.def.BaseComponentDef;
 import org.auraframework.def.DefDescriptor;
-import org.auraframework.impl.AuraImpl;
 import org.auraframework.impl.system.MasterDefRegistryImpl;
 import org.auraframework.impl.util.AuraUtil;
 import org.auraframework.impl.util.json.AuraJsonContext;

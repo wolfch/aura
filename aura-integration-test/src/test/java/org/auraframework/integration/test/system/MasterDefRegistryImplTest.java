@@ -379,7 +379,7 @@ public class MasterDefRegistryImplTest extends AuraImplTestCase {
     }
 
     @UnAdaptableTest("Particular permission is needed to retrieve non-internal cmp in autobuild.")
-	@Test
+    @Test
     public void testNonInternalStringCache() throws Exception {
         String namespace = "testNonInternalStringCache" + getAuraTestingUtil().getNonce();
 
@@ -1234,7 +1234,7 @@ public class MasterDefRegistryImplTest extends AuraImplTestCase {
     @SuppressWarnings("unchecked")
     public <D extends Definition> void testDescriptorFilterConstant() throws Exception {
         DefRegistry<D> mockedRegistry = Mockito.mock(DefRegistry.class);
-        DefDescriptor<D> dd = (DefDescriptor<D>) definitionService.getDefDescriptor("markup", "aura", "mocked", DefType.COMPONENT);
+        DefDescriptor<D> dd = (DefDescriptor<D>) definitionService.getDefDescriptor("markup://aura:mocked", ComponentDef.class);
         Set<DefDescriptor<?>> findable = Sets.newHashSet();
         findable.add(dd);
 
@@ -1266,7 +1266,7 @@ public class MasterDefRegistryImplTest extends AuraImplTestCase {
     @Test
     public void testDescriptorFilterNameWildcardWithCache() throws Exception {
         DefRegistry<?> mockedRegistry = Mockito.mock(DefRegistry.class);
-        DefDescriptor<?> dd = definitionService.getDefDescriptor("markup", "aura", "mocked", DefType.COMPONENT);
+        DefDescriptor<?> dd = definitionService.getDefDescriptor("markup://aura:mocked", ComponentDef.class);
         Set<DefDescriptor<?>> findable = Sets.newHashSet();
         findable.add(dd);
 
@@ -1297,9 +1297,9 @@ public class MasterDefRegistryImplTest extends AuraImplTestCase {
      * contain the def descriptor. (4) There should be no cache.
      */
     @Test
-    public void _testDescriptorFilterNameWildcardWithoutCache() throws Exception {
+    public void testDescriptorFilterNameWildcardWithoutCache() throws Exception {
         DefRegistry<?> mockedRegistry = Mockito.mock(DefRegistry.class);
-        DefDescriptor<?> dd = definitionService.getDefDescriptor("markup", "aura", "mocked", DefType.COMPONENT);
+        DefDescriptor<?> dd = definitionService.getDefDescriptor("markup://aura:mocked", ComponentDef.class);
         Set<DefDescriptor<?>> findable = Sets.newHashSet();
         findable.add(dd);
 
@@ -1332,7 +1332,7 @@ public class MasterDefRegistryImplTest extends AuraImplTestCase {
     @Test
     public void testDescriptorFilterNamespaceWildcard() throws Exception {
         DefRegistry<?> mockedRegistry = Mockito.mock(DefRegistry.class);
-        DefDescriptor<?> dd = definitionService.getDefDescriptor("markup", "aura", "mocked", DefType.COMPONENT);
+        DefDescriptor<?> dd = definitionService.getDefDescriptor("markup://aura:mocked", ComponentDef.class);
         Set<DefDescriptor<?>> findable = Sets.newHashSet();
         findable.add(dd);
 
@@ -1366,10 +1366,10 @@ public class MasterDefRegistryImplTest extends AuraImplTestCase {
     	DefDescriptor<ComponentDef> internalCmpWithCompound = getAuraTestingUtil().addSourceAutoCleanup(
                 ComponentDef.class, String.format(baseComponentTag, "access='global'", auraIf), null,
                         NamespaceAccess.INTERNAL);
-
+    	
         MasterDefRegistry mdr = contextService.getCurrentContext().getDefRegistry();
          MasterDefRegistryImpl mdri = (MasterDefRegistryImpl) mdr;
-
+         
          instanceService.getInstance(internalCmpWithCompound, null);
          assertTrue(isInDepsCache(null, "compound://aura.if", mdri));
     }
@@ -1384,7 +1384,7 @@ public class MasterDefRegistryImplTest extends AuraImplTestCase {
      * into dependency cache.
      * @throws Exception
      */
-	@Test
+    @Test
     public void testDepsCacheInternalAndExternalNamespace() throws Exception {
         String externalNamespace = getAuraTestingUtil().getNonce("alien");
 

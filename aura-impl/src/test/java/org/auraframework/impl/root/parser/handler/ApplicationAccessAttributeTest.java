@@ -43,7 +43,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	
 	//testDefaultAccess
     @Test
-	public void testApplicationWithDefaultAccessInternalNamespace() throws Exception {
+    public void testApplicationWithDefaultAccessInternalNamespace() throws Exception {
     	String appSource = "<aura:application/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -58,7 +58,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	
 	//testEmptyAccess
     @Test
-	public void testApplicationWithEmptyAccessInternalNamespace() throws Exception {
+    public void testApplicationWithEmptyAccessInternalNamespace() throws Exception {
     	String appSource = "<aura:application access=''/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -79,7 +79,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	
 	//testInvalidAccess
     @Test
-	public void testApplicationWithInvalidAccessInternalNamespace() throws Exception {
+    public void testApplicationWithInvalidAccessInternalNamespace() throws Exception {
     	String appSource = "<aura:application access='BLAH'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -100,7 +100,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	
 	//testInvalidAccessDynamic
     @Test
-	public void testApplicationWithInvalidAccessMethodInternalNamespace() throws Exception {
+    public void testApplicationWithInvalidAccessMethodInternalNamespace() throws Exception {
     	String appSource = "<aura:application access='org.auraframework.impl.test.util.TestAccessMethods.invalid'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -123,7 +123,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	//testInvalidValidAccess
 	//we can have valid access mix with invalid access, it will error out on the invalid one
     @Test
-	public void testApplicationWithInvalidAndValidAccessInternalNamespace() throws Exception {
+    public void testApplicationWithInvalidAndValidAccessInternalNamespace() throws Exception {
     	String appSource = "<aura:application access='GLOBAL, BLAH, GLOBAL'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -145,7 +145,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	
 	//testAccessValueAndStaticMethod
     @Test
-	public void testApplicationWithStaticAccessAndAccessMethodInternalNamespace() throws Exception {
+    public void testApplicationWithStaticAccessAndAccessMethodInternalNamespace() throws Exception {
 	    	String appSource = "<aura:application access='GLOBAL,org.auraframework.impl.test.util.TestAccessMethods.allowGlobal' />";
 	    	DefDescriptor<ApplicationDef> descriptor = 
 	    			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -167,7 +167,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	
 	//testStaticMethodAndAuthentication
     @Test
-	public void testApplicationWithAuthenticationAndAccessMethodInternalNamespace() throws Exception {
+    public void testApplicationWithAuthenticationAndAccessMethodInternalNamespace() throws Exception {
     	String appSource = "<aura:application access='org.auraframework.impl.test.util.TestAccessMethods.allowGlobal,AUTHENTICATED'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -186,7 +186,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	 * only PRIVATE is invalid
 	 */
     @Test
-	public void testApplicationWithGlobalAccessInternalNamespace() throws Exception {
+    public void testApplicationWithGlobalAccessInternalNamespace() throws Exception {
     	String appSource = "<aura:application access='GLOBAL'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -200,7 +200,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
     }
 
     @Test
-	public void testApplicationWithPublicAccessInternalNamespace() throws Exception {
+    public void testApplicationWithPublicAccessInternalNamespace() throws Exception {
     	String appSource = "<aura:application access='PUBLIC'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -215,7 +215,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 
 	//the only invalid case among 5
     @Test
-	public void testApplicationWithPrivateAccessInternalNamespace() throws Exception {
+    public void testApplicationWithPrivateAccessInternalNamespace() throws Exception {
     	String appSource = "<aura:application access='PRIVATE'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -236,7 +236,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
     }
 
     @Test
-	public void testApplicationWithInternalAccessInternalNamespace() throws Exception {
+    public void testApplicationWithInternalAccessInternalNamespace() throws Exception {
     	String appSource = "<aura:application access='INTERNAL'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -250,7 +250,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
     }
 
     @Test
-	public void testApplicationWithPrivilegedAccessInternalNamespace() throws Exception {
+    public void testApplicationWithPrivilegedAccessInternalNamespace() throws Exception {
     	String appSource = "<aura:application access='PRIVILEGED'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -269,7 +269,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	 * notice that we only allow access method within internalNamespace.
 	 */
     @Test
-	public void testApplicationWithGlobalAccessMethodInternalNamespace() throws Exception {
+    public void testApplicationWithGlobalAccessMethodInternalNamespace() throws Exception {
     	String appSource = "<aura:application access='org.auraframework.impl.test.util.TestAccessMethods.allowGlobal'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -283,7 +283,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
     }
 
     @Test
-	public void testApplicationWithPublicAccessMethodInternalNamespace() throws Exception {
+    public void testApplicationWithPublicAccessMethodInternalNamespace() throws Exception {
     	String appSource = "<aura:application access='org.auraframework.impl.test.util.TestAccessMethods.allowPublic'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -298,7 +298,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 
 	//TODO: whey private is ok here?
     @Test
-	public void testApplicationWithPrivateAccessMethodInternalNamespace() throws Exception {
+    public void testApplicationWithPrivateAccessMethodInternalNamespace() throws Exception {
     	String appSource = "<aura:application access='org.auraframework.impl.test.util.TestAccessMethods.allowPrivate'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -312,7 +312,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
     }
 
     @Test
-	public void testApplicationWithPrivilegedAccessMethodInternalNamespace() throws Exception {
+    public void testApplicationWithPrivilegedAccessMethodInternalNamespace() throws Exception {
     	String appSource = "<aura:application access='org.auraframework.impl.test.util.TestAccessMethods.allowPrivileged'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -326,7 +326,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
     }
 
     @Test
-	public void testApplicationWithInternalAccessMethodInternalNamespace() throws Exception {
+    public void testApplicationWithInternalAccessMethodInternalNamespace() throws Exception {
     	String appSource = "<aura:application access='org.auraframework.impl.test.util.TestAccessMethods.allowInternal'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -345,7 +345,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	 * this verify putting any two different valid access value together won't work. you can try other combinations, but it's the same
 	 */
     @Test
-	public void testApplicationWithGlobalAndPrivateAccessInternalNamespace() throws Exception {
+    public void testApplicationWithGlobalAndPrivateAccessInternalNamespace() throws Exception {
     	String appSource = "<aura:application access='GLOBAL, PRIVATE'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -368,7 +368,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	 * this verify we can put two same valid access value together 
 	 */
     @Test
-	public void testApplicationWithPublicAndPublicAccessInternalNamespace() throws Exception {
+    public void testApplicationWithPublicAndPublicAccessInternalNamespace() throws Exception {
     	String appSource = "<aura:application access='PUBLIC, PUBLIC'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -386,7 +386,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	 * testSimpleAuthenticationInSystemNamespace
 	 */
     @Test
-	public void testApplicationWithAuthenticationInternalNamespace() throws Exception {
+    public void testApplicationWithAuthenticationInternalNamespace() throws Exception {
     	String appSource = "<aura:application access='AUTHENTICATED'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -400,7 +400,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
     }
 
     @Test
-	public void testApplicationWithUnAuthenticationInternalNamespace() throws Exception {
+    public void testApplicationWithUnAuthenticationInternalNamespace() throws Exception {
     	String appSource = "<aura:application access='UNAUTHENTICATED'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -419,7 +419,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	 * we cannot set access to Authenticated by method, like what we do for access value
 	 */
     @Test
-	public void testApplicationWithUnAuthenticationMethodInternalNamespace() throws Exception {
+    public void testApplicationWithUnAuthenticationMethodInternalNamespace() throws Exception {
     	String appSource = "<aura:application access='org.auraframework.impl.test.util.TestAccessMethods.allowAuthenticated'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -443,7 +443,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	 * this verify we cannot have both AUTHENTICATED and UNAUTHENTICATED as access attribute
 	 */
     @Test
-	public void testApplicationWithAuthenticatedAndUnAuthenticationAccessInternalNamespace() throws Exception {
+    public void testApplicationWithAuthenticatedAndUnAuthenticationAccessInternalNamespace() throws Exception {
     	String appSource = "<aura:application access='AUTHENTICATED,UNAUTHENTICATED'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -466,7 +466,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	 * This verify we can have same Authentication as access attribute
 	 */
     @Test
-	public void testApplicationWithAuthenticatedAndAuthenticatedAccessInternalNamespace() throws Exception {
+    public void testApplicationWithAuthenticatedAndAuthenticatedAccessInternalNamespace() throws Exception {
     	String appSource = "<aura:application access='AUTHENTICATED,AUTHENTICATED'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -485,7 +485,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	 * The only failing case is PRIVATE
 	 */
     @Test
-	public void testApplicationWithAuthenticatedAndGlobalAccessInternalNamespace() throws Exception {
+    public void testApplicationWithAuthenticatedAndGlobalAccessInternalNamespace() throws Exception {
     	String appSource = "<aura:application access='AUTHENTICATED,GLOBAL'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -498,7 +498,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
         def.validateDefinition();
     }
     @Test
-	public void testApplicationWithAuthenticatedAndPrivateAccessInternalNamespace() throws Exception {
+    public void testApplicationWithAuthenticatedAndPrivateAccessInternalNamespace() throws Exception {
     	String appSource = "<aura:application access='AUTHENTICATED,PRIVATE'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -517,7 +517,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
         }
     }
     @Test
-	public void testApplicationWithAuthenticatedAndPublicAccessInternalNamespace() throws Exception {
+    public void testApplicationWithAuthenticatedAndPublicAccessInternalNamespace() throws Exception {
     	String appSource = "<aura:application access='AUTHENTICATED,PUBLIC'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -530,7 +530,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
         def.validateDefinition();
     }
     @Test
-	public void testApplicationWithAuthenticatedAndPrivilegedAccessInternalNamespace() throws Exception {
+    public void testApplicationWithAuthenticatedAndPrivilegedAccessInternalNamespace() throws Exception {
     	String appSource = "<aura:application access='AUTHENTICATED,PRIVILEGED'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -543,7 +543,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
         def.validateDefinition();
     }
     @Test
-	public void testApplicationWithAuthenticatedAndInternalAccessInternalNamespace() throws Exception {
+    public void testApplicationWithAuthenticatedAndInternalAccessInternalNamespace() throws Exception {
     	String appSource = "<aura:application access='AUTHENTICATED,INTERNAL'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -565,7 +565,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	 * testSimpleAccessInPrivilegedNamespace
 	 */
     @Test
-	public void testApplicationWithDefaultAccessPrivilegedNamespace() throws Exception {
+    public void testApplicationWithDefaultAccessPrivilegedNamespace() throws Exception {
     	String appSource = "<aura:application/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -580,7 +580,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	
 	//testEmptyAccess
     @Test
-	public void testApplicationWithEmptyAccessPrivilegedNamespace() throws Exception {
+    public void testApplicationWithEmptyAccessPrivilegedNamespace() throws Exception {
     	String appSource = "<aura:application access=''/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -601,7 +601,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	
 	//testInvalidAccess
     @Test
-	public void testApplicationWithInvalidAccessPrivilegedNamespace() throws Exception {
+    public void testApplicationWithInvalidAccessPrivilegedNamespace() throws Exception {
     	String appSource = "<aura:application access='BLAH'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -622,7 +622,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	
 	//testInvalidAccessDynamic
     @Test
-	public void testApplicationWithInvalidAccessMethodPrivilegedNamespace() throws Exception {
+    public void testApplicationWithInvalidAccessMethodPrivilegedNamespace() throws Exception {
     	String appSource = "<aura:application access='org.auraframework.impl.test.util.TestAccessMethods.invalid'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -645,7 +645,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	//testInvalidValidAccess
 	//we can have valid access mix with invalid access, it will error out on the invalid one
     @Test
-	public void testApplicationWithInvalidAndValidAccessPrivilegedNamespace() throws Exception {
+    public void testApplicationWithInvalidAndValidAccessPrivilegedNamespace() throws Exception {
     	String appSource = "<aura:application access='GLOBAL, BLAH, GLOBAL'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -667,7 +667,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	
 	//testAccessValueAndStaticMethod
     @Test
-	public void testApplicationWithStaticAccessAndAccessMethodPrivilegedNamespace() throws Exception {
+    public void testApplicationWithStaticAccessAndAccessMethodPrivilegedNamespace() throws Exception {
 	    	String appSource = "<aura:application access='GLOBAL,org.auraframework.impl.test.util.TestAccessMethods.allowGlobal' />";
 	    	DefDescriptor<ApplicationDef> descriptor = 
 	    			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -689,7 +689,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	
 	//testStaticMethodAndAuthentication
     @Test
-	public void testApplicationWithAuthenticationAndAccessMethodPrivilegedNamespace() throws Exception {
+    public void testApplicationWithAuthenticationAndAccessMethodPrivilegedNamespace() throws Exception {
     	String appSource = "<aura:application access='org.auraframework.impl.test.util.TestAccessMethods.allowGlobal,AUTHENTICATED'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -715,7 +715,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	 * INTERNAL and PRIVATE is invalid
 	 */
     @Test
-	public void testApplicationWithGlobalAccessPrivilegedNamespace() throws Exception {
+    public void testApplicationWithGlobalAccessPrivilegedNamespace() throws Exception {
     	String appSource = "<aura:application access='GLOBAL'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -728,7 +728,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
         def.validateDefinition();
     }
     @Test
-	public void testApplicationWithPublicAccessPrivilegedNamespace() throws Exception {
+    public void testApplicationWithPublicAccessPrivilegedNamespace() throws Exception {
     	String appSource = "<aura:application access='PUBLIC'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -741,7 +741,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
         def.validateDefinition();
     }
     @Test
-	public void testApplicationWithPrivateAccessPrivilegedNamespace() throws Exception {
+    public void testApplicationWithPrivateAccessPrivilegedNamespace() throws Exception {
     	String appSource = "<aura:application access='PRIVATE'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -761,7 +761,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	    }
     }
     @Test
-	public void testApplicationWithInternalAccessPrivilegedNamespace() throws Exception {
+    public void testApplicationWithInternalAccessPrivilegedNamespace() throws Exception {
     	String appSource = "<aura:application access='INTERNAL'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -781,7 +781,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	    }
     }
     @Test
-	public void testApplicationWithPrivilegedAccessPrivilegedNamespace() throws Exception {
+    public void testApplicationWithPrivilegedAccessPrivilegedNamespace() throws Exception {
     	String appSource = "<aura:application access='PRIVILEGED'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -799,7 +799,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	 * go through access=GLOBAL,PUBLIC,PRIVATE,INTERNAL,PRIVILEGED by AccessMethod for application in PrivilegedNamespace
 	 */
     @Test
-	public void testApplicationWithGlobalAccessMethodPrivilegedNamespace() throws Exception {
+    public void testApplicationWithGlobalAccessMethodPrivilegedNamespace() throws Exception {
     	String appSource = "<aura:application access='org.auraframework.impl.test.util.TestAccessMethods.allowGlobal'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -818,7 +818,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
         }
     }
     @Test
-	public void testApplicationWithPublicAccessMethodPrivilegedNamespace() throws Exception {
+    public void testApplicationWithPublicAccessMethodPrivilegedNamespace() throws Exception {
     	String appSource = "<aura:application access='org.auraframework.impl.test.util.TestAccessMethods.allowPublic'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -837,7 +837,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
         }
     }
     @Test
-	public void testApplicationWithPrivateAccessMethodPrivilegedNamespace() throws Exception {
+    public void testApplicationWithPrivateAccessMethodPrivilegedNamespace() throws Exception {
     	String appSource = "<aura:application access='org.auraframework.impl.test.util.TestAccessMethods.allowPrivate'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -856,7 +856,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
         }
     }
     @Test
-	public void testApplicationWithPrivilegedAccessMethodPrivilegedNamespace() throws Exception {
+    public void testApplicationWithPrivilegedAccessMethodPrivilegedNamespace() throws Exception {
     	String appSource = "<aura:application access='org.auraframework.impl.test.util.TestAccessMethods.allowPrivileged'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -875,7 +875,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
         }
     }
     @Test
-	public void testApplicationWithInternalAccessMethodPrivilegedNamespace() throws Exception {
+    public void testApplicationWithInternalAccessMethodPrivilegedNamespace() throws Exception {
     	String appSource = "<aura:application access='org.auraframework.impl.test.util.TestAccessMethods.allowInternal'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -900,7 +900,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	 * this verify putting any two different valid access value together won't work. you can try other combinations, but it's the same
 	 */
     @Test
-	public void testApplicationWithGlobalAndPrivateAccessPrivilegedNamespace() throws Exception {
+    public void testApplicationWithGlobalAndPrivateAccessPrivilegedNamespace() throws Exception {
     	String appSource = "<aura:application access='GLOBAL, PRIVATE'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -923,7 +923,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	 * this verify we can put two same valid access value together 
 	 */
     @Test
-	public void testApplicationWithPublicAndPublicAccessPrivilegedNamespace() throws Exception {
+    public void testApplicationWithPublicAndPublicAccessPrivilegedNamespace() throws Exception {
     	String appSource = "<aura:application access='PUBLIC, PUBLIC'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -941,7 +941,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	 * testSimpleAuthenticationInSystemNamespace, we cannot have authentication as access, as we are not in InternalNamespace
 	 */
     @Test
-	public void testApplicationWithAuthenticationPrivilegedNamespace() throws Exception {
+    public void testApplicationWithAuthenticationPrivilegedNamespace() throws Exception {
     	String appSource = "<aura:application access='AUTHENTICATED'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -960,7 +960,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
         }
     }
     @Test
-	public void testApplicationWithUnAuthenticationPrivilegedNamespace() throws Exception {
+    public void testApplicationWithUnAuthenticationPrivilegedNamespace() throws Exception {
     	String appSource = "<aura:application access='UNAUTHENTICATED'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -985,7 +985,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	 * we cannot set access to Authenticated by method, like what we do for access value
 	 */
     @Test
-	public void testApplicationWithUnAuthenticationMethodPrivilegedNamespace() throws Exception {
+    public void testApplicationWithUnAuthenticationMethodPrivilegedNamespace() throws Exception {
     	String appSource = "<aura:application access='org.auraframework.impl.test.util.TestAccessMethods.allowAuthenticated'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -1009,7 +1009,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	 * this verify we cannot have both AUTHENTICATED and UNAUTHENTICATED as access attribute
 	 */
     @Test
-	public void testApplicationWithAuthenticatedAndUnAuthenticationAccessPrivilegedNamespace() throws Exception {
+    public void testApplicationWithAuthenticatedAndUnAuthenticationAccessPrivilegedNamespace() throws Exception {
     	String appSource = "<aura:application access='AUTHENTICATED,UNAUTHENTICATED'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -1032,7 +1032,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	 * This verify we cannot have Authentication as access attribute, as we are outside InternalNamespace
 	 */
     @Test
-	public void testApplicationWithAuthenticatedAndAuthenticationAccessPrivilegedNamespace() throws Exception {
+    public void testApplicationWithAuthenticatedAndAuthenticationAccessPrivilegedNamespace() throws Exception {
     	String appSource = "<aura:application access='AUTHENTICATED,AUTHENTICATED'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -1056,7 +1056,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	 * These verify we cannot have authentication as part of access, as we are not in InternalNamespace
 	 */
     @Test
-	public void testApplicationWithAuthenticatedAndGlobalAccessPrivilegedNamespace() throws Exception {
+    public void testApplicationWithAuthenticatedAndGlobalAccessPrivilegedNamespace() throws Exception {
     	String appSource = "<aura:application access='AUTHENTICATED,GLOBAL'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -1076,7 +1076,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
     }
 
     @Test
-	public void testApplicationWithAuthenticatedAndPrivateAccessPrivilegedNamespace() throws Exception {
+    public void testApplicationWithAuthenticatedAndPrivateAccessPrivilegedNamespace() throws Exception {
     	String appSource = "<aura:application access='AUTHENTICATED,PRIVATE'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -1095,7 +1095,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
         }
     }
     @Test
-	public void testApplicationWithAuthenticatedAndPublicAccessPrivilegedNamespace() throws Exception {
+    public void testApplicationWithAuthenticatedAndPublicAccessPrivilegedNamespace() throws Exception {
     	String appSource = "<aura:application access='AUTHENTICATED,PUBLIC'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -1114,7 +1114,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
         }
     }
     @Test
-	public void testApplicationWithAuthenticatedAndPrivilegedAccessPrivilegedNamespace() throws Exception {
+    public void testApplicationWithAuthenticatedAndPrivilegedAccessPrivilegedNamespace() throws Exception {
     	String appSource = "<aura:application access='AUTHENTICATED,PRIVILEGED'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -1133,7 +1133,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
         }
     }
     @Test
-	public void testApplicationWithAuthenticatedAndInternalAccessPrivilegedNamespace() throws Exception {
+    public void testApplicationWithAuthenticatedAndInternalAccessPrivilegedNamespace() throws Exception {
     	String appSource = "<aura:application access='AUTHENTICATED,INTERNAL'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -1164,7 +1164,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	 * testSimpleAccessInPrivilegedNamespace
 	 */
     @Test
-	public void testApplicationWithDefaultAccessCustomNamespace() throws Exception {
+    public void testApplicationWithDefaultAccessCustomNamespace() throws Exception {
     	String appSource = "<aura:application/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -1179,7 +1179,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	
 	//testEmptyAccess
     @Test
-	public void testApplicationWithEmptyAccessCustomNamespace() throws Exception {
+    public void testApplicationWithEmptyAccessCustomNamespace() throws Exception {
     	String appSource = "<aura:application access=''/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -1200,7 +1200,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	
 	//testInvalidAccess
     @Test
-	public void testApplicationWithInvalidAccessCustomNamespace() throws Exception {
+    public void testApplicationWithInvalidAccessCustomNamespace() throws Exception {
     	String appSource = "<aura:application access='BLAH'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -1221,7 +1221,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	
 	//testInvalidAccessDynamic
     @Test
-	public void testApplicationWithInvalidAccessMethodCustomNamespace() throws Exception {
+    public void testApplicationWithInvalidAccessMethodCustomNamespace() throws Exception {
     	String appSource = "<aura:application access='org.auraframework.impl.test.util.TestAccessMethods.invalid'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -1244,7 +1244,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	//testInvalidValidAccess
 	//we can have valid access mix with invalid access, it will error out on the invalid one
     @Test
-	public void testApplicationWithInvalidAndValidAccessCustomNamespace() throws Exception {
+    public void testApplicationWithInvalidAndValidAccessCustomNamespace() throws Exception {
     	String appSource = "<aura:application access='GLOBAL, BLAH, GLOBAL'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -1266,7 +1266,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	
 	//testAccessValueAndStaticMethod
     @Test
-	public void testApplicationWithStaticAccessAndAccessMethodCustomNamespace() throws Exception {
+    public void testApplicationWithStaticAccessAndAccessMethodCustomNamespace() throws Exception {
 	    	String appSource = "<aura:application access='GLOBAL,org.auraframework.impl.test.util.TestAccessMethods.allowGlobal' />";
 	    	DefDescriptor<ApplicationDef> descriptor = 
 	    			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -1288,7 +1288,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	
 	//testStaticMethodAndAuthentication
     @Test
-	public void testApplicationWithAuthenticationAndAccessMethodCustomNamespace() throws Exception {
+    public void testApplicationWithAuthenticationAndAccessMethodCustomNamespace() throws Exception {
     	String appSource = "<aura:application access='org.auraframework.impl.test.util.TestAccessMethods.allowGlobal,AUTHENTICATED'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -1313,7 +1313,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	 * PRIVATE, INTERNAL and PRIVILEGED are not valid
 	 */
     @Test
-	public void testApplicationWithGlobalAccessCustomNamespace() throws Exception {
+    public void testApplicationWithGlobalAccessCustomNamespace() throws Exception {
     	String appSource = "<aura:application access='GLOBAL'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -1326,7 +1326,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
         def.validateDefinition();
     }
     @Test
-	public void testApplicationWithPublicAccessCustomNamespace() throws Exception {
+    public void testApplicationWithPublicAccessCustomNamespace() throws Exception {
     	String appSource = "<aura:application access='PUBLIC'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -1339,7 +1339,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
         def.validateDefinition();
     }
     @Test
-	public void testApplicationWithPrivateAccessCustomNamespace() throws Exception {
+    public void testApplicationWithPrivateAccessCustomNamespace() throws Exception {
     	String appSource = "<aura:application access='PRIVATE'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -1359,7 +1359,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	    }
     }
     @Test
-	public void testApplicationWithInternalAccessCustomNamespace() throws Exception {
+    public void testApplicationWithInternalAccessCustomNamespace() throws Exception {
     	String appSource = "<aura:application access='INTERNAL'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -1379,7 +1379,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	    }
     }
     @Test
-	public void testApplicationWithPrivilegedAccessCustomNamespace() throws Exception {
+    public void testApplicationWithPrivilegedAccessCustomNamespace() throws Exception {
     	String appSource = "<aura:application access='PRIVILEGED'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -1403,7 +1403,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	 * go through access=GLOBAL,PUBLIC,PRIVATE,INTERNAL,PRIVILEGED by AccessMethod for application in CustomNamespace
 	 */
     @Test
-	public void testApplicationWithGlobalAccessMethodCustomNamespace() throws Exception {
+    public void testApplicationWithGlobalAccessMethodCustomNamespace() throws Exception {
     	String appSource = "<aura:application access='org.auraframework.impl.test.util.TestAccessMethods.allowGlobal'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -1422,7 +1422,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
         }
     }
     @Test
-	public void testApplicationWithPublicAccessMethodCustomNamespace() throws Exception {
+    public void testApplicationWithPublicAccessMethodCustomNamespace() throws Exception {
     	String appSource = "<aura:application access='org.auraframework.impl.test.util.TestAccessMethods.allowPublic'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -1441,7 +1441,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
         }
     }
     @Test
-	public void testApplicationWithPrivateAccessMethodCustomNamespace() throws Exception {
+    public void testApplicationWithPrivateAccessMethodCustomNamespace() throws Exception {
     	String appSource = "<aura:application access='org.auraframework.impl.test.util.TestAccessMethods.allowPrivate'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -1460,7 +1460,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
         }
     }
     @Test
-	public void testApplicationWithPrivilegedAccessMethodCustomNamespace() throws Exception {
+    public void testApplicationWithPrivilegedAccessMethodCustomNamespace() throws Exception {
     	String appSource = "<aura:application access='org.auraframework.impl.test.util.TestAccessMethods.allowPrivileged'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -1479,7 +1479,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
         }
     }
     @Test
-	public void testApplicationWithInternalAccessMethodCustomNamespace() throws Exception {
+    public void testApplicationWithInternalAccessMethodCustomNamespace() throws Exception {
     	String appSource = "<aura:application access='org.auraframework.impl.test.util.TestAccessMethods.allowInternal'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -1503,7 +1503,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	 * this verify putting any two different valid access value together won't work. you can try other combinations, but it's the same
 	 */
     @Test
-	public void testApplicationWithGlobalAndPrivateAccessCustomNamespace() throws Exception {
+    public void testApplicationWithGlobalAndPrivateAccessCustomNamespace() throws Exception {
     	String appSource = "<aura:application access='GLOBAL, PRIVATE'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -1525,7 +1525,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	 * this verify we can put two same valid access value together 
 	 */
     @Test
-	public void testApplicationWithPublicAndPublicAccessCustomNamespace() throws Exception {
+    public void testApplicationWithPublicAndPublicAccessCustomNamespace() throws Exception {
     	String appSource = "<aura:application access='PUBLIC, PUBLIC'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -1543,7 +1543,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	 * These two verify we cannot use authentication as access, as we are not in InternalNamespace
 	 */
     @Test
-	public void testApplicationWithAuthenticationCustomNamespace() throws Exception {
+    public void testApplicationWithAuthenticationCustomNamespace() throws Exception {
     	String appSource = "<aura:application access='AUTHENTICATED'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -1563,7 +1563,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	    }
     }
     @Test
-	public void testApplicationWithUnAuthenticationCustomNamespace() throws Exception {
+    public void testApplicationWithUnAuthenticationCustomNamespace() throws Exception {
     	String appSource = "<aura:application access='UNAUTHENTICATED'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -1587,7 +1587,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	 * we cannot set access to Authenticated by method, like what we do for access value
 	 */
     @Test
-	public void testApplicationWithUnAuthenticationMethodCustomNamespace() throws Exception {
+    public void testApplicationWithUnAuthenticationMethodCustomNamespace() throws Exception {
     	String appSource = "<aura:application access='org.auraframework.impl.test.util.TestAccessMethods.allowAuthenticated'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -1610,7 +1610,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	 * this verify we cannot have both AUTHENTICATED and UNAUTHENTICATED as access attribute
 	 */
     @Test
-	public void testApplicationWithAuthenticatedAndUnAuthenticationAccessCustomNamespace() throws Exception {
+    public void testApplicationWithAuthenticatedAndUnAuthenticationAccessCustomNamespace() throws Exception {
     	String appSource = "<aura:application access='AUTHENTICATED,UNAUTHENTICATED'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -1633,7 +1633,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	 * This verify we cannot have Authentication as access attribute, as we are outside InternalNamespace
 	 */
     @Test
-	public void testApplicationWithAuthenticatedAndAuthenticationAccessCustomNamespace() throws Exception {
+    public void testApplicationWithAuthenticatedAndAuthenticationAccessCustomNamespace() throws Exception {
     	String appSource = "<aura:application access='AUTHENTICATED,AUTHENTICATED'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -1656,7 +1656,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
 	 * These verify we cannot have authentication as part of access, as we are not in InternalNamespace. 
 	 */
     @Test
-	public void testApplicationWithAuthenticatedAndGlobalAccessCustomNamespace() throws Exception {
+    public void testApplicationWithAuthenticatedAndGlobalAccessCustomNamespace() throws Exception {
     	String appSource = "<aura:application access='AUTHENTICATED,GLOBAL'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -1675,7 +1675,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
         }
     }
     @Test
-	public void testApplicationWithAuthenticatedAndPrivateAccessCustomNamespace() throws Exception {
+    public void testApplicationWithAuthenticatedAndPrivateAccessCustomNamespace() throws Exception {
     	String appSource = "<aura:application access='AUTHENTICATED,PRIVATE'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -1694,7 +1694,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
         }
     }
     @Test
-	public void testApplicationWithAuthenticatedAndPublicAccessCustomNamespace() throws Exception {
+    public void testApplicationWithAuthenticatedAndPublicAccessCustomNamespace() throws Exception {
     	String appSource = "<aura:application access='AUTHENTICATED,PUBLIC'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -1713,7 +1713,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
         }
     }
     @Test
-	public void testApplicationWithAuthenticatedAndPrivilegedAccessCustomNamespace() throws Exception {
+    public void testApplicationWithAuthenticatedAndPrivilegedAccessCustomNamespace() throws Exception {
     	String appSource = "<aura:application access='AUTHENTICATED,PRIVILEGED'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,
@@ -1732,7 +1732,7 @@ public class ApplicationAccessAttributeTest extends AuraImplTestCase {
         }
     }
     @Test
-	public void testApplicationWithAuthenticatedAndInternalAccessCustomNamespace() throws Exception {
+    public void testApplicationWithAuthenticatedAndInternalAccessCustomNamespace() throws Exception {
     	String appSource = "<aura:application access='AUTHENTICATED,INTERNAL'/>";
     	DefDescriptor<ApplicationDef> descriptor = 
     			getAuraTestingUtil().addSourceAutoCleanup(ApplicationDef.class,

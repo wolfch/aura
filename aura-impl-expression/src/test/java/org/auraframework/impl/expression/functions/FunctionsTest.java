@@ -44,16 +44,6 @@ import static org.auraframework.impl.expression.functions.MultiFunctions.NOTEQUA
 import static org.auraframework.impl.expression.functions.UtilFunctions.EMPTY;
 import static org.auraframework.impl.expression.functions.UtilFunctions.FORMAT;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import org.auraframework.impl.expression.AuraImplExpressionTestCase;
-import org.junit.Test;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
 /**
  * Basic tests of functions
  *

@@ -138,11 +138,6 @@ public abstract class UnitTestCase extends TestCase {
 
     @Override
     public void runBare() throws Throwable {
-        // Support Spring injection in legacy runners
-        if (applicationContext == null) {
-            TestContextManager testContextManager = new TestContextManager(getClass());
-            testContextManager.prepareTestInstance(this);
-        }
         logger.info(String.format("Running: %s.%s", getClass().getName(), getName()));
         super.runBare();
     }

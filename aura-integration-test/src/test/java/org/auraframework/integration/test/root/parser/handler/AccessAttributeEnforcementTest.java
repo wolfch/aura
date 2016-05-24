@@ -29,7 +29,7 @@ import org.junit.Test;
 
 @UnAdaptableTest("namespace start with c means something special in core")
 public class AccessAttributeEnforcementTest extends AuraImplTestCase {
-
+	
 	@Inject
 	protected StringSourceLoader stringSourceLoader;
 
@@ -37,148 +37,148 @@ public class AccessAttributeEnforcementTest extends AuraImplTestCase {
 		super();
 	}
 
-	@Test
-	public void testComponentWithTextWithSystemNamespace() throws Exception {
-		String componentCource = "<aura:component><aura:text value='Hello World!' /></aura:component>";
-		DefDescriptor<? extends Definition> componentDescriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-				componentCource,
+    @Test
+    public void testComponentWithTextWithSystemNamespace() throws Exception {
+    	String componentCource = "<aura:component><aura:text value='Hello World!' /></aura:component>";
+    	DefDescriptor<? extends Definition> componentDescriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, 
+    			componentCource,
 				StringSourceLoader.DEFAULT_NAMESPACE + ":testinterface",
                         NamespaceAccess.INTERNAL);
-		componentDescriptor.getDef();
-	}
-
-	@Test
-	public void testComponentWithTextWithCustomNamespace() throws Exception {
-		String componentCource = "<aura:component><aura:text value='Hello World!' /></aura:component>";
-		DefDescriptor<? extends Definition> componentDescriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-				componentCource,
+    	componentDescriptor.getDef();
+    }
+    
+    @Test
+    public void testComponentWithTextWithCustomNamespace() throws Exception {
+    	String componentCource = "<aura:component><aura:text value='Hello World!' /></aura:component>";
+    	DefDescriptor<? extends Definition> componentDescriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, 
+    			componentCource,
 				StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testinterface",
                         NamespaceAccess.CUSTOM);
-		componentDescriptor.getDef();
-	}
-
-
-	@Test
-	public void testComponentWithHTMLWithSystemNamespace() throws Exception {
-		String componentCource = "<aura:component><aura:html tag='b' body='Hello World!' /></aura:component>";
-		DefDescriptor<? extends Definition> componentDescriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-				componentCource,
+    	componentDescriptor.getDef();
+    }
+    
+    
+    @Test
+    public void testComponentWithHTMLWithSystemNamespace() throws Exception {
+    	String componentCource = "<aura:component><aura:html tag='b' body='Hello World!' /></aura:component>";
+    	DefDescriptor<? extends Definition> componentDescriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, 
+    			componentCource,
 				StringSourceLoader.DEFAULT_NAMESPACE + ":testinterface",
                         NamespaceAccess.INTERNAL);
-		componentDescriptor.getDef();
-	}
-
-	@Test
-	public void testComponentWithHTMLWithCustomNamespace() throws Exception {
-		String componentCource = "<aura:component><aura:html tag='b' body='Hello World!' /></aura:component>";
-		DefDescriptor<? extends Definition> componentDescriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-				componentCource,
+    	componentDescriptor.getDef();
+    }
+    
+    @Test
+    public void testComponentWithHTMLWithCustomNamespace() throws Exception {
+    	String componentCource = "<aura:component><aura:html tag='b' body='Hello World!' /></aura:component>";
+    	DefDescriptor<? extends Definition> componentDescriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, 
+    			componentCource,
 				StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testinterface",
                         NamespaceAccess.CUSTOM);
-		componentDescriptor.getDef();
-	}
+    	componentDescriptor.getDef();
+    }
+  
 
-
-	@Test
-	public void testComponentWithUnescapedHTMLWithSystemNamespace() throws Exception {
-		String componentCource = "<aura:component><aura:unescapedHtml value='Hello World!'/></aura:component>";
-		DefDescriptor<? extends Definition> componentDescriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-				componentCource,
+    @Test
+    public void testComponentWithUnescapedHTMLWithSystemNamespace() throws Exception {
+    	String componentCource = "<aura:component><aura:unescapedHtml value='Hello World!'/></aura:component>";
+    	DefDescriptor<? extends Definition> componentDescriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, 
+    			componentCource,
 				StringSourceLoader.DEFAULT_NAMESPACE + ":testinterface",
                         NamespaceAccess.INTERNAL);
-		componentDescriptor.getDef();
-	}
-
-	@Test
-	public void testComponentWithUnescapedHTMLWithCustomNamespace() throws Exception {
-		String componentCource = "<aura:component><aura:unescapedHtml value='Hello World!'/></aura:component>";
-		DefDescriptor<? extends Definition> componentDescriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-				componentCource,
+    	componentDescriptor.getDef();
+    }
+    
+    @Test
+    public void testComponentWithUnescapedHTMLWithCustomNamespace() throws Exception {
+    	String componentCource = "<aura:component><aura:unescapedHtml value='Hello World!'/></aura:component>";
+    	DefDescriptor<? extends Definition> componentDescriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, 
+    			componentCource,
 				StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testinterface",
                         NamespaceAccess.CUSTOM);
-		componentDescriptor.getDef();
-	}
-
-	@Test
-	public void testComponentWithExpressionWithSystemNamespace() throws Exception {
-		String componentCource = "<aura:component><aura:expression value='Hello + World!' /></aura:component>";
-		DefDescriptor<? extends Definition> componentDescriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-				componentCource,
+    	componentDescriptor.getDef();
+    }
+    
+    @Test
+    public void testComponentWithExpressionWithSystemNamespace() throws Exception {
+    	String componentCource = "<aura:component><aura:expression value='Hello + World!' /></aura:component>";
+    	DefDescriptor<? extends Definition> componentDescriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, 
+    			componentCource,
 				StringSourceLoader.DEFAULT_NAMESPACE + ":testinterface",
                         NamespaceAccess.INTERNAL);
-		componentDescriptor.getDef();
-	}
-
-	@Test
-	public void testComponentWithExpressionWithCustomNamespace() throws Exception {
-		String componentCource = "<aura:component><aura:expression value='Hello + World!' /></aura:component>";
-		DefDescriptor<? extends Definition> componentDescriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-				componentCource,
+    	componentDescriptor.getDef();
+    }
+    
+    @Test
+    public void testComponentWithExpressionWithCustomNamespace() throws Exception {
+    	String componentCource = "<aura:component><aura:expression value='Hello + World!' /></aura:component>";
+    	DefDescriptor<? extends Definition> componentDescriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, 
+    			componentCource,
 				StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testinterface",
                         NamespaceAccess.CUSTOM);
-		componentDescriptor.getDef();
-	}
-
-	@Test
-	public void testComponentWithIfWithSystemNamespace() throws Exception {
-		String componentCource = "<aura:component><aura:if isTrue='True' body='' else='' /></aura:component>";
-		DefDescriptor<? extends Definition> componentDescriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-				componentCource,
+    	componentDescriptor.getDef();
+    }
+    
+    @Test
+    public void testComponentWithIfWithSystemNamespace() throws Exception {
+    	String componentCource = "<aura:component><aura:if isTrue='True' body='' else='' /></aura:component>";
+    	DefDescriptor<? extends Definition> componentDescriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, 
+    			componentCource,
 				StringSourceLoader.DEFAULT_NAMESPACE + ":testinterface",
                         NamespaceAccess.INTERNAL);
-		componentDescriptor.getDef();
-	}
-
-	@Test
-	public void testComponentWithIfWithCustomNamespace() throws Exception {
-		String componentCource = "<aura:component><aura:if isTrue='True' body='' else='' /></aura:component>";
-		DefDescriptor<? extends Definition> componentDescriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-				componentCource,
+    	componentDescriptor.getDef();
+    }
+    
+    @Test
+    public void testComponentWithIfWithCustomNamespace() throws Exception {
+    	String componentCource = "<aura:component><aura:if isTrue='True' body='' else='' /></aura:component>";
+    	DefDescriptor<? extends Definition> componentDescriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, 
+    			componentCource,
 				StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testinterface",
                         NamespaceAccess.CUSTOM);
-		componentDescriptor.getDef();
-	}
-
-	@Test
-	public void testComponentWithRenderIfWithSystemNamespace() throws Exception {
-		String componentCource = "<aura:component><aura:renderIf isTrue='True' body='' else='' /></aura:component>";
-		DefDescriptor<? extends Definition> componentDescriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-				componentCource,
+    	componentDescriptor.getDef();
+    }
+    
+    @Test
+    public void testComponentWithRenderIfWithSystemNamespace() throws Exception {
+    	String componentCource = "<aura:component><aura:renderIf isTrue='True' body='' else='' /></aura:component>";
+    	DefDescriptor<? extends Definition> componentDescriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, 
+    			componentCource,
 				StringSourceLoader.DEFAULT_NAMESPACE + ":testinterface",
                         NamespaceAccess.INTERNAL);
-		componentDescriptor.getDef();
-	}
-
-	@Test
-	public void testComponentWithRenderIfWithCustomNamespace() throws Exception {
-		String componentCource = "<aura:component><aura:renderIf isTrue='True' body='' else='' /></aura:component>";
-		DefDescriptor<? extends Definition> componentDescriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-				componentCource,
+    	componentDescriptor.getDef();
+    }
+    
+    @Test
+    public void testComponentWithRenderIfWithCustomNamespace() throws Exception {
+    	String componentCource = "<aura:component><aura:renderIf isTrue='True' body='' else='' /></aura:component>";
+    	DefDescriptor<? extends Definition> componentDescriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, 
+    			componentCource,
 				StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testinterface",
                         NamespaceAccess.CUSTOM);
-		componentDescriptor.getDef();
-	}
-
-	@Test
-	public void testComponentWithDependencyWithSystemNamespace() throws Exception {
-		DefDescriptor<ComponentDef> cmpDescA = addSourceAutoCleanup(ComponentDef.class, "<aura:component/>");
-		String componentCource = "<aura:component><aura:dependency resource='" + cmpDescA.getQualifiedName() + "'/></aura:component>";
-		DefDescriptor<? extends Definition> componentDescriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-				componentCource,
+    	componentDescriptor.getDef();
+    }
+    
+    @Test
+    public void testComponentWithDependencyWithSystemNamespace() throws Exception {
+    	DefDescriptor<ComponentDef> cmpDescA = addSourceAutoCleanup(ComponentDef.class, "<aura:component/>");
+        String componentCource = "<aura:component><aura:dependency resource='" + cmpDescA.getQualifiedName() + "'/></aura:component>";
+    	DefDescriptor<? extends Definition> componentDescriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, 
+    			componentCource,
 				StringSourceLoader.DEFAULT_NAMESPACE + ":testinterface",
                         NamespaceAccess.INTERNAL);
-		componentDescriptor.getDef();
-	}
-
-	@Test
-	public void testComponentWithDependencyWithCustomNamespace() throws Exception {
-		DefDescriptor<ComponentDef> cmpDescA = addSourceAutoCleanup(ComponentDef.class, "<aura:component/>");
-		String componentCource = "<aura:component><aura:dependency resource='" + cmpDescA.getQualifiedName() + "'/></aura:component>";
-		DefDescriptor<? extends Definition> componentDescriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class,
-				componentCource,
+    	componentDescriptor.getDef();
+    }
+    
+    @Test
+    public void testComponentWithDependencyWithCustomNamespace() throws Exception {
+    	DefDescriptor<ComponentDef> cmpDescA = addSourceAutoCleanup(ComponentDef.class, "<aura:component/>");
+        String componentCource = "<aura:component><aura:dependency resource='" + cmpDescA.getQualifiedName() + "'/></aura:component>";
+    	DefDescriptor<? extends Definition> componentDescriptor = getAuraTestingUtil().addSourceAutoCleanup(ComponentDef.class, 
+    			componentCource,
 				StringSourceLoader.DEFAULT_CUSTOM_NAMESPACE + ":testinterface",
                         NamespaceAccess.CUSTOM);
-		componentDescriptor.getDef();
-	}
+    	componentDescriptor.getDef();
+    }
 
 }

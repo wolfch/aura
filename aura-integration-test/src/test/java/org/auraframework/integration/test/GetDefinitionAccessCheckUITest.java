@@ -21,7 +21,6 @@ import org.auraframework.util.test.annotation.ThreadHostileTest;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.auraframework.util.test.annotation.UnAdaptableTest;
-import org.junit.Test;
 import org.openqa.selenium.By;
 
 @UnAdaptableTest("We don't run access check test across browsers")
