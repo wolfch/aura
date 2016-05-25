@@ -100,19 +100,31 @@
             cmp.testInnerHTMLSupportsUseTagForSvgElement();
         }
     },
-    
+
     testTextContent: {
         test: function(cmp) {
             cmp.testTextContent();
         }
     },
-    
+
     testInnerText: {
         test: function(cmp) {
             cmp.testInnerText();
         }
     },
-    
+
+    testInnerHTMLForExistingElement: {
+        test: function(cmp) {
+            cmp.testInnerHTML("ExistingElement");
+        }
+    },
+
+    testInnerHTMLForCreatedElement: {
+        test: function(cmp) {
+            cmp.testInnerHTML("CreatedElement");
+        }
+    },
+
     testAddEventListenerMultipleCalls: {
         test: function(cmp) {
             cmp.testAddEventListenerMultipleCalls();
