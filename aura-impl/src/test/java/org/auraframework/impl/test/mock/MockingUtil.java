@@ -18,9 +18,14 @@ package org.auraframework.impl.test.mock;
 import java.util.Arrays;
 import java.util.Set;
 
+import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.Definition;
+import org.auraframework.impl.parser.ParserFactory;
+import org.auraframework.service.DefinitionService;
+import org.auraframework.system.Parser;
 import org.auraframework.test.TestContext;
 import org.auraframework.test.TestContextAdapter;
+import org.auraframework.test.source.StringSource;
 
 /**
  * Provides access to mocks for internal framework objects that would be difficult to mock traditionally in the context
@@ -31,9 +36,13 @@ import org.auraframework.test.TestContextAdapter;
 public class MockingUtil {
 
     private final TestContextAdapter testContextAdapter;
+    private final DefinitionService definitionService;
+    private final ParserFactory parserFactory;
 
-    public MockingUtil(TestContextAdapter testContextAdapter) {
+    public MockingUtil(TestContextAdapter testContextAdapter, DefinitionService definitionService, ParserFactory parserFactory) {
         this.testContextAdapter = testContextAdapter;
+        this.definitionService = definitionService;
+        this.parserFactory = parserFactory;
     }
     
     /**
@@ -55,5 +64,37 @@ public class MockingUtil {
                 mocks.addAll(Arrays.asList(mockDefs));
             }
         }
+    }
+
+    /**
+     * Mock a definition with the given markup.
+     * 
+     * @param defClass the type of Definition to generate
+     * @param descriptor the name of the descriptor to assign to the generated Definition
+     * @param markup content to parse
+     * @return the Definition created from the provided markup
+     * @throws Exception
+     */
+    public <D extends Definition> D mockDefMarkup(Class<D> defClass, String descriptor, String markup)
+            throws Exception {
+        DefDescriptor<D> desc = definitionService.getDefDescriptor(descriptor, defClass);
+        return mockDefMarkup(desc, markup);
+    }
+
+    /**
+     * Mock a definition with the given markup.
+     * 
+     * @param descriptor the descriptor to assign to the generated Definition
+     * @param markup content to parse
+     * @return the Definition created from the provided markup
+     * @throws Exception
+     */
+    @SuppressWarnings("unchecked")
+    public <D extends Definition> D mockDefMarkup(DefDescriptor<D> descriptor, String markup) throws Exception {
+        Parser<D> parser = parserFactory.getParser(Parser.Format.XML, descriptor);
+        D def = parser.parse(descriptor,
+                new StringSource<>(descriptor, markup, descriptor.getQualifiedName(), org.auraframework.system.Parser.Format.XML));
+        mockDef(def);
+        return def;
     }
 }
