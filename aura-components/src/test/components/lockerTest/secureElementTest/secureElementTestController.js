@@ -70,17 +70,18 @@
 
         testUtils.assertEquals(1, counter);
     },
-    
+
     testInnerHTMLSupportsUseTagForSvgElement: function(cmp) {
         var testUtils = cmp.get("v.testUtils");
 
         var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
         svg.innerHTML = '<defs> <text id="text" x="50" y="50">SVG</text> </defs>' +
                         '<use xlink:href="#text"></use>';
- 
-        var elements = svg.getElementsByTagName('use');
-        testUtils.assertEquals(1, elements.length);
-        testUtils.assertEquals('#text', elements[0].getAttribute('xlink:href'));
+
+        var actual = svg.innerHTML;
+        // partially matching the tag, since browsers may insert attributes in the tag
+        testUtils.assertTrue(actual.indexOf('xlink:href="#text"></use>') > -1,
+                "use tag should not be removed by DOMPurify: " + actual);
     },
 
     testTextContent: function(cmp) {
@@ -89,22 +90,21 @@
         element.textContent = "text content";
         testUtils.assertEquals("text content", element.textContent);
     },
-    
+
     testInnerText: function(cmp) {
         var testUtils = cmp.get("v.testUtils");
 
         var element = document.createElement("div");
-               
         // Node.innerText is not supported on all browsers
         if ("innerText" in element) {
             element.testInnerText = "innerText content";
             testUtils.assertEquals("innerText content", element.testInnerText);
         }
     },
-    
-    testAddEventListenerMultipleCalls : function(cmp, event, helper) {
+
+    testAddEventListenerMultipleCalls: function(cmp, event, helper) {
         var testUtils = cmp.get("v.testUtils");
-        
+
         var counter = 0;
         var handler1 = function() {
             counter += 0.3;
@@ -112,22 +112,87 @@
         var handler2 = function() {
             counter += 1;
         }
-        
+
         var element = cmp.find("title").getElement();
         element.addEventListener("click", handler1);
-        
+
         // additional handlers should be allowed
         element.addEventListener("click", handler2);
-        
+
         // adding an existing handler should not error out
         element.addEventListener("click", handler1);
-        
+
         // again, no error on adding an existing handler
         element.addEventListener("click", handler2);
-        
+
         testUtils.clickOrTouch(element);
-        
+
         // each handler above should have been invoked once only
         testUtils.assertEquals(1.3, counter);
+    },
+
+    testSvgGetBBox: function(cmp) {
+        var testUtils = cmp.get("v.testUtils");
+        var expected = {
+                "x": 20,
+                "y": 30,
+                "height": 40,
+                "width": 50
+        };
+
+        var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.width = 400;
+        svg.height = 400;
+        document.body.appendChild(svg);
+
+        var rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttributeNS(null, 'x', '20');
+        rect.setAttributeNS(null, 'y', '30');
+        rect.setAttributeNS(null, 'height', '40');
+        rect.setAttributeNS(null, 'width', '50');
+        rect.setAttributeNS(null, 'fill', 'blue');
+        svg.appendChild(rect);
+
+        var bbox = rect.getBBox();
+        testUtils.assertEquals("[object SVGRect]", bbox.toString());
+        for (var prop in expected) {
+            testUtils.assertEquals(expected[prop], bbox[prop], "Unexpected attribute value returned from getBBox() for <" + prop + ">");
+        }
+    },
+    
+    testScalarExpression: function(cmp) {
+        var testUtils = cmp.get("v.testUtils");
+        var element = cmp.find("scalarExpression").getElement();
+        testUtils.assertEquals("A scalar expression", element.innerHTML);
+    },
+        
+    testElementCache: function(cmp, event, helper) {
+        var testUtils = cmp.get("v.testUtils");
+        
+        // Verify that we get the same SE from multiple calls to SecureComponent.getElement()
+        var e = cmp.find("cacheTestA").getElement();
+        testUtils.assertDefined(e);
+        testUtils.assertTrue(e === cmp.find("cacheTestA").getElement());
+        
+        // Verify that we get the same SE for multiple calls to document.getElementById()
+        var cacheTestA = document.getElementById("cacheTestA");
+        testUtils.assertDefined(cacheTestA);
+        testUtils.assertTrue(cacheTestA === document.getElementById("cacheTestA"));
+
+        // Add a new element, reparent it, and verify that we get the same SE
+        var child = document.createElement("div");
+        child.id = "reparentTest";
+        child.innerHTML = "Dynamically Created Child";
+        cacheTestA.appendChild(child);
+        testUtils.assertTrue(child === cacheTestA.children[0]);
+
+        var cacheTestB = document.getElementById("cacheTestB");
+        cacheTestB.appendChild(child);
+        testUtils.assertTrue(child === cacheTestB.children[0]);
+                
+        cacheTestB.innerHTML = "<span>Removed Children</span>"
+        
+        cacheTestA.appendChild(child);
+        testUtils.assertTrue(child === cacheTestA.children[0]);        
     }
 })
