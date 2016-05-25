@@ -34,16 +34,12 @@ import org.auraframework.system.Source;
 import org.auraframework.test.source.StringSource;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
 import org.auraframework.throwable.quickfix.QuickFixException;
-import org.auraframework.util.FileMonitor;
 import org.junit.Test;
 
 import javax.inject.Inject;
 import javax.xml.stream.XMLStreamReader;
 
 public class ApplicationDefHandlerTest extends AuraImplTestCase {
-    @Inject
-    private FileMonitor fileMonitor;
-
     @Inject
     private DefinitionParserAdapter definitionParserAdapter;
     
@@ -79,7 +75,7 @@ public class ApplicationDefHandlerTest extends AuraImplTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        StringSource<ApplicationDef> source = new StringSource<>(fileMonitor,
+        StringSource<ApplicationDef> source = new StringSource<>(
                 vendor.getApplicationDefDescriptor(), "<aura:application controller='" + vendor.getControllerDescriptor().getQualifiedName() + "' extends='"
                 + vendor.getParentComponentDefDescriptor() + "' implements='"
                 + vendor.getInterfaceDefDescriptor()
@@ -110,7 +106,7 @@ public class ApplicationDefHandlerTest extends AuraImplTestCase {
     public void testDuplicateAttributeNames() throws Exception {
         DefDescriptor<ApplicationDef> descriptor = definitionService.getDefDescriptor("test:fakeparser",
                 ApplicationDef.class);
-        StringSource<ApplicationDef> source = new StringSource<>(fileMonitor,
+        StringSource<ApplicationDef> source = new StringSource<>(
                 descriptor, "<aura:application><aura:attribute name=\"implNumber\" type=\"String\"/>"
                 + "<aura:attribute name=\"implNumber\" type=\"String\"/></aura:application>",
                 "myID", Format.XML);

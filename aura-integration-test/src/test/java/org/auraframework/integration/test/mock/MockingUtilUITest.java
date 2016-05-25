@@ -15,15 +15,12 @@
  */
 package org.auraframework.integration.test.mock;
 
-import javax.inject.Inject;
-
 import org.auraframework.Aura;
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.ControllerDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.ModelDef;
-import org.auraframework.impl.parser.ParserFactory;
 import org.auraframework.impl.test.mock.MockingUtil;
 import org.auraframework.integration.test.util.WebDriverTestCase;
 import org.auraframework.system.Annotations.AuraEnabled;
@@ -44,16 +41,12 @@ import com.google.common.collect.ImmutableMap;
 @UnAdaptableTest("W-2329849: Failing on SFDC but passing on standalone ios-driver builds. Needs investigation")
 @Controller
 public class MockingUtilUITest extends WebDriverTestCase {
-
-    @Inject
-    private ParserFactory parserFactory;
-    
     private MockingUtil mockingUtil;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        mockingUtil = new MockingUtil(testContextAdapter, definitionService, fileMonitor, parserFactory);
+        mockingUtil = new MockingUtil(testContextAdapter);
     }
 
     @Override

@@ -23,7 +23,6 @@ import org.auraframework.impl.root.parser.DocumentationXMLParser;
 import org.auraframework.system.Parser.Format;
 import org.auraframework.test.source.StringSource;
 import org.auraframework.throwable.quickfix.QuickFixException;
-import org.auraframework.util.FileMonitor;
 import org.junit.Test;
 
 import javax.inject.Inject;
@@ -31,9 +30,6 @@ import java.util.List;
 import java.util.Map;
 
 public class DocumentationDefHandlerTest extends AuraImplTestCase {
-    @Inject
-    private FileMonitor fileMonitor;
-
     @Inject
     private DocumentationXMLParser documentationXMLParser;
 
@@ -218,7 +214,7 @@ public class DocumentationDefHandlerTest extends AuraImplTestCase {
     }
 
     private DocumentationDef parse(String markup) throws QuickFixException {
-        StringSource<DocumentationDef> source = new StringSource<>(fileMonitor, vendor.getDocumentationDefDescriptor(), markup, "myID", Format.XML);
+        StringSource<DocumentationDef> source = new StringSource<>(vendor.getDocumentationDefDescriptor(), markup, "myID", Format.XML);
 
         return documentationXMLParser.parse(vendor.getDocumentationDefDescriptor(), source);
     }

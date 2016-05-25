@@ -33,7 +33,6 @@ import org.auraframework.system.Parser.Format;
 import org.auraframework.test.source.StringSource;
 import org.auraframework.throwable.AuraRuntimeException;
 import org.auraframework.throwable.quickfix.DefinitionNotFoundException;
-import org.auraframework.util.FileMonitor;
 import org.junit.Test;
 
 import javax.inject.Inject;
@@ -43,9 +42,6 @@ import javax.xml.stream.XMLStreamReader;
 import java.util.List;
 
 public class AttributeDefHandlerTest extends AuraImplTestCase {
-    @Inject
-    private FileMonitor fileMonitor;
-
     @Inject
     private DefinitionParserAdapter definitionParserAdapter;
     
@@ -58,7 +54,7 @@ public class AttributeDefHandlerTest extends AuraImplTestCase {
     public void setUp() throws Exception {
         super.setUp();
         desc = definitionService.getDefDescriptor("mystring", AttributeDef.class);
-        componentSource = new StringSource<>(fileMonitor, desc, "<aura:component/>", "myID", Format.XML);
+        componentSource = new StringSource<>(desc, "<aura:component/>", "myID", Format.XML);
         componentXmlReader = getXmlReader(componentSource);
         cdh = new ComponentDefHandler(null, componentSource, componentXmlReader, true, definitionService, contextService,
                 configAdapter, definitionParserAdapter);
@@ -239,7 +235,7 @@ public class AttributeDefHandlerTest extends AuraImplTestCase {
     }
 
     private AttributeDefHandler<ComponentDef> getHandler(String attrMarkup) throws Exception {
-        StringSource<AttributeDef> attributeSource = new StringSource<>(fileMonitor, desc, attrMarkup,
+        StringSource<AttributeDef> attributeSource = new StringSource<>(desc, attrMarkup,
                 "myID", Format.XML);
         XMLStreamReader attributeXmlReader = getXmlReader(attributeSource);
         return new AttributeDefHandler<>(cdh, attributeXmlReader, attributeSource, true, definitionService,

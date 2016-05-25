@@ -27,7 +27,6 @@ import org.auraframework.service.DefinitionService;
 import org.auraframework.system.Parser.Format;
 import org.auraframework.test.source.StringSource;
 import org.auraframework.throwable.quickfix.DefinitionNotFoundException;
-import org.auraframework.util.FileMonitor;
 import org.junit.Test;
 
 import javax.inject.Inject;
@@ -36,9 +35,6 @@ import java.util.Set;
 
 public class TokensImportImplTest extends StyleTestCase {
     @Inject
-    private FileMonitor fileMonitor;
-
-    @Inject
     DefinitionService definitionService;
 
     @Inject
@@ -46,7 +42,7 @@ public class TokensImportImplTest extends StyleTestCase {
     
     private TokensImportDef source(String src) throws Exception {
         DefDescriptor<TokensImportDef> desc = definitionService.getDefDescriptor("test", TokensImportDef.class);
-        StringSource<TokensImportDef> ss = new StringSource<>(fileMonitor, desc, src, "myID", Format.XML);
+        StringSource<TokensImportDef> ss = new StringSource<>(desc, src, "myID", Format.XML);
         XMLStreamReader xmlReader = XMLParser.createXMLStreamReader(ss.getHashingReader());
         xmlReader.next();
         TokensImportDefHandler<TokensDef> handler = new TokensImportDefHandler<>(null, xmlReader, ss, true,

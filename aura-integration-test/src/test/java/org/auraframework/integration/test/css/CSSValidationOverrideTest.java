@@ -42,7 +42,7 @@ public class CSSValidationOverrideTest extends AuraImplTestCase {
 
     private Source<StyleDef> getInvalidStyleSource() {
         DefDescriptor<StyleDef> styleDefDesc = definitionService.getDefDescriptor("css://fake.name", StyleDef.class);
-        return new StringSource<StyleDef>(null, styleDefDesc, 
+        return new StringSource<StyleDef>(styleDefDesc, 
                 ".xyErrorText { color: #808080; padding-bottom: 5px; } .xyLabel { padding-right: 5px; }",
                 "fake:name", Format.CSS);
     }

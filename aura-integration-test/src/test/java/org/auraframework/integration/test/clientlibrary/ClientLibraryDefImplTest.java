@@ -39,16 +39,12 @@ import org.auraframework.system.AuraContext.Mode;
 import org.auraframework.system.Parser.Format;
 import org.auraframework.test.source.StringSource;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
-import org.auraframework.util.FileMonitor;
 import org.junit.Test;
 
 /**
  * Unit tests for {@link ClientLibraryDefImpl}
  */
 public class ClientLibraryDefImplTest extends AuraImplTestCase {
-    @Inject
-    private FileMonitor fileMonitor;
-
     @Inject
     private DefinitionParserAdapter definitionParserAdapter;
     
@@ -192,12 +188,12 @@ public class ClientLibraryDefImplTest extends AuraImplTestCase {
     }
 
     private ClientLibraryDefHandler<ComponentDef> getHandler(String clMarkup) throws Exception {
-        StringSource<ClientLibraryDef> componentSource = new StringSource<>(fileMonitor, null, "<aura:component/>", "myID", Format.XML);
+        StringSource<ClientLibraryDef> componentSource = new StringSource<>(null, "<aura:component/>", "myID", Format.XML);
         XMLStreamReader componentXmlReader = getXmlReader(componentSource);
         ComponentDefHandler cdh = new ComponentDefHandler(null, componentSource, componentXmlReader, true,
                 definitionService, contextService, configAdapter, definitionParserAdapter);
 
-        StringSource<ClientLibraryDef> clientLibrarySource = new StringSource<>(fileMonitor, null, clMarkup,
+        StringSource<ClientLibraryDef> clientLibrarySource = new StringSource<>(null, clMarkup,
                 "myID", Format.XML);
         XMLStreamReader xmlReader = getXmlReader(clientLibrarySource);
         return new ClientLibraryDefHandler<>(cdh, xmlReader,

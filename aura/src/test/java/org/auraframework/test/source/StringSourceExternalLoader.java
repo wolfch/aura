@@ -42,7 +42,6 @@ import org.auraframework.system.SourceListener;
 import org.auraframework.test.source.StringSourceLoaderImpl.DescriptorInfo;
 import org.auraframework.throwable.AuraExecutionException;
 import org.auraframework.throwable.quickfix.QuickFixException;
-import org.auraframework.util.FileMonitor;
 import org.auraframework.util.json.JsonEncoder;
 import org.auraframework.util.json.JsonReader;
 import org.auraframework.util.test.configuration.TestServletConfig;
@@ -73,9 +72,6 @@ public class StringSourceExternalLoader implements StringSourceLoader {
 
     @Inject
     private ConfigAdapter configAdapter;
-
-    @Inject
-    private FileMonitor fileMonitor;
 
     @Inject
     private DefinitionService definitionService;
@@ -272,7 +268,7 @@ public class StringSourceExternalLoader implements StringSourceLoader {
 
         Format format = DescriptorInfo.get(descriptor.getDefType().getPrimaryInterface()).getFormat();
 
-        RemoteStringSource<D> source = new RemoteStringSource<>(fileMonitor, descriptor, contents,
+        RemoteStringSource<D> source = new RemoteStringSource<>(descriptor, contents,
                 descriptor.getQualifiedName(), format, access);
         localSources.put(descriptor, source);
         localAccess.putIfAbsent(descriptor.getNamespace(), access);
@@ -367,9 +363,9 @@ public class StringSourceExternalLoader implements StringSourceLoader {
         private static final long serialVersionUID = 2891764196250418955L;
         NamespaceAccess access;
 
-        private RemoteStringSource(SourceListener sourceListener, DefDescriptor<D> descriptor, String contents,
+        private RemoteStringSource(DefDescriptor<D> descriptor, String contents,
                                    String id, Format format, NamespaceAccess access) {
-            super(sourceListener, descriptor, contents, id, format);
+            super(descriptor, contents, id, format);
             this.access = access;
         }
 

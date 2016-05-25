@@ -15,7 +15,6 @@
  */
 package org.auraframework.impl.root.parser.handler;
 
-import javax.inject.Inject;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -32,16 +31,11 @@ import org.auraframework.system.Source;
 import org.auraframework.test.source.StringSource;
 import org.auraframework.throwable.AuraRuntimeException;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
-import org.auraframework.util.FileMonitor;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
 public class LibraryDefRefHandlerTest extends AuraImplTestCase {
-
-    @Inject
-    private FileMonitor fileMonitor;
-    
     @Mock
     DefDescriptor<LibraryDefRef> descriptor;
 
@@ -63,7 +57,7 @@ public class LibraryDefRefHandlerTest extends AuraImplTestCase {
     @Test
     public void testGetElement() throws Exception {
         String expectedLibrary = "my:Lib";
-        StringSource<LibraryDefRef> source = new StringSource<>(fileMonitor, descriptor, 
+        StringSource<LibraryDefRef> source = new StringSource<>(descriptor, 
         		String.format("<%s library='%s' property='p'/>", LibraryDefRefHandler.TAG, expectedLibrary), "myID", Format.XML);
         Mockito.doReturn(parentDescriptor).when(parentHandler).getDefDescriptor();
         Mockito.doReturn(DefType.COMPONENT).when(parentDescriptor).getDefType();
@@ -78,7 +72,7 @@ public class LibraryDefRefHandlerTest extends AuraImplTestCase {
 
     @Test
     public void testGetElementWithoutLibrary() throws Exception {
-        StringSource<LibraryDefRef> source = new StringSource<>(fileMonitor, descriptor, String.format(
+        StringSource<LibraryDefRef> source = new StringSource<>(descriptor, String.format(
                 "<%s/>", LibraryDefRefHandler.TAG), "myID", Format.XML);
         Mockito.doReturn(parentDescriptor).when(parentHandler).getDefDescriptor();
         Mockito.doReturn(DefType.COMPONENT).when(parentDescriptor).getDefType();
@@ -95,7 +89,7 @@ public class LibraryDefRefHandlerTest extends AuraImplTestCase {
 
     @Test
     public void testGetElementWithEmptyLibrary() throws Exception {
-        StringSource<LibraryDefRef> source = new StringSource<>(fileMonitor, descriptor, String.format(
+        StringSource<LibraryDefRef> source = new StringSource<>(descriptor, String.format(
                 "<%s library=''/>", LibraryDefRefHandler.TAG), "myID", Format.XML);
         Mockito.doReturn(parentDescriptor).when(parentHandler).getDefDescriptor();
         Mockito.doReturn(DefType.COMPONENT).when(parentDescriptor).getDefType();
@@ -112,7 +106,7 @@ public class LibraryDefRefHandlerTest extends AuraImplTestCase {
 
     @Test
     public void testGetElementWithInvalidLibraryName() throws Exception {
-        StringSource<LibraryDefRef> source = new StringSource<>(fileMonitor, descriptor, String.format(
+        StringSource<LibraryDefRef> source = new StringSource<>(descriptor, String.format(
                 "<%s library='this is invalid'/>", LibraryDefRefHandler.TAG), "myID", Format.XML);
         Mockito.doReturn(parentDescriptor).when(parentHandler).getDefDescriptor();
         Mockito.doReturn(DefType.COMPONENT).when(parentDescriptor).getDefType();
@@ -129,7 +123,7 @@ public class LibraryDefRefHandlerTest extends AuraImplTestCase {
 
     @Test
     public void testGetElementWithNonEmptyTag() throws Exception {
-        StringSource<LibraryDefRef> source = new StringSource<>(fileMonitor, descriptor, String.format(
+        StringSource<LibraryDefRef> source = new StringSource<>(descriptor, String.format(
                 "<%s library='l' property='p'>text</%1$s>", LibraryDefRefHandler.TAG), "myID", Format.XML);
         Mockito.doReturn(parentDescriptor).when(parentHandler).getDefDescriptor();
         Mockito.doReturn(DefType.COMPONENT).when(parentDescriptor).getDefType();
@@ -147,7 +141,7 @@ public class LibraryDefRefHandlerTest extends AuraImplTestCase {
     @Test
     public void testGetElementWithDescription() throws Exception {
         String expectedDescription = "needs to be included";
-        StringSource<LibraryDefRef> source = new StringSource<>(fileMonitor, descriptor, String.format(
+        StringSource<LibraryDefRef> source = new StringSource<>(descriptor, String.format(
                 "<%s library='l' property='p' description='%s'/>", LibraryDefRefHandler.TAG, expectedDescription), "myID", Format.XML);
         Mockito.doReturn(parentDescriptor).when(parentHandler).getDefDescriptor();
         Mockito.doReturn(DefType.COMPONENT).when(parentDescriptor).getDefType();
@@ -159,7 +153,7 @@ public class LibraryDefRefHandlerTest extends AuraImplTestCase {
 
     @Test
     public void testGetElementWithUnexpectedAttribute() throws Exception {
-        StringSource<LibraryDefRef> source = new StringSource<>(fileMonitor, descriptor, String.format(
+        StringSource<LibraryDefRef> source = new StringSource<>(descriptor, String.format(
                 "<%s library='l' property='p' unexpected='me'/>", LibraryDefRefHandler.TAG), "myID", Format.XML);
         Mockito.doReturn(parentDescriptor).when(parentHandler).getDefDescriptor();
         Mockito.doReturn(DefType.COMPONENT).when(parentDescriptor).getDefType();

@@ -24,15 +24,11 @@ import org.auraframework.impl.root.parser.EventXMLParser;
 import org.auraframework.system.Parser.Format;
 import org.auraframework.test.source.StringSource;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
-import org.auraframework.util.FileMonitor;
 import org.junit.Test;
 
 import javax.inject.Inject;
 
 public class EventHandlerDefHandlerTest extends AuraImplTestCase {
-    @Inject
-    private FileMonitor fileMonitor;
-
     @Inject
     private ComponentXMLParser componentXMLParser;
 
@@ -42,7 +38,7 @@ public class EventHandlerDefHandlerTest extends AuraImplTestCase {
     @Test
     public void testEventHandlerDefHandler() throws Exception {
         DefDescriptor<ComponentDef> descriptor = definitionService.getDefDescriptor("test:fakeparser", ComponentDef.class);
-        StringSource<ComponentDef> source = new StringSource<>(fileMonitor,
+        StringSource<ComponentDef> source = new StringSource<>(
                 descriptor, "<aura:component><aura:handler event='aura:click' action='{!c.action}'/></aura:component>",
                 "myID", Format.XML);
         ComponentDef def = componentXMLParser.parse(descriptor, source);
@@ -52,7 +48,7 @@ public class EventHandlerDefHandlerTest extends AuraImplTestCase {
     @Test
     public void testRegisterDuplicateEventNames() throws Exception {
         DefDescriptor<ComponentDef> descriptor = definitionService.getDefDescriptor("test:fakeparser", ComponentDef.class);
-        StringSource<ComponentDef> source = new StringSource<>(fileMonitor, descriptor, "<aura:component>"
+        StringSource<ComponentDef> source = new StringSource<>(descriptor, "<aura:component>"
                 + "<aura:registerevent name='dupName' type='aura:click'/>"
                 + "<aura:registerevent name='dupName' type='aura:click'/>" + "</aura:component>", "myID", Format.XML);
         ComponentDef cd = componentXMLParser.parse(descriptor, source);
@@ -75,7 +71,7 @@ public class EventHandlerDefHandlerTest extends AuraImplTestCase {
     @Test
     public void testEventXMLParser() throws Exception {
         DefDescriptor<EventDef> descriptor = definitionService.getDefDescriptor("auratest" + ":fakeEvent", EventDef.class);
-        StringSource<EventDef> source = new StringSource<>(fileMonitor,
+        StringSource<EventDef> source = new StringSource<>(
                 descriptor,
                 "<aura:event type='component' access='GLOBAL' support='GA' description='Something'>" +
                         "<aura:attribute name='att1' type='String'/>" +
@@ -97,7 +93,7 @@ public class EventHandlerDefHandlerTest extends AuraImplTestCase {
         try {
     		//runTestEventXMLParser(false, true, true, true, true, "abstract='true'");
             DefDescriptor<EventDef> descriptor = definitionService.getDefDescriptor("auratest" + ":fakeEvent", EventDef.class);
-            StringSource<EventDef> source = new StringSource<>(fileMonitor,
+            StringSource<EventDef> source = new StringSource<>(
                     descriptor,
                     "<aura:event type='component' abstract='true'>" +
                             "</aura:event>", "myID", Format.XML);

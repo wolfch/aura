@@ -24,7 +24,6 @@ import org.auraframework.impl.root.parser.XMLParser;
 import org.auraframework.system.Parser.Format;
 import org.auraframework.test.source.StringSource;
 import org.auraframework.throwable.AuraRuntimeException;
-import org.auraframework.util.FileMonitor;
 import org.junit.Test;
 
 import javax.inject.Inject;
@@ -34,9 +33,6 @@ import javax.xml.stream.XMLStreamReader;
  * Test for {@link ContainerTagHandler}.
  */
 public class ContainerTagHandlerTest extends AuraImplTestCase {
-    @Inject
-    private FileMonitor fileMonitor;
-    
     XMLStreamReader xmlReader;
     ComponentDefRefHandler<?> cdrHandler;
 
@@ -62,7 +58,7 @@ public class ContainerTagHandlerTest extends AuraImplTestCase {
     private ParentedTagHandler<? extends ComponentDefRef, ?> createDefRefHandler(String markup) throws Exception {
         DefDescriptor<ComponentDef> desc = definitionService.getDefDescriptor("fake:component",
                 ComponentDef.class);
-        StringSource<ComponentDef> source = new StringSource<>(fileMonitor, desc, markup, "myID", Format.XML);
+        StringSource<ComponentDef> source = new StringSource<>(desc, markup, "myID", Format.XML);
         xmlReader = XMLParser.createXMLStreamReader(source.getHashingReader());
         xmlReader.next();
         // Assume we found the markup in a component, create a

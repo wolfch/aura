@@ -36,7 +36,33 @@ public class StringSource<D extends Definition> extends Source<D> {
     private final SourceListener sourceListener;
     private final transient StringData data;
 
-    public StringSource(SourceListener sourceListener, DefDescriptor<D> descriptor, String contents, String id, Format format) {
+    /**
+     * Constructor for use of 'standalone' string sources.
+     *
+     * This is primarily for testing uses of string source where the entire infrastructure is not needed. The
+     * String source is not hooked in to the file monitor, and no change notifications are sent.
+     *
+     * @param descriptor the descriptor for the source
+     * @param contents contents (or null)
+     * @param id an identifier for logging.
+     * @param format the format of the descriptor (XML, JS, etc).
+     */
+    public StringSource(DefDescriptor<D> descriptor, String contents, String id, Format format) {
+        this(null, descriptor, contents, id, format);
+    }
+
+    /**
+     * Full constructor, including a file monitor.
+     *
+     * Package private, this should only be used by StringSourceLoader
+     *
+     * @param sourceListener a place to notify of change events.
+     * @param descriptor the descriptor for the source
+     * @param contents contents (or null)
+     * @param id an identifier for logging.
+     * @param format the format of the descriptor (XML, JS, etc).
+     */
+    StringSource(SourceListener sourceListener, DefDescriptor<D> descriptor, String contents, String id, Format format) {
         super(descriptor, id, format);
         this.sourceListener = sourceListener;
         data = new StringData();
@@ -47,10 +73,13 @@ public class StringSource<D extends Definition> extends Source<D> {
 
     /**
      * Copy an existing StringSource with shared backing data.
+     *
+     * Package private, this should only be used by StringSourceLoader
+     *
      * @param SourceListener TODO
      * @param original
      */
-    public StringSource(SourceListener sourceListener, StringSource<D> original) {
+    StringSource(SourceListener sourceListener, StringSource<D> original) {
         super(original.getDescriptor(), original.getSystemId(), original.getFormat());
         this.sourceListener = sourceListener;
         data = original.data;

@@ -19,16 +19,10 @@ import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.IncludeDef;
 import org.auraframework.impl.def.DefinitionTest;
 import org.auraframework.test.source.StringSource;
-import org.auraframework.util.FileMonitor;
 import org.junit.Test;
 import org.mockito.Mock;
 
-import javax.inject.Inject;
-
 public class JavascriptIncludeDefHandlerTest extends DefinitionTest<IncludeDef> {
-    @Inject
-    private FileMonitor fileMonitor;
-
     @Mock
     DefDescriptor<IncludeDef> descriptor;
     private String filename = "dummyPath";
@@ -36,7 +30,7 @@ public class JavascriptIncludeDefHandlerTest extends DefinitionTest<IncludeDef> 
     @Test
     public void testEmpty() throws Exception {
         String code = "";
-        StringSource<IncludeDef> source = new StringSource<>(fileMonitor, descriptor, code, filename, null);
+        StringSource<IncludeDef> source = new StringSource<>(descriptor, code, filename, null);
         JavascriptIncludeDefHandler handler = new JavascriptIncludeDefHandler(descriptor, source);
         IncludeDef def = handler.getDefinition();
         def.validateDefinition();
@@ -46,7 +40,7 @@ public class JavascriptIncludeDefHandlerTest extends DefinitionTest<IncludeDef> 
     @Test
     public void testFunction() throws Exception {
         String code = "function(){return 'anything'}";
-        StringSource<IncludeDef> source = new StringSource<>(fileMonitor, descriptor, code, filename, null);
+        StringSource<IncludeDef> source = new StringSource<>(descriptor, code, filename, null);
         JavascriptIncludeDefHandler handler = new JavascriptIncludeDefHandler(descriptor, source);
         IncludeDef def = handler.getDefinition();
         def.validateDefinition();
@@ -56,7 +50,7 @@ public class JavascriptIncludeDefHandlerTest extends DefinitionTest<IncludeDef> 
     @Test
     public void testOtherJsButNotJson() throws Exception {
         String code = "var something = 'borrowed'";
-        StringSource<IncludeDef> source = new StringSource<>(fileMonitor, descriptor, code, filename, null);
+        StringSource<IncludeDef> source = new StringSource<>(descriptor, code, filename, null);
         JavascriptIncludeDefHandler handler = new JavascriptIncludeDefHandler(descriptor, source);
         IncludeDef def = handler.getDefinition();
         def.validateDefinition();

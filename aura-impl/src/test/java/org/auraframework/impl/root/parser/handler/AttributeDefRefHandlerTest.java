@@ -26,7 +26,6 @@ import org.auraframework.impl.root.parser.ComponentXMLParser;
 import org.auraframework.impl.root.parser.XMLParser;
 import org.auraframework.system.Parser.Format;
 import org.auraframework.test.source.StringSource;
-import org.auraframework.util.FileMonitor;
 import org.junit.Test;
 
 import javax.inject.Inject;
@@ -34,9 +33,6 @@ import javax.xml.stream.XMLStreamReader;
 import java.util.List;
 
 public class AttributeDefRefHandlerTest extends AuraImplTestCase {
-    @Inject
-    private FileMonitor fileMonitor;
-
     @Inject
     private ComponentXMLParser componentXMLParser;
 
@@ -46,7 +42,7 @@ public class AttributeDefRefHandlerTest extends AuraImplTestCase {
     @Test
     public void testAttributeDefRefParsing() throws Exception {
         DefDescriptor<ComponentDef> descriptor = definitionService.getDefDescriptor("test:fakeparser", ComponentDef.class);
-        StringSource<ComponentDef> source = new StringSource<>(fileMonitor,
+        StringSource<ComponentDef> source = new StringSource<>(
                 descriptor,
                 "<aura:component><aura:set attribute='header' value='false'>Child Text</aura:set></aura:component>", "myID", Format.XML);
         ComponentDef cd = componentXMLParser.parse(descriptor, source);
@@ -56,7 +52,7 @@ public class AttributeDefRefHandlerTest extends AuraImplTestCase {
     @Test
     public void testAttributeDefRefParsingWithChildtag() throws Exception {
         DefDescriptor<ComponentDef> descriptor = definitionService.getDefDescriptor("test:fakeparser", ComponentDef.class);
-        StringSource<ComponentDef> source = new StringSource<>(fileMonitor,
+        StringSource<ComponentDef> source = new StringSource<>(
                 descriptor, "<aura:component><aura:set attribute='header'><aura:foo/></aura:set></aura:component>",
                 "myID", Format.XML);
         ComponentDef cd = componentXMLParser.parse(descriptor, source);
@@ -66,7 +62,7 @@ public class AttributeDefRefHandlerTest extends AuraImplTestCase {
     @Test
     public void testGetElementWithValueAttribute() throws Exception {
         DefDescriptor<AttributeDef> desc = definitionService.getDefDescriptor("mystring", AttributeDef.class);
-        StringSource<AttributeDef> source = new StringSource<>(fileMonitor,
+        StringSource<AttributeDef> source = new StringSource<>(
                 desc, "<aura:set attribute='mystring' value='testing'/>", "myID", Format.XML);
         XMLStreamReader xmlReader = XMLParser.createXMLStreamReader(source.getHashingReader());
         xmlReader.next();
@@ -81,7 +77,7 @@ public class AttributeDefRefHandlerTest extends AuraImplTestCase {
     @Test
     public void testGetElementWithValueAsChildTag() throws Exception {
         DefDescriptor<AttributeDef> desc = definitionService.getDefDescriptor("mystring", AttributeDef.class);
-        StringSource<AttributeDef> source = new StringSource<>(fileMonitor,
+        StringSource<AttributeDef> source = new StringSource<>(
                 desc, "<aura:set attribute='mystring'><aura:foo/></aura:set>", "myID", Format.XML);
         XMLStreamReader xmlReader = XMLParser.createXMLStreamReader(source.getHashingReader());
         xmlReader.next();
@@ -95,7 +91,7 @@ public class AttributeDefRefHandlerTest extends AuraImplTestCase {
     @Test
     public void testGetElementWithTextBetweenTags() throws Exception {
         DefDescriptor<AttributeDef> desc = definitionService.getDefDescriptor("mystring", AttributeDef.class);
-        StringSource<AttributeDef> source = new StringSource<>(fileMonitor,
+        StringSource<AttributeDef> source = new StringSource<>(
                 desc, "<aura:set attribute='mystring'>Child Text</aura:set>", "myID", Format.XML);
         XMLStreamReader xmlReader = XMLParser.createXMLStreamReader(source.getHashingReader());
         xmlReader.next();

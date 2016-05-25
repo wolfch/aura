@@ -26,7 +26,6 @@ import org.auraframework.impl.root.component.ComponentDefRefImpl;
 import org.auraframework.impl.root.parser.XMLParser;
 import org.auraframework.system.Parser.Format;
 import org.auraframework.test.source.StringSource;
-import org.auraframework.util.FileMonitor;
 import org.junit.Test;
 
 import javax.inject.Inject;
@@ -35,9 +34,6 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class HTMLComponentDefRefHandlerTest extends AuraImplTestCase {
-    @Inject
-    private FileMonitor fileMonitor;
-
     @Inject
     private DefinitionParserAdapter definitionParserAdapter;
     
@@ -49,7 +45,7 @@ public class HTMLComponentDefRefHandlerTest extends AuraImplTestCase {
         super.setUp();
         DefDescriptor<ComponentDef> desc = definitionService.getDefDescriptor("fake:component",
                 ComponentDef.class);
-        StringSource<ComponentDef> source = new StringSource<>(fileMonitor,
+        StringSource<ComponentDef> source = new StringSource<>(
                 desc, "<div class='MyClass'>Child Text<br/></div>", "myID", Format.XML);
         xmlReader = XMLParser.createXMLStreamReader(source.getHashingReader());
         xmlReader.next();
@@ -86,7 +82,7 @@ public class HTMLComponentDefRefHandlerTest extends AuraImplTestCase {
     public void testHandleChildSetTag() throws Exception {
         DefDescriptor<ComponentDef> desc = definitionService.getDefDescriptor("fake:component",
                 ComponentDef.class);
-        StringSource<ComponentDef> source = new StringSource<>(fileMonitor,
+        StringSource<ComponentDef> source = new StringSource<>(
                 desc, "<div><aura:set attribute='header' value='false'/></div>", "myID", Format.XML);
         xmlReader = XMLParser.createXMLStreamReader(source.getHashingReader());
         xmlReader.next();
@@ -136,7 +132,7 @@ public class HTMLComponentDefRefHandlerTest extends AuraImplTestCase {
     @Test
     public void testReadFlavorable() throws Exception {
         DefDescriptor<ComponentDef> desc = definitionService.getDefDescriptor("fake:component", ComponentDef.class);
-        StringSource<ComponentDef> source = new StringSource<>(fileMonitor, desc, "<div aura:flavorable='true'></div>", "myID", Format.XML);
+        StringSource<ComponentDef> source = new StringSource<>(desc, "<div aura:flavorable='true'></div>", "myID", Format.XML);
         xmlReader = XMLParser.createXMLStreamReader(source.getHashingReader());
         xmlReader.next();
         ComponentDefHandler cdh = new ComponentDefHandler(null, source, xmlReader, true, definitionService, contextService,

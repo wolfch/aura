@@ -24,15 +24,11 @@ import org.auraframework.system.Parser.Format;
 import org.auraframework.test.source.StringSource;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
 import org.auraframework.throwable.quickfix.QuickFixException;
-import org.auraframework.util.FileMonitor;
 import org.junit.Test;
 
 import javax.inject.Inject;
 
 public class InterfaceDefHandlerTest extends AuraImplTestCase {
-    @Inject
-    private FileMonitor fileMonitor;
-
     @Inject
     private InterfaceXMLParser interfaceXMLParser;
 
@@ -48,7 +44,6 @@ public class InterfaceDefHandlerTest extends AuraImplTestCase {
         String namespace = "auratest";
         DefDescriptor<InterfaceDef> descriptor = definitionService.getDefDescriptor(namespace + ":fakeparser", InterfaceDef.class);
         StringSource<InterfaceDef> source = new StringSource<>(
-                fileMonitor,
                 descriptor,
                 "<aura:interface support='PROTO' description='some description'><aura:attribute name='mystring' type='String'/><aura:registerevent name='click' type='aura:click' description='The Description'/></aura:interface>", "myID", Format.XML);
         InterfaceDef def = interfaceXMLParser.parse(descriptor, source);
@@ -66,7 +61,7 @@ public class InterfaceDefHandlerTest extends AuraImplTestCase {
     @Test
     public void testInterfaceDefHandlerWithExtension() throws Exception {
         DefDescriptor<InterfaceDef> descriptor = definitionService.getDefDescriptor("test:fakeparser", InterfaceDef.class);
-        StringSource<InterfaceDef> source = new StringSource<>(fileMonitor,
+        StringSource<InterfaceDef> source = new StringSource<>(
                 descriptor, "<aura:interface extends='aura:testinterfaceparent'></aura:interface>", "myID", Format.XML);
         InterfaceDef def = interfaceXMLParser.parse(descriptor, source);
         assertEquals(1, def.getExtendsDescriptors().size());
@@ -81,7 +76,7 @@ public class InterfaceDefHandlerTest extends AuraImplTestCase {
     @Test
     public void testInterfaceDefHandlerWithInvalidChildTag() throws Exception {
         DefDescriptor<InterfaceDef> descriptor = definitionService.getDefDescriptor("test:fakeparser", InterfaceDef.class);
-        StringSource<InterfaceDef> source = new StringSource<>(fileMonitor,
+        StringSource<InterfaceDef> source = new StringSource<>(
                 descriptor, "<aura:interface><aura:foo/></aura:interface>", "myID", Format.XML);
         InterfaceDef id = interfaceXMLParser.parse(descriptor, source);
         try {
@@ -101,7 +96,7 @@ public class InterfaceDefHandlerTest extends AuraImplTestCase {
     @Test
     public void testInterfaceDefHandlerWithTextBetweenTag() throws Exception {
         DefDescriptor<InterfaceDef> descriptor = definitionService.getDefDescriptor("test:fakeparser", InterfaceDef.class);
-        StringSource<InterfaceDef> source = new StringSource<>(fileMonitor,
+        StringSource<InterfaceDef> source = new StringSource<>(
                 descriptor, "<aura:interface>Invalid text</aura:interface>", "myID", Format.XML);
         InterfaceDef id = interfaceXMLParser.parse(descriptor, source);
         try {
@@ -122,7 +117,6 @@ public class InterfaceDefHandlerTest extends AuraImplTestCase {
         String namespace = "fakeNamespace";
         DefDescriptor<InterfaceDef> descriptor = definitionService.getDefDescriptor(namespace + ":fakeparser", InterfaceDef.class);
         StringSource<InterfaceDef> source = new StringSource<>(
-                fileMonitor,
                 descriptor,
                 "<aura:interface support='PROTO'></aura:interface>",
                 "myID", Format.XML);

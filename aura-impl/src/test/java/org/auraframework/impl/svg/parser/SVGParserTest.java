@@ -167,7 +167,7 @@ public class SVGParserTest extends AuraImplTestCase {
     @Test
     public void testValidTags() throws QuickFixException {
         DefDescriptor<SVGDef> descriptor = setupSimpleSVGDef(VALID_SVG);
-        Source<SVGDef> source = new StringSource<>(null, descriptor, VALID_SVG, "test", null);
+        Source<SVGDef> source = new StringSource<>(descriptor, VALID_SVG, "test", null);
         parser.parse(descriptor,source);
     }
 
@@ -175,7 +175,7 @@ public class SVGParserTest extends AuraImplTestCase {
     public void testInvalidTags() {
         try {
             DefDescriptor<SVGDef> descriptor = setupSimpleSVGDef(INVALID_SCRIPT);
-            Source<SVGDef> source = new StringSource<>(null, descriptor, INVALID_SCRIPT, "test", null);
+            Source<SVGDef> source = new StringSource<>(descriptor, INVALID_SCRIPT, "test", null);
             parser.parse(descriptor,source);
         } catch (QuickFixException e) {
             assertTrue(e.getMessage().contains("script"));
@@ -188,7 +188,7 @@ public class SVGParserTest extends AuraImplTestCase {
     public void testInvalidCharacters() {
         try {
             DefDescriptor<SVGDef> descriptor = setupSimpleSVGDef(INVALID_CHAR);
-            Source<SVGDef> source = new StringSource<>(null, descriptor, INVALID_CHAR, "test", null);
+            Source<SVGDef> source = new StringSource<>(descriptor, INVALID_CHAR, "test", null);
             parser.parse(descriptor,source);
         } catch (QuickFixException e) {
             assertTrue(e.getMessage().contains("<"));
@@ -201,7 +201,7 @@ public class SVGParserTest extends AuraImplTestCase {
     public void testInvalidXML() {
         try {
             DefDescriptor<SVGDef> descriptor = setupSimpleSVGDef(INVALID_XML);
-            Source<SVGDef> source = new StringSource<>(null, descriptor, INVALID_XML, "test", null);
+            Source<SVGDef> source = new StringSource<>(descriptor, INVALID_XML, "test", null);
             parser.parse(descriptor,source);
         } catch (QuickFixException e) {
             assertTrue(e.getMessage().contains("ParseError"));
@@ -215,7 +215,7 @@ public class SVGParserTest extends AuraImplTestCase {
         try {
 
             DefDescriptor<SVGDef> descriptor = setupSimpleSVGDef(INVALID_ATTR);
-            Source<SVGDef> source = new StringSource<>(null, descriptor, INVALID_ATTR, "test", null);
+            Source<SVGDef> source = new StringSource<>(descriptor, INVALID_ATTR, "test", null);
             parser.parse(descriptor,source);
         } catch (QuickFixException e) {
             assertTrue(e.getMessage().contains("onclick"));

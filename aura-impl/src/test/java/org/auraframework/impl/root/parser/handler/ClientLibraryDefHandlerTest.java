@@ -26,7 +26,6 @@ import org.auraframework.system.AuraContext.Mode;
 import org.auraframework.system.Parser.Format;
 import org.auraframework.test.source.StringSource;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
-import org.auraframework.util.FileMonitor;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -39,9 +38,6 @@ import java.util.List;
  */
 public class ClientLibraryDefHandlerTest extends AuraImplTestCase {
     @Inject
-    private FileMonitor fileMonitor;
-
-    @Inject
     private ComponentXMLParser componentXMLParser;
 
     private DefDescriptor<ComponentDef> descriptor;
@@ -53,7 +49,7 @@ public class ClientLibraryDefHandlerTest extends AuraImplTestCase {
 
     @Test
     public void testNoTypeInLibraryTag() throws Exception {
-        StringSource<ComponentDef> source = new StringSource<>(fileMonitor,
+        StringSource<ComponentDef> source = new StringSource<>(
                 descriptor, "<aura:component><aura:clientLibrary name='HTML5Shiv'/></aura:component>",
                 "myID", Format.XML);
         assertDefaultType(source, "When no type specified, JS should be the default");
@@ -61,7 +57,7 @@ public class ClientLibraryDefHandlerTest extends AuraImplTestCase {
 
     @Test
     public void testEmptyTypeInLibraryTag() throws Exception {
-        StringSource<ComponentDef> source = new StringSource<>(fileMonitor,
+        StringSource<ComponentDef> source = new StringSource<>(
                 descriptor, "<aura:component><aura:clientLibrary name='HTML5Shiv' type='' /></aura:component>",
                 "myID", Format.XML);
         assertDefaultType(source, "When empty type specified, JS should be the default");
@@ -76,7 +72,7 @@ public class ClientLibraryDefHandlerTest extends AuraImplTestCase {
 
     @Test
     public void testInvalidTypeInLibraryTag() throws Exception {
-        StringSource<ComponentDef> source = new StringSource<>(fileMonitor,
+        StringSource<ComponentDef> source = new StringSource<>(
                 descriptor, "<aura:component><aura:clientLibrary name='HTML5Shiv' type='fooBar' /></aura:component>",
                 "myID", Format.XML);
 
@@ -91,7 +87,7 @@ public class ClientLibraryDefHandlerTest extends AuraImplTestCase {
 
     @Test
     public void testCommaSeparatedTypesInLibraryTag() throws Exception {
-        StringSource<ComponentDef> source = new StringSource<>(fileMonitor,
+        StringSource<ComponentDef> source = new StringSource<>(
                 descriptor, "<aura:component><aura:clientLibrary name='HTML5Shiv' type='JS, CSS' /></aura:component>",
                 "myID", Format.XML);
         ComponentDef cd = componentXMLParser.parse(descriptor, source);
@@ -105,7 +101,7 @@ public class ClientLibraryDefHandlerTest extends AuraImplTestCase {
 
     @Test
     public void testNoModeSpecifiedInLibraryTag() throws Exception {
-        StringSource<ComponentDef> source = new StringSource<>(fileMonitor,
+        StringSource<ComponentDef> source = new StringSource<>(
                 descriptor, "<aura:component>" +
                 "<aura:clientLibrary name='HTML5Shiv' type='JS' />" +
                 "</aura:component>",
@@ -119,7 +115,7 @@ public class ClientLibraryDefHandlerTest extends AuraImplTestCase {
 
     @Test
     public void testModesSpecifiedInLibraryTag() throws Exception {
-        StringSource<ComponentDef> source = new StringSource<>(fileMonitor,
+        StringSource<ComponentDef> source = new StringSource<>(
                 descriptor, "<aura:component>" +
                 "<aura:clientLibrary name='HTML5Shiv' type='JS' modes='DEV'/>" +
                 "</aura:component>",
@@ -136,7 +132,7 @@ public class ClientLibraryDefHandlerTest extends AuraImplTestCase {
 
     @Test
     public void testInvalidModeSpecificationInLibraryTag() throws Exception {
-        StringSource<ComponentDef> source = new StringSource<>(fileMonitor,
+        StringSource<ComponentDef> source = new StringSource<>(
                 descriptor, "<aura:component>" +
                 "<aura:clientLibrary name='HTML5Shiv' type='JS' modes='fooBar'/>" +
                 "</aura:component>",
@@ -161,7 +157,7 @@ public class ClientLibraryDefHandlerTest extends AuraImplTestCase {
                 "<aura:component>" +
                 "    <aura:clientLibrary name='HTML5Shiv' type='JS' unknown='bla' url=''/>" +
                 "</aura:component>";
-        StringSource<ComponentDef> source = new StringSource<>(fileMonitor, descriptor, cmpMarkup
+        StringSource<ComponentDef> source = new StringSource<>(descriptor, cmpMarkup
                 ,"myID", Format.XML);
         ComponentDef cd = componentXMLParser.parse(descriptor, source);
         cd.validateDefinition();

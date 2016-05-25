@@ -45,7 +45,7 @@ public class SourceTest extends UnitTestCase {
     public void testHashingReaderProgress() throws Exception {
         int expectedHashCode = getHashCode("hi");
 
-        Source<?> src = new StringSource<>(null, null, "hi", null, null);
+        Source<?> src = new StringSource<>(null, "hi", null, null);
         Hash hash = src.getHash();
 
         // hash not set initially
@@ -79,7 +79,7 @@ public class SourceTest extends UnitTestCase {
     public void testHashingReaderLargerBuffer() throws Exception {
         int expectedHashCode = getHashCode("hi");
 
-        Source<?> src = new StringSource<>(null, null, "hi", null, null);
+        Source<?> src = new StringSource<>(null, "hi", null, null);
         Hash hash = src.getHash();
         Reader reader = src.getHashingReader();
         char[] buffer = new char[50];
@@ -98,7 +98,7 @@ public class SourceTest extends UnitTestCase {
     public void testHashingReaderNull() throws Exception {
         int expectedHashCode = getHashCode("");
 
-        Source<?> src = new StringSource<>(null, null, null, null, null);
+        Source<?> src = new StringSource<>(null, null, null, null);
         Hash hash = src.getHash();
         Reader reader = src.getHashingReader();
         char[] buffer = new char[50];
@@ -116,7 +116,7 @@ public class SourceTest extends UnitTestCase {
     public void testHashingReaderEmpty() throws Exception {
         int expectedHashCode = getHashCode("");
 
-        Source<?> src = new StringSource<>(null, null, "", null, null);
+        Source<?> src = new StringSource<>(null, "", null, null);
         Hash hash = src.getHash();
         Reader reader = src.getHashingReader();
         char[] buffer = new char[50];

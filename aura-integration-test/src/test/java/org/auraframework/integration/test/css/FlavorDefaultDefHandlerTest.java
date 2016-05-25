@@ -28,16 +28,12 @@ import org.auraframework.service.DefinitionService;
 import org.auraframework.system.Parser.Format;
 import org.auraframework.test.source.StringSource;
 import org.auraframework.throwable.AuraRuntimeException;
-import org.auraframework.util.FileMonitor;
 import org.junit.Test;
 
 import javax.inject.Inject;
 import javax.xml.stream.XMLStreamReader;
 
 public class FlavorDefaultDefHandlerTest extends StyleTestCase {
-    @Inject
-    private FileMonitor fileMonitor;
-
     @Inject
     DefinitionService definitionService;
 
@@ -74,14 +70,14 @@ public class FlavorDefaultDefHandlerTest extends StyleTestCase {
     private FlavorDefaultDef source(String src) throws Exception {
         DefDescriptor<FlavorsDef> parentDesc = definitionService.getDefDescriptor("test:tmp",
                 FlavorsDef.class);
-        StringSource<FlavorsDef> parentSource = new StringSource<>(fileMonitor, parentDesc, "<aura:flavors/>", "myID", Format.XML);
+        StringSource<FlavorsDef> parentSource = new StringSource<>(parentDesc, "<aura:flavors/>", "myID", Format.XML);
         XMLStreamReader parentReader = XMLParser.createXMLStreamReader(parentSource.getHashingReader());
         parentReader.next();
         FlavorsDefHandler parent = new FlavorsDefHandler(parentDesc, parentSource, parentReader, true, definitionService,
                 configAdapter, definitionParserAdapter);
 
         DefDescriptor<FlavorIncludeDef> desc = definitionService.getDefDescriptor("test", FlavorIncludeDef.class);
-        StringSource<FlavorIncludeDef> ss = new StringSource<>(fileMonitor, desc, src, "myID", Format.XML);
+        StringSource<FlavorIncludeDef> ss = new StringSource<>(desc, src, "myID", Format.XML);
         XMLStreamReader xmlReader = XMLParser.createXMLStreamReader(ss.getHashingReader());
         xmlReader.next();
         FlavorDefaultDefHandler<FlavorsDef> handler = new FlavorDefaultDefHandler<>(parent, xmlReader, ss, true,
