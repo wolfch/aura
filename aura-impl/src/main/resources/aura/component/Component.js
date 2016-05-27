@@ -456,8 +456,8 @@ Component.prototype.implementsDirectly = function(type) {
  *            insert The flag to indicate if we should put the handler at the
  *            beginning instead of the end of handlers array.
  * @public
- * @platform
  * @export
+ * @platform
  */
 Component.prototype.addHandler = function(eventName, valueProvider, actionExpression, insert) {
     var dispatcher = this.getEventDispatcher(this);
@@ -483,6 +483,7 @@ Component.prototype.addHandler = function(eventName, valueProvider, actionExpres
  *            (e.g. "c.myAction").
  * @public
  * @export
+ * @platform
  */
 Component.prototype.addValueHandler = function(config) {
     var value = config["value"];
