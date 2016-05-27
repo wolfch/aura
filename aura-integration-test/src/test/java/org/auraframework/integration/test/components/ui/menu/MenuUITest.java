@@ -32,10 +32,10 @@ import org.openqa.selenium.interactions.Actions;
 /**
  * UI automation to verify Action, checkbox and radio Menu using mouse and keyboard interaction .
  *
- * @userStory a07B0000000TG3R Excluding the test from IE due to know issue related to mouseOver Excluding it from touch
- * browsers due to to W-1478819 and mouse over related issues
+ * @userStory a07B0000000TG3R Excluding some tests from IE due to know issue related to mouseOver
+ * Excluding it from touch browsers due to to W-1478819 and mouse over related issues
  */
-@TargetBrowsers({BrowserType.GOOGLECHROME, BrowserType.FIREFOX})
+@TargetBrowsers({BrowserType.GOOGLECHROME, BrowserType.FIREFOX, BrowserType.IE11})
 public class MenuUITest extends WebDriverTestCase {
 
     public static final String MENUTEST_APP = "/uitest/menu_Test.app";
@@ -47,6 +47,7 @@ public class MenuUITest extends WebDriverTestCase {
      * Test that verify's interaction with Action Menu.
      */
     @Test
+    @ExcludeBrowsers({BrowserType.IE11})
     public void testActionMenu() throws Exception {
         testActionMenuForApp(MENUTEST_APP, "");
     }
@@ -55,11 +56,13 @@ public class MenuUITest extends WebDriverTestCase {
      * Test that verify's interaction with Action Menu with image is trigger link.
      */
     @Test
+    @ExcludeBrowsers({BrowserType.IE11})
     public void testActionMenuWithImageTrigger() throws Exception {
         testActionMenuForApp(MENUTEST_APP, "Image", false);
     }
 
     @Test
+    @ExcludeBrowsers({BrowserType.IE11})
     public void testActionMenuNestedMenuItems() throws Exception {
         testActionMenuForApp(MENUTEST_APP, "Nested");
     }
@@ -67,11 +70,13 @@ public class MenuUITest extends WebDriverTestCase {
     // Test case for W-2181713
     @Flapper
     @Test
+    @ExcludeBrowsers({BrowserType.IE11})
     public void testActionMenuAttachToBodySet() throws Exception {
         testActionMenuForApp(MENUTEST_ATTACHTOBODY_APP, "");
     }
 
     @Test
+    @ExcludeBrowsers({BrowserType.IE11})
     public void testActionMenuGeneratedFromMetaData() throws Exception {
         testActionMenuForApp(MENUTEST_METADATA_APP, "");
     }
@@ -100,19 +105,20 @@ public class MenuUITest extends WebDriverTestCase {
         openMenu(menuLabel, actionMenu);
 
         getAuraUITestingUtil().setHoverOverElement(menuItem3);
-        waitForFocusOnMenuActionItem(actionItem3Element);
+        waitForFocusOnElement(actionItem3Element);
 
         assertTrue("Item 2 in the menu List is should be visible on the page", actionItem2.isDisplayed());
 
         // actionItem2 text starts with the letter F so pressing that key should switch focus to it
         actionItem3Element.sendKeys("f");
-        waitForFocusOnMenuActionItem(actionItem2Element);
+        waitForFocusOnElement(actionItem2Element);
 
         // actionItem2 is not clickable as it's disabled via markup
         try {
             actionItem2Element.click();
             // The Firefox used in autobuild environments does not throw an exception. Passes locally on Firefox 42.
-            if (getBrowserType() != BrowserType.FIREFOX) {
+            // IE11 doesn't throw an exception either
+            if (getBrowserType() != BrowserType.FIREFOX && getBrowserType() != BrowserType.IE11) {
                 fail("Expected exception trying to click an unclickable element");
             }
         } catch (Exception e) {
@@ -127,17 +133,20 @@ public class MenuUITest extends WebDriverTestCase {
     }
 
     @Test
+    @ExcludeBrowsers({BrowserType.IE11})
     public void testActionMenuWithImageTriggerViaKeyboardInteraction() throws Exception {
         testActionMenuViaKeyboardInteractionForApp(MENUTEST_APP, "Image", false);
     }
 
     @Test
+    @ExcludeBrowsers({BrowserType.IE11})
     public void testActionMenuViaKeyboardInteraction() throws Exception {
         testActionMenuViaKeyboardInteractionForApp(MENUTEST_APP, "");
     }
 
     // Test case for W-2234265
     @Test
+    @ExcludeBrowsers({BrowserType.IE11})
     public void testActionMenuAttachToBodySetViaKeyboardInteraction() throws Exception {
         testActionMenuViaKeyboardInteractionForApp(MENUTEST_ATTACHTOBODY_APP, "");
     }
@@ -153,6 +162,7 @@ public class MenuUITest extends WebDriverTestCase {
     }
     
     // TODO: W-2406307: remaining Halo test failure
+    @ExcludeBrowsers({BrowserType.IE11})
     public void _testActionMenuGeneratedFromMetaDataViaKeyboardInteraction() throws Exception {
         testActionMenuViaKeyboardInteractionForApp(MENUTEST_METADATA_APP, "");
     }
@@ -188,13 +198,13 @@ public class MenuUITest extends WebDriverTestCase {
         menuLabel.sendKeys(Keys.DOWN);
 
         // focus should be one the first item
-        waitForFocusOnMenuActionItem(actionItem1Element);
+        waitForFocusOnElement(actionItem1Element);
 
         actionItem1Element.sendKeys(Keys.DOWN, Keys.DOWN);
 
         // verify focus on action item3
         getAuraUITestingUtil().setHoverOverElement(menuItem3);
-        waitForFocusOnMenuActionItem(actionItem3Element);
+        waitForFocusOnElement(actionItem3Element);
 
         actionItem3Element.click();
         if (verifyLabelUpdate) {
@@ -203,11 +213,11 @@ public class MenuUITest extends WebDriverTestCase {
 
         openMenu(menuLabel, actionMenu);
         getAuraUITestingUtil().setHoverOverElement(menuItem4);
-        waitForFocusOnMenuActionItem(actionItem4Element);
+        waitForFocusOnElement(actionItem4Element);
 
         actionItem4Element.sendKeys(Keys.UP);
         // verify focus on action item3
-        waitForFocusOnMenuActionItem(actionItem3Element);
+        waitForFocusOnElement(actionItem3Element);
 
         // press space key and check if item3 got selected
         actionItem3Element.sendKeys(Keys.SPACE);
@@ -217,7 +227,7 @@ public class MenuUITest extends WebDriverTestCase {
 
         openMenu(menuLabel, actionMenu);
         getAuraUITestingUtil().setHoverOverElement(menuItem1);
-        waitForFocusOnMenuActionItem(actionItem1Element);
+        waitForFocusOnElement(actionItem1Element);
         actionItem1Element.sendKeys(Keys.ESCAPE);
         waitForMenuClose(actionMenu);
     }
@@ -245,23 +255,19 @@ public class MenuUITest extends WebDriverTestCase {
         else {
         	focusAfterOpenElement = getAnchor(focusAfterOpenItem);
             openMenu(menuLabel, actionMenu, openKey);
-            waitForFocusOnMenuActionItem(focusAfterOpenElement);
+            waitForFocusOnElement(focusAfterOpenElement);
         }
           
         focusAfterOpenElement.sendKeys(Keys.DOWN, Keys.DOWN);
-        waitForFocusOnMenuActionItem(expectedItemElement);
+        waitForFocusOnElement(expectedItemElement);
     }
 
     @PerfTest
-    // Timing issue on firefox when trying to click on non clickable element
-    @ExcludeBrowsers({BrowserType.FIREFOX})
     @Test
     public void testCheckboxMenu() throws Exception {
         testMenuCheckboxForApp(MENUTEST_APP);
     }
 
-    // Timing issue on firefox when trying to click on non clickable element
-    @ExcludeBrowsers({BrowserType.FIREFOX})
     @Test
     public void testCheckboxMenuGeneratedFromMetaData() throws Exception {
         testMenuCheckboxForApp(MENUTEST_METADATA_APP);
@@ -308,7 +314,11 @@ public class MenuUITest extends WebDriverTestCase {
         // item4Element is not clickable as it's disabled via markup
         try {
             item4Element.click();
-            fail("Expected exception trying to click an unclickable element");
+            // The Firefox used in autobuild environments does not throw an exception. Passes locally on Firefox 42.
+            // IE11 doesn't throw an exception either
+            if (getBrowserType() != BrowserType.FIREFOX && getBrowserType() != BrowserType.IE11) {
+                fail("Expected exception trying to click an unclickable element");
+            }
         } catch (Exception e) {
             checkExceptionContains(e, WebDriverException.class, "Element is not clickable");
         }
@@ -345,9 +355,9 @@ public class MenuUITest extends WebDriverTestCase {
 
         // check if focus changes when you use up and down arrow using keyboard
         item3Element.sendKeys(Keys.DOWN);
-        waitForFocusOnMenuActionItem(item4Element);
+        waitForFocusOnElement(item4Element);
         item4Element.sendKeys(Keys.UP);
-        waitForFocusOnMenuActionItem(item3Element);
+        waitForFocusOnElement(item3Element);
 
         // press Tab to close to menu
         item3Element.sendKeys(Keys.TAB);
@@ -451,10 +461,12 @@ public class MenuUITest extends WebDriverTestCase {
     // 
     // W-3140286
     // 
-    // This fails in jenkins now and passes locally. 
+    // This fails in jenkins now and passes locally.
+    // Excluding IE11 since setSize doesn't work for IE11
     @UnAdaptableTest
     @Flapper
     @Test
+    @ExcludeBrowsers({BrowserType.IE11})
     public void testMenuPositionWhenMenuItemAttachToBody() throws Exception {
         open(MENUTEST_ATTACHTOBODY_APP);
 
@@ -570,6 +582,7 @@ public class MenuUITest extends WebDriverTestCase {
      * Test case for W-2315592 Components extends menuItem get's focus
      */
     @Test
+    @ExcludeBrowsers({BrowserType.IE11})
     public void testFocusForExtendedMenuItem() throws Exception {
         open("/uitest/menu_extendMenuItem.app");
         WebDriver driver = this.getDriver();
@@ -590,11 +603,11 @@ public class MenuUITest extends WebDriverTestCase {
 
         // verify focus on action item3
         getAuraUITestingUtil().setHoverOverElement(menuItem3);
-        waitForFocusOnMenuActionItem(actionItem3Element);
+        waitForFocusOnElement(actionItem3Element);
 
         // use send key("f") to move to actionItem2
         actionItem3Element.sendKeys("f");
-        waitForFocusOnMenuActionItem(actionItem2Element);
+        waitForFocusOnElement(actionItem2Element);
     }
 
     /**
@@ -632,6 +645,38 @@ public class MenuUITest extends WebDriverTestCase {
         openMenu(menuLabel, actionMenu);
         assertNull("Event should not bubble up to parent div when StopPropogoation is set on menu",
             getAuraUITestingUtil().getEval(valueExpression));
+    }
+    
+    /**
+     * Test case for W-2958313 to check focus after tabbing out of menu
+     */
+    @Test
+    public void testFocusWhenTabOnOpenMenu() throws Exception {
+        open(MENUTEST_APP);
+        WebDriver driver = this.getDriver();
+        WebElement menuElm = driver.findElement(By.className("actionMenu"));
+        WebElement item1Elm = driver.findElement(By.className("actionItem1"));
+        WebElement triggerElm = driver.findElement(By.className("trigger"));
+        WebElement nextFocusableElm = driver.findElement(By.className("checkboxMenuLabel"));
+
+        // open menu and make sure focus is on the trigger label
+        openMenu(triggerElm, menuElm);
+        waitForFocusOnElement(triggerElm);
+
+        // move the focus to the menuList by moving to the first item
+        triggerElm.sendKeys(Keys.DOWN);
+        waitForFocusOnElement(item1Elm);
+
+        // tab out to close the menu and check the focus is set to the right element
+        if (getBrowserType().equals(BrowserType.FIREFOX)) {
+            // firefox closes the menu on the first tab, but the focus is still on the item
+            // need a second tab to get to the next element
+            getAnchor(item1Elm).sendKeys(Keys.TAB, Keys.TAB);
+        } else {
+            getAuraUITestingUtil().pressTab(getAnchor(item1Elm));
+        }
+
+        waitForFocusOnElement(nextFocusableElm);
     }
 
     /**
@@ -681,14 +726,14 @@ public class MenuUITest extends WebDriverTestCase {
     /**
      * Wait for focus to be on a certain menu action item by checking the current active element.
      *
-     * @param actionItemElement The WebElement on which to wait for focus
+     * @param element The WebElement on which to wait for focus
      */
-    private void waitForFocusOnMenuActionItem(final WebElement actionItemElement) {
-        String text = actionItemElement.toString();
+    private void waitForFocusOnElement(final WebElement element) {
+        String text = element.toString();
         getAuraUITestingUtil().waitUntil(check -> {
-            String actionItemText = actionItemElement.getText();
+            String elementText = element.getText();
             String activeElementText = getAuraUITestingUtil().getActiveElementText();
-            return actionItemText.equals(activeElementText);
+            return elementText.equals(activeElementText);
         }, "Focus hasn't switched to WebElement <" + text + ">");
     }
 

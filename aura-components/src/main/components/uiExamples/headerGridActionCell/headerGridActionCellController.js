@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.auraframework.def;
-
-import java.util.List;
-
-public interface LibraryDef extends RootDefinition, HasJavascriptReferences {
-
-	@Override
-    DefDescriptor<LibraryDef> getDescriptor();
-    
-    /**
-     * Gets the list of included JS files.
-     * @return {@link List} of included resources.
-     */
-    List<IncludeDefRef> getIncludes();
-}
+({
+	handleClick : function(cmp, evt, helper) {
+		var newValue = cmp.getElement().getElementsByTagName('input')[0].checked;
+		cmp.getEvent('gridAction').setParams({
+			action  : 'select',
+			payload : {
+				value : newValue,
+				selectedItem : {
+					subject: 'Header'
+				}
+			},
+			index : 'Index'
+		}).fire();
+	}
+})

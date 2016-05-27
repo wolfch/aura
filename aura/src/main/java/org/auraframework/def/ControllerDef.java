@@ -24,7 +24,7 @@ import java.util.Map;
  * from a controller that the component definition needs to know like what
  * actions and types of data are exposed.
  */
-public interface ControllerDef extends ValueProvider, CodeDefinition {
+public interface ControllerDef extends ValueProvider, RemotableDefinition {
     /**
      * Get the descriptor for this def.
      */
