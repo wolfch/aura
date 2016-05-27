@@ -30,11 +30,11 @@ import java.net.URL;
 
 public class PerfDiffUtil implements DiffUtil<PerfMetrics>{
 
-    private final PerfExecutorTest test;
+    private final PerfExecutorTestCase test;
     private URL srcUrl;
     private URL destUrl;
 
-    public PerfDiffUtil(PerfExecutorTest test, String goldName) throws Exception {
+    public PerfDiffUtil(PerfExecutorTestCase test, String goldName) throws Exception {
         this.test = test;
         String explicitResultsFolder = test.getExplicitGoldResultsFolder();
         if (explicitResultsFolder != null) {
@@ -117,7 +117,7 @@ public class PerfDiffUtil implements DiffUtil<PerfMetrics>{
     }
 
     @Override
-    public PerfExecutorTest getTest() {
+    public PerfExecutorTestCase getTest() {
         return test;
     }
 
