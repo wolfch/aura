@@ -40,5 +40,4 @@ public interface TestContext {
 	 * @return the set of Definitions expected by this TestContext
 	 */
     public Set<Definition> getLocalDefs();
-    
 }

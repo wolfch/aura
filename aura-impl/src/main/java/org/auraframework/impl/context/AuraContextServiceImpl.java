@@ -40,6 +40,7 @@ import org.auraframework.system.DefRegistry;
 import org.auraframework.system.SourceLoader;
 import org.auraframework.throwable.NoContextException;
 import org.auraframework.util.json.JsonSerializerFactory;
+import org.springframework.context.annotation.Lazy;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -50,6 +51,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+@Lazy
 @ServiceComponent
 public class AuraContextServiceImpl implements ContextService {
     @Inject

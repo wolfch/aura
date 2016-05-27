@@ -27,6 +27,7 @@ import org.auraframework.util.AuraLocale;
 import org.auraframework.util.date.DateService;
 import org.auraframework.util.date.DateServiceImpl;
 import org.auraframework.util.number.AuraNumberFormat;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -42,6 +43,7 @@ import java.util.TimeZone;
 /**
  * Default implementation for the Localization Service
  */
+@Lazy
 @ServiceComponent
 @Component("org.auraframework.impl.LocalizationServiceImpl")
 public class LocalizationServiceImpl implements LocalizationService {

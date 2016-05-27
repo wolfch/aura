@@ -15,8 +15,9 @@
  */
 package org.auraframework.integration.test.model;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import java.util.ArrayList;
+import java.util.Map;
+
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.impl.AuraImplTestCase;
@@ -24,8 +25,8 @@ import org.auraframework.instance.Component;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Map;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 public class ReinitializeModelTest extends AuraImplTestCase {
     private final boolean debug = false;

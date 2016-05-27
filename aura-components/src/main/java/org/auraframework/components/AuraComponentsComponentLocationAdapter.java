@@ -17,7 +17,9 @@ package org.auraframework.components;
 
 import org.auraframework.adapter.ComponentLocationAdapter;
 import org.auraframework.annotations.Annotations.ServiceComponent;
+import org.springframework.context.annotation.Lazy;
 
+@Lazy
 @ServiceComponent
 public class AuraComponentsComponentLocationAdapter extends ComponentLocationAdapter.Impl {
 

@@ -22,6 +22,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.apache.log4j.Logger;
+import org.auraframework.Aura;
 import org.auraframework.adapter.ConfigAdapter;
 import org.auraframework.cache.Cache;
 import org.auraframework.def.BaseComponentDef;
@@ -36,6 +37,7 @@ import org.auraframework.def.ParentedDef;
 import org.auraframework.def.RootDefinition;
 import org.auraframework.impl.controller.AuraStaticControllerDefRegistry;
 import org.auraframework.service.CachingService;
+import org.auraframework.service.ContextService;
 import org.auraframework.service.DefinitionService;
 import org.auraframework.service.LoggingService;
 import org.auraframework.system.AuraContext;
@@ -434,7 +436,7 @@ public class MasterDefRegistryImpl implements MasterDefRegistry {
 
         public CompileContext(LoggingService loggingService, AuraContext context, DefDescriptor<? extends Definition> topLevel, List<ClientLibraryDef> clientLibs) {
             this.loggingService = loggingService;
-            this.context = context;
+            this.context = context != null ? context : Aura.getContextService().getCurrentContext();
             this.clientLibs = clientLibs;
             this.topLevel = topLevel;
             this.level = 0;
@@ -444,7 +446,7 @@ public class MasterDefRegistryImpl implements MasterDefRegistry {
 
         public CompileContext(LoggingService loggingService, AuraContext context, DefDescriptor<? extends Definition> topLevel) {
             this.loggingService = loggingService;
-            this.context = context;
+            this.context = context != null ? context : Aura.getContextService().getCurrentContext();
             this.clientLibs = null;
             this.topLevel = topLevel;
             this.shouldCacheDependencies = true;

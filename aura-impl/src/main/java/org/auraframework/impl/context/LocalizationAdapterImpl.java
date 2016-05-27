@@ -15,33 +15,35 @@
  */
 package org.auraframework.impl.context;
 
-import org.auraframework.adapter.LocalizationAdapter;
-import org.auraframework.annotations.Annotations.ServiceComponent;
-import org.auraframework.impl.util.AuraLocaleImpl;
-import org.auraframework.service.ContextService;
-import org.auraframework.system.AuraContext;
-import org.auraframework.util.AuraLocale;
-import org.springframework.context.annotation.Profile;
-
-import javax.inject.Inject;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
+import javax.inject.Inject;
+
+import org.auraframework.adapter.LocalizationAdapter;
+import org.auraframework.annotations.Annotations.ServiceComponent;
+import org.auraframework.impl.util.AuraLocaleImpl;
+import org.auraframework.service.ContextService;
+import org.auraframework.system.AuraContext;
+import org.auraframework.test.TestableLocalizationAdapter;
+import org.auraframework.util.AuraLocale;
+import org.springframework.context.annotation.Lazy;
+
+@Lazy
 @ServiceComponent
-@Profile("!auraTest")
-public class LocalizationAdapterImpl implements LocalizationAdapter {
+public class LocalizationAdapterImpl implements LocalizationAdapter, TestableLocalizationAdapter {
 
     @Inject
     private ContextService contextService;
-    
-    /**
-     * Temporary workaround for localized labels
-     */
+
     private static Map<String, Map<String, String>> labels = new HashMap<>();
+    
+    private final static Map<String, String> testLabels = new HashMap<>();
+
+    // THIS SHOULD DIE.
     static {
         Map<String, String> todayLabels = new HashMap<>();
         todayLabels.put("ar", "اليوم");
@@ -75,7 +77,7 @@ public class LocalizationAdapterImpl implements LocalizationAdapter {
         tomorrowLabels.put("en_US", "Tomorrow");
         labels.put("task_mode_tomorrow", tomorrowLabels);
     }
-
+    
     public LocalizationAdapterImpl() {
     }
 
@@ -83,6 +85,9 @@ public class LocalizationAdapterImpl implements LocalizationAdapter {
     public String getLabel(String section, String name, Object... params) {
         Map<String, String> label = labels.get(name);
         if (label == null) {
+        	if(testLabels.containsKey(getLabelKey(section, name))) {
+        		return testLabels.get(getLabelKey(section, name));
+        	}
             return "FIXME - LocalizationAdapter.getLabel() needs implementation!";
         }
         return label.get(this.getAuraLocale().getLanguageLocale().toString());
@@ -126,6 +131,25 @@ public class LocalizationAdapterImpl implements LocalizationAdapter {
             Locale languageLocale, Locale numberLocale, Locale systemLocale, TimeZone timeZone) {
         return new AuraLocaleImpl(defaultLocale, currencyLocale, dateLocale, languageLocale, numberLocale,
                 systemLocale, timeZone);
+    }
+    
+    @Override
+	public void setTestLabel(String section, String name, String value) {
+    	testLabels.put(getLabelKey(section, name), value);
+    }
+
+    @Override
+    public String getTestLabel(String section, String name) {
+        return testLabels.get(getLabelKey(section, name));
+    }
+    
+    @Override
+    public String removeTestLabel(String section, String name) {
+    	return testLabels.remove(getLabelKey(section, name));
+    }
+
+    private String getLabelKey(String section, String name) {
+        return section + "." + name;
     }
 
 }

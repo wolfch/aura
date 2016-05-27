@@ -15,15 +15,19 @@
  */
 package org.auraframework.test.source;
 
-import com.google.common.collect.Sets;
-import org.auraframework.adapter.ComponentLocationAdapter;
-import org.auraframework.annotations.Annotations.ServiceComponent;
-import org.auraframework.system.SourceLoader;
-
-import javax.inject.Inject;
 import java.io.File;
 import java.util.Set;
 
+import javax.inject.Inject;
+
+import org.auraframework.adapter.ComponentLocationAdapter;
+import org.auraframework.annotations.Annotations.ServiceComponent;
+import org.auraframework.system.SourceLoader;
+import org.springframework.context.annotation.Lazy;
+
+import com.google.common.collect.Sets;
+
+@Lazy
 @ServiceComponent
 public class StringComponentLocationAdapter implements ComponentLocationAdapter {
 

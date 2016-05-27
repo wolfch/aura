@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.auraframework.test;
+package org.auraframework.impl.test;
 
 import java.util.Set;
 
 import org.auraframework.def.Definition;
+import org.auraframework.test.TestContext;
+
 import com.google.common.collect.Sets;
 
 /**
@@ -63,4 +65,5 @@ public class TestContextImpl implements TestContext {
         }
         return localDefs;
     }
+    
 }
