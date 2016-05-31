@@ -9,8 +9,8 @@
                 var foo = $A.storageService.initStorage({name: "foo"});
                 var bar = $A.storageService.initStorage({name: "bar"});
 
-                foo.put("key1", "value1")
-                    .then(function() { return bar.put("key2", "value2"); })
+                foo.set("key1", "value1")
+                    .then(function() { return bar.set("key2", "value2"); })
                     .then(function() { return foo.get("key1"); })
                     .then(function(v) { cmp._fooValue1 = v; })
                     // Insure that foo and bar are truly isolated stores and do
@@ -37,24 +37,6 @@
         ]
     },
 
-    testCreateDuplicateNamedStores : {
-        test : function(cmp) {
-            var foo = $A.storageService.initStorage({name: "foo"});
-
-            try {
-                var foo2 = $A.storageService.initStorage({name: "foo"});
-            } catch (e) {
-                $A.test.assertEquals("Assertion Failed!: Storage named 'foo' already exists : false", e.message);
-            }
-
-            try {
-                var foo3 = $A.storageService.initStorage({name: "foo"});
-            } catch (e) {
-                $A.test.assertEquals("Assertion Failed!: Storage named 'foo' already exists : false", e.message);
-            }
-        }
-    },
-
     testNamedStorageInTemplate : {
         test : function(cmp) {
             var actions = $A.storageService.getStorage("actions");
@@ -76,6 +58,7 @@
 
     /**
      * Test case to verify the behavior of $A.storageService.getStorage()
+     * TODO: this can be moved to xunit.
      */
     testGetStorageApi : {
         test: function(cmp){
