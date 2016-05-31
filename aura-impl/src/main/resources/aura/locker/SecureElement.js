@@ -206,15 +206,15 @@ function SecureElement(el, key) {
 		}
 	});
 
-	[ "childNodes", "children", "firstChild", "lastChild", "getAttribute", "nodeName", "nodeType", "parentNode", "parentElement", "ownerDocument",
-			"setAttribute", "removeAttribute", "getAttributeNS", "setAttributeNS", "removeAttributeNS" ].forEach(function(name) {
+	[ "childNodes", "children", "firstChild", "lastChild", "nodeName", "nodeType", "parentNode", "parentElement", "ownerDocument"].forEach(function(name) {
 		SecureObject.addPropertyIfSupported(o, el, name, {
 			filterOpaque : true
 		});
 	});
 
 	[ "compareDocumentPosition", "getElementsByClassName", "getElementsByTagName", "getElementsByTagNameNS", "querySelector", "querySelectorAll",
-			"getBoundingClientRect", "getClientRects", "blur", "click", "focus" ].forEach(function(name) {
+			"getBoundingClientRect", "getClientRects", "blur", "click", "focus", 
+			"getAttribute", "hasAttribute", "setAttribute", "removeAttribute", "getAttributeNS", "hasAttributeNS", "setAttributeNS", "removeAttributeNS" ].forEach(function(name) {
 		SecureObject.addMethodIfSupported(o, el, name, {
 			filterOpaque : true
 		});
