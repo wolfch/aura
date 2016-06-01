@@ -15,12 +15,17 @@
  */
 package org.auraframework.components.dependency;
 
+import javax.inject.Inject;
+
 import org.auraframework.Aura;
+import org.auraframework.annotations.Annotations.ServiceComponentProvider;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.ComponentDescriptorProvider;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.instance.AttributeSet;
 import org.auraframework.instance.BaseComponent;
+import org.auraframework.service.ContextService;
+import org.auraframework.service.DefinitionService;
 import org.auraframework.system.Annotations.Provider;
 import org.auraframework.system.AuraContext;
 import org.auraframework.throwable.quickfix.QuickFixException;
@@ -28,19 +33,23 @@ import org.auraframework.throwable.quickfix.QuickFixException;
 /**
  * server side provider for if.cmp
  */
+@ServiceComponentProvider
 @Provider
 public class dependencyProvider implements ComponentDescriptorProvider {
+    @Inject
+    private ContextService contextService;
+
+    @Inject
+    private DefinitionService definitionService;
 
     @Override
     public DefDescriptor<ComponentDef> provide() throws QuickFixException {
-
-        AuraContext context = Aura.getContextService().getCurrentContext();
+        AuraContext context = contextService.getCurrentContext();
         BaseComponent<?, ?> component = context.getCurrentComponent();
         AttributeSet atts = component.getAttributes();
 
         String qualifiedName = (String)atts.getValue("qualifiedName");
 
-        return Aura.getDefinitionService().getDefDescriptor(qualifiedName, ComponentDef.class);
+        return definitionService.getDefDescriptor(qualifiedName, ComponentDef.class);
    }
-
 }
