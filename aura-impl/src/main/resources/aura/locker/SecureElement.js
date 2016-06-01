@@ -276,7 +276,9 @@ SecureElement.addSecureProperties = function(se, raw) {
 	// DCHASMAN TODO This list needs to be revisted as it is missing a ton of
 	// valid attributes!
 	].forEach(function(name) {
-		SecureObject.addPropertyIfSupported(se, raw, name);
+		SecureObject.addPropertyIfSupported(se, raw, name, {
+			filterOpaque : true
+		});
 	});
 };
 
@@ -366,7 +368,9 @@ SecureElement.addElementSpecificProperties = function(se, el) {
 		var whitelist = SecureElement.elementSpecificAttributeWhitelists[tagName];
 		if (whitelist) {
 			whitelist.forEach(function(name) {
-				SecureObject.addPropertyIfSupported(se, el, $A.util.hyphensToCamelCase(name));
+				SecureObject.addPropertyIfSupported(se, el, $A.util.hyphensToCamelCase(name), {
+					filterOpaque : true
+				});
 			});
 		}
 
@@ -383,7 +387,9 @@ SecureElement.addElementSpecificMethods = function(se, el) {
 		var whitelist = SecureElement.elementSpecificMethodWhitelists[tagName];
 		if (whitelist) {
 			whitelist.forEach(function(name) {
-				SecureObject.addMethodIfSupported(se, el, name);
+				SecureObject.addMethodIfSupported(se, el, name, {
+					filterOpaque : true
+				});
 			});
 		}
 	}
