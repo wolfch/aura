@@ -38,11 +38,28 @@
     /**
      * Override
      */
-    doUpdate : function(component, value) {
-        var isoDate = $A.localizationService.parseDateTimeUTC(value);
-        var timezone = component.get("v.timezone");
+    doUpdate : function (component, value) {
+        var timezone = component.get("v.timezone"),
+            helper = this,
+            isoDate;
 
-        $A.localizationService.WallTimeToUTC(isoDate, timezone, function (utcDate) {
+        if ($A.util.isEmpty(component.get("v.value"))) {
+            component._isInitialValue = true;
+            isoDate = $A.localizationService.parseDateTime(value);
+
+            // first convert the date/time to the user's SFDC timezone, because mobile always defaults to the local timezone
+            $A.localizationService.UTCToWallTime(isoDate, timezone, function (walltime) {
+                helper.setValue(component, walltime, timezone);
+            });
+        } else {
+            isoDate = $A.localizationService.parseDateTimeUTC(value);
+            helper.setValue(component, isoDate, timezone);
+        }
+
+    },
+
+    setValue : function (component, walltime, timezone) {
+        $A.localizationService.WallTimeToUTC(walltime, timezone, function (utcDate) {
             utcDate = $A.localizationService.translateFromOtherCalendar(utcDate);
             component.set("v.value", $A.localizationService.toISOString(utcDate));
         });
