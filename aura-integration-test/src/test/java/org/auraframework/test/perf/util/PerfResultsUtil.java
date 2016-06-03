@@ -62,7 +62,7 @@ public final class PerfResultsUtil {
     }
 
 
-    public static void writeToDb(PerfExecutorTest test, String testName, String dbURI, PerfMetrics metrics,String traceLog) {
+    public static void writeToDb(PerfExecutorTestCase test, String testName, String dbURI, PerfMetrics metrics,String traceLog) {
         try {
             MongoClient mongo = getMongoClient(dbURI);
             if (mongo != null) {
@@ -86,7 +86,7 @@ public final class PerfResultsUtil {
         }
     }
 
-    public static void exportToCsv(PerfExecutorTest test, Document doc){
+    public static void exportToCsv(PerfExecutorTestCase test, Document doc){
     	Object id = doc.get("_id");
     	StringBuilder sb = new StringBuilder();
         
@@ -114,7 +114,7 @@ public final class PerfResultsUtil {
      *
      * @return the written file
      */
-    public static File writeDevToolsLog(List<JSONObject> timeline, String fileName, PerfExecutorTest test) {
+    public static File writeDevToolsLog(List<JSONObject> timeline, String fileName, PerfExecutorTestCase test) {
         File resultsFilePath = PerfFilesUtil.getTimelineResultsDir(test.getExplicitPerfResultsFolder(), fileName);  
         
         BufferedWriter writer = null;
@@ -142,7 +142,7 @@ public final class PerfResultsUtil {
     /**
      * @return the written file
      */
-    public static File writeGoldFile(PerfMetrics metrics, PerfExecutorTest test) {
+    public static File writeGoldFile(PerfMetrics metrics, PerfExecutorTestCase test) {
     	String fileName = test.getComponentDef().getName();
         try {
             ALL_GOLDFILES_JSON.addGoldfile(fileName, metrics);
@@ -170,7 +170,7 @@ public final class PerfResultsUtil {
         }
     }
 
-    public static void assertPerfDiff(PerfExecutorTest test, String resultsBaseFilename, PerfMetrics actual)
+    public static void assertPerfDiff(PerfExecutorTestCase test, String resultsBaseFilename, PerfMetrics actual)
             throws Exception {
         DiffUtil<PerfMetrics> diff = new PerfDiffUtil(test, resultsBaseFilename);
         assertDiff(actual, diff);
