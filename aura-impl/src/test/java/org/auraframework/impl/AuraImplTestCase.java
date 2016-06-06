@@ -85,10 +85,19 @@ public abstract class AuraImplTestCase extends AuraTestCase {
             if (contextService.isEstablished()) {
                 contextService.endContext();
             }
-            contextService.startContext(Mode.UTEST, Format.JSON, Authentication.AUTHENTICATED);
+            startDefaultContext();
         }
         laxSecurityApp = definitionService.getDefDescriptor("test:laxSecurity", ApplicationDef.class);
     }
+
+	/**
+	 * This method is invoked from <code>setUp()</code> and by default a context
+	 * in UTEST mode is started and allows for derived test classes to override
+	 * and start a context with different Mode.
+	 */
+	protected void startDefaultContext() {
+		contextService.startContext(Mode.UTEST, Format.JSON, Authentication.AUTHENTICATED);
+	}
 
     @PostConstruct
     public void initVendor() {
