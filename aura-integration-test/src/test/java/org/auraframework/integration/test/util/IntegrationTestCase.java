@@ -34,7 +34,6 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
-import org.auraframework.adapter.ConfigAdapter;
 import org.auraframework.def.BaseComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.DefDescriptor.DefType;
@@ -60,9 +59,10 @@ public abstract class IntegrationTestCase extends AuraImplTestCase {
     
     private HttpClient httpClient = null;
 
-    @Inject
-    protected ConfigAdapter configAdapter;
-
+    protected IntegrationTestCase() {
+        setShouldSetupContext(false);
+    }
+    
     @Override
     public void tearDown() throws Exception {
         if (httpClient != null) {
