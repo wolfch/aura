@@ -15,14 +15,12 @@
  */
 package org.auraframework.test.perf.util;
 
-import com.google.common.collect.ImmutableList;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.auraframework.Aura;
 import org.auraframework.def.BaseComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.service.ContextService;
@@ -35,6 +33,9 @@ import org.auraframework.util.test.annotation.UnAdaptableTest;
 import org.auraframework.util.test.perf.metrics.PerfMetricsComparator;
 
 import javax.inject.Inject;
+
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
 @UnAdaptableTest
 @PerfTestSuite
@@ -87,7 +88,7 @@ public class PerfEngineUITest extends TestSuite implements PerfTestFramework {
         return defs;
     }
 
-    private class ComponentTestSuite extends TestSuite {
+	private class ComponentTestSuite extends TestSuite {
         ComponentTestSuite(DefDescriptor<BaseComponentDef> defDescriptor, final PerfConfig config) throws Exception {
             super(defDescriptor.getName());
             boolean doEndContext = false;

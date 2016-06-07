@@ -15,7 +15,11 @@
  */
 package org.auraframework.renderer;
 
+import java.io.IOException;
+import java.util.List;
+
 import org.auraframework.annotations.Annotations.ServiceComponentRenderer;
+import org.auraframework.Aura;
 import org.auraframework.def.ComponentDefRef;
 import org.auraframework.def.Renderer;
 import org.auraframework.instance.BaseComponent;
@@ -24,10 +28,6 @@ import org.auraframework.service.InstanceService;
 import org.auraframework.service.RenderingService;
 import org.auraframework.system.RenderContext;
 import org.auraframework.throwable.quickfix.QuickFixException;
-
-import javax.inject.Inject;
-import java.io.IOException;
-import java.util.List;
 
 @ServiceComponentRenderer
 public class ExpressionRenderer implements Renderer {

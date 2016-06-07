@@ -15,7 +15,10 @@
  */
 package org.auraframework.components.aura;
 
+import java.io.IOException;
+
 import org.auraframework.annotations.Annotations.ServiceComponentRenderer;
+import org.auraframework.Aura;
 import org.auraframework.def.ComponentDefRefArray;
 import org.auraframework.def.Renderer;
 import org.auraframework.instance.BaseComponent;

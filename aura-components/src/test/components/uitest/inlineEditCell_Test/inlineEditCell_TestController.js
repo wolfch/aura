@@ -13,19 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-({
-	handleClick : function(cmp, evt, helper) {
-		
-		var newValue = cmp.getElement().getElementsByTagName('input')[0].checked;
-		cmp.getEvent('gridAction').setParams({
-			action  : 'select',
-			payload : {
-				value : newValue,
-				selectedItem : {
-					subject: 'Header'
-				}
-			},
-			index : 'Index'
-		}).fire();
-	}
-})
+ ({
+	 doCell1Error : function(cmp) {
+		 var cell1 = cmp.find('cell1');
+		 cell1.set('v.hasErrors', true);
+	 },
+	 
+	 doCell1ClearError : function(cmp) {
+		 var cell1 = cmp.find('cell1');
+		 cell1.set('v.hasErrors', false);
+	 },
+	 
+	 doCell1ChangeData : function(cmp) {
+		 cmp.set('v.cell1Data', 'Aura!');
+	 },
+	 
+	 doCell1Disable : function(cmp) {
+		 cmp.set('v.isCell1Disabled', true);
+	 },
+	 
+	 doCell1Enable : function(cmp) {
+		 cmp.set('v.isCell1Disabled', false);
+	 }
+ })

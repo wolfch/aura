@@ -20,11 +20,7 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 
-import javax.inject.Inject;
-
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
+import org.apache.http.*;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -34,12 +30,12 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
-import org.auraframework.def.BaseComponentDef;
-import org.auraframework.def.DefDescriptor;
+import org.auraframework.Aura;
+import org.auraframework.def.*;
 import org.auraframework.def.DefDescriptor.DefType;
 import org.auraframework.http.CSP;
-import org.auraframework.impl.AuraImplTestCase;
-import org.auraframework.system.AuraContext;
+import org.auraframework.service.ContextService;
+import org.auraframework.system.*;
 import org.auraframework.system.AuraContext.Authentication;
 import org.auraframework.system.AuraContext.Format;
 import org.auraframework.system.AuraContext.Mode;
@@ -52,8 +48,11 @@ import org.auraframework.util.test.configuration.TestServletConfig;
  */
 @SuppressWarnings("deprecation")
 @IntegrationTest
-public abstract class IntegrationTestCase extends AuraImplTestCase {
-    
+@RunWith(BlockJUnit4ClassRunner.class)
+@TestExecutionListeners(listeners = {DependencyInjectionTestExecutionListener.class})
+@ContextConfiguration(locations = {"/applicationContext.xml"})
+public abstract class IntegrationTestCase extends AuraTestCase {
+
     @Inject
     private TestServletConfig testServletConfig;
     

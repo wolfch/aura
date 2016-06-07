@@ -15,6 +15,11 @@
  */
 package org.auraframework.renderer;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
+import org.auraframework.annotations.Annotations.ServiceComponentRenderer;
 import org.auraframework.Aura;
 import org.auraframework.annotations.Annotations.ServiceComponentRenderer;
 import org.auraframework.def.AttributeDef;
