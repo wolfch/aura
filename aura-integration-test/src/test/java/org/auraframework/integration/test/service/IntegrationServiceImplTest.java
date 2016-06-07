@@ -58,8 +58,9 @@ public class IntegrationServiceImplTest extends AuraImplTestCase {
     @Inject
     private ContextService contextService;
 
-    @Override
-    protected void startDefaultContext() {
+    public IntegrationServiceImplTest() {
+        super();
+        setShouldSetupContext(false);
     }
     
     @Override

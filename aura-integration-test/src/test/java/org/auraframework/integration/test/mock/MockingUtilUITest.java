@@ -18,17 +18,16 @@ package org.auraframework.integration.test.mock;
 import javax.inject.Inject;
 
 import org.auraframework.Aura;
-import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.ControllerDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.ModelDef;
-import org.auraframework.ds.servicecomponent.Controller;
 import org.auraframework.impl.parser.ParserFactory;
 import org.auraframework.impl.test.mock.MockingUtil;
 import org.auraframework.integration.test.util.WebDriverTestCase;
 import org.auraframework.system.Annotations.AuraEnabled;
+import org.auraframework.system.Annotations.Controller;
 import org.auraframework.system.AuraContext.Authentication;
 import org.auraframework.system.AuraContext.Format;
 import org.auraframework.system.AuraContext.Mode;
@@ -43,6 +42,7 @@ import org.openqa.selenium.By;
 import com.google.common.collect.ImmutableMap;
 
 @UnAdaptableTest("W-2329849: Failing on SFDC but passing on standalone ios-driver builds. Needs investigation")
+@Controller
 public class MockingUtilUITest extends WebDriverTestCase {
     private MockingUtil mockingUtil;
 
@@ -181,12 +181,9 @@ public class MockingUtilUITest extends WebDriverTestCase {
     }
 
     // Dummy controller method for use by testMockServerAction
-    @ServiceComponent
-    public static class InnerController implements Controller {
-        @AuraEnabled
-        public static Object lookInside() {
-            return "not so interesting";
-        }
+    @AuraEnabled
+    public static Object lookInside() {
+        return "not so interesting";
     }
 
     @Test
@@ -195,8 +192,7 @@ public class MockingUtilUITest extends WebDriverTestCase {
             Aura.getContextService().startContext(Mode.SELENIUM, Format.HTML, Authentication.AUTHENTICATED);
         }
         DefDescriptor<ControllerDef> controllerDefDescriptor = definitionService.getDefDescriptor(
-                "java://org.auraframework.integration.test.mock.MockingUtilUITest$InnerController",
-                ControllerDef.class);
+                String.format("java://%s", this.getClass().getCanonicalName()), ControllerDef.class);
         DefDescriptor<ComponentDef> cmpDefDescriptor = addSourceAutoCleanup(
                 ComponentDef.class,
                 String.format(baseComponentTag,
@@ -223,8 +219,7 @@ public class MockingUtilUITest extends WebDriverTestCase {
 //            Aura.getContextService().startContext(Mode.SELENIUM, Format.HTML, Authentication.AUTHENTICATED);
 //        }
 //        DefDescriptor<ControllerDef> controllerDefDescriptor = definitionService.getDefDescriptor(
-//                "java://org.auraframework.integration.test.mock.MockingUtilUITest$InnerController",
-//                ControllerDef.class);
+//                String.format("java://%s", this.getClass().getCanonicalName()), ControllerDef.class);
 //        DefDescriptor<ComponentDef> cmpDefDescriptor = addSourceAutoCleanup(ComponentDef.class, String
 //                .format(baseComponentTag, String.format("controller='%s'", controllerDefDescriptor.getQualifiedName()),
 //                        "<ui:button press='{!c.clicked}' label='act'/><div class='result' aura:id='result'></div>"));

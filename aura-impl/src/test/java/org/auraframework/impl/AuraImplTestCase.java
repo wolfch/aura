@@ -70,12 +70,23 @@ public abstract class AuraImplTestCase extends AuraTestCase {
 
     protected AuraImplUnitTestingUtil vendor;
 
+    private boolean shouldSetupContext = true;
+
     protected DefDescriptor<ApplicationDef> laxSecurityApp;
 
+    protected void setShouldSetupContext(boolean setupContext) {
+        this.shouldSetupContext = setupContext;
+    }
+    
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        startDefaultContext();
+        if (shouldSetupContext) {
+            if (contextService.isEstablished()) {
+                contextService.endContext();
+            }
+            startDefaultContext();
+        }
         laxSecurityApp = definitionService.getDefDescriptor("test:laxSecurity", ApplicationDef.class);
     }
 

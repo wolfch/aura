@@ -64,11 +64,6 @@ public abstract class IntegrationTestCase extends AuraImplTestCase {
     protected ConfigAdapter configAdapter;
 
     @Override
-    protected void startDefaultContext() {
-        // integration tests don't need a default AuraContext
-    }
-    
-    @Override
     public void tearDown() throws Exception {
         if (httpClient != null) {
             httpClient.getConnectionManager().shutdown();

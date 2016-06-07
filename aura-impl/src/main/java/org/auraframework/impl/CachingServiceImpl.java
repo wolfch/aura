@@ -45,7 +45,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 
-public final class CachingServiceImpl implements CachingService {
+public class CachingServiceImpl implements CachingService {
     private static final long serialVersionUID = -3311707270226573084L;
 
     /** Default size of definition caches, in number of entries */

@@ -61,8 +61,8 @@ import java.util.Set;
 public class DefinitionServiceImplTest extends AuraImplTestCase {
     private static final String DEFINITION_SERVICE_IMPL_TEST_TARGET_COMPONENT = "definitionServiceImplTest:targetComponent";
 
-    @Override
-    protected void startDefaultContext() {
+    public DefinitionServiceImplTest() {
+        this.setShouldSetupContext(false);
     }
 
     @Override

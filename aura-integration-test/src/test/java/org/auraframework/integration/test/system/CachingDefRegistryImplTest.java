@@ -38,12 +38,12 @@ import java.util.List;
 public class CachingDefRegistryImplTest extends AuraImplTestCase {
     private static final int CACHE_SIZE_MAX = 1024;
 
-    @Override
-    protected void startDefaultContext() {
+    public CachingDefRegistryImplTest() {
         // The behavior of caching Def registry changes based on Context.
         // So it is necessary to let each test case set its own context
+    	this.setShouldSetupContext(false);
     }
-        
+
     @Override
     public void setUp() throws Exception {
         super.setUp();
