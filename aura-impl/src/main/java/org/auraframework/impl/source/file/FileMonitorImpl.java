@@ -16,13 +16,15 @@
 package org.auraframework.impl.source.file;
 
 import org.apache.log4j.Logger;
-import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.service.CachingService;
 import org.auraframework.system.SourceListener;
 import org.auraframework.util.FileChangeEvent;
 import org.auraframework.util.FileListener;
 import org.auraframework.util.FileMonitor;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -56,10 +58,27 @@ import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
  * File monitor allowing to ability to add watched directory. Used to update files and clear caches on source changes
  * during development
  */
-@ServiceComponent
 public final class FileMonitorImpl implements FileMonitor, Runnable {
     private final static Logger LOG = Logger.getLogger(FileMonitorImpl.class);
 
+    @Configuration
+    public static class BeanConfiguration {
+        private static final FileMonitorImpl INSTANCE;
+        
+        static {
+            synchronized (BeanConfiguration.class) {
+                INSTANCE = new FileMonitorImpl();
+                INSTANCE.start();
+            }
+        }
+        
+        @Lazy
+        @Bean
+        public FileMonitor fileMonitorImpl() {
+            return INSTANCE;
+        }
+    }
+    
     @Inject
     private CachingService cachingService;
 

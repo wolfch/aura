@@ -19,7 +19,6 @@ import com.google.common.base.Optional;
 
 import org.apache.log4j.Logger;
 import org.auraframework.adapter.LoggingAdapter;
-import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.builder.CacheBuilder;
 import org.auraframework.cache.Cache;
 import org.auraframework.def.ApplicationDef;
@@ -31,6 +30,9 @@ import org.auraframework.impl.system.DefDescriptorImpl;
 import org.auraframework.service.CachingService;
 import org.auraframework.system.DependencyEntry;
 import org.auraframework.system.SourceListener;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -43,7 +45,6 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 
-@ServiceComponent
 public class CachingServiceImpl implements CachingService {
     private static final long serialVersionUID = -3311707270226573084L;
 
@@ -63,6 +64,17 @@ public class CachingServiceImpl implements CachingService {
     /** Default size of client lib caches, in number of entries */
     private final static int CLIENT_LIB_CACHE_SIZE = 30;
 
+    @Configuration
+    public static class BeanConfiguration {
+        private static final CachingServiceImpl INSTANCE  = new CachingServiceImpl();
+        
+        @Lazy
+        @Bean
+        public CachingService cachingServiceImpl() {
+            return INSTANCE;
+        }
+    }
+    
     private LoggingAdapter loggingAdapter;
     
     private final ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock();

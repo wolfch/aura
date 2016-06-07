@@ -47,20 +47,12 @@ import org.auraframework.system.AuraContext.Mode;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.test.annotation.IntegrationTest;
 import org.auraframework.util.test.configuration.TestServletConfig;
-import org.junit.runner.RunWith;
-import org.junit.runners.BlockJUnit4ClassRunner;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 /**
  * Base class for all Aura integration tests.
  */
 @SuppressWarnings("deprecation")
 @IntegrationTest
-@RunWith(BlockJUnit4ClassRunner.class)
-@TestExecutionListeners(listeners = {DependencyInjectionTestExecutionListener.class})
-@ContextConfiguration(locations = {"/applicationContext.xml"})
 public abstract class IntegrationTestCase extends AuraImplTestCase {
     
     @Inject

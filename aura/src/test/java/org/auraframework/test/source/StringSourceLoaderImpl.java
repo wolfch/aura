@@ -21,7 +21,6 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import org.auraframework.adapter.ConfigAdapter;
-import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.ControllerDef;
@@ -50,6 +49,9 @@ import org.auraframework.system.Parser.Format;
 import org.auraframework.system.Source;
 import org.auraframework.system.SourceListener.SourceMonitorEvent;
 import org.auraframework.util.FileMonitor;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 
 import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
@@ -73,8 +75,22 @@ import java.util.concurrent.locks.ReentrantLock;
  * or provide descriptors via find that aura will not be able to find because it has a fixed idea of the namespaces
  * represented. This could be fixed by providing a fixed view into the namespaces provided.
  */
-@ServiceComponent
-public class StringSourceLoaderImpl implements StringSourceLoader {
+public final class StringSourceLoaderImpl implements StringSourceLoader {
+    
+    private StringSourceLoaderImpl() {
+    }
+    
+    @Configuration
+    public static class BeanConfiguration {
+        private static final StringSourceLoaderImpl INSTANCE = new StringSourceLoaderImpl();
+
+        @Lazy
+        @Bean
+        public StringSourceLoader stringSourceLoaderImpl() {
+            return INSTANCE;
+        }
+    }
+    
     @Inject
     private DefinitionService definitionService;
 
@@ -157,9 +173,6 @@ public class StringSourceLoaderImpl implements StringSourceLoader {
      */
     private final Map<String, NamespaceInfo> namespaces = new ConcurrentHashMap<>();
 
-    public StringSourceLoaderImpl() {
-    }
-    
     private NamespaceInfo getOrAddNamespace(String namespace, NamespaceAccess access) {
         nsLock.lock();
         try {
