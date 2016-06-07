@@ -29,11 +29,19 @@
 
 	handleGridAction : function(cmp, evt, helper) {
 		var action = evt.getParam("action");
-		
+
 		/**
 		 * If the bubbled event is an edit, send an edit panel to the cell
 		 */
 		if (action === 'edit') {
+
+			// Prevent inline edit if editable is false	
+			if (!cmp.get('v.editable')){
+				evt.preventDefault();
+				evt.stopPropagation();
+				return;
+			}
+
 			var index = evt.getParam("index");
 			var payload = evt.getParam("payload");
 			
@@ -43,20 +51,21 @@
 			if (editLayout) {
 				// TODO: Need check that editLayout follows a certain interface so we can attach the appropriate
 				// attributes and events.
-				var attributes = editLayout.attributes || {};
 				
-				attributes.value = payload.value;
-				attributes.updateOn = 'input';
+				if (!editLayout.attributes) {
+				    editLayout.attributes = { values : {} };
+				}
 				
-				$A.createComponent(editLayout.componentDef.descriptor, attributes, function (inputComponent) {
-					var panelBodyAttributes = {
-							index : index,
-							key : payload.name,
-							inputComponent : inputComponent
-					};
-					
-					helper.displayEditPanel(cmp, panelBodyAttributes, payload.targetElement);
-				});
+				editLayout.attributes.values.value = payload.value;
+				editLayout.attributes.values.updateOn = 'input';
+				
+				var panelBodyAttributes = {
+				        index : index,
+				        key : payload.name,
+				        inputComponent : $A.createComponentFromConfig(editLayout)
+				};
+				
+				helper.displayEditPanel(cmp, panelBodyAttributes, payload.targetElement);
 			}
 		}
 	},
@@ -64,7 +73,8 @@
 	handlePanelSubmit : function(cmp, evt, helper) {
 		var payload = evt.getParam("payload");
 		var items = cmp.get("v.items");
-		var item = items[payload.index];
+		var index = payload.index;
+		var item = items[index];
 		
 		// TODO: Move into preprocessing logic when items are initially set
 		item.status = item.status || {};
@@ -82,7 +92,8 @@
 			item.status[payload.key].hasErrors = true;
 		}
 		
-		cmp.set("v.items", items);
+		// Update only the specified item (using VDG methods)
+		helper.updateItem(cmp, item, index);
 		cmp._panelCmp.hide();
 		
 		helper.fireEditEvent(cmp, payload);

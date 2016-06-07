@@ -355,7 +355,7 @@ public class ServerServiceImpl implements ServerService {
         // Append component classes.
         Collection<BaseComponentDef> componentDefs = filterAndLoad(BaseComponentDef.class, dependencies, null);
         for (BaseComponentDef def : componentDefs) {
-        	sb.append(def.getCode(minify));
+            sb.append(def.getCode(minify));
             masterDefRegistry.setClientClassLoaded(def.getDescriptor(), true);
         }
 

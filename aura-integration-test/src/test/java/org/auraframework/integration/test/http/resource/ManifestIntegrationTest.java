@@ -83,7 +83,7 @@ public class ManifestIntegrationTest extends AuraImplTestCase {
         ServletUtilAdapter spyServletUtilAdapter = spy(servletUtilAdapter);
         ConfigAdapter spyConfigAdapter = spy(configAdapter);
         doReturn(new ArrayList<String>()).when(spyServletUtilAdapter).getStyles(context);
-        doReturn(new ArrayList<String>()).when(spyServletUtilAdapter).getScripts(Mockito.any(), Mockito.anyBoolean(), Mockito.anyMap());
+        doReturn(new ArrayList<String>()).when(spyServletUtilAdapter).getScripts(Mockito.any(), Mockito.anyBoolean(),Mockito.anyBoolean(), Mockito.anyMap());
 
         Manifest manifest = new Manifest();
         manifest.setServletUtilAdapter(spyServletUtilAdapter);

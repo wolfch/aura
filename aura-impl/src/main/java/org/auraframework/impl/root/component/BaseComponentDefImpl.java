@@ -40,6 +40,7 @@ import org.auraframework.def.AttributeDefRef;
 import org.auraframework.def.BaseComponentDef;
 import org.auraframework.def.ClientLibraryDef;
 import org.auraframework.def.ComponentDef;
+import org.auraframework.def.ComponentDefRef;
 import org.auraframework.def.ControllerDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.DefDescriptor.DefType;
@@ -275,6 +276,27 @@ public abstract class BaseComponentDefImpl<T extends BaseComponentDef> extends
         return localDeps == Boolean.TRUE;
     }
 
+    // JBUCH: TODO: This is sub-optimal and the entire concern needs to be revisited. Note the impl cast.
+    public boolean hasFacetLocalDependencies() throws QuickFixException {
+        if (!facets.isEmpty()) {
+            for (AttributeDefRef facet : facets) {
+                Object v = facet.getValue();
+                if(v instanceof ArrayList){
+                    for(Object fl : ((ArrayList)v)){
+                        if(fl instanceof ComponentDefRef){
+                            ComponentDefRef cdr=(ComponentDefRef)fl;
+                            BaseComponentDefImpl def=(BaseComponentDefImpl)cdr.getDescriptor().getDef();
+                            if(def.hasLocalDependencies()||def.hasFacetLocalDependencies()){
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     /**
      * Computes the local (server) dependencies.
      *
@@ -355,7 +377,7 @@ public abstract class BaseComponentDefImpl<T extends BaseComponentDef> extends
 
     @Override
     public void validateReferences(boolean minify) throws QuickFixException {
-    	validateReferences();
+        validateReferences();
         initializeJavascriptClass(minify);
     }
 
@@ -1021,6 +1043,11 @@ public abstract class BaseComponentDefImpl<T extends BaseComponentDef> extends
                 }
 
                 boolean local = hasLocalDependencies();
+                // For the client, hasRemoteDeps is true if the current definition or
+                // a definition in any of its facets has a local dependency.
+                if (!local) {
+                    local = hasFacetLocalDependencies();
+                }
 
                 if (local) {
                     json.writeMapEntry("hasServerDeps", true);
@@ -1077,15 +1104,15 @@ public abstract class BaseComponentDefImpl<T extends BaseComponentDef> extends
     	if (minify) {
     		js = javascriptClass.getMinifiedCode();
     	}
-    	
+
     	if (js == null) {
     		js = javascriptClass.getCode();
     	}
-    	
+
     	if (isLockerRequired()) {
     		js = convertToLocker(js);
     	}
-    	
+
     	return js;
     }
     

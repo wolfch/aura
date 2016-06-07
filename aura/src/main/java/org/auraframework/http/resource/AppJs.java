@@ -17,24 +17,48 @@
 package org.auraframework.http.resource;
 
 import org.auraframework.annotations.Annotations.ServiceComponent;
-import org.auraframework.def.DefDescriptor;
-import org.auraframework.service.ServerService;
-import org.auraframework.system.AuraContext;
-import org.auraframework.system.AuraContext.Format;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.URL;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.Set;
+
+import org.auraframework.adapter.ConfigAdapter;
+import org.auraframework.def.DefDescriptor;
+import org.auraframework.service.ServerService;
+import org.auraframework.system.AuraContext;
+import org.auraframework.system.AuraContext.Format;
+import org.auraframework.throwable.AuraRuntimeException;
+import org.auraframework.util.resource.ResourceLoader;
+
+import com.google.common.base.Charsets;
+import com.google.common.io.Resources;
+
 
 @ServiceComponent
 public class AppJs extends AuraResourceImpl {
 
     private ServerService serverService;
+    private ConfigAdapter configAdapter;
 
     public AppJs() {
         super("app.js", Format.JS);
+    }
+    
+    private void prependBootstrapJsPayload (PrintWriter writer) {
+    	String tmp = "";
+        ResourceLoader resourceLoader = configAdapter.getResourceLoader();
+		try {
+			URL url = resourceLoader.getResource("js/prependAppJs.js");
+			tmp = Resources.toString(url, Charsets.UTF_8);
+		} catch (IOException e) {
+			throw new AuraRuntimeException(e);
+		}
+		
+		writer.append(tmp);
     }
 
     @Override
@@ -45,7 +69,9 @@ public class AppJs extends AuraResourceImpl {
             return;
         }
         try {
-            serverService.writeDefinitions(dependencies, response.getWriter());
+        	PrintWriter writer = response.getWriter();
+        	prependBootstrapJsPayload(writer);
+            serverService.writeDefinitions(dependencies, writer);
         } catch (Throwable t) {
             servletUtilAdapter.handleServletException(t, false, context, request, response, false);
         }
@@ -54,6 +80,11 @@ public class AppJs extends AuraResourceImpl {
     @Inject
     public void setServerService(ServerService serverService) {
         this.serverService = serverService;
+    }
+    
+    @Inject
+    public void setConfigAdapter (ConfigAdapter configAdapter) {
+    	this.configAdapter = configAdapter;
     }
 }
 

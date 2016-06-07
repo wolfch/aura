@@ -190,7 +190,7 @@
                     completed = true;
                 })['catch'](function(e) {
                    completed = true;
-                   $A.test.fail("Cyclic object put/get failed: " + e.message);
+                   $A.test.fail("Cyclic object set/get failed: " + e.message);
                 });
 
             $A.test.addWaitFor(true, function() { return completed; });
@@ -247,7 +247,7 @@
     /**
      * Verify trying to store an Error object errors out.
      */
-    testPutErrorValueFails: {
+    testSetErrorValueFails: {
         test: function(cmp) {
             var that = this;
             var completed = false;
@@ -255,14 +255,14 @@
             this.storage.set("testErrorValue", new Error("hello, error"))
                 .then(function() {
                     completed = true;
-                    $A.test.fail("Expected put() to fail but it succeeded");
+                    $A.test.fail("Expected set() to fail but it succeeded");
                 }, function(e) {
                     cmp._storageLib.appendLine(cmp, e.message);
                 })
                 .then(function() { return that.storage.get("testErrorValue"); })
                 .then(
                     function(value){
-                        $A.test.assertUndefined(value, "Expected undefined because put() failed");
+                        $A.test.assertUndefined(value, "Expected undefined because set() failed");
                         completed = true;
                     },
                     function(err) { failTest(cmp, err); }
@@ -272,7 +272,7 @@
     },
 
     // function values are not supported by IndexedDB adapter unlike all other adapters
-    testPutFunctionValueFails: {
+    testSetFunctionValueFails: {
         test: function(cmp) {
             var completed = false;
             var that = this;
@@ -280,7 +280,7 @@
                 .then(
                     function() {
                         completed = true;
-                        $A.test.fail("Expected put() to fail but it succeeded");
+                        $A.test.fail("Expected set() to fail but it succeeded");
                     },
                     function(e) {
                         cmp._storageLib.appendLine(cmp, e.message);
@@ -289,7 +289,7 @@
                 .then(function() { return that.storage.get("testFunctionValue"); })
                 .then(
                     function(value){
-                        $A.test.assertUndefined(value, "Expected undefined because put() failed");
+                        $A.test.assertUndefined(value, "Expected undefined because set() failed");
                         completed = true;
                     },
                     function(e) {
@@ -310,8 +310,8 @@
                 debugLogging: true
             });
             $A.test.addCleanup(function(){ $A.storageService.deleteStorage("browserdb-testGetSize"); });
-            cmp._failTest = function(error) { cmp._storageLib.failTest(cmp, error); }.bind(this);
-            cmp._append = function(string) { cmp._storageLib.appendLine(cmp, string); }.bind(this);
+            cmp._failTest = function(error) { cmp._storageLib.failTest(cmp, error); };
+            cmp._append = function(string) { cmp._storageLib.appendLine(cmp, string); };
         }, function(cmp){
             var completed = false;
 
@@ -430,7 +430,7 @@
     testDeleteDatabase: {
         test: [
         function deleteDatabase(cmp) {
-            var failTest = function(error) { completed=true; cmp._storageLib.failTest(cmp, error); }.bind(this);
+            var failTest = function(error) { completed=true; cmp._storageLib.failTest(cmp, error); };
             var dbName = "browserdb";
             var completed = false;
             var results;
@@ -466,7 +466,7 @@
     testDeleteDatabaseTwice: {
         test: [
         function deleteDatabaseTwice(cmp) {
-            var failTest = function(error) { completed=true; cmp._storageLib.failTest(cmp, error); }.bind(this);
+            var failTest = function(error) { completed=true; cmp._storageLib.failTest(cmp, error); };
             var completed = false;
             var dbName = "browserdb";
 
@@ -487,7 +487,7 @@
     testDeleteAndRecreateDatabase: {
         test: [
         function deleteAndRecreateDatabase(cmp) {
-            var failTest = function(error) { completed=true; cmp._storageLib.failTest(cmp, error); }.bind(this);
+            var failTest = function(error) { completed=true; cmp._storageLib.failTest(cmp, error); };
             var completed = false;
             cmp._dbName = "browserdb";
 

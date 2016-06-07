@@ -18,8 +18,9 @@
 
     OtherPropertiesWhitelist: ["childNodes", "children", "ownerDocument", "parentNode", "offsetParent"],
 
-    MethodsWhitelist: ["appendChild", "replaceChild", "insertBefore", "addEventListener", "removeEventListener", "dispatchEvent",
-                       "getAttribute", "setAttribute", "blur", "click", "focus"],
+    MethodsWhitelist: ["appendChild", "replaceChild", "insertBefore", "addEventListener", "removeEventListener",
+                       "dispatchEvent", "getAttribute", "setAttribute", "blur", "click", "focus", "hasAttribute",
+                       "hasAttributeNS", "removeAttribute", "getAttributeNS", "setAttributeNS", "removeAttributeNS"],
 
     setUp: function(cmp) {
         cmp.set("v.testUtils", $A.test);
@@ -151,7 +152,7 @@
 
             // Exclude the properties for unsupported browser
             var browser = $A.get("$Browser");
-            if(!browser.isIE11 && !browser.isPhone) {
+            if(!browser.isIE11 && !browser.isPhone && !browser.isTablet) {
                 imgProperties.push("sizes");
             }
             if(!browser.isIE11) {
