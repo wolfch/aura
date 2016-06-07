@@ -29,8 +29,8 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 public class ClientLibraryJSFormatAdapterTest extends AuraImplTestCase {
-    public ClientLibraryJSFormatAdapterTest(){
-        this.setShouldSetupContext(false);
+    @Override
+    protected void startDefaultContext() {
     }
 
     @Test

@@ -32,8 +32,8 @@ public class AuraContextServiceImplTest extends AuraImplTestCase {
     @Inject
     private ContextAdapter contextAdapter;
 
-    public AuraContextServiceImplTest() {
-    	this.setShouldSetupContext(false);
+    @Override
+    protected void startDefaultContext() {
     }
 
     @Test

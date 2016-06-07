@@ -307,9 +307,6 @@ public class AuraServlet extends AuraBaseServlet {
     private <T extends BaseComponentDef> void internalGet(HttpServletRequest request,
                                                           HttpServletResponse response, DefDescriptor<T> defDescriptor, AuraContext context)
             throws ServletException, IOException {
-        // Knowing the app, we can do the HTTP headers, so of which depend on
-        // the app in play, so we couldn't do this earlier.
-        servletUtilAdapter.setCSPHeaders(defDescriptor, request, response);
         T def;
         try {
             context.setFrameworkUID(configAdapter.getAuraFrameworkNonce());

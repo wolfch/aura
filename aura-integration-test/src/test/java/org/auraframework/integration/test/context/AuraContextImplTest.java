@@ -72,8 +72,8 @@ public class AuraContextImplTest extends AuraImplTestCase {
     @Inject
     private JsonSerializerFactory jsonSerializerFactory;
 
-    public AuraContextImplTest() {
-    	this.setShouldSetupContext(false);
+    @Override
+    protected void startDefaultContext() {
     }
 
     @Override

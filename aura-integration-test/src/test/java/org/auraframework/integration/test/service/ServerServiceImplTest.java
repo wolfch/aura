@@ -85,9 +85,8 @@ public class ServerServiceImplTest extends AuraImplTestCase {
     @Inject
     private ServerService serverService;
 
-    public ServerServiceImplTest() {
-        super();
-        setShouldSetupContext(false);
+    @Override
+    protected void startDefaultContext() {
     }
 
     private static final Set<String> GLOBAL_IGNORE = Sets.newHashSet("context", "actions", "perf");
