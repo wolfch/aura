@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.auraframework.Aura;
+import org.auraframework.annotations.Annotations.ServiceComponent;
 import org.auraframework.def.BaseComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.DefDescriptor.DefType;
@@ -37,6 +38,7 @@ import org.auraframework.util.json.JsonEncoder;
 /**
  * Handles /l/{}/app.encryptionkey requests to retrieve encryption key.
  */
+@ServiceComponent
 public class Bootstrap extends AuraResourceImpl {
 
     public Bootstrap() {
