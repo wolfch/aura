@@ -23,7 +23,6 @@ import javax.inject.Inject;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.auraframework.adapter.LocalizationAdapter;
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.Definition;
@@ -55,18 +54,15 @@ public abstract class AuraImplTestCase extends AuraTestCase {
     protected DefinitionService definitionService;
     
     @Inject
-    RenderingService renderingService;
+    private RenderingService renderingService;
 
     @Inject
     protected InstanceService instanceService;
     
     @Inject
-    LocalizationAdapter localizationAdapter;
-    
-    @Inject
     protected StringSourceLoader stringSourceLoader;
     
-    protected AuraTestingUtil auraTestingUtil;
+    private AuraTestingUtil auraTestingUtil;
 
     protected AuraImplUnitTestingUtil vendor;
 
