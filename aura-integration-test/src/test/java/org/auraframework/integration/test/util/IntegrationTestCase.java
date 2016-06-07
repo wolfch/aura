@@ -79,13 +79,13 @@ public abstract class IntegrationTestCase extends AuraImplTestCase {
 
     protected HttpClient getHttpClient() throws Exception {
         if (httpClient == null) {
-            httpClient = testServletConfig.getHttpClient();
+            httpClient = getTestServletConfig().getHttpClient();
         }
         return httpClient;
     }
 
     protected String getCsrfToken() throws Exception {
-        return testServletConfig.getCsrfToken();
+        return getTestServletConfig().getCsrfToken();
     }
 
     /**
@@ -112,7 +112,7 @@ public abstract class IntegrationTestCase extends AuraImplTestCase {
      */
     protected HttpGet obtainGetMethod(String path, boolean followRedirects,
             Header[] headers) throws MalformedURLException, URISyntaxException {
-        String url = testServletConfig.getBaseUrl().toURI().resolve(path)
+        String url = getTestServletConfig().getBaseUrl().toURI().resolve(path)
                 .toString();
 
         HttpGet get = new HttpGet(url);
@@ -234,4 +234,7 @@ public abstract class IntegrationTestCase extends AuraImplTestCase {
                 DefType.APPLICATION.equals(desc.getDefType()) ? "app" : "cmp");
     }
 
+    protected TestServletConfig getTestServletConfig() {
+        return testServletConfig;
+    }
 }

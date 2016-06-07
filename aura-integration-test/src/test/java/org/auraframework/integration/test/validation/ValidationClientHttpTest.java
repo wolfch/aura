@@ -41,7 +41,7 @@ public final class ValidationClientHttpTest extends AuraHttpTestCase {
      */
     @Test
     public void testCanRunStandalone() throws Exception {
-        URL url = testServletConfig.getBaseUrl();
+        URL url = getTestServletConfig().getBaseUrl();
         String path = AuraFiles.Core.getPath() + "/aura-components/src/test/components/validationTest/basic";
         List<String> command = Lists.newArrayList();
         command.add("java");
@@ -84,7 +84,7 @@ public final class ValidationClientHttpTest extends AuraHttpTestCase {
 
     @Test
     public void testValidate() throws Exception {
-        testServletConfig.getBaseUrl(); // make sure the jetty server is started
+        getTestServletConfig().getBaseUrl(); // make sure the jetty server is started
         String path = AuraFiles.Core.getPath() + "/aura-components/src/test/components/validationTest/basic";
         List<String> errors = ValidationClient.validate(path);
         ValidationTestUtil.verifyValidationTestBasicErrors(errors);

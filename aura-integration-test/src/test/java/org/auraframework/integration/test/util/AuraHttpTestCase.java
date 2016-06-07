@@ -176,7 +176,7 @@ public abstract class AuraHttpTestCase extends IntegrationTestCase {
     }
 
     protected String getHost() throws Exception {
-        return testServletConfig.getBaseUrl().getHost();
+        return getTestServletConfig().getBaseUrl().getHost();
     }
 
     /**
@@ -335,7 +335,7 @@ public abstract class AuraHttpTestCase extends IntegrationTestCase {
     protected HttpPost obtainPostMethod(String path, Map<String, String> params)
             throws MalformedURLException, URISyntaxException, UnsupportedEncodingException {
 
-        HttpPost post = new HttpPost(testServletConfig.getBaseUrl().toURI().resolve(path).toString());
+        HttpPost post = new HttpPost(getTestServletConfig().getBaseUrl().toURI().resolve(path).toString());
 
         List<NameValuePair> nvps = Lists.newArrayList();
         if (params != null) {
@@ -594,7 +594,7 @@ public abstract class AuraHttpTestCase extends IntegrationTestCase {
                 String jsonMessage = JsonEncoder.serialize(message);
                 Map<String, String> params = Maps.newHashMap();
                 params.put("message", jsonMessage);
-                params.put("aura.token", testServletConfig.getCsrfToken());
+                params.put("aura.token", getTestServletConfig().getCsrfToken());
 
                 params.put("aura.context", getAuraTestingUtil().buildContextForPost(mode, app, null, dn));
                 post = obtainPostMethod("/aura", params);

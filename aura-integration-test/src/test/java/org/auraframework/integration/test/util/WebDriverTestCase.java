@@ -868,7 +868,7 @@ public abstract class WebDriverTestCase extends IntegrationTestCase {
     }
 
     protected URI getAbsoluteURI(String url) throws MalformedURLException, URISyntaxException {
-        return testServletConfig.getBaseUrl().toURI().resolve(url);
+        return getTestServletConfig().getBaseUrl().toURI().resolve(url);
     }
 
     /**
