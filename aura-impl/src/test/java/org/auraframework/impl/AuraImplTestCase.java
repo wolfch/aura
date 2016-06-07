@@ -78,9 +78,6 @@ public abstract class AuraImplTestCase extends AuraTestCase {
     public void setUp() throws Exception {
         super.setUp();
         if (shouldSetupContext) {
-            if (contextService.isEstablished()) {
-                contextService.endContext();
-            }
             startDefaultContext();
         }
         laxSecurityApp = definitionService.getDefDescriptor("test:laxSecurity", ApplicationDef.class);
@@ -102,9 +99,6 @@ public abstract class AuraImplTestCase extends AuraTestCase {
 
     @Override
     public void tearDown() throws Exception {
-        if (contextService.isEstablished()) {
-            contextService.endContext();
-        }
         if (auraTestingUtil != null) {
             auraTestingUtil.tearDown();
         }
