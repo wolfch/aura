@@ -20,6 +20,8 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 
+import javax.inject.Inject;
+
 import org.apache.http.*;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -34,14 +36,21 @@ import org.auraframework.Aura;
 import org.auraframework.def.*;
 import org.auraframework.def.DefDescriptor.DefType;
 import org.auraframework.http.CSP;
+import org.auraframework.impl.AuraImplTestCase;
 import org.auraframework.service.ContextService;
 import org.auraframework.system.*;
 import org.auraframework.system.AuraContext.Authentication;
 import org.auraframework.system.AuraContext.Format;
 import org.auraframework.system.AuraContext.Mode;
+import org.auraframework.test.util.AuraTestCase;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.test.annotation.IntegrationTest;
 import org.auraframework.util.test.configuration.TestServletConfig;
+import org.junit.runner.RunWith;
+import org.junit.runners.BlockJUnit4ClassRunner;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 /**
  * Base class for all Aura integration tests.
@@ -51,7 +60,7 @@ import org.auraframework.util.test.configuration.TestServletConfig;
 @RunWith(BlockJUnit4ClassRunner.class)
 @TestExecutionListeners(listeners = {DependencyInjectionTestExecutionListener.class})
 @ContextConfiguration(locations = {"/applicationContext.xml"})
-public abstract class IntegrationTestCase extends AuraTestCase {
+public abstract class IntegrationTestCase extends AuraImplTestCase {
 
     @Inject
     private TestServletConfig testServletConfig;

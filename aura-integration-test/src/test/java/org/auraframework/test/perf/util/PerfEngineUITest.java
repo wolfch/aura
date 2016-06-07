@@ -32,6 +32,8 @@ import org.auraframework.util.test.annotation.PerfTestSuite;
 import org.auraframework.util.test.annotation.UnAdaptableTest;
 import org.auraframework.util.test.perf.metrics.PerfMetricsComparator;
 
+import com.google.common.collect.ImmutableList;
+
 import javax.inject.Inject;
 
 import junit.framework.TestCase;
