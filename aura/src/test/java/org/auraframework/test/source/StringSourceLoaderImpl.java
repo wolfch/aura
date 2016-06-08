@@ -55,7 +55,7 @@ import com.google.common.collect.*;
  */
 public final class StringSourceLoaderImpl implements StringSourceLoader {
     
-    private StringSourceLoaderImpl() {
+    public StringSourceLoaderImpl() {
     }
     
     @Configuration

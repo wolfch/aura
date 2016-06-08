@@ -96,7 +96,7 @@ public final class FileMonitorImpl implements FileMonitor, Runnable {
     private boolean terminateThread;
     private final FileListener listener;
 
-    private FileMonitorImpl() {
+    public FileMonitorImpl() {
         this(null);
     }
 
