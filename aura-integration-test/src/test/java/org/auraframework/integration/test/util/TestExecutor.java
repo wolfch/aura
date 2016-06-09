@@ -118,10 +118,6 @@ public class TestExecutor {
         protected final Test test;
         protected final TestResult result;
 
-		// The Spring Test Context framework is currently not thread safe: https://jira.spring.io/browse/SPR-5863
-		// Create an instance of TestContextManager per test run.
-		private final TestContextManager testContextManager = new TestContextManager(IntegrationTestCase.class);
-
         /**
          * This lock ensures that a {@link ThreadHostileTest} is not run concurrently with any other tests because it
          * must obtain the write lock.
