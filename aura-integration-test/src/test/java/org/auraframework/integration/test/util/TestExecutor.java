@@ -149,6 +149,9 @@ public class TestExecutor {
             lock.lock();
             long start = System.nanoTime();
             try {
+        		// The Spring Test Context framework is currently not thread safe: https://jira.spring.io/browse/SPR-5863
+        		// Create an instance of TestContextManager per test run.
+            	TestContextManager testContextManager = new TestContextManager(IntegrationTestCase.class);
                 testContextManager.prepareTestInstance(test);
                 test.run(result);
                 return result;
