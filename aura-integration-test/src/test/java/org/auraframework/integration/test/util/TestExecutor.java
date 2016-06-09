@@ -42,7 +42,6 @@ import org.springframework.test.context.TestContextManager;
 public class TestExecutor {
     public static final int NUM_THREADS = Integer.parseInt(System.getProperty("testThreadCount", "4"));
     private static final Logger logger = Logger.getLogger("TestExecutor");
-    private static final TestContextManager testContextManager = new TestContextManager(IntegrationTestCase.class);
     private final ExecutorService executor;
 
     /**
@@ -118,6 +117,10 @@ public class TestExecutor {
     public static class TestRun implements Callable<TestResult> {
         protected final Test test;
         protected final TestResult result;
+
+		// The Spring Test Context framework is currently not thread safe: https://jira.spring.io/browse/SPR-5863
+		// Create an instance of TestContextManager per test run.
+		private final TestContextManager testContextManager = new TestContextManager(IntegrationTestCase.class);
 
         /**
          * This lock ensures that a {@link ThreadHostileTest} is not run concurrently with any other tests because it
