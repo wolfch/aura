@@ -46,6 +46,7 @@ import org.auraframework.impl.css.flavor.FlavorIncludeDefImpl;
 import org.auraframework.impl.css.flavor.FlavorsDefImpl;
 import org.auraframework.impl.java.model.JavaValueDef;
 import org.auraframework.impl.javascript.model.JavascriptValueDef;
+import org.auraframework.impl.root.application.ApplicationDefImpl;
 import org.auraframework.impl.root.library.LibraryDefRefImpl;
 import org.auraframework.instance.GlobalValueProvider;
 import org.auraframework.system.Location;
@@ -122,6 +123,7 @@ public abstract class DefinitionImpl<T extends Definition> implements Definition
                 || DesignItemsDef.class.isAssignableFrom(this.getClass())
                 || DesignDef.class.isAssignableFrom(this.getClass())
                 || DesignOptionDef.class.isAssignableFrom(this.getClass())
+                || ApplicationDefImpl.class.isAssignableFrom(this.getClass())
                 || AttributeDefRef.class.isAssignableFrom(this.getClass())) {
         } else {
             if (access == null && parseError == null) {
