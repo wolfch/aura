@@ -5,16 +5,18 @@
      */
 
     // LockerService not supported on older IE
-    browsers: ["-IE8", "-IE9", "-IE10"],
+    browsers: ['-IE8', '-IE9', '-IE10'],
 
     // TODO(tbliss): make these lists on SecureIFrameElement accessible here for maintainability
     AttributesWhitelist: ['contentWindow', 'height', 'name', 'src', 'width'],
     AttributesBlacklist: ['contentDocument', 'sandbox', 'srcdoc'],
 
-    MethodsWhitelist: ['blur', 'focus'],
+    MethodsWhitelist: ['blur', 'focus',
+                       'getAttribute', 'hasAttribute', 'setAttribute', 'removeAttribute',
+                       'getAttributeNS', 'hasAttributeNS', 'setAttributeNS', 'removeAttributeNS'],
 
     setUp: function(cmp) {
-        cmp.set("v.testUtils", $A.test);
+        cmp.set('v.testUtils', $A.test);
     },
 
     testIframeAttributes: {
@@ -28,7 +30,7 @@
             cmp.testIframeMethods(this.MethodsWhitelist);
         }
     },
-    
+
     testContentWindow: {
         test: function(cmp) {
             cmp.testContentWindow();
