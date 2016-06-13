@@ -90,8 +90,11 @@ function SecureDocument(doc, key) {
         body: SecureObject.createFilteredProperty(o, doc, "body"),
         head: SecureObject.createFilteredProperty(o, doc, "head"),
 
+        createEvent: SecureObject.createFilteredMethod(o, doc, "createEvent"),
+
         childNodes: SecureObject.createFilteredProperty(o, doc, "childNodes", { filterOpaque: true }),
 
+        defaultView: SecureObject.createFilteredProperty(o, doc, "defaultView"),
         nodeType: SecureObject.createFilteredProperty(o, doc, "nodeType"),
 
         getElementById: SecureObject.createFilteredMethod(o, doc, "getElementById", { filterOpaque: true }),

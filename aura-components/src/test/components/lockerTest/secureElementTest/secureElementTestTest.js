@@ -18,8 +18,9 @@
 
     OtherPropertiesWhitelist: ["childNodes", "children", "ownerDocument", "parentNode", "offsetParent"],
 
-    MethodsWhitelist: ["appendChild", "replaceChild", "insertBefore", "addEventListener", "removeEventListener", "dispatchEvent",
-                       "getAttribute", "setAttribute", "blur", "click", "focus"],
+    MethodsWhitelist: ["appendChild", "replaceChild", "insertBefore", "addEventListener", "removeEventListener",
+                       "dispatchEvent", "getAttribute", "setAttribute", "blur", "click", "focus", "hasAttribute",
+                       "hasAttributeNS", "removeAttribute", "getAttributeNS", "setAttributeNS", "removeAttributeNS"],
 
     setUp: function(cmp) {
         cmp.set("v.testUtils", $A.test);
@@ -100,19 +101,31 @@
             cmp.testInnerHTMLSupportsUseTagForSvgElement();
         }
     },
-    
+
     testTextContent: {
         test: function(cmp) {
             cmp.testTextContent();
         }
     },
-    
+
     testInnerText: {
         test: function(cmp) {
             cmp.testInnerText();
         }
     },
-    
+
+    testInnerHTMLForExistingElement: {
+        test: function(cmp) {
+            cmp.testInnerHTML("ExistingElement");
+        }
+    },
+
+    testInnerHTMLForCreatedElement: {
+        test: function(cmp) {
+            cmp.testInnerHTML("CreatedElement");
+        }
+    },
+
     testAddEventListenerMultipleCalls: {
         test: function(cmp) {
             cmp.testAddEventListenerMultipleCalls();

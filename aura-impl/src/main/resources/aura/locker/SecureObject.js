@@ -43,26 +43,41 @@ SecureObject.isDOMElementOrNode = function(el) {
 		(typeof el.nodeType === "number" && typeof el.nodeName === "string"));
 };
 
-var rawToSecureObjectCache = typeof WeakMap !== "undefined" ? new WeakMap() : {
-	/* WeakMap dummy polyfill */
-	"get": function () { 
-		return undefined; 
-	},
-	"set": function () {}
-};
+function newWeakMap() {	
+	return typeof WeakMap !== "undefined" ? new WeakMap() : {
+		/* WeakMap dummy polyfill */
+		"get": function () {
+			return undefined;
+		},
+		"set": function () {}
+	};
+}
 
-SecureObject.addToCache = function(raw, so) {
+var rawToSecureObjectCaches = {};
+
+SecureObject.addToCache = function(raw, so, key) {
+	// Keep SecureObject's segregated by key
+	var psuedoKeySymbol = JSON.stringify(key);
+	var rawToSecureObjectCache = rawToSecureObjectCaches[psuedoKeySymbol];
+	if (!rawToSecureObjectCache) {
+		rawToSecureObjectCache = newWeakMap();
+		rawToSecureObjectCaches[psuedoKeySymbol] = rawToSecureObjectCache;
+	}
+
 	rawToSecureObjectCache.set(raw, so);
 };
 
-SecureObject.getCached = function(raw) {
-	return rawToSecureObjectCache.get(raw);
+SecureObject.getCached = function(raw, key) {
+	var psuedoKeySymbol = JSON.stringify(key);
+	var rawToSecureObjectCache = rawToSecureObjectCaches[psuedoKeySymbol];
+	return rawToSecureObjectCache ? rawToSecureObjectCache.get(raw) : undefined;
 };
 
 SecureObject.filterEverything = function (st, raw, options) {
 	"use strict";
-	
-	var cached = SecureObject.getCached(raw);
+
+	var key = getLockerSecret(st, "key");
+	var cached = SecureObject.getCached(raw, key);
 	if (cached) {
 		return cached;
 	}
@@ -85,25 +100,25 @@ SecureObject.filterEverything = function (st, raw, options) {
 	} else if (t === "object") {
 		var isNodeList = raw && (raw instanceof NodeList || raw instanceof HTMLCollection);
 		if (raw === window) {
-			return $A.lockerService.getEnv(getLockerSecret(st, "key"));
+			return $A.lockerService.getEnv(key);
 		} else if (raw === document) {
-			return $A.lockerService.getEnv(getLockerSecret(st, "key")).document;
+			return $A.lockerService.getEnv(key).document;
 		} else if (Array.isArray(raw) || isNodeList) {
 			swallowed = [];
 			for (var n = 0; n < raw.length; n++) {
 				var newValue = SecureObject.filterEverything(st, raw[n]);
-				
+
 				// TODO: NaN !== NaN
-				
+
 				if (!options || options.filterOpaque !== true || !$A.lockerService.isOpaque(newValue)) {
 					swallowed.push(newValue);
 				}
-				
+
 				mutated = mutated || (newValue !== raw[n]);
 			}
-			
+
 			setLockerSecret(swallowed, "ref", raw);
-			
+
 			// Decorate with .item() to preserve NodeList shape
 			if (isNodeList) {
 				Object.defineProperty(swallowed, "item", {
@@ -113,7 +128,6 @@ SecureObject.filterEverything = function (st, raw, options) {
 				});
 			}
 		} else {
-			var key = getLockerSecret(st, "key");
 			var hasAccess = $A.lockerService.util.hasAccess(st, raw);
 			$A.assert(key, "A secure object should always have a key.");
 
@@ -146,25 +160,35 @@ SecureObject.filterEverything = function (st, raw, options) {
 				mutated = true;
 			} else {
 				swallowed = {};
+				setLockerSecret(swallowed, "ref", raw);
+				SecureObject.addToCache(raw, swallowed, key);
+
 				for (var prop in raw) {
 					swallowed[prop] = SecureObject.filterEverything(st, raw[prop]);
 					mutated = mutated || (raw[prop] !== swallowed[prop]);
-				}
-				setLockerSecret(swallowed, "ref", raw);
+				}				
 			}
 		}
 	}
-	
+
 	if (mutated) {
-		SecureObject.addToCache(raw, swallowed);
+		SecureObject.addToCache(raw, swallowed, key);
 		return swallowed;
 	} else {
 		return raw;
 	}
 };
 
-SecureObject.unfilterEverything = function(st, value) {
+SecureObject.unfilterEverything = function(st, value, visited) {
 	"use strict";
+
+	function memoize(visitedCache, v, unfiltered) {
+		try {
+			visitedCache.set(v, unfiltered);
+		} catch (ignore) { /* ignored */ }
+		
+		return unfiltered;
+	}
 
 	var t = typeof value;
 	if (!value || (t !== "object" && t !== "function")) {
@@ -172,36 +196,60 @@ SecureObject.unfilterEverything = function(st, value) {
 		return value;
 	}
 	
+	var isArray = Array.isArray(value);
+
 	var raw = getLockerSecret(value, "ref");
 	if (raw) {
+		// If this is an array make sure that the backing array is updated to match the system mode proxy that might have been manipulated
+		if (isArray) {
+			raw.length = 0;
+			value.forEach(function (v) {
+				raw.push(SecureObject.unfilterEverything(st, v, visited));
+			});
+		}
+		
 		// returning the raw value stored in the secure reference, which means
 		// this value was original produced in system-mode
 		return raw;
 	}
+
+	// Handle cyclic refs and duplicate object refs
+	if (visited) {
+		var previous = visited.get(value);
+		if (previous) {
+			return previous;
+		}
+	} else {
+		visited = newWeakMap();
+	}
+
 	if (t === "function") {
 		// wrapping functions to guarantee that they run in user-mode, usually
 		// callback functions privided by non-privilege code.
-		return function () {
+		return memoize(visited, value, function () {
 			var filteredArguments = SecureObject.filterEverything(st, SecureObject.ArrayPrototypeSlice.call(arguments));
 			var fnReturnedValue = value.apply(SecureObject.filterEverything(st, this), filteredArguments);
-			return SecureObject.unfilterEverything(st, fnReturnedValue);
-		};
-	}
-	if (Array.isArray(value)) {
-		return value.map(function (v) {
-			return SecureObject.unfilterEverything(st, v);
+			return SecureObject.unfilterEverything(st, fnReturnedValue, visited);
 		});
 	}
-	if (t === "object") {
-		var proxy = {};
-		var mutated = false;
+
+	var proxy;
+	if (isArray) {
+		proxy = memoize(visited, value, []);
+
+		value.forEach(function (v) {
+			proxy.push(SecureObject.unfilterEverything(st, v, visited));
+		});
+
+		return proxy;
+	} else if (t === "object") {
+		proxy = memoize(visited, value, {});
+
 		for (var prop in value) {
-			proxy[prop] = SecureObject.unfilterEverything(st, value[prop]);
-			mutated = mutated || (value[prop] !== proxy[prop]);
+			proxy[prop] = SecureObject.unfilterEverything(st, value[prop], visited);
 		}
-		if (mutated) {
-			return proxy;
-		}
+
+		return proxy;
 	}
 
 	return value;
@@ -258,7 +306,7 @@ SecureObject.createFilteredProperty = function(st, raw, propertyName, options) {
 
 	descriptor.get = function() {
 		var value = raw[propertyName];
-		
+
 		if (options && options.afterGetCallback) {
 			// The caller wants to handle the property value
 			return options.afterGetCallback(value);
@@ -304,3 +352,5 @@ SecureObject.addMethodIfSupported = function(st, raw, name, options) {
 
 SecureObject.FunctionPrototypeBind = Function.prototype.bind;
 SecureObject.ArrayPrototypeSlice = Array.prototype.slice;
+
+Aura.Locker.SecureObject = SecureObject;

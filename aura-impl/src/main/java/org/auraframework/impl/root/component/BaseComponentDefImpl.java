@@ -32,6 +32,7 @@ import java.util.regex.Pattern;
 import org.auraframework.Aura;
 import org.auraframework.adapter.ConfigAdapter;
 import org.auraframework.builder.BaseComponentDefBuilder;
+import org.auraframework.builder.JavascriptCodeBuilder;
 import org.auraframework.def.ActionDef;
 import org.auraframework.def.ActionDef.ActionType;
 import org.auraframework.def.AttributeDef;
@@ -39,6 +40,7 @@ import org.auraframework.def.AttributeDefRef;
 import org.auraframework.def.BaseComponentDef;
 import org.auraframework.def.ClientLibraryDef;
 import org.auraframework.def.ComponentDef;
+import org.auraframework.def.ComponentDefRef;
 import org.auraframework.def.ControllerDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.DefDescriptor.DefType;
@@ -49,7 +51,6 @@ import org.auraframework.def.FlavoredStyleDef;
 import org.auraframework.def.FlavorsDef;
 import org.auraframework.def.HelperDef;
 import org.auraframework.def.InterfaceDef;
-import org.auraframework.def.JavascriptCodeBuilder;
 import org.auraframework.def.LibraryDefRef;
 import org.auraframework.def.MethodDef;
 import org.auraframework.def.ModelDef;
@@ -64,6 +65,7 @@ import org.auraframework.def.StyleDef;
 import org.auraframework.def.TokensDef;
 import org.auraframework.def.design.DesignDef;
 import org.auraframework.expression.PropertyReference;
+import org.auraframework.impl.javascript.BaseJavascriptClass;
 import org.auraframework.impl.root.AttributeDefRefImpl;
 import org.auraframework.impl.root.RootDefinitionImpl;
 import org.auraframework.impl.root.intf.InterfaceDefImpl;
@@ -136,7 +138,7 @@ public abstract class BaseComponentDefImpl<T extends BaseComponentDef> extends
 
     private final int hashCode;
 
-    private JavascriptComponentClass javascriptClass;
+    private BaseJavascriptClass javascriptClass;
 
     private transient Boolean localDeps = null;
 
@@ -274,6 +276,27 @@ public abstract class BaseComponentDefImpl<T extends BaseComponentDef> extends
         return localDeps == Boolean.TRUE;
     }
 
+    // JBUCH: TODO: This is sub-optimal and the entire concern needs to be revisited. Note the impl cast.
+    public boolean hasFacetLocalDependencies() throws QuickFixException {
+        if (!facets.isEmpty()) {
+            for (AttributeDefRef facet : facets) {
+                Object v = facet.getValue();
+                if(v instanceof ArrayList){
+                    for(Object fl : ((ArrayList)v)){
+                        if(fl instanceof ComponentDefRef){
+                            ComponentDefRef cdr=(ComponentDefRef)fl;
+                            BaseComponentDefImpl def=(BaseComponentDefImpl)cdr.getDescriptor().getDef();
+                            if(def.hasLocalDependencies()||def.hasFacetLocalDependencies()){
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     /**
      * Computes the local (server) dependencies.
      *
@@ -350,6 +373,12 @@ public abstract class BaseComponentDefImpl<T extends BaseComponentDef> extends
             throw new DefinitionNotFoundException(descToCheck, getLocation());
         }
         mdr.assertAccess(descriptor, definition);
+    }
+
+    @Override
+    public void validateReferences(boolean minify) throws QuickFixException {
+    	validateReferences();
+        initializeJavascriptClass(minify);
     }
 
     @SuppressWarnings("unchecked")
@@ -498,8 +527,6 @@ public abstract class BaseComponentDefImpl<T extends BaseComponentDef> extends
                 }
             }
         }
-
-        initializeJavascriptClass();
     }
 
     /**
@@ -1017,6 +1044,12 @@ public abstract class BaseComponentDefImpl<T extends BaseComponentDef> extends
 
                 boolean local = hasLocalDependencies();
 
+                // For the client, hasRemoteDeps is true if the current definition or
+                // a definition in any of its facets has a local dependency.
+                if (!local) {
+                    local = hasFacetLocalDependencies();
+                }
+
                 if (local) {
                     json.writeMapEntry("hasServerDeps", true);
                 }
@@ -1068,7 +1101,7 @@ public abstract class BaseComponentDefImpl<T extends BaseComponentDef> extends
     @Override
     public String getCode(boolean minify) throws QuickFixException {
     	String js = null;
-		initializeJavascriptClass();
+		initializeJavascriptClass(false);
     	if (minify) {
     		js = javascriptClass.getMinifiedCode();
     	}
@@ -1083,13 +1116,13 @@ public abstract class BaseComponentDefImpl<T extends BaseComponentDef> extends
     	
     	return js;
     }
-    
-    private void initializeJavascriptClass() throws QuickFixException {
+
+    private void initializeJavascriptClass(boolean minify) throws QuickFixException {
     	if (javascriptClass == null) {
-    		javascriptClass = new JavascriptComponentClass.Builder().setDefinition(this).build();
+    		javascriptClass = new JavascriptComponentClass.Builder().setDefinition(this).setMinify(minify).build();
     	}
     }
-    
+
     /**
      * Return true if the definition is a component that needs to be locked.
      */

@@ -97,12 +97,26 @@
         var element = document.createElement("div");
         // Node.innerText is not supported on all browsers
         if ("innerText" in element) {
-            element.testInnerText = "innerText content";
-            testUtils.assertEquals("innerText content", element.testInnerText);
+            element.innerText = "innerText content";
+            testUtils.assertEquals("innerText content", element.innerText);
         }
     },
 
-    testAddEventListenerMultipleCalls: function(cmp, event, helper) {
+    testInnerHTML: function(cmp, event) {
+        var testUtils = cmp.get("v.testUtils");
+        var targetElement = event.getParam("arguments").targetElement;
+        var element;
+        if(targetElement === "ExistingElement") {
+            element = document.querySelector('.title');
+        } else if (targetElement === "CreatedElement") {
+            element = document.createElement("div");
+        }
+
+        element.innerHTML = "innerHTML content";
+        testUtils.assertEquals("innerHTML content", element.innerHTML);
+    },
+
+    testAddEventListenerMultipleCalls : function(cmp, event, helper) {
         var testUtils = cmp.get("v.testUtils");
 
         var counter = 0;
@@ -159,21 +173,21 @@
             testUtils.assertEquals(expected[prop], bbox[prop], "Unexpected attribute value returned from getBBox() for <" + prop + ">");
         }
     },
-    
+
     testScalarExpression: function(cmp) {
         var testUtils = cmp.get("v.testUtils");
         var element = cmp.find("scalarExpression").getElement();
         testUtils.assertEquals("A scalar expression", element.innerHTML);
     },
-        
+
     testElementCache: function(cmp, event, helper) {
         var testUtils = cmp.get("v.testUtils");
-        
+
         // Verify that we get the same SE from multiple calls to SecureComponent.getElement()
         var e = cmp.find("cacheTestA").getElement();
         testUtils.assertDefined(e);
         testUtils.assertTrue(e === cmp.find("cacheTestA").getElement());
-        
+
         // Verify that we get the same SE for multiple calls to document.getElementById()
         var cacheTestA = document.getElementById("cacheTestA");
         testUtils.assertDefined(cacheTestA);
@@ -189,10 +203,10 @@
         var cacheTestB = document.getElementById("cacheTestB");
         cacheTestB.appendChild(child);
         testUtils.assertTrue(child === cacheTestB.children[0]);
-                
+
         cacheTestB.innerHTML = "<span>Removed Children</span>"
-        
+
         cacheTestA.appendChild(child);
-        testUtils.assertTrue(child === cacheTestA.children[0]);        
+        testUtils.assertTrue(child === cacheTestA.children[0]);
     }
 })

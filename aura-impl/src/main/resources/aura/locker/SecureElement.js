@@ -44,7 +44,7 @@ function SecureElement(el, key) {
 		}
 	}
 	
-	var o = SecureObject.getCached(el);
+	var o = SecureObject.getCached(el, key);
 	if (o) {
 		return o;
 	}
@@ -66,7 +66,7 @@ function SecureElement(el, key) {
 	}
 	
 	if (o) {
-		SecureObject.addToCache(el, o);
+		SecureObject.addToCache(el, o, key);
 		return o;
 	}
 
@@ -206,15 +206,15 @@ function SecureElement(el, key) {
 		}
 	});
 
-	[ "childNodes", "children", "firstChild", "lastChild", "getAttribute", "nodeName", "nodeType", "parentNode", "parentElement", "ownerDocument",
-			"setAttribute", "removeAttribute", "getAttributeNS", "setAttributeNS", "removeAttributeNS" ].forEach(function(name) {
+	[ "childNodes", "children", "firstChild", "lastChild", "nodeName", "nodeType", "parentNode", "parentElement", "ownerDocument"].forEach(function(name) {
 		SecureObject.addPropertyIfSupported(o, el, name, {
 			filterOpaque : true
 		});
 	});
 
 	[ "compareDocumentPosition", "getElementsByClassName", "getElementsByTagName", "getElementsByTagNameNS", "querySelector", "querySelectorAll",
-			"getBoundingClientRect", "getClientRects", "blur", "click", "focus" ].forEach(function(name) {
+			"getBoundingClientRect", "getClientRects", "blur", "click", "focus", 
+			"getAttribute", "hasAttribute", "setAttribute", "removeAttribute", "getAttributeNS", "hasAttributeNS", "setAttributeNS", "removeAttributeNS" ].forEach(function(name) {
 		SecureObject.addMethodIfSupported(o, el, name, {
 			filterOpaque : true
 		});
@@ -253,7 +253,7 @@ function SecureElement(el, key) {
 	setLockerSecret(o, "key", key);
 	setLockerSecret(o, "ref", el);
 	
-	SecureObject.addToCache(el, o);
+	SecureObject.addToCache(el, o, key);
 
 	return o;
 }
@@ -276,7 +276,9 @@ SecureElement.addSecureProperties = function(se, raw) {
 	// DCHASMAN TODO This list needs to be revisted as it is missing a ton of
 	// valid attributes!
 	].forEach(function(name) {
-		SecureObject.addPropertyIfSupported(se, raw, name);
+		SecureObject.addPropertyIfSupported(se, raw, name, {
+			filterOpaque : true
+		});
 	});
 };
 
@@ -366,7 +368,9 @@ SecureElement.addElementSpecificProperties = function(se, el) {
 		var whitelist = SecureElement.elementSpecificAttributeWhitelists[tagName];
 		if (whitelist) {
 			whitelist.forEach(function(name) {
-				SecureObject.addPropertyIfSupported(se, el, $A.util.hyphensToCamelCase(name));
+				SecureObject.addPropertyIfSupported(se, el, $A.util.hyphensToCamelCase(name), {
+					filterOpaque : true
+				});
 			});
 		}
 
@@ -383,7 +387,9 @@ SecureElement.addElementSpecificMethods = function(se, el) {
 		var whitelist = SecureElement.elementSpecificMethodWhitelists[tagName];
 		if (whitelist) {
 			whitelist.forEach(function(name) {
-				SecureObject.addMethodIfSupported(se, el, name);
+				SecureObject.addMethodIfSupported(se, el, name, {
+					filterOpaque : true
+				});
 			});
 		}
 	}

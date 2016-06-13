@@ -19,7 +19,7 @@
 
     testUnexposedPlatformAPIs: {
         test: function(cmp) {
-            var unexposedPlatformApis = ["addHandler", "destroy", "getSuper", "getElement", "getElements", "getReference",
+            var unexposedPlatformApis = ["destroy", "getSuper", "getElement", "getElements", "getReference",
                                          "clearReference", "getConcreteComponent", "autoDestroy", "isConcrete",
                                          "addValueProvider", "getEvent", "find", "getElements"];
             cmp.testUnexposedPlatformAPIs(unexposedPlatformApis);
@@ -41,6 +41,18 @@
     testGetComponentEvent: {
         test: function(cmp) {
             cmp.testGetComponentEvent();
+        }
+    },
+    
+    testAuraMethod: {
+        test: function(cmp) {
+            cmp.testAuraMethod();
+        }
+    },
+    
+    testAddHandler: {
+        test: function(cmp) {
+            cmp.testAddHandler();
         }
     }
 })

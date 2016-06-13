@@ -68,10 +68,13 @@ function SecureComponent(component, key) {
         "superAfterRender": SecureObject.createFilteredMethod(o, component, "superAfterRender"),
         "superRerender": SecureObject.createFilteredMethod(o, component, "superRerender"),
         "superUnrender": SecureObject.createFilteredMethod(o, component, "superUnrender"),
+        
         // component @platform methods
         "isValid": SecureObject.createFilteredMethod(o, component, "isValid"),
         "isInstanceOf": SecureObject.createFilteredMethod(o, component, "isInstanceOf"),
         "addHandler": SecureObject.createFilteredMethod(o, component, "addHandler"),
+        "addValueHandler": SecureObject.createFilteredMethod(o, component, "addValueHandler"),
+        "addValueProvider": SecureObject.createFilteredMethod(o, component, "addValueProvider"),
         "destroy": SecureObject.createFilteredMethod(o, component, "destroy"),
         "isRendered": SecureObject.createFilteredMethod(o, component, "isRendered"),
         "getGlobalId": SecureObject.createFilteredMethod(o, component, "getGlobalId"),
@@ -82,7 +85,6 @@ function SecureComponent(component, key) {
         "clearReference": SecureObject.createFilteredMethod(o, component, "clearReference"),
         "autoDestroy": SecureObject.createFilteredMethod(o, component, "autoDestroy"),
         "isConcrete": SecureObject.createFilteredMethod(o, component, "isConcrete"),
-        "addValueProvider": SecureObject.createFilteredMethod(o, component, "addValueProvider"),
         "getConcreteComponent": SecureObject.createFilteredMethod(o, component, "getConcreteComponent"),
         "find": SecureObject.createFilteredMethod(o, component, "find"),
         "set": SecureObject.createFilteredMethod(o, component, "set"),

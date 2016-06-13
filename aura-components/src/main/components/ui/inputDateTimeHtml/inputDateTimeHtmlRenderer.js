@@ -20,7 +20,11 @@
     },
 
     rerender: function(component, helper) {
-        helper.formatValue(component);
+        // We convert the selected time from local timezone to the user's SFDC timezone. In this case we shouldn't
+        // change the display value because it will get very confusing
+        if (!component._isInitialValue) {
+            helper.formatValue(component);
+        }
         this.superRerender();
     }
 });

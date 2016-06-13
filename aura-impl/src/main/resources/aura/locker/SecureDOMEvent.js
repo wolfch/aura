@@ -31,17 +31,19 @@ function SecureDOMEvent(event, key) {
         target: SecureObject.createFilteredProperty(o, event, "target"),
         currentTarget: SecureObject.createFilteredProperty(o, event, "currentTarget"),
 
+        initEvent: SecureObject.createFilteredMethod(o, event, "initEvent"),
+
         // Touch Events are special on their own:
         // https://developer.mozilla.org/en-US/docs/Web/API/Touch
         touches: SecureDOMEvent.filterTouchesDescriptor(o, event, "touch"),
         targetTouches: SecureDOMEvent.filterTouchesDescriptor(o, event, "targetTouches"),
         changedTouches: SecureDOMEvent.filterTouchesDescriptor(o, event, "changedTouches"),
 
-        // WindowProxy for events like compositionupdate
-        // disabling this capability seems to be the right thing to do for now.
         view: {
             get: function() {
-                throw Error("Access denied for insecure view");
+            	var swin = $A.lockerService.getEnvForSecureObject(o);
+            	var win = getLockerSecret(swin, "ref");
+                return win === event.view ? swin : undefined;
             }
         }
     };
