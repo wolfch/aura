@@ -20,6 +20,7 @@ import org.auraframework.builder.ComponentDefRefBuilder;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.ds.servicecomponent.Controller;
+import org.auraframework.impl.DefinitionAccessImpl;
 import org.auraframework.impl.root.component.ComponentDefImpl;
 import org.auraframework.impl.root.component.ComponentDefImpl.Builder;
 import org.auraframework.impl.root.component.ComponentDefRefImpl;
@@ -29,6 +30,7 @@ import org.auraframework.service.ContextService;
 import org.auraframework.service.DefinitionService;
 import org.auraframework.system.Annotations.AuraEnabled;
 import org.auraframework.system.AuraContext;
+import org.auraframework.system.AuraContext.Access;
 import org.auraframework.system.MasterDefRegistry;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
@@ -60,6 +62,7 @@ public class TestSerializeAbsentLayout implements Controller {
 
         // Build Layout
         Builder builder = new ComponentDefImpl.Builder();
+        builder.setAccess(new DefinitionAccessImpl(Access.GLOBAL));
         builder.setDescriptor("layout://test_" + timestamp + ":" + timestamp);
         ComponentDef cmpDef = builder.build();
 
@@ -75,6 +78,7 @@ public class TestSerializeAbsentLayout implements Controller {
 
         // Return the component so our dependencies are included in the request.
         ComponentDefRefBuilder subbuilder = builderService.getComponentDefRefBuilder();
+        subbuilder.setAccess(new DefinitionAccessImpl(Access.GLOBAL));
         subbuilder.setDescriptor(dynamicDependentComponent);
 
         return (ComponentDefRefImpl) subbuilder.build();
