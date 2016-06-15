@@ -15,71 +15,33 @@
  */
 package org.auraframework.impl.system;
 
-import static org.auraframework.instance.AuraValueProviderType.LABEL;
-
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
-
+import com.google.common.collect.Maps;
 import org.auraframework.Aura;
 import org.auraframework.builder.DefBuilder;
-import org.auraframework.def.ActionDef;
-import org.auraframework.def.AttributeDefRef;
-import org.auraframework.def.ComponentDefRef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.Definition;
 import org.auraframework.def.DefinitionAccess;
-import org.auraframework.def.DependencyDef;
-import org.auraframework.def.DescriptionDef;
-import org.auraframework.def.EventHandlerDef;
-import org.auraframework.def.ExampleDef;
-import org.auraframework.def.IncludeDefRef;
-import org.auraframework.def.ResourceDef;
-import org.auraframework.def.TokensImportDef;
-import org.auraframework.def.design.DesignDef;
-import org.auraframework.def.design.DesignItemsDef;
-import org.auraframework.def.design.DesignOptionDef;
-import org.auraframework.expression.PropertyReference;
-import org.auraframework.impl.css.flavor.FlavorDefaultDefImpl;
-import org.auraframework.impl.css.flavor.FlavorIncludeDefImpl;
-import org.auraframework.impl.css.flavor.FlavorsDefImpl;
-import org.auraframework.impl.java.model.JavaValueDef;
-import org.auraframework.impl.javascript.model.JavascriptValueDef;
-import org.auraframework.impl.root.application.ApplicationDefImpl;
-import org.auraframework.impl.root.library.LibraryDefRefImpl;
-import org.auraframework.instance.GlobalValueProvider;
 import org.auraframework.system.Location;
 import org.auraframework.system.SubDefDescriptor;
-import org.auraframework.throwable.AuraExceptionInfo;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.json.Serialization;
 import org.auraframework.util.json.Serialization.ReferenceScope;
 import org.auraframework.util.json.Serialization.ReferenceType;
-import org.auraframework.util.text.Hash;
 
-import com.google.common.collect.Maps;
+import java.io.Serializable;
+import java.util.Map;
 
 /**
  * The implementation for a definition.
  */
 @Serialization(referenceType = ReferenceType.IDENTITY, referenceScope = ReferenceScope.REQUEST)
-public abstract class DefinitionImpl<T extends Definition> implements Definition, Serializable {
+public abstract class DefinitionImpl<T extends Definition> extends BaseXmlElementImpl implements Definition, Serializable {
 
     private static final long serialVersionUID = 5836732915093913670L;
 
     protected final DefDescriptor<T> descriptor;
-    protected final Location location;
     protected final Map<SubDefDescriptor<?, T>, Definition> subDefs;
-    protected final String apiVersion;
-    protected final String description;
-
-
-    private final QuickFixException parseError;
-    private final String ownHash;
-    private final DefinitionAccess access;
-    private boolean valid;
 
     protected DefinitionImpl(DefDescriptor<T> descriptor, Location location, DefinitionAccess access) {
         this(descriptor, location, null, null, null, access, null, null);
@@ -93,64 +55,15 @@ public abstract class DefinitionImpl<T extends Definition> implements Definition
     DefinitionImpl(DefDescriptor<T> descriptor, Location location, Map<SubDefDescriptor<?, T>, Definition> subDefs,
             String apiVersion, String description, DefinitionAccess access, String ownHash,
             QuickFixException parseError) {
+        super(descriptor == null ? null : descriptor.getQualifiedName(),
+                location,
+                apiVersion,
+                description,
+                access,
+                ownHash,
+                parseError);
         this.descriptor = descriptor;
-        this.location = location;
         this.subDefs = subDefs;
-        this.apiVersion = apiVersion;
-        this.description = description;
-        this.ownHash = ownHash;
-        this.parseError = parseError;
-        this.access = access;
-        //
-        // BLECH!!! remove!!!!
-        // Temporary workaround for verifying that a class has specified its default access
-        // The following list below are things that we decided should not be specifying their access (doesn't make sense to have it)
-        // This is essentially our list of things we don't yet know the best default access for.
-        if (EventHandlerDef.class.isAssignableFrom(this.getClass())
-                || ComponentDefRef.class.isAssignableFrom(this.getClass())
-                || JavaValueDef.class.isAssignableFrom(this.getClass())
-                || ActionDef.class.isAssignableFrom(this.getClass())
-                || IncludeDefRef.class.isAssignableFrom(this.getClass())
-                || DescriptionDef.class.isAssignableFrom(this.getClass())
-                || ExampleDef.class.isAssignableFrom(this.getClass())
-                || JavascriptValueDef.class.isAssignableFrom(this.getClass())
-                || DependencyDef.class.isAssignableFrom(this.getClass())
-                || FlavorIncludeDefImpl.class.isAssignableFrom(this.getClass())
-                || FlavorDefaultDefImpl.class.isAssignableFrom(this.getClass())
-                || FlavorsDefImpl.class.isAssignableFrom(this.getClass())
-                || ResourceDef.class.isAssignableFrom(this.getClass())
-                || TokensImportDef.class.isAssignableFrom(this.getClass())
-                || DesignItemsDef.class.isAssignableFrom(this.getClass())
-                || DesignDef.class.isAssignableFrom(this.getClass())
-                || DesignOptionDef.class.isAssignableFrom(this.getClass())
-                || ApplicationDefImpl.class.isAssignableFrom(this.getClass())
-                || AttributeDefRef.class.isAssignableFrom(this.getClass())) {
-        } else {
-            if (access == null && parseError == null) {
-                throw new RuntimeException("Invalid Access value of null for " + descriptor + " for class " + getClass() + " - (" + getClass().getSimpleName() + ")");
-            }
-        }
-    }
-
-    /**
-     * @see Definition#getDescriptor()
-     */
-    @Override
-    public DefDescriptor<T> getDescriptor() {
-        return descriptor;
-    }
-
-    /**
-     * @see Definition#getLocation()
-     */
-    @Override
-    public Location getLocation() {
-        return location;
-    }
-
-    @Override
-    public DefinitionAccess getAccess() {
-        return access;
     }
 
     /**
@@ -161,25 +74,12 @@ public abstract class DefinitionImpl<T extends Definition> implements Definition
         return descriptor == null ? getClass().getName() : descriptor.getName();
     }
 
-    @Override
-    public String getOwnHash() {
-        return ownHash;
-    }
-
     /**
-     * @throws QuickFixException
-     * @see Definition#appendDependencies(java.util.Set)
+     * @see Definition#getDescriptor()
      */
     @Override
-    public void appendDependencies(Set<DefDescriptor<?>> dependencies) {
-    }
-
-    /**
-     * @throws QuickFixException
-     * @see Definition#appendSupers(java.util.Set)
-     */
-    @Override
-    public void appendSupers(Set<DefDescriptor<?>> dependencies) throws QuickFixException {
+    public DefDescriptor<T> getDescriptor() {
+        return descriptor;
     }
 
     /**
@@ -194,42 +94,6 @@ public abstract class DefinitionImpl<T extends Definition> implements Definition
         if (descriptor == null) {
             throw new InvalidDefinitionException("No descriptor", location);
         }
-        //
-        // BLECH!!! remove!!!!
-        if (EventHandlerDef.class.isAssignableFrom(this.getClass())
-                || ComponentDefRef.class.isAssignableFrom(this.getClass())
-                || TokensImportDef.class.isAssignableFrom(this.getClass())
-                || DesignOptionDef.class.isAssignableFrom(this.getClass())
-                || DesignDef.class.isAssignableFrom(this.getClass())
-                || JavaValueDef.class.isAssignableFrom(this.getClass())
-                || ActionDef.class.isAssignableFrom(this.getClass())
-                || IncludeDefRef.class.isAssignableFrom(this.getClass())
-                || DescriptionDef.class.isAssignableFrom(this.getClass())
-                || DependencyDef.class.isAssignableFrom(this.getClass())
-                || ExampleDef.class.isAssignableFrom(this.getClass())
-                || FlavorIncludeDefImpl.class.isAssignableFrom(this.getClass())
-                || FlavorDefaultDefImpl.class.isAssignableFrom(this.getClass())
-                || FlavorsDefImpl.class.isAssignableFrom(this.getClass())
-                || ResourceDef.class.isAssignableFrom(this.getClass())
-                || JavascriptValueDef.class.isAssignableFrom(this.getClass())
-                || LibraryDefRefImpl.class.isAssignableFrom(this.getClass())
-                || DesignItemsDef.class.isAssignableFrom(this.getClass())
-                || AttributeDefRef.class.isAssignableFrom(this.getClass())) {
-        } else {
-            if (access == null) {
-                throw new InvalidDefinitionException("Invalid Access value of null for " + descriptor, location);
-            }
-        }
-    }
-
-    @Override
-    public void markValid() {
-        this.valid = true;
-    }
-
-    @Override
-    public boolean isValid() {
-        return this.valid;
     }
 
     /**
@@ -267,57 +131,27 @@ public abstract class DefinitionImpl<T extends Definition> implements Definition
         }
     }
 
-    public abstract static class RefBuilderImpl<T extends Definition, A extends Definition> implements DefBuilder<T, A> {
-        private boolean descriptorLocked;
+    public abstract static class RefBuilderImpl<T extends Definition, A extends Definition> extends BaseXmlElementImpl.BaseBuilderImpl
+            implements DefBuilder<T, A> {
+
         public DefDescriptor<T> descriptor;
-        public Location location;
-        public Map<SubDefDescriptor<?, T>, Definition> subDefs;
-        private final Class<T> defClass;
-        public String apiVersion;
-        public String description;
-        public Hash hash;
-        public String ownHash;
-        private QuickFixException parseError;
-        private DefinitionAccess access;
+        public Map<SubDefDescriptor<?, T>, Definition> subDefs;;
+        private boolean descriptorLocked;
 
         protected RefBuilderImpl(Class<T> defClass) {
-            this.defClass = defClass;
+            super(defClass);
             //this.ownHash = String.valueOf(System.currentTimeMillis());
         }
 
         @Override
-        public RefBuilderImpl<T, A> setAccess(DefinitionAccess access) {
-            this.access = access;
-            return this;
+        public RefBuilderImpl<T, A> setDescriptor(String qualifiedName) {
+            try {
+                return this.setDescriptor(Aura.getDefinitionService().getDefDescriptor(qualifiedName, defClass));
+            } catch (Exception e) {
+                setParseError(e);
+                return this;
+            }
         }
-
-        @Override
-        public DefinitionAccess getAccess() {
-            return access;
-        }
-
-        @Override
-        public RefBuilderImpl<T, A> setLocation(String fileName, int line, int column, long lastModified) {
-            location = new Location(fileName, line, column, lastModified);
-            return this;
-        }
-
-        @Override
-        public RefBuilderImpl<T, A> setLocation(String fileName, long lastModified) {
-            location = new Location(fileName, lastModified);
-            return this;
-        }
-
-        @Override
-        public RefBuilderImpl<T, A> setLocation(Location location) {
-            this.location = location;
-            return this;
-        }
-
-        public Location getLocation() {
-            return this.location;
-        }
-
         public RefBuilderImpl<T, A> addSubDef(SubDefDescriptor<?, T> sddesc, Definition inner) {
             if (this.subDefs == null) {
                 this.subDefs = Maps.newHashMap();
@@ -333,13 +167,8 @@ public abstract class DefinitionImpl<T extends Definition> implements Definition
         }
 
         @Override
-        public RefBuilderImpl<T, A> setDescriptor(String qualifiedName) {
-            try {
-                return this.setDescriptor(Aura.getDefinitionService().getDefDescriptor(qualifiedName, defClass));
-            } catch (Exception e) {
-                setParseError(e);
-                return this;
-            }
+        public DefDescriptor<T> getDescriptor() {
+            return descriptor;
         }
 
         @Override
@@ -349,105 +178,5 @@ public abstract class DefinitionImpl<T extends Definition> implements Definition
             }
             return this;
         }
-
-        @Override
-        public DefDescriptor<T> getDescriptor() {
-            return descriptor;
-        }
-
-        @Override
-        public RefBuilderImpl<T, A> setAPIVersion(String apiVersion) {
-            this.apiVersion = apiVersion;
-            return this;
-        }
-
-        @Override
-        public RefBuilderImpl<T, A> setDescription(String description) {
-            this.description = description;
-            return this;
-        }
-
-        @Override
-        public RefBuilderImpl<T,A> setOwnHash(Hash hash) {
-            if (hash != null) {
-                this.ownHash = null;
-            }
-            this.hash = hash;
-            return this;
-        }
-
-        @Override
-        public RefBuilderImpl<T,A> setOwnHash(String ownHash) {
-            this.ownHash = ownHash;
-            return this;
-        }
-
-        private String getOwnHash() {
-            //
-            // Try to make sure that we have a hash string.
-            //
-            if (ownHash == null && hash != null && hash.isSet()) {
-                ownHash = hash.toString();
-            }
-            return ownHash;
-        }
-
-        @Override
-        public void setParseError(Throwable cause) {
-            if (this.parseError != null) {
-                return;
-            }
-            if (cause instanceof QuickFixException) {
-                this.parseError = (QuickFixException)cause;
-            } else {
-                Location location = null;
-
-                if (cause instanceof AuraExceptionInfo) {
-                    AuraExceptionInfo aei = (AuraExceptionInfo)cause;
-                    location = aei.getLocation();
-                }
-                this.parseError = new InvalidDefinitionException(cause.getMessage(), location, cause);
-            }
-        }
-
-        @Override
-        public QuickFixException getParseError() {
-            return parseError;
-        }
-    }
-
-    @Override
-    public void retrieveLabels() throws QuickFixException {
-
-    }
-
-    /**
-     * A utility routine to get the full set of labels out of a set of property references.
-     *
-     * This is used everywhere that we parse javascript to get property references and want to
-     * process them. But can be applied to literally anything.
-     *
-     * @param props the collection of properties to scan.
-     */
-    protected void retrieveLabels(Collection<PropertyReference> props) throws QuickFixException {
-        if (props != null && !props.isEmpty()) {
-            GlobalValueProvider labelProvider = Aura.getContextService().getCurrentContext().getGlobalProviders().get(LABEL.getPrefix());
-            for (PropertyReference e : props) {
-                if (e.getRoot().equals(LABEL.getPrefix())) {
-                    labelProvider.validate(e.getStem());
-                    labelProvider.getValue(e.getStem());
-                }
-            }
-        }
-    }
-
-    @Override
-    public String getAPIVersion() {
-        return apiVersion;
-    }
-
-    @Override
-    public String getDescription() {
-        return description;
     }
 }

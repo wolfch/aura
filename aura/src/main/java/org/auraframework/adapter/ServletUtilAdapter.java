@@ -99,16 +99,64 @@ public interface ServletUtilAdapter {
      *
      * @param context the aura context to use.
      * @param safeInlineJs should we include 'inline.js' to allow for CSP protection?
-     * @param ignoreBootstrap should we include 'bootstrap.js' in the mix?
+     * @param ignoreNonCacheableScripts. Flag to ignore scripts that are dynamic so we don't potentially cache them such as bootstrap.js
+     * This parameter will mostly be false but for calls from manifest or other caching calls alike.
      * @return the list of scripts.
      */
-    List<String> getScripts(AuraContext context, boolean safeInlineJs, boolean ignoreBootstrap, Map<String,Object> attributes)
+    List<String> getScripts(AuraContext context, boolean safeInlineJs, boolean ignoreNonCacheableScripts, Map<String,Object> attributes)
         throws QuickFixException;
 
     /**
      * Get the manifest url.
      */
     String getManifestUrl(AuraContext context, Map<String,Object> attributes);
+    
+    /**
+     * Get bootstrap url.
+     */
+    
+    String getBootstrapUrl(AuraContext context, Map<String,Object> attributes);
+    
+    /**
+     * Get html5Shiv url.
+     */
+    String getHTML5ShivUrl();
+    
+    /**
+     * Aura libraries
+     */
+    String getFrameworkLibUrl();
+    
+    /**
+     * Get inline.js url.
+     */
+    
+    String getInlineJsUrl(AuraContext context, Map<String,Object> attributes);
+    
+    /**
+     * Get app.js url.
+     */
+    String getAppJsUrl(AuraContext context, Map<String, Object> attributes);
+    
+    /**
+     * Get app.css url.
+     */
+    String getAppCssUrl(AuraContext context);
+    
+    /**
+     * Get JS client libraries urls
+     */
+    Set<String> getJsClientLibraryUrls (AuraContext context) throws QuickFixException;
+    
+    /**
+     * Get CSS client libraries urls
+     */
+    Set<String> getCssClientLibraryUrls (AuraContext context) throws QuickFixException;
+    
+    /**
+     * Get aura framework
+     */
+    String getFrameworkUrl();
 
     /**
      * Get the full set of styles for the current context.
@@ -116,6 +164,7 @@ public interface ServletUtilAdapter {
      * @param context the aura context to use.
      * @return the list of css includes
      */
+    	
     List<String> getStyles(AuraContext context) throws QuickFixException;
 
     /**
@@ -175,4 +224,6 @@ public interface ServletUtilAdapter {
 
     Set<DefDescriptor<?>> verifyTopLevel(HttpServletRequest request, HttpServletResponse response,
             AuraContext context) throws IOException;
+
+	
 }

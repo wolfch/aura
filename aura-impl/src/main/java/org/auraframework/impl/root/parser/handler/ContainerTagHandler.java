@@ -30,14 +30,12 @@ import org.auraframework.expression.PropertyReference;
 import org.auraframework.impl.DefinitionAccessImpl;
 import org.auraframework.service.DefinitionService;
 import org.auraframework.system.AuraContext;
-import org.auraframework.system.Location;
 import org.auraframework.system.Source;
 import org.auraframework.throwable.AuraRuntimeException;
 import org.auraframework.throwable.quickfix.DefinitionNotFoundException;
 import org.auraframework.throwable.quickfix.InvalidAccessValueException;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
-import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import java.util.Set;
@@ -47,13 +45,12 @@ import java.util.Set;
  * Abstract handler for tags that contain other tags.
  */
 public abstract class ContainerTagHandler<T extends Definition> extends XMLHandler<T>
-implements ExpressionContainerHandler {
-    protected Location startLocation;
-    protected WhitespaceBehavior whitespaceBehavior = BaseComponentDef.DefaultWhitespaceBehavior;
-    protected DefDescriptor<T> defDescriptor;
-    protected final boolean isInInternalNamespace;
+        implements ExpressionContainerHandler {
     public static final String SCRIPT_TAG = "script";
     public static final String ATTRIBUTE_ACCESS = "access";
+    protected final boolean isInInternalNamespace;
+    protected WhitespaceBehavior whitespaceBehavior = BaseComponentDef.DefaultWhitespaceBehavior;
+    protected DefDescriptor<T> defDescriptor;
 
     protected final ConfigAdapter configAdapter;
     protected final DefinitionParserAdapter definitionParserAdapter;
@@ -90,44 +87,6 @@ implements ExpressionContainerHandler {
         return defDescriptor;
     }
 
-    protected void readElement() throws XMLStreamException, QuickFixException {
-        validateAttributes();
-        this.startLocation = getLocation();
-        String startTag = getTagName();
-        if (!handlesTag(startTag)) {
-            error("Expected start tag <%s> but found %s", getHandledTag(), getTagName());
-        }
-        readAttributes();
-        readSystemAttributes();
-        loop: while (xmlReader.hasNext()) {
-            int next = xmlReader.next();
-            switch (next) {
-            case XMLStreamConstants.START_ELEMENT:
-                handleChildTag();
-                break;
-            case XMLStreamConstants.CDATA:
-            case XMLStreamConstants.CHARACTERS:
-            case XMLStreamConstants.SPACE:
-                handleChildText();
-                break;
-            case XMLStreamConstants.END_ELEMENT:
-                if (!startTag.equalsIgnoreCase(getTagName())) {
-                    error("Expected end tag <%s> but found %s", startTag, getTagName());
-                }
-                // we hit our own end tag, so stop handling
-                break loop;
-            case XMLStreamConstants.ENTITY_REFERENCE:
-            case XMLStreamConstants.COMMENT:
-                break;
-            default:
-                error("found something of type: %s", next);
-            }
-        }
-        if (xmlReader.getEventType() != XMLStreamConstants.END_ELEMENT) {
-            // must have hit EOF, barf time!
-            error("Didn't find an end tag");
-        }
-    }
 
     @Override
     public void addExpressionReferences(Set<PropertyReference> propRefs) {
@@ -156,50 +115,23 @@ implements ExpressionContainerHandler {
         whitespaceBehavior = val;
     }
 
-    /**
-     * called for every child tag that is encountered
-     *
-     * @throws QuickFixException
-     */
-    protected abstract void handleChildTag() throws XMLStreamException, QuickFixException;
-
-    /**
-     * Called for any literal text that is encountered
-     */
-    protected abstract void handleChildText() throws XMLStreamException, QuickFixException;
-
-    /**
-     * Override this to read in the attributes for the main tag this handler
-     * handles
-     *
-     * @throws QuickFixException
-     */
-    protected void readAttributes() throws QuickFixException {
-        // do nothing
-    }
-
-    protected void readSystemAttributes() throws QuickFixException {
-        // do nothing
-    }
-
     protected DefinitionAccess readAccessAttribute() throws InvalidAccessValueException {
         String access = getAttributeValue(ATTRIBUTE_ACCESS);
-        DefinitionAccess defaultAccess;
         if (access != null) {
+            DefinitionAccess a;
             try {
                 String namespace = source.getDescriptor().getNamespace();
-                defaultAccess = definitionParserAdapter.parseAccess(namespace, access);
-                defaultAccess.validate(namespace, allowAuthenticationAttribute(), allowPrivateAttribute(), configAdapter);
+                a = definitionParserAdapter.parseAccess(namespace, access);
+                a.validate(namespace, allowAuthenticationAttribute(), allowPrivateAttribute(), configAdapter);
             } catch (InvalidAccessValueException e) {
                 // re-throw with location
                 throw new InvalidAccessValueException(e.getMessage(), getLocation());
             }
+            return a;
         }
         else {
-            defaultAccess = new DefinitionAccessImpl(this.isInInternalNamespace ? AuraContext.Access.INTERNAL : AuraContext.Access.PUBLIC);
+            return getAccess(isInInternalNamespace);
         }
-
-        return defaultAccess;
     }
 
     protected  boolean allowAuthenticationAttribute() {
@@ -208,22 +140,6 @@ implements ExpressionContainerHandler {
 
     protected boolean allowPrivateAttribute() {
         return false;
-    }
-
-    /**
-     * @return this container's tag. May return a more generic term for the
-     *         class of tag expected if more than one is handled. Not safe for
-     *         tag comparisons, only for messaging. For comparisons, use
-     *         getHandledTag()
-     */
-    @Override
-    public abstract String getHandledTag();
-
-    /**
-     * @return true if this handler can parse the given tag
-     */
-    protected boolean handlesTag(String tag) {
-        return getHandledTag().equalsIgnoreCase(tag);
     }
 
     /**
@@ -240,7 +156,8 @@ implements ExpressionContainerHandler {
             if (!parentHandler.getAllowsScript() && SCRIPT_TAG.equals(tag.toLowerCase())) {
                 throw new AuraRuntimeException("script tags only allowed in templates", getLocation());
             }
-            return new HTMLComponentDefRefHandler<>(parentHandler, tag, xmlReader, source, isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter);
+            return new HTMLComponentDefRefHandler<>(parentHandler, tag, xmlReader, source, isInInternalNamespace,
+                    definitionService, configAdapter, definitionParserAdapter);
         } else {
             String loadString = getSystemAttributeValue("load");
             if (loadString != null) {
@@ -252,11 +169,13 @@ implements ExpressionContainerHandler {
                             "Invalid value '%s' specified for 'aura:load' attribute", loadString), getLocation());
                 }
                 if (load == Load.LAZY || load == Load.EXCLUSIVE) {
-                    return new LazyComponentDefRefHandler<>(parentHandler, tag, xmlReader, source, isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter);
+                    return new LazyComponentDefRefHandler<>(parentHandler, tag, xmlReader, source, isInInternalNamespace,
+                            definitionService, configAdapter, definitionParserAdapter);
                 }
             }
 
-            return new ComponentDefRefHandler<>(parentHandler, xmlReader, source, isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter);
+            return new ComponentDefRefHandler<>(parentHandler, xmlReader, source, isInInternalNamespace,
+                    definitionService, configAdapter, definitionParserAdapter);
         }
     }
 

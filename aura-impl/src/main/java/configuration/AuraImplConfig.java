@@ -13,10 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package configuration;
 
 import org.auraframework.adapter.JsonSerializerAdapter;
+import org.auraframework.def.genericxml.RootLevelGenericXmlValidator;
 import org.auraframework.impl.adapter.JsonSerializerAdapterImpl;
+import org.auraframework.impl.design.DesignOptionsValidator;
 import org.auraframework.util.ServiceLoaderImpl.AuraConfiguration;
 import org.auraframework.util.ServiceLoaderImpl.Impl;
 
@@ -29,5 +32,10 @@ public class AuraImplConfig {
     @Impl
     public static JsonSerializerAdapter auraImplJsonSerializationAdapter() {
         return new JsonSerializerAdapterImpl();
+    }
+
+    @Impl
+    public static RootLevelGenericXmlValidator designOptionsValidator() {
+        return new DesignOptionsValidator();
     }
 }

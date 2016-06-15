@@ -35,6 +35,7 @@ import org.auraframework.system.Annotations.BackgroundAction;
 import org.auraframework.system.Annotations.CabooseAction;
 import org.auraframework.system.Annotations.Key;
 import org.auraframework.system.AuraContext;
+import org.auraframework.system.AuraContext.Access;
 import org.auraframework.system.DefFactory;
 import org.auraframework.system.Location;
 import org.auraframework.system.SourceLoader;
@@ -179,7 +180,9 @@ public class JavaControllerDefFactory extends BaseJavaDefFactory<ControllerDef> 
         
     	actionBuilder.setBackground(method.isAnnotationPresent(BackgroundAction.class));
     	actionBuilder.setCaboose(method.isAnnotationPresent(CabooseAction.class));
-        
+
+        actionBuilder.setAccess(new DefinitionAccessImpl(Access.INTERNAL));
+
         return actionBuilder.build();
     }
 

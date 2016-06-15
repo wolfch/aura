@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.auraframework.impl.system;
 
 import org.auraframework.Aura;
@@ -25,9 +26,10 @@ import org.auraframework.throwable.AuraRuntimeException;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.AuraTextUtil;
 import org.auraframework.util.json.Json;
-
 import java.io.IOException;
 
+/**
+ */
 public class DefDescriptorImpl<T extends Definition> implements DefDescriptor<T> {
     private static final long serialVersionUID = 3030118554156737974L;
     private final DefDescriptor<?> bundle;
@@ -40,25 +42,6 @@ public class DefDescriptorImpl<T extends Definition> implements DefDescriptor<T>
     protected final DefType defType;
 
     private final int hashCode;
-
-    public static String buildQualifiedName(String prefix, String namespace, String name) {
-        if (prefix == null && namespace == null) {
-            return name;
-        }
-        if (namespace == null) {
-            return String.format("%s://%s", prefix, name);
-        }
-        String format = MARKUP_PREFIX.equals(prefix) ? "%s://%s:%s" : "%s://%s.%s";
-        return String.format(format, prefix, namespace, name);
-    }
-
-    private static String buildDescriptorName(String prefix, String namespace, String name) {
-        if (namespace == null) {
-            return String.format("%s", name);
-        }
-        String format = MARKUP_PREFIX.equals(prefix) ? "%s:%s" : "%s.%s";
-        return String.format(format, namespace, name);
-    }
 
     public DefDescriptorImpl(DefDescriptor<?> associate, Class<T> defClass, String newPrefix) {
         this.bundle = null;
@@ -125,7 +108,9 @@ public class DefDescriptorImpl<T extends Definition> implements DefDescriptor<T>
                     namespace = clazz.namespace;
                     name = clazz.name;
 
-                    if (clazz.nameParameters != null && defType == org.auraframework.def.DefDescriptor.DefType.TYPE) {
+                    if (clazz.nameParameters != null
+                        && defType == org.auraframework.def.DefDescriptor.DefType.TYPE) {
+
                         nameParameters = clazz.nameParameters;
                     }
                 } else {
@@ -147,12 +132,6 @@ public class DefDescriptorImpl<T extends Definition> implements DefDescriptor<T>
             case ATTRIBUTE_DESIGN:
             case DESIGN_TEMPLATE:
             case DESIGN_TEMPLATE_REGION:
-            case DESIGN_LAYOUT:
-            case DESIGN_LAYOUT_SECTION:
-            case DESIGN_LAYOUT_SECTION_ITEMS:
-            case DESIGN_LAYOUT_SECTION_ITEMS_ATTRIBUTE:
-            case DESIGN_LAYOUT_SECTION_ITEMS_COMPONENT:
-            case DESIGN_OPTION:
             case INCLUDE_REF:
             case FLAVOR_INCLUDE:
             case FLAVOR_DEFAULT:
@@ -203,6 +182,57 @@ public class DefDescriptorImpl<T extends Definition> implements DefDescriptor<T>
         this(qualifiedName, defClass, null);
     }
 
+    public static String buildQualifiedName(String prefix, String namespace, String name) {
+        if (prefix == null && namespace == null) {
+            return name;
+        }
+        if (namespace == null) {
+            return String.format("%s://%s", prefix, name);
+        }
+        String format = MARKUP_PREFIX.equals(prefix) ? "%s://%s:%s" : "%s://%s.%s";
+        return String.format(format, prefix, namespace, name);
+    }
+
+    private static String buildDescriptorName(String prefix, String namespace, String name) {
+        if (namespace == null) {
+            return String.format("%s", name);
+        }
+        String format = MARKUP_PREFIX.equals(prefix) ? "%s:%s" : "%s.%s";
+        return String.format(format, namespace, name);
+    }
+
+    /**
+     * Helper method for various {@link DefDescriptor} subclasses to implement {@link #compareTo(DefDescriptor)}, since
+     * interfaces aren't allowed to have static methods, and since {@code DefDescriptor} is an interface rather than an
+     * abstract class.
+     */
+    public static int compare(DefDescriptor<?> dd1, DefDescriptor<?> dd2) {
+        if (dd1 == dd2) {
+            return 0;
+        }
+
+        if (dd1 == null) {
+            return -1;
+        }
+
+        if (dd2 == null) {
+            return 1;
+        }
+
+        int value;
+
+        value = dd1.getQualifiedName().compareToIgnoreCase(dd2.getQualifiedName());
+        if (value != 0) {
+            return value;
+        }
+
+        value = dd1.getDefType().compareTo(dd2.getDefType());
+        if (value != 0) {
+            return value;
+        }
+
+        return compare(dd1.getBundle(), dd2.getBundle());
+    }
     private int createHashCode() {
         return (bundle == null ? 0 : bundle.hashCode())
                 + AuraUtil.hashCodeLowerCase(name, namespace, prefix, defType.ordinal());
@@ -321,36 +351,4 @@ public class DefDescriptorImpl<T extends Definition> implements DefDescriptor<T>
         return compare(this, other);
     }
 
-    /**
-     * Helper method for various {@link DefDescriptor} subclasses to implement {@link #compareTo(DefDescriptor)}, since
-     * interfaces aren't allowed to have static methods, and since {@code DefDescriptor} is an interface rather than an
-     * abstract class.
-     */
-    public static int compare(DefDescriptor<?> dd1, DefDescriptor<?> dd2) {
-        if (dd1 == dd2) {
-            return 0;
-        }
-
-        if (dd1 == null) {
-            return -1;
-        }
-
-        if (dd2 == null) {
-            return 1;
-        }
-
-        int value;
-
-        value = dd1.getQualifiedName().compareToIgnoreCase(dd2.getQualifiedName());
-        if (value != 0) {
-            return value;
-        }
-
-        value = dd1.getDefType().compareTo(dd2.getDefType());
-        if (value != 0) {
-            return value;
-        }
-
-        return compare(dd1.getBundle(), dd2.getBundle());
-    }
 }

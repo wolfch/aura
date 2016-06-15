@@ -21,10 +21,12 @@ import org.auraframework.def.EventDef;
 import org.auraframework.def.RootDefinition;
 import org.auraframework.expression.Expression;
 import org.auraframework.expression.PropertyReference;
+import org.auraframework.impl.DefinitionAccessImpl;
 import org.auraframework.impl.expression.AuraExpressionBuilder;
 import org.auraframework.impl.root.event.EventHandlerDefImpl;
 import org.auraframework.impl.util.TextTokenizer;
 import org.auraframework.service.DefinitionService;
+import org.auraframework.system.AuraContext.Access;
 import org.auraframework.system.Source;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.AuraTextUtil;
@@ -101,6 +103,8 @@ public class EventHandlerDefHandler extends XMLHandler<EventHandlerDefImpl> {
             error("expected end of %s tag", TAG);
         }
         builder.setOwnHash(source.getHash());
+
+        builder.setAccess(new DefinitionAccessImpl(Access.INTERNAL));
 
         return builder.build();
     }

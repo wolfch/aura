@@ -70,6 +70,7 @@ public class AuraServletIntegrationTest extends IntegrationTestCase {
     }
     
 	private String getLockerServiceContextValue() {
-		return configAdapter.isLockerServiceEnabled() ? "%2C%22ls%22%3A%22E%22" : "";
+        String cacheBuster = configAdapter.getLockerServiceCacheBuster();
+		return cacheBuster != null ? "%2C%22ls%22%3A%22" + cacheBuster + "%22" : "";
 	}
 }

@@ -20,8 +20,10 @@ import org.auraframework.def.DefDescriptor.DefType;
 import org.auraframework.def.IncludeDef;
 import org.auraframework.def.LibraryDef;
 import org.auraframework.def.RootDefinition;
+import org.auraframework.impl.DefinitionAccessImpl;
 import org.auraframework.impl.root.library.IncludeDefRefImpl;
 import org.auraframework.service.DefinitionService;
+import org.auraframework.system.AuraContext.Access;
 import org.auraframework.system.Source;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
 import org.auraframework.throwable.quickfix.QuickFixException;
@@ -122,6 +124,7 @@ public class IncludeDefRefHandler extends XMLHandler<IncludeDefRefImpl> {
         }
 
         builder.setOwnHash(source.getHash());
+        builder.setAccess(new DefinitionAccessImpl(Access.PRIVATE));
         return builder.build();
     }
 

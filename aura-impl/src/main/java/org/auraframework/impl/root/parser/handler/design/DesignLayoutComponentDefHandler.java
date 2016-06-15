@@ -13,20 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.auraframework.impl.root.parser.handler.design;
 
 import com.google.common.collect.ImmutableSet;
-import org.auraframework.adapter.ConfigAdapter;
-import org.auraframework.adapter.DefinitionParserAdapter;
+import org.auraframework.Aura;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
-import org.auraframework.def.design.DesignDef;
 import org.auraframework.def.design.DesignLayoutComponentDef;
 import org.auraframework.impl.design.DesignLayoutComponentDefImpl;
-import org.auraframework.impl.root.parser.handler.ContainerTagHandler;
-import org.auraframework.impl.root.parser.handler.ParentedTagHandler;
-import org.auraframework.impl.system.DefDescriptorImpl;
-import org.auraframework.service.DefinitionService;
+import org.auraframework.impl.root.parser.handler.BaseXMLElementHandler;
 import org.auraframework.system.Source;
 import org.auraframework.throwable.quickfix.DefinitionNotFoundException;
 import org.auraframework.throwable.quickfix.QuickFixException;
@@ -36,7 +32,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import java.util.Set;
 
-public class DesignLayoutComponentDefHandler extends ParentedTagHandler<DesignLayoutComponentDef, DesignDef> {
+public class DesignLayoutComponentDefHandler extends BaseXMLElementHandler {
     public static final String TAG = "design:layoutcomponent";
 
     private static final String ATTRIBUTE_NAME = "name";
@@ -44,17 +40,10 @@ public class DesignLayoutComponentDefHandler extends ParentedTagHandler<DesignLa
     private static final ImmutableSet<String> ALLOWED_ATTRIBUTES = ImmutableSet.of(ATTRIBUTE_NAME);
     private DesignLayoutComponentDefImpl.Builder builder = new DesignLayoutComponentDefImpl.Builder();
 
-    public DesignLayoutComponentDefHandler() {
-        super();
-    }
 
-    public DesignLayoutComponentDefHandler(ContainerTagHandler<DesignDef> parentHandler, XMLStreamReader xmlReader, Source<?> source,
-                                           boolean isInInternalNamespace, DefinitionService definitionService,
-                                           ConfigAdapter configAdapter, DefinitionParserAdapter definitionParserAdapter) {
-        super(parentHandler, xmlReader, source, isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter);
-        builder.setDescriptor(DefDescriptorImpl.getAssociateDescriptor(getParentDefDescriptor(), DesignLayoutComponentDef.class,
-                TAG));
-        builder.setAccess(getAccess(isInInternalNamespace));
+    public DesignLayoutComponentDefHandler(XMLStreamReader xmlReader, Source<?> source) {
+        super(xmlReader, source);
+        builder.setTagName(getTagName());
     }
 
     @Override
@@ -63,7 +52,7 @@ public class DesignLayoutComponentDefHandler extends ParentedTagHandler<DesignLa
         if (name == null) {
             error("Attribute '%s' is required on <%s>", ATTRIBUTE_NAME, TAG);
         }
-        DefDescriptor<ComponentDef> cmp = definitionService.getDefDescriptor(name, ComponentDef.class);
+        DefDescriptor<ComponentDef> cmp = Aura.getDefinitionService().getDefDescriptor(name, ComponentDef.class);
         if (!cmp.exists()) {
             throw new DefinitionNotFoundException(cmp, getLocation());
         }
@@ -93,8 +82,8 @@ public class DesignLayoutComponentDefHandler extends ParentedTagHandler<DesignLa
         return TAG;
     }
 
-    @Override
-    protected DesignLayoutComponentDef createDefinition() throws QuickFixException {
+    public DesignLayoutComponentDef createElement() throws QuickFixException, XMLStreamException {
+        readElement();
         return builder.build();
     }
 }

@@ -122,9 +122,6 @@ public abstract class BaseJavaDefFactory<D extends Definition> extends DefFactor
         if (builder == null) {
             return null;
         }
-        if (builder.getAccess() == null) {
-            builder.setAccess(new DefinitionAccessImpl(AuraContext.Access.PUBLIC));
-        }
         // FIXME = "need md5 in builder";
         def = builder.build();
         return def;

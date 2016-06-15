@@ -19,6 +19,7 @@
 	
 	<aura:attribute name="items" type="Object[]" />
     <aura:attribute name="lastEdited" type="Object" />
+    <aura:attribute name="index" type="Integer" />
 	
 	<aura:handler name="init" value="{!this}" action="{!c.init}"/>
 
@@ -26,6 +27,7 @@
         <div class="toolbar">
         	<ui:inputText aura:id="inputTxt" class="inputTxt"/>
             <ui:button aura:id="appendButton" label="Append Item" press="{!c.appendItem}" />
+            <ui:button aura:id="updateButton" label="Update Item" press="{!c.updateItem}" />
         </div>
 		<ui:inlineEditGrid
 		    aura:id="grid"        
@@ -38,9 +40,9 @@
 		    
 			<aura:set attribute="headerColumns">
 				<ui:dataGridColumn name="id"	  label="Id" sortable="true"/>
-				<ui:dataGridColumn name="name"	  label="Name"/>
+				<ui:dataGridColumn name="name"	  label="Name" sortable="true"/>
 				<ui:dataGridColumn name="grade"   label="Grade"/>
-                		<ui:dataGridColumn name="linkLabel"  label="Link"/>
+				<ui:dataGridColumn name="linkLabel"  label="Link"/>
 				<ui:dataGridColumn name="issueDate" label="Issue Date"/>
 				<ui:dataGridColumn name="passing" label="Passing"/>
 				<ui:dataGridColumn name="notes"   label="Notes"/>
@@ -58,9 +60,9 @@
 				<ui:inlineEditCell name="grade" edited="{!row.status.grade}">
 					<ui:outputText value="{!row.data.grade}"/>
 				</ui:inlineEditCell>
-                		<ui:inlineEditCell name="linkLabel" edited="{!row.status.linkLabel}" valueAttribute="label">
-                    			<ui:outputURL value="http://www.google.com" label="{!row.data.linkLabel}" />
-                		</ui:inlineEditCell>
+				    <ui:inlineEditCell name="linkLabel" edited="{!row.status.linkLabel}" valueAttribute="label">
+				        <ui:outputURL value="http://www.google.com" label="{!row.data.linkLabel}" />
+				    </ui:inlineEditCell>
 				<ui:inlineEditCell name="issueDate" edited="{!row.status.issueDate}">
 					<ui:outputText value="{!row.data.issueDate}"/>
 				</ui:inlineEditCell>
@@ -86,7 +88,7 @@
 		<div class="manager">
 	        <ui:panelManager2 aura:id="pm">
 	            <aura:set attribute="registeredPanels">
-	                    <ui:panel alias="panel"/>
+	               <ui:panel alias="panel"/>
 	            </aura:set>
 	        </ui:panelManager2>
 	    </div>

@@ -78,8 +78,7 @@ public class ApplicationDefHTMLFormatAdapterTest extends BaseComponentDefHTMLFor
                 "<aura:application render='client' useAppcache='false'></aura:application>");
         context.setApplicationDescriptor(desc);
         context.addLoaded(desc, context.getDefRegistry().getUid(null, desc));
-        String body = doWrite(definitionService.getDefinition(desc)
-        		);
+        String body = doWrite(definitionService.getDefinition(desc));
         int start = body.indexOf("<html");
         String tag = body.substring(start, body.indexOf('>', start) + 1);
         if (tag.contains(" manifest=")) {
@@ -119,7 +118,8 @@ public class ApplicationDefHTMLFormatAdapterTest extends BaseComponentDefHTMLFor
         String body = doWrite(definitionService.getDefinition(desc));
         int start = body.indexOf("<html");
         String tag = body.substring(start, body.indexOf('>', start) + 1);
-        String lockerServiceEnabled = mockConfigAdapter.isLockerServiceEnabled() ? ",\"ls\":\"E\"" : "";
+        String cacheBuster = configAdapter.getLockerServiceCacheBuster();
+        String lockerServiceEnabled = cacheBuster != null ? ",\"ls\":\"" + cacheBuster + "\"" : "";
         String expectedSubPath = AuraTextUtil.urlencode(String.format(
                 "{\"mode\":\"UTEST\",\"app\":\"%s\",\"test\":\"org.auraframework.integration.test.adapter.format.html.ApplicationDefHTMLFormatAdapterTest.testWriteManifest\"%s}",
                 desc.getDescriptorName(), lockerServiceEnabled));

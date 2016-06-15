@@ -15,16 +15,15 @@
  */
 ({
 	init : function(cmp, evt, helper) {
-		var columns = cmp.get("v.columns");
-		var headers = cmp.get("v.headerColumns");
-		var itemVar = cmp.get("v.itemVar");
-		
-		for (var i = 0; i < columns.length; i++) {
-			helper.initializeCellStates(columns[i], itemVar);
-		}
-				
-		cmp.find("grid").set("v.columns", columns);
-		cmp.find("grid").set("v.headerColumns", headers);
+		helper.initializeColumns(cmp);
+	},
+	
+	handleColumnsChange : function(cmp, evt, helper) {
+	    helper.initializeColumns(cmp);
+	},
+	
+	handleHeadersChange : function(cmp, evt, helper) {
+	    helper.updateHeaderColumns(cmp);
 	},
 
 	handleGridAction : function(cmp, evt, helper) {
@@ -92,7 +91,7 @@
 			item.status[payload.key].hasErrors = true;
 		}
 		
-		// Update only the specified item (using VDG methods)
+		// Update only the specified item
 		helper.updateItem(cmp, item, index);
 		cmp._panelCmp.hide();
 		
@@ -121,5 +120,9 @@
 	sort : function(cmp, evt) {
 		var sortBy = evt.getParam('arguments').sortBy;
 		cmp.find("grid").sort(sortBy);
-	}
+	},
+    updateItem: function (cmp, event, helper) {
+        var params = event.getParam('arguments');
+        helper.updateItem(cmp, params.item, params.index);
+    }    	
 })// eslint-disable-line semi

@@ -13,19 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.auraframework.impl.root.parser.handler.design;
 
-import org.auraframework.adapter.ConfigAdapter;
-import org.auraframework.adapter.DefinitionParserAdapter;
-import org.auraframework.def.design.DesignDef;
 import org.auraframework.def.design.DesignItemsDef;
 import org.auraframework.def.design.DesignLayoutAttributeDef;
 import org.auraframework.def.design.DesignLayoutComponentDef;
+import org.auraframework.impl.DefinitionAccessImpl;
 import org.auraframework.impl.design.DesignItemsDefImpl;
-import org.auraframework.impl.root.parser.handler.ContainerTagHandler;
-import org.auraframework.impl.root.parser.handler.ParentedTagHandler;
-import org.auraframework.impl.system.DefDescriptorImpl;
-import org.auraframework.service.DefinitionService;
+import org.auraframework.impl.root.parser.handler.BaseXMLElementHandler;
+import org.auraframework.system.AuraContext.Access;
 import org.auraframework.system.Source;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.AuraTextUtil;
@@ -35,36 +32,29 @@ import javax.xml.stream.XMLStreamReader;
 import java.util.Collections;
 import java.util.Set;
 
-public class DesignItemsDefHandler extends ParentedTagHandler<DesignItemsDef, DesignDef>{
+public class DesignItemsDefHandler extends BaseXMLElementHandler {
     public final static String TAG = "design:layoutitems";
     private final static String ATTRIBUTE_NAME = "name";
+    private final boolean isInInternalNamespace;
 
     private DesignItemsDefImpl.Builder builder = new DesignItemsDefImpl.Builder();
 
-    public DesignItemsDefHandler() {
-        super();
-    }
-
-    public DesignItemsDefHandler(ContainerTagHandler<DesignDef> parentHandler, XMLStreamReader xmlReader, Source<?> source,
-                                 boolean isInInternalNamespace, DefinitionService definitionService,
-                                 ConfigAdapter configAdapter, DefinitionParserAdapter definitionParserAdapter) {
-        super(parentHandler, xmlReader, source, isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter);
-        builder.setDescriptor(DefDescriptorImpl.getAssociateDescriptor(getParentDefDescriptor(), DesignItemsDef.class,
-                TAG));
-        builder.setAccess(getAccess(isInInternalNamespace));
+    public DesignItemsDefHandler(XMLStreamReader xmlReader, Source<?> source, boolean isInInternalNamespace) {
+        super(xmlReader, source);
+        this.isInInternalNamespace = isInInternalNamespace;
+        builder.setTagName(getTagName());
+        builder.setAccess(new DefinitionAccessImpl(isInInternalNamespace ? Access.INTERNAL : Access.PUBLIC));
     }
 
     @Override
     protected void handleChildTag() throws XMLStreamException, QuickFixException {
         String tag = getTagName();
         if (DesignLayoutAttributeDefHandler.TAG.equalsIgnoreCase(tag)) {
-            DesignLayoutAttributeDef item = new DesignLayoutAttributeDefHandler(getParentHandler(), xmlReader, source,
-                    isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter).getElement();
+            DesignLayoutAttributeDef item = new DesignLayoutAttributeDefHandler(xmlReader, source).createElement();
             builder.addAttribute(item);
-        } else if(isInInternalNamespace() && DesignLayoutComponentDefHandler.TAG.equalsIgnoreCase(tag)) {
+        } else if(isInInternalNamespace && DesignLayoutComponentDefHandler.TAG.equalsIgnoreCase(tag)) {
             //Component injection is only allowed in internal namespaces
-            DesignLayoutComponentDef cmp = new DesignLayoutComponentDefHandler(getParentHandler(), xmlReader, source,
-                    isInInternalNamespace, definitionService, configAdapter, definitionParserAdapter).getElement();
+            DesignLayoutComponentDef cmp = new DesignLayoutComponentDefHandler(xmlReader, source).createElement();
             builder.addComponent(cmp);
         } else {
             throw new XMLStreamException(String.format("<%s> can not contain tag %s", getHandledTag(), tag));
@@ -98,8 +88,8 @@ public class DesignItemsDefHandler extends ParentedTagHandler<DesignItemsDef, De
         return TAG;
     }
 
-    @Override
-    protected DesignItemsDef createDefinition() throws QuickFixException {
+    protected DesignItemsDef createElement() throws QuickFixException, XMLStreamException {
+        readElement();
         return builder.build();
     }
 }

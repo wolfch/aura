@@ -50,6 +50,34 @@
 	 },
 	 
 	 /**
+	   *  Verifies the attribute value shows up correctly after event fired
+	  */
+	 testOutputAttribute : {
+	     test : [function(cmp) {
+	         this.triggerEditOnCell(cmp, 1, 3);
+	     }, function(cmp) {
+	         $A.test.addWaitForWithFailureMessage(true, function() {
+	             var activeElement = $A.test.getActiveElement();
+	             return activeElement.tagName === 'INPUT';
+	         }, "Input element should be focused.");
+	     }, function(cmp) {
+	         // Trigger submit on the edit panel with new value
+	         var input = cmp.find("grid")._panelBody.get("v.inputComponent")[0];
+	         input.set("v.value", "abc");
+	         input.getEvent("keydown").setParams({
+	             keyCode : 13,
+	             domEvent : {
+	                 type : "keydown",
+	                 preventDefault : function() {}
+	             }
+	         }).fire();
+	     }, function(cmp) {
+	         var lastEdited = cmp.get("v.lastEdited");
+	         $A.test.assertEquals("abc", lastEdited.value, "Default value of output component is wrong");
+	     }]
+	 },
+	 
+	 /**
 	  * Test append functionality
 	  */
 	 testAppendItems : {
@@ -89,6 +117,23 @@
 		 }, function(cmp) {
 			 this.waitForCellContent(cmp, 5, 1, 'something new');
 		 }]
+	 },
+	 
+	 /**
+	  * Test update item on inline edit.
+	  */
+	 testUpdateItem : {
+	     attributes : {'index': 4},
+	     test : [function(cmp) {
+	         cmp.find('updateButton').get('e.press').fire();
+	         this.waitForCellContent(cmp, 4, 1, 'updated at 4');
+	     }, function(cmp) {
+	         this.verifyCellContent(cmp, 4, 0, '999');
+	         this.verifyCellContent(cmp, 4, 2, '999');
+	         this.verifyCellContent(cmp, 4, 3, 'new link');
+	         this.verifyCellContent(cmp, 4, 4, '');
+	         this.verifyCellContent(cmp, 4, 5, '');
+	     }]
 	 },
 	 
 	 triggerEditOnCell : function(cmp, rowIndex, colIndex) {

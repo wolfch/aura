@@ -13,20 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.auraframework.impl.root.parser.handler;
 
 import com.google.common.collect.ImmutableSet;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.Definition;
-import org.auraframework.impl.root.parser.XMLParser;
 import org.auraframework.impl.root.parser.handler.design.DesignAttributeDefHandler;
 import org.auraframework.impl.root.parser.handler.design.DesignDefHandler;
-import org.auraframework.impl.root.parser.handler.design.DesignItemsDefHandler;
-import org.auraframework.impl.root.parser.handler.design.DesignLayoutAttributeDefHandler;
-import org.auraframework.impl.root.parser.handler.design.DesignLayoutComponentDefHandler;
-import org.auraframework.impl.root.parser.handler.design.DesignLayoutDefHandler;
-import org.auraframework.impl.root.parser.handler.design.DesignOptionDefHandler;
-import org.auraframework.impl.root.parser.handler.design.DesignSectionDefHandler;
 import org.auraframework.impl.root.parser.handler.design.DesignTemplateDefHandler;
 import org.auraframework.impl.root.parser.handler.design.DesignTemplateRegionDefHandler;
 import org.auraframework.impl.system.DefDescriptorImpl;
@@ -39,52 +33,42 @@ import org.auraframework.util.AuraTextUtil;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
-import java.util.Collections;
 import java.util.Set;
 
 /**
- * Superclass for all the xml handlers.
+ * Superclass for all the definition handlers.
+ * Note: This should be renamed to BaseDefinitionHandler or something.
  */
-public abstract class XMLHandler<T extends Definition> {
-
-    private static final String SYSTEM_TAG_PREFIX = "aura";
+public abstract class XMLHandler<T extends Definition> extends BaseXMLElementHandler {
 
     public final static Set<String> SYSTEM_TAGS = ImmutableSet.of(ApplicationDefHandler.TAG,
             AttributeDefHandler.TAG, ComponentDefHandler.TAG, EventDefHandler.TAG, InterfaceDefHandler.TAG,
-            EventHandlerDefHandler.TAG, LibraryDefRefHandler.TAG, MethodDefHandler.TAG,RegisterEventHandler.TAG, 
+            EventHandlerDefHandler.TAG, LibraryDefRefHandler.TAG, MethodDefHandler.TAG,RegisterEventHandler.TAG,
             AttributeDefRefHandler.TAG,
             DependencyDefHandler.TAG, TokensDefHandler.TAG, DesignDefHandler.TAG,
             DesignAttributeDefHandler.TAG, DesignTemplateDefHandler.TAG, DesignTemplateRegionDefHandler.TAG,
-            DesignLayoutDefHandler.TAG, DesignSectionDefHandler.TAG, DesignItemsDefHandler.TAG, DesignLayoutAttributeDefHandler.TAG,
-            DesignOptionDefHandler.TAG, DesignLayoutComponentDefHandler.TAG, LibraryDefHandler.TAG, IncludeDefRefHandler.TAG);
+            LibraryDefHandler.TAG, IncludeDefRefHandler.TAG);
+    private static final String SYSTEM_TAG_PREFIX = "aura";
 
-    protected final XMLStreamReader xmlReader;
-    protected final XMLStreamWriter xmlWriter;
-    protected final Source<?> source;
     protected final DefinitionService definitionService;
 
-    public static class InvalidSystemAttributeException extends AuraRuntimeException {
-        private static final long serialVersionUID = -7339542343645451510L;
-        private static final String message = "Invalid attribute \"%s\"";
-
-        public InvalidSystemAttributeException(String attribute, org.auraframework.system.Location location) {
-            super(String.format(message, attribute), location);
-        }
-    }
-
     protected XMLHandler(XMLStreamReader xmlReader, Source<?> source, DefinitionService definitionService) {
-        this.xmlReader = xmlReader;
-        this.xmlWriter = null;
-        this.source = source;
+        super(xmlReader, source);
         this.definitionService = definitionService;
     }
 
     protected XMLHandler() {
-        this.xmlReader = null;
-        this.xmlWriter = null;
-        this.source = null;
-        this.definitionService = null;
+        this(null, null, null);
+    }
+
+    /**
+     * Whether name is system "aura" prefixed
+     *
+     * @param name tag or attribute name
+     * @return whether name is system "aura" prefixed
+     */
+    public static boolean isSystemPrefixed(String name, String prefix) {
+        return SYSTEM_TAG_PREFIX.equalsIgnoreCase(prefix) || name.regionMatches(true, 0, SYSTEM_TAG_PREFIX + ":", 0, 5);
     }
 
     /**
@@ -95,16 +79,6 @@ public abstract class XMLHandler<T extends Definition> {
      * @throws QuickFixException
      */
     public abstract T getElement() throws XMLStreamException, QuickFixException;
-
-    public abstract String getHandledTag();
-
-    public Set<String> getAllowedAttributes() {
-        return Collections.emptySet();
-    }
-
-    protected org.auraframework.system.Location getLocation() {
-        return XMLParser.getLocation(xmlReader, source);
-    }
 
     protected String getAttributeValue(String name) {
         String value = xmlReader.getAttributeValue(null, name);
@@ -147,18 +121,6 @@ public abstract class XMLHandler<T extends Definition> {
             }
             return null;
         }
-    }
-
-    protected boolean getBooleanAttributeValue(String name) {
-        return Boolean.parseBoolean(getAttributeValue(name));
-    }
-
-    protected String getTagName() {
-        return xmlReader.getName().getLocalPart();
-    }
-
-    protected void error(String message, Object... args) {
-        throw new AuraRuntimeException(String.format(message, args), getLocation());
     }
 
     protected void validateAttributes() {
@@ -207,7 +169,7 @@ public abstract class XMLHandler<T extends Definition> {
      * Gets a DefDescriptor instance based on a name with additional checks
      * for sources that supports a default namespace
      * @param name The simple String representation of the instance requested ("foo:bar" or "java://foo.Bar")
-     * @param defClass The Interface's Class for the DefDescriptor being requested.
+     * @param clazz The Interface's Class for the DefDescriptor being requested.
      * @return An instance of a AuraDescriptor for the provided tag with updated ns for sources with default namespace support
      */
     protected <E extends Definition> DefDescriptor<E> getDefDescriptor(String name, Class<E> clazz) {
@@ -222,21 +184,22 @@ public abstract class XMLHandler<T extends Definition> {
         return defDesc;
     }
 
-    protected boolean isDefaultNamespaceUsed(String ns) {
-        return source != null 
-                && source.isDefaultNamespaceSupported() // default namespace is supported by the source
-                && (AuraTextUtil.isNullEmptyOrWhitespace(ns) // and (the namespace is empty
-                    || source.getDefaultNamespace().equals(ns)) // or has the default namespace) 
-                && !source.getDefaultNamespace().equals(source.getDescriptor().getNamespace()); // and the source has a different ns from the default
+    @Override
+    protected void handleChildTag() throws XMLStreamException, QuickFixException {
+        //Do nothing
     }
 
-    /**
-     * Whether name is system "aura" prefixed
-     * 
-     * @param name tag or attribute name
-     * @return whether name is system "aura" prefixed
-     */
-    public static boolean isSystemPrefixed(String name, String prefix) {
-        return SYSTEM_TAG_PREFIX.equalsIgnoreCase(prefix) || name.regionMatches(true, 0, SYSTEM_TAG_PREFIX + ":", 0, 5);
+    @Override
+    protected void handleChildText() throws XMLStreamException, QuickFixException {
+        //Do nothing
+    }
+
+    public static class InvalidSystemAttributeException extends AuraRuntimeException {
+        private static final long serialVersionUID = -7339542343645451510L;
+        private static final String message = "Invalid attribute \"%s\"";
+
+        public InvalidSystemAttributeException(String attribute, org.auraframework.system.Location location) {
+            super(String.format(message, attribute), location);
+        }
     }
 }

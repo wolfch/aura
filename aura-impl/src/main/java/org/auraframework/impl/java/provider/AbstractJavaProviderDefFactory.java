@@ -18,8 +18,10 @@ package org.auraframework.impl.java.provider;
 import org.auraframework.builder.DefBuilder;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.Definition;
+import org.auraframework.impl.DefinitionAccessImpl;
 import org.auraframework.impl.java.BaseJavaDefFactory;
 import org.auraframework.system.Annotations.Provider;
+import org.auraframework.system.AuraContext;
 import org.auraframework.system.SourceLoader;
 import org.auraframework.throwable.quickfix.InvalidDefinitionException;
 import org.auraframework.throwable.quickfix.QuickFixException;
@@ -52,6 +54,7 @@ public abstract class AbstractJavaProviderDefFactory<D extends Definition> exten
         builder.setDescriptor(descriptor);
         builder.setLocation(providerClass.getCanonicalName(), 0);
         builder.setProviderClass(providerClass);
+        builder.setAccess(new DefinitionAccessImpl(AuraContext.Access.PUBLIC));
         Provider ann = findAnnotation(providerClass, Provider.class);
         if (ann == null) {
             throw new InvalidDefinitionException(String.format(

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.auraframework.impl.root.parser.handler.design;
 
 import com.google.common.collect.ImmutableSet;
@@ -23,10 +24,12 @@ import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.design.DesignAttributeDef;
 import org.auraframework.def.design.DesignDef;
 import org.auraframework.def.design.DesignLayoutDef;
-import org.auraframework.def.design.DesignOptionDef;
 import org.auraframework.def.design.DesignTemplateDef;
+import org.auraframework.def.genericxml.GenericXmlElement;
 import org.auraframework.impl.design.DesignDefImpl;
+import org.auraframework.impl.root.GenericXmlElementImpl;
 import org.auraframework.impl.root.parser.handler.RootTagHandler;
+import org.auraframework.impl.root.parser.handler.genericxml.GenericXmlElementHandlerProvider;
 import org.auraframework.service.DefinitionService;
 import org.auraframework.system.Source;
 import org.auraframework.throwable.quickfix.QuickFixException;
@@ -104,14 +107,13 @@ public class DesignDefHandler extends RootTagHandler<DesignDef> {
             DesignTemplateDef template = new DesignTemplateDefHandler(this, xmlReader, source, isInInternalNamespace,
                     definitionService, configAdapter, definitionParserAdapter).getElement();
             builder.setDesignTemplateDef(template);
-        } else if (isInInternalNamespace() && DesignLayoutDefHandler.TAG.equalsIgnoreCase(tag)) {
-            DesignLayoutDef layoutDesign = new DesignLayoutDefHandler(this, xmlReader, source, isInInternalNamespace,
-                    definitionService, configAdapter, definitionParserAdapter).getElement();
+        } else if (isInInternalNamespace && (DesignLayoutDefHandler.TAG.equalsIgnoreCase(tag))) {
+            DesignLayoutDef layoutDesign = new DesignLayoutDefHandler(xmlReader, source, isInInternalNamespace).createElement();
             builder.addLayoutDesign(layoutDesign.getName(), layoutDesign);
-        } else if (isInInternalNamespace() && DesignOptionDefHandler.TAG.equalsIgnoreCase(tag)) {
-            DesignOptionDef option = new DesignOptionDefHandler(this, xmlReader, source, isInInternalNamespace,
-                    definitionService, configAdapter, definitionParserAdapter).getElement();
-            builder.addOption(option);
+        } else if (GenericXmlElementHandlerProvider.get().handlesTag(DesignDef.class, tag, isInInternalNamespace)) {
+            GenericXmlElement xmlDef = GenericXmlElementHandlerProvider.get().getHandler(
+                    xmlReader, source, DesignDef.class, tag, isInInternalNamespace).createElement();
+            builder.addGenericElement((GenericXmlElementImpl) xmlDef);
         } else {
             throw new XMLStreamException(String.format("<%s> can not contain tag %s", getHandledTag(), tag));
         }
