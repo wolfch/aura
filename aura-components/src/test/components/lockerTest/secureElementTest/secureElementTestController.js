@@ -176,7 +176,9 @@
 
     testScalarExpression: function(cmp) {
         var testUtils = cmp.get("v.testUtils");
-        var element = cmp.find("scalarExpression").getElement();
+        var scalarExpression = cmp.find("scalarExpression");
+        var element = scalarExpression.getElement();
+          
         testUtils.assertEquals("A scalar expression", element.innerHTML);
     },
 
