@@ -80,6 +80,11 @@ function SecureDocument(doc, key) {
     		get : function() {
                 return trust(o, doc.documentElement.cloneNode());
             }
+        },
+        querySelector: {
+            value: function(selector) {
+                return SecureElement.secureQuerySelector(o, doc, key, selector);
+            }
         }
     });
 
@@ -103,7 +108,6 @@ function SecureDocument(doc, key) {
         getElementsByTagName: SecureObject.createFilteredMethod(o, doc, "getElementsByTagName", { filterOpaque: true }),
         getElementsByTagNameNS: SecureObject.createFilteredMethod(o, doc, "getElementsByTagNameNS", { filterOpaque: true }),
 
-        querySelector: SecureObject.createFilteredMethod(o, doc, "querySelector", { filterOpaque: true }),
         querySelectorAll: SecureObject.createFilteredMethod(o, doc, "querySelectorAll", { filterOpaque: true }),
 
         title: SecureObject.createFilteredProperty(o, doc, "title"),
