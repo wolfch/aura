@@ -51,18 +51,6 @@
         }
     },
 
-    testNullKey: {
-        test: function(cmp) {
-            cmp.helper.lib.storageTest.testNullKey(cmp, this.storage);
-        }
-    },
-
-    testUndefinedKey: {
-        test: function(cmp) {
-            cmp.helper.lib.storageTest.testUndefinedKey(cmp, this.storage);
-        }
-    },
-
     testEmptyStringKey: {
         test: function(cmp) {
             cmp.helper.lib.storageTest.testEmptyStringKey(cmp, this.storage);
@@ -233,6 +221,44 @@
         function(cmp){
             cmp.helper.lib.storageTest.testClear_stage2(cmp, this.storage);
         }]
+    },
+
+    testBulkGetInnerItemNotInStorage: {
+        test: function(cmp) {
+            cmp.helper.lib.storageTest.testBulkGetInnerItemNotInStorage(cmp, this.storage);
+        }
+    },
+
+    testBulkGetOuterItemsNotInStorage: {
+        test: function(cmp) {
+            cmp.helper.lib.storageTest.testBulkGetOuterItemsNotInStorage(cmp, this.storage);
+        }
+    },
+
+    testBulkSet: {
+        test: function(cmp) {
+            cmp.helper.lib.storageTest.testBulkSet(cmp, this.storage);
+        }
+    },
+
+    testBulkSetLargerThanMaxSize: {
+        test: function(cmp) {
+            var storage = this.createStorage("crypto-store-overflow", 5000, 2000, 3000);
+            $A.test.addCleanup(function(){ $A.storageService.deleteStorage("crypto-store-overflow"); });
+            cmp.helper.lib.storageTest.testBulkSetLargerThanMaxSize(cmp, storage);
+        }
+    },
+
+    testBulkRemoveInnerItemNotInStorage: {
+        test: function(cmp) {
+            cmp.helper.lib.storageTest.testBulkRemoveInnerItemNotInStorage(cmp, this.storage);
+        }
+    },
+
+    testBulkRemoveOuterItemsNotInStorage: {
+        test: function(cmp) {
+            cmp.helper.lib.storageTest.testBulkRemoveOuterItemsNotInStorage(cmp, this.storage);
+        }
     },
 
     /**

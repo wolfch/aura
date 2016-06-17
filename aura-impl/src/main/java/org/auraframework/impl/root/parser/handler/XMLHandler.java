@@ -16,7 +16,12 @@
 
 package org.auraframework.impl.root.parser.handler;
 
-import com.google.common.collect.ImmutableSet;
+import java.util.Set;
+
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.Definition;
 import org.auraframework.impl.root.parser.handler.design.DesignAttributeDefHandler;
@@ -30,10 +35,7 @@ import org.auraframework.throwable.AuraRuntimeException;
 import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.AuraTextUtil;
 
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import java.util.Set;
+import com.google.common.collect.ImmutableSet;
 
 /**
  * Superclass for all the definition handlers.
@@ -44,7 +46,7 @@ public abstract class XMLHandler<T extends Definition> extends BaseXMLElementHan
     public final static Set<String> SYSTEM_TAGS = ImmutableSet.of(ApplicationDefHandler.TAG,
             AttributeDefHandler.TAG, ComponentDefHandler.TAG, EventDefHandler.TAG, InterfaceDefHandler.TAG,
             EventHandlerDefHandler.TAG, LibraryDefRefHandler.TAG, MethodDefHandler.TAG,RegisterEventHandler.TAG,
-            AttributeDefRefHandler.TAG,
+            AttributeDefRefHandler.TAG, LocatorDefHandler.TAG, LocatorContextDefHandler.TAG,
             DependencyDefHandler.TAG, TokensDefHandler.TAG, DesignDefHandler.TAG,
             DesignAttributeDefHandler.TAG, DesignTemplateDefHandler.TAG, DesignTemplateRegionDefHandler.TAG,
             LibraryDefHandler.TAG, IncludeDefRefHandler.TAG);
@@ -80,6 +82,7 @@ public abstract class XMLHandler<T extends Definition> extends BaseXMLElementHan
      */
     public abstract T getElement() throws XMLStreamException, QuickFixException;
 
+    @Override
     protected String getAttributeValue(String name) {
         String value = xmlReader.getAttributeValue(null, name);
         if (AuraTextUtil.isNullEmptyOrWhitespace(value)) {
@@ -123,6 +126,7 @@ public abstract class XMLHandler<T extends Definition> extends BaseXMLElementHan
         }
     }
 
+    @Override
     protected void validateAttributes() {
         if (!isSystemTag()) {
             return;

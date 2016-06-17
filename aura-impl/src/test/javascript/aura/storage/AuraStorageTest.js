@@ -633,7 +633,9 @@ Test.Aura.Storage.AuraStorageTest = function() {
                     estimateSize: function(obj) {
                         if(obj === "size5") { return 5; }
                         return 0;
-                    }
+                    },
+                    isString: function() { return true; },
+                    isObject: function() { return true; }
                 },
                 eventService: {
                     getNewEvent: function(name) {
@@ -644,7 +646,8 @@ Test.Aura.Storage.AuraStorageTest = function() {
                 },
                 metricsService: {
                     transaction: function() {}
-                }
+                },
+                assert: function() {}
             },
             "AuraStorage": {
                 KEY_DELIMITER: ":"
@@ -652,37 +655,12 @@ Test.Aura.Storage.AuraStorageTest = function() {
         });
 
         [Fact]
-        function CallsRemoveItemWithPrefixAndKeyWhenKeyValuePairLargerThanMax() {
-            var actual;
-            var keyPrefix = "prefix";
-            var expected = keyPrefix + "key";
-
-            AdapterClass.prototype.removeItem = function(key) {
-                actual = key;
-                return new ResolvePromise();
-            };
-
-            mockA(function() {
-                Aura.Storage.AuraStorage.prototype.generateKeyPrefix = function() {
-                    return keyPrefix;
-                };
-
-                var target = new Aura.Storage.AuraStorage(config);
-                target.maxSize = 1;
-                // set a key-value pair with size of 5
-                target.set("key", "size5");
-            });
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Fact]
         function CallsSetItemWithKey() {
             var expected = "key";
             var actual;
 
-            AdapterClass.prototype.setItem = function(key, item, size) {
-                actual = key;
+            AdapterClass.prototype.setItems = function(tuples) {
+                actual = tuples[0][0];
                 return new ResolvePromise();
             };
 
@@ -704,8 +682,8 @@ Test.Aura.Storage.AuraStorageTest = function() {
             var expected = "value";
             var actual;
 
-            AdapterClass.prototype.setItem = function(key, item, size) {
-                actual = item;
+            AdapterClass.prototype.setItems = function(tuples) {
+                actual = tuples[0][1];
                 return new ResolvePromise();
             };
 
@@ -723,8 +701,8 @@ Test.Aura.Storage.AuraStorageTest = function() {
         function CallsSetItemWithItemDotCreated() {
             var actual;
 
-            AdapterClass.prototype.setItem = function(key, item, size) {
-                actual = item;
+            AdapterClass.prototype.setItems = function(tuples) {
+                actual = tuples[0][1];
                 return new ResolvePromise();
             };
 
@@ -742,8 +720,8 @@ Test.Aura.Storage.AuraStorageTest = function() {
         function CallsSetItemWithItemDotExpires() {
             var actual;
 
-            AdapterClass.prototype.setItem = function(key, item, size) {
-                actual = item;
+            AdapterClass.prototype.setItems = function(tuples) {
+                actual = tuples[0][1];
                 return new ResolvePromise();
             };
 
@@ -762,8 +740,8 @@ Test.Aura.Storage.AuraStorageTest = function() {
             var expected = 7;
             var actual;
 
-            AdapterClass.prototype.setItem = function(key, item, size) {
-                actual = size;
+            AdapterClass.prototype.setItems = function(tuples) {
+                actual = tuples[0][2];
                 return new ResolvePromise();
             };
 
@@ -782,7 +760,7 @@ Test.Aura.Storage.AuraStorageTest = function() {
         function SuccessfulSetFiresModified() {
             firedEvents = [];
 
-            AdapterClass.prototype.setItem = function() {
+            AdapterClass.prototype.setItems = function() {
                 return new ResolvePromise();
             };
 
@@ -800,7 +778,7 @@ Test.Aura.Storage.AuraStorageTest = function() {
             firedEvents = [];
             var expected = "storageName";
 
-            AdapterClass.prototype.setItem = function() {
+            AdapterClass.prototype.setItems = function() {
                 return new ResolvePromise();
             };
 
@@ -819,7 +797,7 @@ Test.Aura.Storage.AuraStorageTest = function() {
         function FailedSetDoesNotFireModified() {
             firedEvents = [];
 
-            AdapterClass.prototype.setItem = function() {
+            AdapterClass.prototype.setItems = function() {
                 return new RejectPromise();
             };
 
@@ -853,7 +831,10 @@ Test.Aura.Storage.AuraStorageTest = function() {
                 util: {
                     format: function() {},
                     isUndefinedOrNull: function(obj) { return obj === undefined || obj === null; },
-                    estimateSize: function() { return 0; }
+                    estimateSize: function() { return 0; },
+                    isString: function() { return true; },
+                    isArray: function() { return true; },
+                    isBoolean: function() { return true; }
                 },
                 eventService: {
                     getNewEvent: function(name) {
@@ -864,7 +845,8 @@ Test.Aura.Storage.AuraStorageTest = function() {
                 },
                 metricsService: {
                     transaction: function() {}
-                }
+                },
+                assert: function() {}
             },
             "AuraStorage": {
                 KEY_DELIMITER: ":"
@@ -875,7 +857,7 @@ Test.Aura.Storage.AuraStorageTest = function() {
         function SuccessfulRemoveFiresModified() {
             firedEvents = [];
 
-            AdapterClass.prototype.removeItem = function() {
+            AdapterClass.prototype.removeItems = function() {
                 return new ResolvePromise();
             };
 
@@ -893,7 +875,7 @@ Test.Aura.Storage.AuraStorageTest = function() {
             firedEvents = [];
             var expected = "storageName";
 
-            AdapterClass.prototype.removeItem = function() {
+            AdapterClass.prototype.removeItems = function() {
                 return new ResolvePromise();
             };
 
@@ -912,7 +894,7 @@ Test.Aura.Storage.AuraStorageTest = function() {
         function FailedRemoveDoesNotFireModified() {
             firedEvents = [];
 
-            AdapterClass.prototype.removeItem = function() {
+            AdapterClass.prototype.removeItems = function() {
                 return new RejectPromise();
             };
 
@@ -930,7 +912,7 @@ Test.Aura.Storage.AuraStorageTest = function() {
         function RemoveDoNotFireModifiedRespected() {
             firedEvents = [];
 
-            AdapterClass.prototype.removeItem = function() {
+            AdapterClass.prototype.removeItems = function() {
                 return new ResolvePromise();
             };
 
