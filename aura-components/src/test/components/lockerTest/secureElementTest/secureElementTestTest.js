@@ -13,7 +13,7 @@
         "childElementCount", "classList", "className", "id", "tagName", "innerHTML", "namespaceURI",
         "scrollHeight", "scrollLeft", "scrollTop", "scrollWidth"
     ],
-    ElementProperitesBlacklist: ['firstElementChild', 'lastElementChild', 'nextElementSibling', 'previousElementSibling'],
+    ElementPropertiesBlacklist: ['firstElementChild', 'lastElementChild', 'nextElementSibling', 'previousElementSibling'],
 
     HTMLPropertiesWhitelist: ['accessKey', 'contentEditable', 'isContentEditable',
                               'dataset', 'dir', 'lang', 'spellcheck', 'style', 'tabIndex', 'title'],
@@ -32,7 +32,7 @@
 
     testElementProperties: {
         test: function(cmp) {
-            cmp.testElementProperties(this.ElementPropertiesWhitelist, this.ElementProperitesBlacklist);
+            cmp.testElementProperties(this.ElementPropertiesWhitelist, this.ElementPropertiesBlacklist);
         }
     },
 
