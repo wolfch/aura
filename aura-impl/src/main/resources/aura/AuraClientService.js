@@ -129,8 +129,9 @@ Aura.Services.AuraClientService$AuraActionCollector = function AuraActionCollect
  *  * actionsDeferred - actions that have been processed through storage, but need to go to the server.
  *
  * @constructor
+ * @export
  */
-AuraClientService = function AuraClientService () {
+function AuraClientService () {
     this._host = "";
     this._token = null;
     this._isDisconnected = false;
@@ -216,7 +217,7 @@ AuraClientService = function AuraClientService () {
 
     this.handleAppCache();
 
-};
+}
 
 AuraClientService.BOOTSTRAP_KEY = "appBootstrap";
 
@@ -1226,7 +1227,7 @@ AuraClientService.prototype.runAfterBootstrapReady = function (callback) {
         this.saveTokenToStorage(); // async fire-and-forget
 
         // If is not coming from cache we need to clean the payload
-        if (!Aura["appBootstrapFromCache"]) {
+        if (Aura["appBootstrapReady"] !== "cache") {
             // Prevent collision between $Label value provider and serRefId properties (typically "s" and "r").
             if (boot["context"] && boot["context"]["globalValueProviders"]) {
                 var saved = [];
@@ -1270,7 +1271,6 @@ AuraClientService.prototype.runAfterBootstrapReady = function (callback) {
         } catch(e) {
             // Abort caching and wait for bootstrap.js to arrive
             $A.warning('Bootstrap cache missmatch, waiting for bootstrap.js');
-            Aura["appBootstrapFromCache"] = false;
             Aura["afterBootstrapReady"].push(this.runAfterBootstrapReady.bind(this, callback));
             return;
         }
@@ -3012,8 +3012,7 @@ AuraClientService.prototype.populatePersistedActionsFilter = function() {
                 acs.persistedActionFilter[key] = true;
                 // Get it from storage if bootstrap.js hasnt arrived yet
                 if (key === AuraClientService.BOOTSTRAP_KEY && !Aura["appBootstrap"]) {
-                    Aura["appBootstrapReady"] = true;
-                    Aura["appBootstrapFromCache"] = true;
+                    Aura["appBootstrapReady"] = "cache";
                     Aura["appBootstrap"] = items[key];
                 }
             }
