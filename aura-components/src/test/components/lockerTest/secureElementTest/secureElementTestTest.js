@@ -8,7 +8,11 @@
     browsers: ["-IE8", "-IE9", "-IE10"],
 
     // TODO(tbliss): make these lists on SecureElement accessible here for maintainablility
-    ElementPropertiesWhitelist: ['attributes', 'childElementCount', 'classList', 'className', 'id', 'tagName', 'innerHTML', 'namespaceURI'],
+    ElementPropertiesWhitelist: [
+        "attributes",
+        "childElementCount", "classList", "className", "id", "tagName", "innerHTML", "namespaceURI",
+        "scrollHeight", "scrollLeft", "scrollTop", "scrollWidth"
+    ],
     ElementProperitesBlacklist: ['firstElementChild', 'lastElementChild', 'nextElementSibling', 'previousElementSibling'],
 
     HTMLPropertiesWhitelist: ['accessKey', 'contentEditable', 'isContentEditable',
@@ -143,7 +147,7 @@
             cmp.testScalarExpression();
         }
     },
-    
+
     testElementCache: {
         test: function(cmp) {
             cmp.testElementCache();
