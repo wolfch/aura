@@ -474,7 +474,7 @@ SecureElement.elementSpecificAttributeWhitelists = {
 	"IMG" : [ "alt", "crossorigin", "height", "ismap", "longdesc", "sizesHTML5", "src", "srcsetHTML5", "width", "usemap" ],
 	"INPUT" : [ "type", "accept", "autocomplete", "autofocus", "autosave", "checked", "disabled", "form", "formaction", "formenctype", "formmethod",
 			"formnovalidate", "formtarget", "height", "inputmode", "list", "max", "maxlength", "min", "minlength", "multiple", "name", "pattern",
-			"placeholder", "readonly", "required", "selectionDirection", "size", "src", "step", "tabindex", "value", "width" ],
+			"placeholder", "readonly", "required", "selectionDirection", "size", "src", "step", "tabindex", "value", "width", "files" ],
 	"INS" : [ "cite", "datetime" ],
 	"LABEL" : [ "accesskey", "for", "form" ],
 	"LI" : [ "value" ],
