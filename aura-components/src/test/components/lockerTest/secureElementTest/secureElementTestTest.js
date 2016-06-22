@@ -130,6 +130,18 @@
         }
     },
 
+    testInsertAdjacentHTMLForExistingElement: {
+        test: function(cmp) {
+            cmp.testInsertAdjacentHTML("ExistingElement");
+        }
+    },
+
+    testInsertAdjacentHTMLForCreatedElement: {
+        test: function(cmp) {
+            cmp.testInsertAdjacentHTML("CreatedElement");
+        }
+    },
+
     testAddEventListenerMultipleCalls: {
         test: function(cmp) {
             cmp.testAddEventListenerMultipleCalls();
