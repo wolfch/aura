@@ -18,7 +18,7 @@
 
 function SecureElement(el, key) {
 	"use strict";
-	
+
 	function isSharedElement(element) {
 		return element === document.body || element === document.head;
 	}
@@ -32,7 +32,7 @@ function SecureElement(el, key) {
 		}
 		return isRunnable;
 	}
-	
+
 	function trustNodes(node, children) {
 		if (node) {
 			$A.lockerService.trust(o, node);
@@ -43,7 +43,7 @@ function SecureElement(el, key) {
 			trustNodes(child, child.childNodes);
 		}
 	}
-	
+
 	var o = SecureObject.getCached(el, key);
 	if (o) {
 		return o;
@@ -64,7 +64,7 @@ function SecureElement(el, key) {
 		o = SecureScriptElement(key, el);
 		break;
 	}
-	
+
 	if (o) {
 		SecureObject.addToCache(el, o, key);
 		return o;
@@ -127,9 +127,44 @@ function SecureElement(el, key) {
 
 				return newNode;
 			}
-		}
+		},
+        querySelector: {
+            value: function(selector) {
+                return SecureElement.secureQuerySelector(o, el, key, selector);
+            }
+        },
+        insertAdjacentHTML: {
+            value: function(position, text) {
+
+                // Do not allow insertAdjacentHTML on shared elements (body/head)
+                if (isSharedElement(el)) {
+                    throw new $A.auraError("SecureElement.insertAdjacentHTML cannot be used with " + el.tagName + " elements!");
+                }
+                var parent;
+                if (position === "afterbegin" || position === "beforeend") {
+                    // We have access to el, nothing else to check.
+                } else if (position === "beforebegin" || position === "afterend") {
+                    // Prevent writing outside secure node.
+                    parent = el.parentNode;
+                    $A.lockerService.util.verifyAccess(o, parent, {
+                        verifyNotOpaque : true
+                    });
+                } else {
+                    throw new $A.auraError("SecureElement.insertAdjacentHTML requires position 'beforeBegin', 'afterBegin', 'beforeEnd', or 'afterEnd'.");
+                }
+
+                // Allow SVG <use> element
+                var config = {
+                    "ADD_TAGS" : [ "use" ]
+                };
+
+                el.insertAdjacentHTML(position, DOMPurify["sanitize"](text, config));
+
+                trustNodes(undefined, parent ? parent.childNodes : el.childNodes);
+            }
+        }
 	});
-	
+
 	Object.defineProperties(o, {
 		removeChild : SecureObject.createFilteredMethod(o, el, "removeChild", {
 			beforeCallback : function(child) {
@@ -212,8 +247,8 @@ function SecureElement(el, key) {
 		});
 	});
 
-	[ "compareDocumentPosition", "getElementsByClassName", "getElementsByTagName", "getElementsByTagNameNS", "querySelector", "querySelectorAll",
-			"getBoundingClientRect", "getClientRects", "blur", "click", "focus", 
+	[ "compareDocumentPosition", "getElementsByClassName", "getElementsByTagName", "getElementsByTagNameNS", "querySelectorAll",
+			"getBoundingClientRect", "getClientRects", "blur", "click", "focus",
 			"getAttribute", "hasAttribute", "setAttribute", "removeAttribute", "getAttributeNS", "hasAttributeNS", "setAttributeNS", "removeAttributeNS" ].forEach(function(name) {
 		SecureObject.addMethodIfSupported(o, el, name, {
 			filterOpaque : true
@@ -230,11 +265,11 @@ function SecureElement(el, key) {
 				throw new $A.auraError("SecureElement.innerHTML cannot be used with " + el.tagName + " elements!");
 			}
 
-			// Allow SVG <use> element 
+			// Allow SVG <use> element
 			var config = {
 				"ADD_TAGS" : [ "use" ]
 			};
-			
+
 			return DOMPurify["sanitize"](value, config);
 		},
 		afterSetCallback : function() {
@@ -252,7 +287,7 @@ function SecureElement(el, key) {
 
 	setLockerSecret(o, "key", key);
 	setLockerSecret(o, "ref", el);
-	
+
 	SecureObject.addToCache(el, o, key);
 
 	return o;
@@ -262,16 +297,20 @@ SecureElement.addSecureProperties = function(se, raw) {
 	[
 	// Standard Element interface represents an object of a Document.
 	// https://developer.mozilla.org/en-US/docs/Web/API/Element#Properties
-	'childElementCount', 'classList', 'className', 'id', 'tagName', 'namespaceURI',
-	// Note: ignoring 'firstElementChild', 'lastElementChild',
-	// 'nextElementSibling' and 'previousElementSibling' from the list
+	"childElementCount", "classList", "className", "id", "tagName", "namespaceURI",
+            "scrollHeight", "scrollLeft", "scrollTop", "scrollWidth",
+
+	// Note: ignoring "firstElementChild", "lastElementChild",
+	// "nextElementSibling" and "previousElementSibling" from the list
 	// above.
 
 	// Standard HTMLElement interface represents any HTML element
 	// https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement#Properties
-	'accessKey', 'accessKeyLabel', 'contentEditable', 'isContentEditable', 'contextMenu', 'dataset', 'dir', 'draggable', 'dropzone', 'hidden', 'lang',
-			'spellcheck', 'style', 'tabIndex', 'title', 'offsetHeight', 'offsetLeft', 'offsetParent', 'offsetTop', 'offsetWidth', 'clientWidth',
-			'clientHeight', 'clientLeft', 'clientTop', 'nodeValue'
+	"accessKey", "accessKeyLabel", "contentEditable", "isContentEditable", "contextMenu", "dataset", "dir", "draggable", "dropzone", "hidden", "lang",
+			"spellcheck", "style", "tabIndex", "title",
+            "offsetHeight", "offsetLeft", "offsetParent", "offsetTop", "offsetWidth",
+            "clientHeight", "clientLeft", "clientTop", "clientWidth",
+            "nodeValue"
 
 	// DCHASMAN TODO This list needs to be revisted as it is missing a ton of
 	// valid attributes!
@@ -395,6 +434,27 @@ SecureElement.addElementSpecificMethods = function(se, el) {
 	}
 };
 
+SecureElement.secureQuerySelector = function(st, el, key, selector) {
+    var rawAll = el.querySelectorAll(selector);
+    for (var n = 0; n < rawAll.length; n++) {
+        var raw = rawAll[n];
+        var hasAccess = $A.lockerService.util.hasAccess(st, raw);
+        if (hasAccess || raw === document.body || raw === document.head) {
+
+            var cached = SecureObject.getCached(raw, key);
+            if (cached) {
+                return cached;
+            }
+
+            var swallowed = SecureElement(raw, key);
+            SecureObject.addToCache(raw, swallowed, key);
+            return swallowed;
+        }
+    }
+
+    return null;
+};
+
 SecureElement.elementSpecificAttributeWhitelists = {
 	"A" : [ "hash", "host", "hostname", "href", "origin", "pathname", "port", "protocol", "search" ],
 	"AREA" : [ "alt", "coords", "download", "href", "hreflang", "media", "rel", "shape", "target", "type" ],
@@ -414,7 +474,7 @@ SecureElement.elementSpecificAttributeWhitelists = {
 	"IMG" : [ "alt", "crossorigin", "height", "ismap", "longdesc", "sizesHTML5", "src", "srcsetHTML5", "width", "usemap" ],
 	"INPUT" : [ "type", "accept", "autocomplete", "autofocus", "autosave", "checked", "disabled", "form", "formaction", "formenctype", "formmethod",
 			"formnovalidate", "formtarget", "height", "inputmode", "list", "max", "maxlength", "min", "minlength", "multiple", "name", "pattern",
-			"placeholder", "readonly", "required", "selectionDirection", "size", "src", "step", "tabindex", "value", "width" ],
+			"placeholder", "readonly", "required", "selectionDirection", "size", "src", "step", "tabindex", "value", "width", "files" ],
 	"INS" : [ "cite", "datetime" ],
 	"LABEL" : [ "accesskey", "for", "form" ],
 	"LI" : [ "value" ],

@@ -8,8 +8,12 @@
     browsers: ["-IE8", "-IE9", "-IE10"],
 
     // TODO(tbliss): make these lists on SecureElement accessible here for maintainablility
-    ElementPropertiesWhitelist: ['attributes', 'childElementCount', 'classList', 'className', 'id', 'tagName', 'innerHTML', 'namespaceURI'],
-    ElementProperitesBlacklist: ['firstElementChild', 'lastElementChild', 'nextElementSibling', 'previousElementSibling'],
+    ElementPropertiesWhitelist: [
+        "attributes",
+        "childElementCount", "classList", "className", "id", "tagName", "innerHTML", "namespaceURI",
+        "scrollHeight", "scrollLeft", "scrollTop", "scrollWidth"
+    ],
+    ElementPropertiesBlacklist: ['firstElementChild', 'lastElementChild', 'nextElementSibling', 'previousElementSibling'],
 
     HTMLPropertiesWhitelist: ['accessKey', 'contentEditable', 'isContentEditable',
                               'dataset', 'dir', 'lang', 'spellcheck', 'style', 'tabIndex', 'title'],
@@ -28,7 +32,7 @@
 
     testElementProperties: {
         test: function(cmp) {
-            cmp.testElementProperties(this.ElementPropertiesWhitelist, this.ElementProperitesBlacklist);
+            cmp.testElementProperties(this.ElementPropertiesWhitelist, this.ElementPropertiesBlacklist);
         }
     },
 
@@ -126,6 +130,18 @@
         }
     },
 
+    testInsertAdjacentHTMLForExistingElement: {
+        test: function(cmp) {
+            cmp.testInsertAdjacentHTML("ExistingElement");
+        }
+    },
+
+    testInsertAdjacentHTMLForCreatedElement: {
+        test: function(cmp) {
+            cmp.testInsertAdjacentHTML("CreatedElement");
+        }
+    },
+
     testAddEventListenerMultipleCalls: {
         test: function(cmp) {
             cmp.testAddEventListenerMultipleCalls();
@@ -143,7 +159,7 @@
             cmp.testScalarExpression();
         }
     },
-    
+
     testElementCache: {
         test: function(cmp) {
             cmp.testElementCache();
