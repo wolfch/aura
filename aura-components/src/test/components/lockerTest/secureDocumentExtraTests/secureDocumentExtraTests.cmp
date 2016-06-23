@@ -15,6 +15,13 @@
     limitations under the License.
 
 -->
-<aura:event access="GLOBAL" type="COMPONENT" description="Change the visibility of a ui:spinner component.">
-    <aura:attribute access="GLOBAL" name="isVisible" type="Boolean" required="true" description="Hide/show the spinner"/>
-</aura:event>
+<aura:component>
+
+    <div id="title">SecureDocument extra test</div>
+
+    <div aura:id="content">
+        <div class="foobar"/>
+        <lockerTestOtherNamespace:facetLocked aura:id="foo" id="foo" class="foobar"/>
+        <lockerTestOtherNamespace:facetLocked aura:id="bar" id="bar" class="foobar"/>
+    </div>
+</aura:component>

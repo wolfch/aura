@@ -2,13 +2,13 @@
     testElementProperties: function(cmp, event, helper) {
         var testUtils = cmp.get("v.testUtils");
         var elementPropertiesWhitelist = event.getParam("arguments").elementPropertiesWhitelist;
-        var elementProperitesBlacklist = event.getParam("arguments").elementPropertiesBlacklist;
+        var elementPropertiesBlacklist = event.getParam("arguments").elementPropertiesBlacklist;
         var element = cmp.find("title").getElement();
 
         elementPropertiesWhitelist.forEach(function(name) {
             testUtils.assertTrue(name in element, "Expected property '" + name + "' to be a property on SecureElement");
         });
-        elementProperitesBlacklist.forEach(function(name) {
+        elementPropertiesBlacklist.forEach(function(name) {
             testUtils.assertFalse(name in element, "Expected property '" + name + "' to not be exposed on SecureElement");
         });
     },
@@ -116,6 +116,26 @@
         testUtils.assertEquals("innerHTML content", element.innerHTML);
     },
 
+    testInsertAdjacentHTML: function(cmp, event) {
+        var testUtils = cmp.get("v.testUtils");
+        var targetElement = event.getParam("arguments").targetElement;
+        var element;
+        if(targetElement === "ExistingElement") {
+            element = document.querySelector('.title');
+        } else if (targetElement === "CreatedElement") {
+            element = document.createElement("div");
+        }
+
+        element.innerHTML = "<span>innerHTML content</span>";
+        var innerElement = element.firstChild;
+        innerElement.insertAdjacentHTML("afterbegin","<i>afterbegin content</i>");
+        innerElement.insertAdjacentHTML("beforeend","<i>beforeend content</i>");
+        innerElement.insertAdjacentHTML("beforebegin","<i>beforebegin content</i>");
+        innerElement.insertAdjacentHTML("afterend","<i>afterend content</i>");
+
+        testUtils.assertEquals("<i>beforebegin content</i><span><i>afterbegin content</i>innerHTML content<i>beforeend content</i></span><i>afterend content</i>", element.innerHTML);
+    },
+
     testAddEventListenerMultipleCalls : function(cmp, event, helper) {
         var testUtils = cmp.get("v.testUtils");
 
@@ -168,7 +188,6 @@
         svg.appendChild(rect);
 
         var bbox = rect.getBBox();
-        testUtils.assertEquals("[object SVGRect]", bbox.toString());
         for (var prop in expected) {
             testUtils.assertEquals(expected[prop], bbox[prop], "Unexpected attribute value returned from getBBox() for <" + prop + ">");
         }
@@ -176,7 +195,9 @@
 
     testScalarExpression: function(cmp) {
         var testUtils = cmp.get("v.testUtils");
-        var element = cmp.find("scalarExpression").getElement();
+        var scalarExpression = cmp.find("scalarExpression");
+        var element = scalarExpression.getElement();
+
         testUtils.assertEquals("A scalar expression", element.innerHTML);
     },
 
