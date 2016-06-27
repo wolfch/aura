@@ -18,6 +18,7 @@ package org.auraframework.http;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -36,6 +37,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpHeaders;
 import org.auraframework.AuraDeprecated;
 import org.auraframework.adapter.ConfigAdapter;
+import org.auraframework.adapter.LocalizationAdapter;
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.BaseComponentDef;
 import org.auraframework.def.ComponentDef;
@@ -91,6 +93,7 @@ public class AuraContextFilter implements Filter {
     private DefinitionService definitionService;
     private ConfigAdapter configAdapter;
     protected SerializationService serializationService;
+    private LocalizationAdapter localizationAdapter;
 
     @Inject
     public void setContextService(ContextService service) {
@@ -120,6 +123,11 @@ public class AuraContextFilter implements Filter {
     @Inject
     public void setAuraTestFilter(AuraTestFilter testFilter) {
         this.testFilter = testFilter;
+    }
+
+    @Inject
+    public void setLocalizationAdapter(LocalizationAdapter localizationAdapter) {
+        this.localizationAdapter = localizationAdapter;
     }
 
     public AuraTestFilter getAuraTestFilter() {
@@ -191,8 +199,24 @@ public class AuraContextFilter implements Filter {
                 f = Format.JSON;
             }
         }
-        AuraContext context = contextService.startContext(m, f, a, appDesc, d);
 
+        List<Locale> requestedLocales = Collections.list(request.getLocales());
+
+		//
+		// When a context is starting, LocalizationAdapter does not have a valid
+		// context to get the requested locales to create appropriate
+		// AuraLocale.
+		// So, we pass the locales to LocalizationAdapter
+		//
+        localizationAdapter.setRequestedLocales(requestedLocales);
+        
+        AuraContext context = contextService.startContext(m, f, a, appDesc, d);
+        
+        //
+        // Reset it after the context is started (created)
+        //
+        localizationAdapter.setRequestedLocales(null);
+ 
         String contextPath = request.getContextPath();
         // some appservers (like tomcat) use "/" as the root path, others ""
         if (contextPath == null || "/".equals(contextPath)) {
@@ -200,7 +224,7 @@ public class AuraContextFilter implements Filter {
         }
         context.setContextPath(contextPath);
         context.setNum(num.get(request));
-        context.setRequestedLocales(Collections.list(request.getLocales()));
+        context.setRequestedLocales(requestedLocales);
         context.setClient(new Client(request.getHeader(HttpHeaders.USER_AGENT)));
         if (configMap != null) {
             getLoaded(context, configMap.get("loaded"));

@@ -36,9 +36,14 @@ import org.springframework.context.annotation.Lazy;
 @ServiceComponent
 public class LocalizationAdapterImpl implements LocalizationAdapter, TestableLocalizationAdapter {
 
+	private List<Locale> requestedLocales;
+
     @Inject
     private ContextService contextService;
 
+	/**
+     * Temporary workaround for localized labels
+     */
     private static Map<String, Map<String, String>> labels = new HashMap<>();
     
     private final static Map<String, String> testLabels = new HashMap<>();
@@ -105,16 +110,27 @@ public class LocalizationAdapterImpl implements LocalizationAdapter, TestableLoc
      */
     @Override
     public AuraLocale getAuraLocale() {
-        AuraContext context = contextService.getCurrentContext();
-        // check for nulls - this happens when AuraContextFilter has not been run
-        if (context != null) {
-            List<Locale> locales = context.getRequestedLocales();
-            if (locales != null && locales.size() > 0) {
-                return new AuraLocaleImpl(locales.get(0));
-            }
-        }
-        return new AuraLocaleImpl();
-    }
+		//
+		// use requested locales from context
+		// check for nulls - this happens when AuraContextFilter has not been
+		// run
+		AuraContext context = contextService.getCurrentContext();
+		if (context != null) {
+			List<Locale> locales = context.getRequestedLocales();
+			if (locales != null && locales.size() > 0) {
+				return new AuraLocaleImpl(locales.get(0));
+			}
+		}
+
+		// use any explicitly set requested locales if available
+		if (requestedLocales != null && !requestedLocales.isEmpty()) {
+			return new AuraLocaleImpl(requestedLocales.get(0));
+		}
+
+		// none available create a default locale
+		return new AuraLocaleImpl();
+	}
+
 
     @Override
     public AuraLocale getAuraLocale(Locale defaultLocale) {
@@ -132,8 +148,13 @@ public class LocalizationAdapterImpl implements LocalizationAdapter, TestableLoc
         return new AuraLocaleImpl(defaultLocale, currencyLocale, dateLocale, languageLocale, numberLocale,
                 systemLocale, timeZone);
     }
-    
+
     @Override
+	public void setRequestedLocales(List<Locale> requestedLocales) {
+		this.requestedLocales = requestedLocales;
+	}
+    
+   @Override
 	public void setTestLabel(String section, String name, String value) {
     	testLabels.put(getLabelKey(section, name), value);
     }
