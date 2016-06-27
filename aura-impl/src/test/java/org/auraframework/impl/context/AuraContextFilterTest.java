@@ -17,6 +17,7 @@ package org.auraframework.impl.context;
 
 import com.google.common.collect.ImmutableList;
 import org.auraframework.adapter.ConfigAdapter;
+import org.auraframework.adapter.LocalizationAdapter;
 import org.auraframework.http.AuraContextFilter;
 import org.auraframework.service.ContextService;
 import org.auraframework.service.DefinitionService;
@@ -46,6 +47,9 @@ public class AuraContextFilterTest extends AuraTestCase {
     @Inject
     private ConfigAdapter configAdapter;
 
+    @Inject
+    private LocalizationAdapter localizationAdapter;
+
     private void assertContextPath(AuraContextFilter filter, HttpServletRequest mock, String input, String expected)
             throws Exception {
         Mockito.when(mock.getContextPath()).thenReturn(input);
@@ -62,6 +66,7 @@ public class AuraContextFilterTest extends AuraTestCase {
         filter.setLoggingService(loggingService);
         filter.setDefinitionService(definitionService);
         filter.setConfigAdapter(configAdapter);
+        filter.setLocalizationAdapter(localizationAdapter);
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(filter);
         HttpServletRequest mock = Mockito.mock(HttpServletRequest.class);
         Mockito.when(mock.getLocales()).thenReturn(new Vector<>(ImmutableList.of(Locale.ENGLISH)).elements());
