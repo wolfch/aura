@@ -147,6 +147,7 @@ public class AttributeDefHandler<P extends RootDefinition> extends ParentedTagHa
             atBuilder.setDescriptor(builder.getDescriptor());
             atBuilder.setLocation(builder.getLocation());
             atBuilder.setValue(defaultObj);
+            atBuilder.setAccess(getAccess(isInInternalNamespace));
             builder.setDefaultValue(atBuilder.build());
         }
 

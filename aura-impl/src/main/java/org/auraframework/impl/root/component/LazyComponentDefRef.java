@@ -26,8 +26,10 @@ import org.auraframework.def.ComponentDef;
 import org.auraframework.def.ComponentDefRef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.TypeDef;
+import org.auraframework.impl.DefinitionAccessImpl;
 import org.auraframework.impl.root.AttributeDefRefImpl;
 import org.auraframework.impl.system.DefDescriptorImpl;
+import org.auraframework.system.AuraContext;
 import org.auraframework.throwable.quickfix.InvalidReferenceException;
 import org.auraframework.throwable.quickfix.QuickFixException;
 
@@ -104,7 +106,7 @@ public class LazyComponentDefRef extends ComponentDefRefImpl {
             AttributeDefRefImpl.Builder valueBuilder = new AttributeDefRefImpl.Builder();
             valueBuilder.setDescriptor(Aura.getDefinitionService().getDefDescriptor(key, AttributeDef.class));
             valueBuilder.setValue(value);
-
+            valueBuilder.setAccess(new DefinitionAccessImpl(AuraContext.Access.PUBLIC));
             AttributeDefRef adr = valueBuilder.build();
             super.setAttribute(adr.getDescriptor(), adr);
             return this;

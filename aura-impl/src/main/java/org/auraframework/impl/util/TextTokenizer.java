@@ -24,11 +24,13 @@ import org.auraframework.def.ComponentDefRef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.expression.Expression;
 import org.auraframework.expression.PropertyReference;
+import org.auraframework.impl.DefinitionAccessImpl;
 import org.auraframework.impl.expression.AuraExpressionBuilder;
 import org.auraframework.impl.expression.PropertyReferenceImpl;
 import org.auraframework.impl.root.AttributeDefRefImpl;
 import org.auraframework.impl.root.component.ComponentDefRefImpl;
 import org.auraframework.impl.root.parser.handler.ExpressionContainerHandler;
+import org.auraframework.system.AuraContext;
 import org.auraframework.system.Location;
 import org.auraframework.throwable.quickfix.AuraValidationException;
 import org.auraframework.throwable.quickfix.InvalidExpressionException;
@@ -300,6 +302,7 @@ public class TextTokenizer implements Iterable<TextTokenizer.Token> {
             atBuilder.setDescriptor(attdesc);
             atBuilder.setLocation(location);
             atBuilder.setValue(value);
+            atBuilder.setAccess(new DefinitionAccessImpl(AuraContext.Access.PUBLIC));
 
             ComponentDefRefImpl.Builder builder = new ComponentDefRefImpl.Builder();
             builder.setDescriptor(type.componentDefDescriptor);

@@ -67,6 +67,7 @@ import org.auraframework.def.StyleDef;
 import org.auraframework.def.TokensDef;
 import org.auraframework.def.design.DesignDef;
 import org.auraframework.expression.PropertyReference;
+import org.auraframework.impl.DefinitionAccessImpl;
 import org.auraframework.impl.javascript.BaseJavascriptClass;
 import org.auraframework.impl.root.AttributeDefRefImpl;
 import org.auraframework.impl.root.RootDefinitionImpl;
@@ -1434,6 +1435,7 @@ public abstract class BaseComponentDefImpl<T extends BaseComponentDef> extends
             atBuilder.setDescriptor(key);
             atBuilder.setLocation(getLocation());
             atBuilder.setValue(value);
+            atBuilder.setAccess(new DefinitionAccessImpl(AuraContext.Access.PUBLIC));
             facets.add(atBuilder.build());
             return this;
         }

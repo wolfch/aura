@@ -28,8 +28,10 @@ import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.HtmlTag;
 import org.auraframework.def.optimizer.DefBuilderOptimizer;
 import org.auraframework.expression.Expression;
+import org.auraframework.impl.DefinitionAccessImpl;
 import org.auraframework.impl.root.AttributeDefRefImpl;
 import org.auraframework.impl.root.parser.handler.HTMLComponentDefRefHandler;
+import org.auraframework.system.AuraContext;
 
 import java.util.List;
 import java.util.Map;
@@ -60,7 +62,7 @@ public class HTMLDefRefBuilderImpl extends ComponentDefRefImpl.Builder implement
         AttributeDefRefImpl.Builder valueBuilder = new AttributeDefRefImpl.Builder();
         valueBuilder.setDescriptor(Aura.getDefinitionService().getDefDescriptor(key, AttributeDef.class));
         valueBuilder.setValue(value);
-
+        valueBuilder.setAccess(new DefinitionAccessImpl(AuraContext.Access.PUBLIC));
         AttributeDefRef adr = valueBuilder.build();
         super.setAttribute(adr.getDescriptor(), adr);
         return this;

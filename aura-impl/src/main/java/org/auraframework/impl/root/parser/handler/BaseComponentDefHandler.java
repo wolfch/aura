@@ -45,6 +45,7 @@ import org.auraframework.def.SVGDef;
 import org.auraframework.def.StyleDef;
 import org.auraframework.def.design.DesignDef;
 import org.auraframework.expression.PropertyReference;
+import org.auraframework.impl.DefinitionAccessImpl;
 import org.auraframework.impl.css.util.Flavors;
 import org.auraframework.impl.root.AttributeDefImpl;
 import org.auraframework.impl.root.AttributeDefRefImpl;
@@ -557,6 +558,7 @@ public abstract class BaseComponentDefHandler<T extends BaseComponentDef, B exte
                     AttributeDef.class));
             atBuilder.setLocation(getLocation());
             atBuilder.setValue(body);
+            atBuilder.setAccess(new DefinitionAccessImpl(AuraContext.Access.PUBLIC));
             AttributeDefRef adr = atBuilder.build();
             builder.facets.add(adr);
         }

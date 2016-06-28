@@ -140,6 +140,7 @@ public class ComponentDefRefHandler<P extends RootDefinition> extends ParentedTa
                 atBuilder.setDescriptor(att);
                 atBuilder.setLocation(getLocation());
                 atBuilder.setValue(value);
+                atBuilder.setAccess(getAccess(isInInternalNamespace));
                 attributes.put(att, atBuilder.build());
             }
         }

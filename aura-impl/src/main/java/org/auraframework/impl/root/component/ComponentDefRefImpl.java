@@ -28,6 +28,7 @@ import org.auraframework.def.DefDescriptor;
 import org.auraframework.def.InterfaceDef;
 import org.auraframework.def.RegisterEventDef;
 import org.auraframework.def.RootDefinition;
+import org.auraframework.impl.DefinitionAccessImpl;
 import org.auraframework.impl.root.AttributeDefRefImpl;
 import org.auraframework.impl.system.DefinitionImpl;
 import org.auraframework.impl.util.AuraUtil;
@@ -335,7 +336,7 @@ public class ComponentDefRefImpl extends DefinitionImpl<ComponentDef> implements
                 AttributeDefRefImpl.Builder valueBuilder = new AttributeDefRefImpl.Builder();
                 valueBuilder.setDescriptor(Aura.getDefinitionService().getDefDescriptor(key, AttributeDef.class));
                 valueBuilder.setValue(value);
-
+                valueBuilder.setAccess(new DefinitionAccessImpl(AuraContext.Access.PUBLIC));
                 AttributeDefRef adr = valueBuilder.build();
                 setAttribute(adr.getDescriptor(), adr);
             } else if (attributeValues != null) {
