@@ -286,7 +286,6 @@ AuraEventService.prototype.getDef = function(descriptor) {
         //   }
         //    return null;
         //} else {
-            $A.logger.reportError(new $A.auraError("[NoErrorObjectAvailable] " + message));
             if(context.logAccessFailures){
                 $A.warning(message);
             }
@@ -317,7 +316,6 @@ AuraEventService.prototype.hasDefinition = function(descriptor) {
         //   }
         //   return false;
         //}else{
-            $A.logger.reportError(new $A.auraError("[NoErrorObjectAvailable] " + message));
             if(context.logAccessFailures){
                 $A.warning(message);
             }

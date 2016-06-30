@@ -2145,7 +2145,6 @@ Component.prototype.getMethodHandler = function(methodDef){
              //    }
              //    return false;
              //} else {
-                 $A.logger.reportError(new $A.auraError("[NoErrorObjectAvailable] " + message));
                  if (context.logAccessFailures) {
                      $A.warning(message);
                  }
