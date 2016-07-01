@@ -54,9 +54,10 @@
     <aura:method name="testInsertAdjacentHTML" action="{!c.testInsertAdjacentHTML}">
         <aura:attribute name="targetElement" type="String"/>
     </aura:method>
+    <aura:method name="testNoAccessToParentNodeReturnsNull" action="{!c.testNoAccessToParentNodeReturnsNull}"/>
 
     <lockerTest:facet/>
-    <div aura:id="title" class="title">SecureElement test</div>
+    <div aura:id="title" class="title" id="title">SecureElement test</div>
     <div aura:id="scalarExpression">{!v.scalarExpression}</div>
 
   	<div aura:id="cacheTestA" id="cacheTestA"></div>

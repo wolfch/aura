@@ -164,5 +164,11 @@
         test: function(cmp) {
             cmp.testElementCache();
         }
+    },
+
+    testNoAccessToParentNodeReturnsNull: {
+        test: function(cmp) {
+            cmp.testNoAccessToParentNodeReturnsNull();
+        }
     }
 })
