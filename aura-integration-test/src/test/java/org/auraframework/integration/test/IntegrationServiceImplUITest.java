@@ -65,15 +65,15 @@ public class IntegrationServiceImplUITest extends WebDriverTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        
+
         getMockConfigAdapter().setLockerServiceEnabled(false);
-        
+
         defaultStubCmp = addSourceAutoCleanup(
             ComponentDef.class,
             getIntegrationStubMarkup(
                 "java://org.auraframework.impl.renderer.sampleJavaRenderers.RendererForTestingIntegrationService",
                 true, true, true));
-        
+
         tmu = getAuraTestingMarkupUtil();
     }
 
@@ -111,7 +111,7 @@ public class IntegrationServiceImplUITest extends WebDriverTestCase {
 
         openIntegrationStub(stub, cmpToInject, attributes);
 
-        getAuraUITestingUtil().waitForElement("Injected component not found inside placeholder", 
+        getAuraUITestingUtil().waitForElement("Injected component not found inside placeholder",
         		By.cssSelector(selectorForPlaceholder + ">" + "div.wrapper"));
         WebElement attrValue = findDomElement(By.cssSelector("div.dataFromAttribute"));
         assertEquals("Failed to see data from model of injected component", "Oranges", attrValue.getText());
@@ -140,7 +140,7 @@ public class IntegrationServiceImplUITest extends WebDriverTestCase {
 
         WebElement buttonShowStyle = findDomElement(By.cssSelector(".btnShowStyle"));
         buttonShowStyle.click();
-        getAuraUITestingUtil().waitForElementFunction(By.cssSelector("div.dataFromAttributeStyle"), 
+        getAuraUITestingUtil().waitForElementFunction(By.cssSelector("div.dataFromAttributeStyle"),
         		new Function<WebElement, Boolean>() {
 		            @Override
 		            public Boolean apply(WebElement element) {
@@ -296,23 +296,15 @@ public class IntegrationServiceImplUITest extends WebDriverTestCase {
     }
 
     /**
-     * Verify use of integration service to inject a component and initialize various types of attributes. Disabled in
-     * chrome because only this test fails with chromedriver 2.9 with a
-     * "unknown error: Maximum call stack size exceeded" exception. It works fine in firefox, IE9.
-     * https://code.google.com/p/chromedriver/issues/detail?id=887
+     * Verify use of integration service to inject a component and initialize various types of attributes.
      */
-    @ExcludeBrowsers(BrowserType.GOOGLECHROME)
     public void testAttributesInitialization() throws Exception {
-        verifyAttributesInitialization(defaultStubCmp);
+        verifyAttributesInitialization(defaultStubCmp, false);
     }
 
     /**
      * Verify use of integration service to inject a component and initialize various types of attributes. (ASYNC)
-     * Disabled in chrome because only this test fails with chromedriver 2.9 with a
-     * "unknown error: Maximum call stack size exceeded" exception. It works fine in firefox, IE9.
-     * https://code.google.com/p/chromedriver/issues/detail?id=887
      */
-    @ExcludeBrowsers(BrowserType.GOOGLECHROME)
     public void testAttributesInitializationAsync() throws Exception {
         DefDescriptor<ComponentDef> stub = addSourceAutoCleanup(
                 ComponentDef.class,
@@ -321,10 +313,10 @@ public class IntegrationServiceImplUITest extends WebDriverTestCase {
                         true, true, true, true)
                 );
 
-        verifyAttributesInitialization(stub);
+        verifyAttributesInitialization(stub, true);
     }
 
-    private void verifyAttributesInitialization(DefDescriptor<ComponentDef> stub) throws Exception {
+    private void verifyAttributesInitialization(DefDescriptor<ComponentDef> stub, boolean async) throws Exception {
         String attributeMarkup = tmu.getCommonAttributeMarkup(true, true, true, false)
                 + tmu.getCommonAttributeListMarkup(true, true, false, false, false);
         String attributeWithDefaultsMarkup =
@@ -349,9 +341,13 @@ public class IntegrationServiceImplUITest extends WebDriverTestCase {
 
         openIntegrationStub(stub, cmpToInject, attributes);
 
-        // Access injected component through ClientSide API
-        assertTrue(getAuraUITestingUtil().getBooleanEval(String.format(
-                "return window.$A.getRoot().find('%s')!== undefined ;", defaultLocalId)));
+        String script = String.format("return window.$A.getRoot().find('%s')!== undefined ;", defaultLocalId);
+        if(async) {
+            waitForCondition(script);
+        } else {
+            // Access injected component through ClientSide API
+            assertTrue("Failed to find injected component.", getAuraUITestingUtil().getBooleanEval(script));
+        }
 
         // Provided attributes
         assertEquals("Oranges",
@@ -788,17 +784,17 @@ public class IntegrationServiceImplUITest extends WebDriverTestCase {
             throws MalformedURLException, URISyntaxException {
         String url = String.format("/%s/%s.cmp", stub.getNamespace(), stub.getName());
         url = url + "?desc=" + String.format("%s:%s", toInject.getNamespace(), toInject.getName());
-        
+
         if (attributeMap != null) {
             url = url + "&" + "attrMap=" + AuraTextUtil.urlencode(JsonEncoder.serialize(attributeMap));
         } else {
             url = url + "&" + "attrMap=" + AuraTextUtil.urlencode(JsonEncoder.serialize(Maps.newHashMap()));
         }
-        
+
         if (placeholder != null) {
             url = url + "&placeholder=" + placeholder;
         }
-        
+
         openNoAura(url);
 
         getAuraUITestingUtil().waitForDocumentReady();
