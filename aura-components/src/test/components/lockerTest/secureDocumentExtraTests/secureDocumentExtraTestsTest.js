@@ -9,11 +9,12 @@
 
     testDocumentQuerySelectorAccessFromLockerizedFirst: {
         test: function(cmp) {
-            var results = {
-                "#foo": undefined,
-                "#bar": undefined,
-                ".foobar": undefined
+        	var results = {
+        		"#foo": undefined,
+        		"#bar": undefined,
+        		".foobar": undefined
             };
+    	
             var fooCmp = cmp.find("foo");
             fooCmp.documentQuerySelector(["#foo", "#bar", ".foobar"], results);
 
@@ -28,11 +29,12 @@
 
     testDocumentQuerySelectorAccessFromLockerizedSecond: {
         test: function(cmp) {
-            var results = {
-                "#foo": undefined,
-                "#bar": undefined,
-                ".foobar": undefined
+        	var results = {
+        		"#foo": undefined,
+        		"#bar": undefined,
+        		".foobar": undefined
             };
+        	
             var barCmp = cmp.find("bar");
             barCmp.documentQuerySelector(["#foo", "#bar", ".foobar"], results);
 
