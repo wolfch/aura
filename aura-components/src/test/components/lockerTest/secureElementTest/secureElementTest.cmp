@@ -23,6 +23,7 @@
     <aura:attribute name="scalarExpression" type="String" default="A scalar expression"/>
 
     <aura:method name="testElementProperties" action="{!c.testElementProperties}">
+        <aura:attribute name="auraId" type="String"/>
         <aura:attribute name="elementPropertiesWhitelist" type="List"/>
         <aura:attribute name="elementPropertiesBlacklist" type="List"/>
     </aura:method>
@@ -41,7 +42,7 @@
     <aura:method name="testTextContent" action="{!c.testTextContent}"/>
     <aura:method name="testInnerText" action="{!c.testInnerText}"/>
     <aura:method name="testAddEventListenerMultipleCalls" action="{!c.testAddEventListenerMultipleCalls}"/>
-    <aura:method name="testSvgGetBBox" action="{!c.testSvgGetBBox}"/>
+    <aura:method name="testSvgGetBBox" action="{!c.testSvgGetBBox}"/>r
     <aura:method name="testScalarExpression" action="{!c.testScalarExpression}"/>
 
     <aura:method name="testElementCache" action="{!c.testElementCache}"/>
@@ -57,7 +58,27 @@
     <aura:method name="testNoAccessToParentNodeReturnsNull" action="{!c.testNoAccessToParentNodeReturnsNull}"/>
 
     <lockerTest:facet/>
+
     <div aura:id="title" class="title" id="title">SecureElement test</div>
+
+    <input type="text" aura:id="input" value="input" />
+    <textarea aura:id="textarea" value="textarea" />
+    <button aura:id="button" value="button" >button</button>
+    <a aura:id="link">link</a>
+    <form aura:id="form" />
+    <img aura:id="img" />
+    <area aura:id="area" />
+    <label aura:id="label" />
+    <!-- object -->
+    <table aura:id="table">
+        <tr aura:id="tr" >
+            <th aura:id="th">th</th>
+        </tr>
+        <tr>
+            <td aura:id="td">td</td>
+        </tr>
+    </table>
+
     <div aura:id="scalarExpression">{!v.scalarExpression}</div>
 
   	<div aura:id="cacheTestA" id="cacheTestA"></div>
