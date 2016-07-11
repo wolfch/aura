@@ -10,11 +10,13 @@
     testElementQuerySelectorAccessFromLockerized: {
         test: function(cmp) {
             var results = {
-                "#foo": undefined,
-                "#bar": undefined,
-                ".foobar": undefined
+        		"#foo": undefined,
+        		"#bar": undefined,
+        		".foobar": undefined
             };
+            
             var contentCmp = cmp.find("content");
+            
             contentCmp.elementQuerySelector(["#foo", "#bar", ".foobar"], results);
 
             $A.test.assertNotNull(results["#foo"], "Expected element.querySelector()"

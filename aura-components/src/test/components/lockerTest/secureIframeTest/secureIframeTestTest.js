@@ -10,7 +10,6 @@
     // TODO(tbliss): make these lists on SecureIFrameElement accessible here for maintainability
     AttributesWhitelist: ['contentWindow', 'height', 'name', 'src', 'width'],
     AttributesBlacklist: ['contentDocument', 'sandbox', 'srcdoc'],
-
     MethodsWhitelist: ['blur', 'focus',
                        'getAttribute', 'hasAttribute', 'setAttribute', 'removeAttribute',
                        'getAttributeNS', 'hasAttributeNS', 'setAttributeNS', 'removeAttributeNS'],
