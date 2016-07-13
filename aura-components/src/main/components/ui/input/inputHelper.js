@@ -240,7 +240,9 @@
      */
     getInputElement: function (component) {
         var element = component.getElement();
-        return element.getElementsByTagName('input')[0] || element.getElementsByTagName('select')[0] || element.getElementsByTagName('textarea')[0] || element;
+        if(element){
+            return element.getElementsByTagName('input')[0] || element.getElementsByTagName('select')[0] || element.getElementsByTagName('textarea')[0] || element;
+        }
     },
 
     /**
