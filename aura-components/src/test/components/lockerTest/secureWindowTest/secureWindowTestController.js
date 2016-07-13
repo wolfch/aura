@@ -79,5 +79,13 @@
         testUtils.assertTrue(typeof setTimeoutReturn === "number", "setInterval did not return a number");
         clearInterval(setIntervalReturn);
         clearTimeout(setTimeoutReturn);
+    },
+
+    testGetComputedStyle: function(cmp) {
+        var testUtils = cmp.get("v.testUtils");
+        var div = document.getElementById("title");
+        var style = window.getComputedStyle(div);
+        testUtils.assertTrue(style.length > 0, "getComputedStyle should return an object with length property greater than 0");
+        testUtils.assertEquals("0px", style.padding, "Unexpected computed style padding");
     }
 })

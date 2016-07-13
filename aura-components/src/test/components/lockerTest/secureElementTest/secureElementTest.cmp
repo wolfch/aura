@@ -42,7 +42,7 @@
     <aura:method name="testTextContent" action="{!c.testTextContent}"/>
     <aura:method name="testInnerText" action="{!c.testInnerText}"/>
     <aura:method name="testAddEventListenerMultipleCalls" action="{!c.testAddEventListenerMultipleCalls}"/>
-    <aura:method name="testSvgGetBBox" action="{!c.testSvgGetBBox}"/>r
+    <aura:method name="testSvgGetBBox" action="{!c.testSvgGetBBox}"/>
     <aura:method name="testScalarExpression" action="{!c.testScalarExpression}"/>
 
     <aura:method name="testElementCache" action="{!c.testElementCache}"/>
