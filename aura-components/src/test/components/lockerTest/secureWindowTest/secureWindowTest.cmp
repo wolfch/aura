@@ -30,6 +30,7 @@
     <aura:method name="testHostedDefinedGlobalsExposedOnWindow" action="{!c.testHostedDefinedGlobalsExposedOnWindow}"/>
     <aura:method name="testObjectExposedOnWindow" action="{!c.testObjectExposedOnWindow}"/>
     <aura:method name="testTimerReturns" action="{!c.testTimerReturns}"/>
+    <aura:method name="testGetComputedStyle" action="{!c.testGetComputedStyle}"/>
 
-    <div>SecureWindow test</div>
+    <div id="title">SecureWindow test</div>
 </aura:component>

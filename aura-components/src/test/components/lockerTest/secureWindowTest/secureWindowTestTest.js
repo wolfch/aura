@@ -78,5 +78,11 @@
         test: function(cmp) {
             cmp.testTimerReturns();
         }
+    },
+
+    testGetComputedStyle: {
+        test: function(cmp) {
+            cmp.testGetComputedStyle();
+        }
     }
 })
