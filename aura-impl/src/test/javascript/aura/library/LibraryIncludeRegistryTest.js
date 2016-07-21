@@ -16,7 +16,7 @@
 Function.RegisterNamespace("Test.Aura.Library");
 
 [Fixture]
-Test.Aura.Library.LibraryRegistryTest = function () {
+Test.Aura.Library.LibraryIncludeRegistry = function () {
 
     Function.RegisterNamespace("Aura.Library");
     [Import("aura-impl/src/main/resources/aura/library/LibraryIncludeRegistry.js")]
