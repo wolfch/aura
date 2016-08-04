@@ -30,7 +30,6 @@ function ComponentDef(config) {
     this.descriptor = descriptor;
     this.hasRemoteDeps = config["hasServerDeps"] || false;
     this.access = config[Json.ApplicationKey.ACCESS];
-    delete config[Json.ApplicationKey.ACCESS];
 
     this.superDef = this.initSuperDef(config["superDef"]);
     this.styleDef = config["styleDef"] ? new StyleDef(config["styleDef"]) : undefined;
