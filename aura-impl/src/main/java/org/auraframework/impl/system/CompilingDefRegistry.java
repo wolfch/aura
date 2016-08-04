@@ -42,6 +42,7 @@ public class CompilingDefRegistry implements DefRegistry<Definition> {
     private final Set<String> prefixes;
     private final Set<String> namespaces;
     private final Map<DefDescriptor<?>, DefHolder> registry;
+    private final ParserFactory parserFactory;
 
     private static class DefHolder {
         public DefHolder(DefDescriptor<?> descriptor) {
@@ -53,12 +54,14 @@ public class CompilingDefRegistry implements DefRegistry<Definition> {
         public boolean initialized;
     }
 
-    public CompilingDefRegistry(SourceLoader sourceLoader, Set<String> prefixes, Set<DefType> defTypes) {
+    public CompilingDefRegistry(SourceLoader sourceLoader, Set<String> prefixes, Set<DefType> defTypes,
+                                ParserFactory parserFactory) {
         this.sourceLoader = sourceLoader;
         this.namespaces = Sets.newHashSet();
         this.registry = Maps.newHashMap();
         this.prefixes = prefixes;
         this.defTypes = defTypes;
+        this.parserFactory = parserFactory;
         reset();
     }
 
@@ -92,7 +95,7 @@ public class CompilingDefRegistry implements DefRegistry<Definition> {
                     DefDescriptor<Definition> canonical = (DefDescriptor<Definition>)holder.descriptor;
                     Source<Definition> source = sourceLoader.getSource(canonical);
                     if (source != null && source.exists()) {
-                        Parser<Definition> parser = ParserFactory.getParser(source.getFormat(), canonical);
+                        Parser<Definition> parser = parserFactory.getParser(source.getFormat(), canonical);
                         holder.def = parser.parse(canonical, source);
                         holder.def.validateDefinition();
                     }
