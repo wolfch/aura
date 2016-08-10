@@ -16,12 +16,17 @@
 
 -->
 <aura:component>
+
     <aura:attribute name="items" type="Object[]" />
-    <aura:attribute name="colToSort" type="String" />
+    <aura:attribute name="prevResize" type="Object" />
+    <aura:attribute name="initialWidths" type="Integer[]" default="[200, 400, 100]" />
     
     <aura:handler name="init" value="{!this}" action="{!c.init}"/>
 
     <div>
+        <div class="toolbar">
+            <ui:inputText aura:id="inputTxt" class="inputTxt"/>
+        </div>
         <ui:inlineEditGrid
             aura:id="grid"        
             class="inline-edit-grid"
@@ -30,18 +35,19 @@
             rowHeaderIndex="1"    
             delegatedEvents="click,keydown,mouseover"
             onEdit="{!c.onEdit}"
-            onSort="{!c.onSort}">
-                        
+            enableResizableColumns="true"
+            onColumnResize="{!c.onResize}">
+            
             <aura:set attribute="headerColumns">
-                <ui:dataTableHeader name="id"      label="Id" sortable="true"/>
-                <ui:dataTableHeader name="name"    label="Name" sortable="true"/>
-                <ui:dataTableHeader name="grade"   label="Grade"/>
-                <ui:dataTableHeader name="linkLabel"  label="Link"/>
-                <ui:dataTableHeader name="issueDate" label="Issue Date"/>
-                <ui:dataTableHeader name="passing" label="Passing"/>
-                <ui:dataTableHeader name="notes"   label="Notes"/>
-                <ui:dataTableHeader name="modDateTime"   label="Modified"/>
-                <ui:dataTableHeader name=""        label="Actions" hideLabel="true"/>
+                <ui:dataGridColumn name="id"      label="Id" sortable="true"/>
+                <ui:dataGridColumn name="name"    label="Name" sortable="true"/>
+                <ui:dataGridColumn name="grade"   label="Grade"/>
+                <ui:dataGridColumn name="linkLabel"  label="Link"/>
+                <ui:dataGridColumn name="issueDate" label="Issue Date"/>
+                <ui:dataGridColumn name="passing" label="Passing"/>
+                <ui:dataGridColumn name="notes"   label="Notes"/>
+                <ui:dataGridColumn name="modDateTime"   label="Modified"/>
+                <ui:dataGridColumn name=""        label="Actions" hideLabel="true"/>
             </aura:set>
             
             <aura:set attribute="columns">
@@ -73,7 +79,9 @@
         </ui:inlineEditGrid>
         
         <div>
-            SortBy: <ui:outputText aura:id="outputSortBy" value=""/><br/>
+            Column: <ui:outputText aura:id="srcColumn" value="{!v.prevResize.src.label}"/> <br/>
+            Index: <ui:outputText aura:id="srcIndex" value="{!v.prevResize.src.index}"/> <br />
+            Width: <ui:outputText aura:id="srcWidth" value="{!v.prevResize.width}"/> 
         </div>
         
         <div class="manager">

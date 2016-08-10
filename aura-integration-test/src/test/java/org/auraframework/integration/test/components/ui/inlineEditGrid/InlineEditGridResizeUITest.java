@@ -30,17 +30,19 @@ import org.openqa.selenium.WebElement;
 @TargetBrowsers({BrowserType.GOOGLECHROME, BrowserType.FIREFOX, BrowserType.IE11, BrowserType.SAFARI})
 public class InlineEditGridResizeUITest extends WebDriverTestCase {
 
-    private final String URL = "/uitest/inlineEdit_resizeTest.cmp";
+    private final String URL[] = {"/uitest/inlineEdit_resizeTest.cmp", "/uitest/inlineEdit_resizeDGCTest.cmp"};
     
     /**
      * Test resize column widths
      */
     @Test
     public void testResizeColumnWidth() throws Exception {
-    	open(URL);
-    	WebDriver driver = getDriver();
-    	doTestResizeColumn(driver, "bigger", 1, 10);
-    	doTestResizeColumn(driver, "smaller", 1, 5);
+    	for (int i=0; i<2; i++) {
+    		open(URL[i]);
+        	WebDriver driver = getDriver();
+        	doTestResizeColumn(driver, "bigger", 1, 10);
+        	doTestResizeColumn(driver, "smaller", 1, 5);
+    	}
     }
     
     private void doTestResizeColumn(WebDriver d, String testCase, int columnIndex, int widthOffset) throws Exception {

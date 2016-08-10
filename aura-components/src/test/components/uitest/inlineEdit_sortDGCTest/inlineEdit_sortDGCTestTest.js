@@ -132,8 +132,7 @@
          var col = this.getColHeaderElem(colName);
          var expectedSort = isDesc ? 'descending' : 'ascending';
          var actualSort = col['className'].trim();
-         $A.test.assertTrue(actualSort.indexOf(expectedSort) >= 0, 
-                 'Incorrect sort expected ' + expectedSort + ' to be in ' + actualSort);
+         $A.test.assertEquals(expectedSort, actualSort, 'Incorrect sort');
      },
      
      isSortDesc : function(sortBy) {

@@ -471,9 +471,8 @@
      verifyHeaderColumnNames : function(expected, headers) {
          $A.test.assertEquals(expected.length, headers.length, 'Number of expected columns incorrect');
          for (var i=0; i<headers.length; i++) {
-             var colText = $A.test.getText(headers[i]);
-             $A.test.assertTrue(colText.indexOf(expected[i]) >=0, 
-                     'Column header label incorrect expected "' + expected[i] + '" in "' + colText + '"');
+             var colText = $A.test.getText(headers[i]).replace('Sort ', ''); //Ignoring sort assistive text
+             $A.test.assertEquals(expected[i], colText, 'Column header label incorrect');
          }
      }
  })
