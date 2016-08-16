@@ -128,7 +128,8 @@
      /**
       * Test editing multiple cells opens and closes appropriate panel for cell.
       */
-     testEditPanelForMulitpleCells : {
+     // Flapping on autobuilds
+     _testEditPanelForMulitpleCells : {
          test : [function(cmp) {
              this.triggerEditOnCell(cmp, 0, 2);
          }, function(cmp) {
