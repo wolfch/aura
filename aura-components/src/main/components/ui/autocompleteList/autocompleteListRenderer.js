@@ -26,13 +26,13 @@
         this.superRerender();
         if (component.isDirty('v.visible')) {
             helper.updateEmptyListContent(component);
-            helper.setDefaultHighlight(component);
             helper.positionList(component);
         }
+        helper.setDefaultHighlight(component);
     },
     unrender: function(component, helper) {
         if (helper.getOnClickEventProp.cache && 
-            helper.getOnClickEventProp.cache.onClickStartEvent && 
+            helper.getOnClickEventProp.cache.onClickStartEvent &&
             component._onClickStartFunc) {
             $A.util.removeOn(document.body, helper.getOnClickEventProp.cache.onClickStartEvent, component._onClickStartFunc, false);
         }
