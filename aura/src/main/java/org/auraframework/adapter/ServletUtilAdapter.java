@@ -135,6 +135,11 @@ public interface ServletUtilAdapter extends AuraAdapter {
     String getInlineJsUrl(AuraContext context, Map<String,Object> attributes);
 
     /**
+     * Get app cache fallback url for inline.js, app.js
+     */
+    String getJsFallbackUrl(AuraContext context);
+
+    /**
      * Get app.js url.
      */
     String getAppJsUrl(AuraContext context, Map<String, Object> attributes);

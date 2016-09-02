@@ -614,7 +614,7 @@ AuraClientService.prototype.singleAction = function(action, actionResponse, key,
 };
 
 AuraClientService.prototype.isBB10 = function() {
-    var ua = navigator.userAgent;
+    var ua = window.navigator.userAgent;
     return (ua.indexOf("BB10") > 0 && ua.indexOf("AppleWebKit") > 0);
 };
 
@@ -800,9 +800,7 @@ AuraClientService.prototype.handleAppCache = function() {
         if (e.stopImmediatePropagation) {
             e.stopImmediatePropagation();
         }
-        if (window.applicationCache
-            && (window.applicationCache.status === window.applicationCache.UNCACHED ||
-                window.applicationCache.status === window.applicationCache.OBSOLETE)) {
+        if (window.applicationCache && window.applicationCache.status === window.applicationCache.OBSOLETE) {
             return;
         }
 
@@ -814,9 +812,6 @@ AuraClientService.prototype.handleAppCache = function() {
          * For BB10, we append cache busting param to url to force BB10 browser
          * not to use cached HTML via hardRefresh
          */
-        if (acs.isBB10()) {
-            acs.hardRefresh();
-        }
 
         if (acs.isDevMode()) {
             showProgress(-1);
@@ -830,10 +825,19 @@ AuraClientService.prototype.handleAppCache = function() {
             return;
         }
 
-        // if bootstrap has failed then the app is stuck. if appcache has also errored then
-        // force a server trip to allow for a server-side redirect or get a new manifest.
-        if (Aura["appBootstrapStatus"] === "failed" && Aura["appBootstrapCacheStatus"] === "failed") {
+        // if server bootstrap and cached bootstrap failed
+        if ((Aura["appBootstrapStatus"] === "failed" && Aura["appBootstrapCacheStatus"] === "failed")
+            // fallback for inline.js and app.js failures
+            || Aura["appJsStatus"] === "failed"
+            // see above note for BB10
+            || acs.isBB10()
+            // if there is no application cache, best thing we can do is reload or we'll be stuck
+            || window.applicationCache.status === window.applicationCache.UNCACHED) {
+            // force a server trip to allow for a server-side redirect or get a new manifest.
             acs.hardRefresh();
+        } else {
+            // Otherwise display error dialog instead of empty screen
+            throw new $A.auraError("There was a problem loading the page. Please reload the page.");
         }
 
     }
@@ -876,8 +880,9 @@ AuraClientService.prototype.handleAppCache = function() {
         // if the boot sequence is beyond bootstrap.js and fallback directives have been used then
         // reload the page to get the non-fallback values. must do only location.reload();
         // appcache.swapCache() nor hardRefresh() create the desired behavior.
-        if (Aura["appBootstrapStatus"] === "failed" && Aura["appBootstrapCacheStatus"] === "failed" ) {
-            location.reload();
+        if ((Aura["appBootstrapStatus"] === "failed" && Aura["appBootstrapCacheStatus"] === "failed")
+            || Aura["appJsStatus"] === "failed") {
+            window.location.reload();
         }
     }
 
