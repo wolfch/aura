@@ -162,6 +162,8 @@ function AuraClientService () {
     // can set this flag if ever required.
     this._disableBootstrapCacheCookie = "auraDisableBootstrapCache";
 
+    this._reloadCountKey = "auraReloadCount";
+
     this.NOOP = function() {};
 
     Aura.Utils.Util.prototype.on(window, "load", function() {
@@ -618,6 +620,10 @@ AuraClientService.prototype.isBB10 = function() {
     return (ua.indexOf("BB10") > 0 && ua.indexOf("AppleWebKit") > 0);
 };
 
+AuraClientService.prototype.isFirefox = function() {
+    return window.navigator.userAgent.indexOf("Firefox") > 0;
+};
+
 AuraClientService.prototype.getManifestURL = function() {
     var htmlNode = document.body.parentNode;
     return htmlNode ? htmlNode.getAttribute("manifest") : null;
@@ -678,6 +684,11 @@ AuraClientService.prototype.releaseXHR = function(auraXHR) {
  */
 AuraClientService.prototype.hardRefresh = function() {
     var url = location.href;
+
+    if (this.shouldPreventReload()) {
+        throw new $A.auraError("Please reload the page.");
+    }
+
     if (!this.isManifestPresent() || url.indexOf("?nocache=") > -1) {
         location.reload(true);
         return;
@@ -755,8 +766,53 @@ AuraClientService.prototype.dumpCachesAndReload = function() {
     this.reloadFunction = this.actualDumpCachesAndReload.bind(this);
 
     if (this.reloadPointPassed) {
+        if (this.shouldPreventReload()) {
+            throw new $A.auraError("Please reload the page.");
+        }
         this.reloadFunction();
     }
+};
+
+/**
+ * Tracks reloads issued by hardRefresh and dumpCachesAndReload.
+ * If 5 occur consecutively, we halt, clear client storages,
+ * and return true for the consumer to handle.
+ *
+ * $A.finishInit clears counter
+ *
+ * @returns {boolean} true if reloaded 5 consecutive times
+ */
+AuraClientService.prototype.shouldPreventReload = function() {
+    var cookies = document.cookie;
+    var reloadCountKey = this._reloadCountKey + "=";
+    var begin = cookies.indexOf(reloadCountKey);
+    var count = 0;
+    if (begin !== -1) {
+        var afterKeyIndex = begin + reloadCountKey.length;
+        var end = cookies.indexOf(";", afterKeyIndex);
+        count = +cookies.substring(afterKeyIndex, end);
+        count = !isNaN(count) ? count : 0;
+        if (count > 4) {
+            // more than 5 consecutive reloads without successful init
+            var idb = window.indexedDB;
+            if (idb) {
+                // if inline.js fails, none of the storages are initialized
+                // so must brute force as methods in ComponentDefStorage won't work.
+                idb.deleteDatabase(Action.STORAGE_NAME);
+                idb.deleteDatabase($A.componentService.getComponentDefStorageName());
+            }
+            return true;
+        }
+    }
+    document.cookie = reloadCountKey + (count + 1);
+    return false;
+};
+
+/**
+ * Clears reload count cookie
+ */
+AuraClientService.prototype.clearReloadCount = function() {
+    document.cookie = this._reloadCountKey + "=0; expires=Thu, 01 Jan 1970 00:00:00 GMT";
 };
 
 AuraClientService.prototype.handleAppCache = function() {
@@ -800,7 +856,20 @@ AuraClientService.prototype.handleAppCache = function() {
         if (e.stopImmediatePropagation) {
             e.stopImmediatePropagation();
         }
-        if (window.applicationCache && window.applicationCache.status === window.applicationCache.OBSOLETE) {
+        if (window.applicationCache.status === window.applicationCache.OBSOLETE) {
+            return;
+        }
+        // Firefox always calls this error handler when uncached regardless of js status.
+        // Thus, it needs special handling and we cannot call hardRefresh as we do below.
+        if (acs.isFirefox() && window.applicationCache.status === window.applicationCache.UNCACHED) {
+            // set timeout and check for missing bootstrap metric variables for app.js and inline.js
+            // then hardRefresh if those variables for not set. They are set in the valid response.
+            window.setTimeout(function() {
+                var bootstrap = window["Aura"]["bootstrap"];
+                if ((bootstrap && (!bootstrap["execAppJs"] || !bootstrap["execInlineJs"])) || Aura["appJsStatus"] === "failed") {
+                    acs.hardRefresh();
+                }
+            }, 6000); // six seconds
             return;
         }
 

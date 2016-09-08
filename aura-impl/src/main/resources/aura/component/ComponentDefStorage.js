@@ -21,6 +21,8 @@
  */
 function ComponentDefStorage() {}
 
+ComponentDefStorage.prototype.STORAGE_NAME = "ComponentDefStorage";
+
 /**
  * Target size, as a percent of max size, for component def storage during eviction.
  */
@@ -40,7 +42,7 @@ ComponentDefStorage.prototype.TRANSACTION_SENTINEL_KEY = "sentinel_key";
 /**
  * Key to use of the MutexLocker to guarantee atomic execution across tabs.
  */
-ComponentDefStorage.prototype.MUTEX_KEY = "ComponentDefStorage";
+ComponentDefStorage.prototype.MUTEX_KEY = ComponentDefStorage.prototype.STORAGE_NAME;
 
 /**
  * Function to release the mutex, set while the mutex is held.
@@ -64,7 +66,6 @@ ComponentDefStorage.prototype.useDefStore = undefined;
  * The AuraStorage instance.
  */
 ComponentDefStorage.prototype.storage = undefined;
-
 
 /**
  * Whether to use storage for component definitions.
@@ -93,13 +94,13 @@ ComponentDefStorage.prototype.setupDefinitionStorage = function() {
         var actions = Action.getStorage();
         if (actions && actions.isPersistent()) {
 
-            var storage = $A.storageService.getStorage("ComponentDefStorage");
+            var storage = $A.storageService.getStorage(this.STORAGE_NAME);
             var removeStorage = false;
             if (!storage) {
                 // only create (and then remove) if the app hasn't defined one
                 removeStorage = true;
                 storage = $A.storageService.initStorage({
-                    "name":         "ComponentDefStorage",
+                    "name":         this.STORAGE_NAME,
                     "persistent":   true,
                     "secure":       false,
                     "maxSize":      4096000, // 4MB
@@ -116,7 +117,7 @@ ComponentDefStorage.prototype.setupDefinitionStorage = function() {
                 this.storage.suspendSweeping();
                 this.useDefStore = true;
             } else if (removeStorage) {
-                $A.storageService.deleteStorage("ComponentDefStorage");
+                $A.storageService.deleteStorage(this.STORAGE_NAME);
             }
         }
     }
