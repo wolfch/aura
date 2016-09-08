@@ -1445,8 +1445,10 @@ Test.Aura.AuraClientServiceTest = function() {
             mockGlobal(function() {
                 target = new Aura.Services.AuraClientService();
             });
-            var mockUserAgent = Mocks.GetMock(Object.Global(), "navigator", {
-                userAgent: "Mozilla/5.0 (BB10; Touch) AppleWebKit/537.10+ (KHTML, like Gecko) Version/10.0.9.2372 Mobile Safari/537.10+"
+            var mockUserAgent = Mocks.GetMock(Object.Global(), "window", {
+                navigator: {
+                    userAgent: "Mozilla/5.0 (BB10; Touch) AppleWebKit/537.10+ (KHTML, like Gecko) Version/10.0.9.2372 Mobile Safari/537.10+"
+                }
             });
 
             var actual;
@@ -1463,8 +1465,10 @@ Test.Aura.AuraClientServiceTest = function() {
             mockGlobal(function() {
                 target = new Aura.Services.AuraClientService();
             });
-            var mockUserAgent = Mocks.GetMock(Object.Global(), "navigator", {
-                userAgent: "Mozilla/5.0 (BlackBerry; U; BlackBerry 9900; en-US) AppleWebKit/534.11+ (KHTML, like Gecko) Version/7.0.0 Mobile Safari/534.11+"
+            var mockUserAgent = Mocks.GetMock(Object.Global(), "window", {
+                navigator: {
+                    userAgent: "Mozilla/5.0 (BlackBerry; U; BlackBerry 9900; en-US) AppleWebKit/534.11+ (KHTML, like Gecko) Version/7.0.0 Mobile Safari/534.11+"
+                }
             });
 
             var actual;
@@ -1490,7 +1494,9 @@ Test.Aura.AuraClientServiceTest = function() {
         var mockStorage = {
             clear: function() {
                 storageClearCalled = true;
-            }
+            },
+            getItem: function() {},
+            setItem: function() {}
         };
 
         var mockLocation = { reload: function() {} };
@@ -1624,10 +1630,11 @@ Test.Aura.AuraClientServiceTest = function() {
                         }
                     }
                 },
-                navigator: {
-                    userAgent: ""
+                window: {
+                    navigator: {
+                        userAgent: ""
+                    }
                 },
-                window: {},
                 history: {
                     pushState: function(state, title, url) {
                         actual = url;
@@ -1644,6 +1651,7 @@ Test.Aura.AuraClientServiceTest = function() {
             });
 
             mockDeps(function() {
+                target.shouldPreventReload = function() { return false; };
                 target.hardRefresh();
             });
 
@@ -2102,6 +2110,7 @@ Test.Aura.AuraClientServiceTest = function() {
             mockGlobal(function() {
                 target = new Aura.Services.AuraClientService();
             });
+            target.shouldPreventReload = function() { return false; };
             target.actualDumpCachesAndReload = function() { actual = expected; };
             target.reloadFunction = undefined;
             target.reloadPointPassed = true;
