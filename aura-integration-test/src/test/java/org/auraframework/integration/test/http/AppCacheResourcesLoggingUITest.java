@@ -197,7 +197,7 @@ public class AppCacheResourcesLoggingUITest extends AbstractLoggingUITest {
      */
     @TargetBrowsers({ BrowserType.GOOGLECHROME, BrowserType.IPAD, BrowserType.IPHONE })
     @Test
-    public void testCacheErrorWithEmptyCache() throws Exception {
+        public void testCacheErrorWithEmptyCache() throws Exception {
         AppDescription app = new AppDescription();
         openNoAura("/aura/application.app"); // just need a domain page to set cookie from
 
@@ -207,24 +207,24 @@ public class AppCacheResourcesLoggingUITest extends AbstractLoggingUITest {
 
         List<Request> logs = loadMonitorAndValidateApp(app, TOKEN, TOKEN, "", TOKEN);
         List<Request> expectedChange = Lists.newArrayList();
-        expectedChange.add(new Request("/auraResource", "manifest", 404)); // reset
-        expectedChange.add(new Request("/auraResource", "css", 200));
-        // FIXME: we need to differentiate here... our test mechanism hasn't kept up with our implementation
-        // there should be an app.js and an inline.js here.
-        // expectedChange.add(new Request("/auraResource", "js", 200));
+        expectedChange.add(new Request("/auraResource", "manifest", 404));  // reset
+        expectedChange.add(new Request("/auraResource", "css", 200));       // app.css
+        expectedChange.add(new Request(2, "/auraResource", "js", 200));     // app.js, inline.js, aura.js
+        expectedChange.add(new Request(getUrl(app), null, 302));            // hard refresh
+        expectedChange.add(new Request(2, "/auraResource", "manifest", 200));
         expectedChange.add(new Request(2, "/auraResource", "js", 200));
         switch (getBrowserType()) {
         case GOOGLECHROME:
-            expectedChange.add(new Request(1, getUrl(app), null, 200));
+            expectedChange.add(new Request(2, getUrl(app), null, 200));
             break;
         default:
-            expectedChange.add(new Request(getUrl(app), null, 200));
+            expectedChange.add(new Request(1, getUrl(app), null, 200));
         }
         assertRequests(expectedChange, logs);
-        assertAppCacheStatus(Status.UNCACHED);
+        assertAppCacheStatus(Status.IDLE);
         // There may be a varying number of requests, depending on when the initial manifest response is received.
         Cookie cookie = getDriver().manage().getCookieNamed(cookieName);
-        assertNull("No manifest cookie should be present", cookie);
+        assertFalse("Manifest cookie was not changed " + cookie.getValue(), "error".equals(cookie.getValue()));
     }
 
     /**
@@ -480,8 +480,9 @@ public class AppCacheResourcesLoggingUITest extends AbstractLoggingUITest {
                 new Function<WebDriver, Boolean>() {
                     @Override
                     public Boolean apply(WebDriver input) {
-                        return status.name().equals(Status.values()[Integer.parseInt(getAuraUITestingUtil().getEval(
-                                "return window.applicationCache.status;").toString())].name());
+                        String actual = Status.values()[Integer.parseInt(getAuraUITestingUtil().getEval(
+                                "return window.applicationCache.status;").toString())].name();
+                        return status.name().equals(actual);
                     }
                 },
                 "applicationCache.status was not " + status.name());
@@ -599,7 +600,7 @@ public class AppCacheResourcesLoggingUITest extends AbstractLoggingUITest {
                 },
                 10,
                 "fail waiting on application cache not to be Downloading or Checking before clicking on 'clickableme'");
-
+        Thread.sleep(200);
         getAuraUITestingUtil()
                 .waitUntil(
                         new Function<WebDriver, WebElement>() {
