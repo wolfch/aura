@@ -678,11 +678,6 @@ AuraClientService.prototype.releaseXHR = function(auraXHR) {
  */
 AuraClientService.prototype.hardRefresh = function() {
     var url = location.href;
-
-    if (this.shouldPreventReload()) {
-        throw new $A.auraError("There were too many attempts to load the page. Please reload the page.");
-    }
-
     if (!this.isManifestPresent() || url.indexOf("?nocache=") > -1) {
         location.reload(true);
         return;
@@ -760,51 +755,8 @@ AuraClientService.prototype.dumpCachesAndReload = function() {
     this.reloadFunction = this.actualDumpCachesAndReload.bind(this);
 
     if (this.reloadPointPassed) {
-        if (this.shouldPreventReload()) {
-            throw new $A.auraError("There were too many attempts to load the page. Please reload the page.");
-        }
         this.reloadFunction();
     }
-};
-
-/**
- * Tracks reloads issued by hardRefresh and dumpCachesAndReload.
- * If 5 occur within 15 seconds, we halt, clear client storages,
- * and return true for the consumer to handle.
- *
- * @returns {boolean} true if reloaded 6 times within 10 seconds
- */
-AuraClientService.prototype.shouldPreventReload = function() {
-    // Only enable for production modes. We want to be able to see reloading in other modes to investigate.
-    //#if {"modes" : ["PRODUCTION", "PRODUCTIONDEBUG"]}
-    var ls = window.localStorage;
-    if (ls) {
-        var reloadStartKey = "aura.reload.start";
-        var reloadCountKey = "aura.reload.count";
-        var now = Date.now();
-        var reloadCount = 0;
-        var reloadStart = +ls.getItem(reloadStartKey);
-        if (reloadStart && now - reloadStart < 15000) {
-            reloadCount = +ls.getItem(reloadCountKey);
-            if (reloadCount > 4) {
-                // more than 4 reloads in 15 seconds
-                var idb = window.indexedDB;
-                if (idb) {
-                    // if inline.js fails, none of the storages are initialized
-                    // so must brute force as methods in ComponentDefStorage won't work.
-                    idb.deleteDatabase("actions");
-                    idb.deleteDatabase("ComponentDefStorage");
-                    idb.deleteDatabase("ComponentDefRegistry");
-                }
-                return true;
-            }
-        } else {
-            ls.setItem(reloadStartKey, now);
-        }
-        ls.setItem(reloadCountKey, reloadCount + 1);
-    }
-    //#end
-    return false;
 };
 
 AuraClientService.prototype.handleAppCache = function() {
