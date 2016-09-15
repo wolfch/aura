@@ -51,5 +51,6 @@
 
     unrender: function(component, helper) {
         helper.lib.interactive.removeDomEventsFromMap(component);
+        component.superUnrender();
     }
 });
