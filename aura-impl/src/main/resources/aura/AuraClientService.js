@@ -620,10 +620,6 @@ AuraClientService.prototype.isBB10 = function() {
     return (ua.indexOf("BB10") > 0 && ua.indexOf("AppleWebKit") > 0);
 };
 
-AuraClientService.prototype.isFirefox = function() {
-    return window.navigator.userAgent.indexOf("Firefox") > 0;
-};
-
 AuraClientService.prototype.getManifestURL = function() {
     var htmlNode = document.body.parentNode;
     return htmlNode ? htmlNode.getAttribute("manifest") : null;
@@ -859,9 +855,12 @@ AuraClientService.prototype.handleAppCache = function() {
         if (window.applicationCache.status === window.applicationCache.OBSOLETE) {
             return;
         }
-        // Firefox always calls this error handler when uncached regardless of js status.
+        
+        var ua = window.navigator.userAgent;
+        var compatibleUserAgents = ua.indexOf("Chrome") > 0 || ua.indexOf("Safari") > 0 || ua.indexOf("Edge") > 0;
+        // Browsers other than Chrome, Safari, Edge always calls this error handler when uncached regardless of js status.
         // Thus, it needs special handling and we cannot call hardRefresh as we do below.
-        if (acs.isFirefox() && window.applicationCache.status === window.applicationCache.UNCACHED) {
+        if (!compatibleUserAgents && window.applicationCache.status === window.applicationCache.UNCACHED) {
             // set timeout and check for missing bootstrap metric variables for app.js and inline.js
             // then hardRefresh if those variables for not set. They are set in the valid response.
             window.setTimeout(function() {
@@ -869,7 +868,7 @@ AuraClientService.prototype.handleAppCache = function() {
                 if ((bootstrap && (!bootstrap["execAppJs"] || !bootstrap["execInlineJs"])) || Aura["appJsStatus"] === "failed") {
                     acs.hardRefresh();
                 }
-            }, 6000); // six seconds
+            }, 8000);
             return;
         }
 
