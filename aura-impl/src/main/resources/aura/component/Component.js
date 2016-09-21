@@ -1009,7 +1009,7 @@ Component.prototype.getRendering = function() {
 /**
  * Returns the super component.
  *
- * @protected
+ * @public
  * @platform
  * @export
  */
