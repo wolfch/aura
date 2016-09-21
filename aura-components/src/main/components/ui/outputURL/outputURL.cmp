@@ -18,6 +18,7 @@
 <aura:component access="GLOBAL" support="GA" implements="ui:visible" extensible="true" description="Displays a link to a URL as specified by the value attribute, rendered on a given text (label attribute) and image, if any.">
 
     <aura:import library="ui:eventLib" property="lib"/>
+    <aura:import library="ui:urlLib" property="urlLib"/>
 
     <aura:attribute access="GLOBAL" name="iconClass" type="String" description="The CSS style used to display the icon or image."/>
     <aura:attribute access="GLOBAL" name="title" type="String" default="" description="The text to display as a tooltip when the mouse pointer hovers over this component."/>
@@ -26,6 +27,8 @@
     <aura:attribute access="GLOBAL" name="alt" type="String" description="The alternate text description for image (used when there is no label)"/>
     <aura:attribute access="GLOBAL" name="label" type="String" description="The text displayed on the component."/>
     <aura:attribute access="GLOBAL" name="disabled" type="Boolean" default="false" description="Specifies whether the component should be displayed in a disabled state. Default value is &quot;false&quot;."/>
+
+    <aura:attribute access="PRIVATE" name="absoluteURL" type="String" description="The text displayed when this component is rendered."/>
 
     <aura:attribute name="stopPropagation" type="Boolean" default="false" description="Prevents the click event from bubbling up the DOM tree, preventing any parent handlers from being notified of the event."/>
 
@@ -37,6 +40,6 @@
 
     <aura:locator target="link" description="Url link"/>
 
-    <a aura:id="link" class="{!v.class}" dir="{!v.dir}" href="{!v.value}" title="{!v.title}" onclick="{!c.click}" target="{!v.target}"></a>
+    <a aura:id="link" class="{!v.class}" dir="{!v.dir}" href="{!v.absoluteURL}" title="{!v.title}" onclick="{!c.click}" target="{!v.target}"></a>
 
 </aura:component>
