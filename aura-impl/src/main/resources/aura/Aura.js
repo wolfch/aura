@@ -177,20 +177,6 @@ window['$A'] = {};
 // #include {"excludeModes" : ["PRODUCTION", "PRODUCTIONDEBUG"], "path" : "aura.AuraDevToolService"}
 
 //-- LockerService -----------------------------------------------------------
-//#include aura.locker.SecureObject
-//#include aura.locker.SecureDOMEvent
-//#include aura.locker.SecureIFrameElement
-//#include aura.locker.SecureElement
-//#include aura.locker.SecureScriptElement
-//#include aura.locker.SecureDocument
-//#include aura.locker.SecureAura
-//#include aura.locker.SecureNavigator
-//#include aura.locker.SecureXMLHttpRequest
-//#include aura.locker.SecureWindow
-//#include aura.locker.SecureAuraEvent
-//#include aura.locker.SecureAction
-//#include aura.locker.SecureComponent
-//#include aura.locker.SecureComponentRef
 //#include aura.locker.LockerService
 
 /**
