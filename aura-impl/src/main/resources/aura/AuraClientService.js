@@ -856,19 +856,29 @@ AuraClientService.prototype.handleAppCache = function() {
             return;
         }
         
-        var ua = window.navigator.userAgent;
-        var compatibleUserAgents = ua.indexOf("Chrome") > 0 || ua.indexOf("Safari") > 0 || ua.indexOf("Edge") > 0;
-        // Browsers other than Chrome, Safari, Edge always calls this error handler when uncached regardless of js status.
-        // Thus, it needs special handling and we cannot call hardRefresh as we do below.
-        if (!compatibleUserAgents && window.applicationCache.status === window.applicationCache.UNCACHED) {
-            // set timeout and check for missing bootstrap metric variables for app.js and inline.js
+        if (window.applicationCache.status === window.applicationCache.UNCACHED) {
+            // set timeout and check for inlinejs ready and bootstrap metric variables for app.js and inline.js
             // then hardRefresh if those variables for not set. They are set in the valid response.
-            window.setTimeout(function() {
-                var bootstrap = window["Aura"]["bootstrap"];
-                if ((bootstrap && (!bootstrap["execAppJs"] || !bootstrap["execInlineJs"])) || Aura["appJsStatus"] === "failed") {
+            var checkJsTimeout = window.setTimeout(function() {
+                var bootstrap = Aura["bootstrap"];
+                if ((!Aura["inlineJsReady"] && bootstrap && !bootstrap["execInlineJs"]) || Aura["appJsStatus"] === "failed") {
                     acs.hardRefresh();
                 }
-            }, 8000);
+            }, 9800);
+            
+            var clearRefreshTimeout = function() {
+               window.clearTimeout(checkJsTimeout); 
+            };
+            
+            // no need to call function above if we successfully loaded so clearTimeout
+            // handleAppcacheError handler is called at difference times in different browsers
+            // so clear timeout before and after init. At those points, the framework is already
+            // loading and we wouldn't have any js issues.
+            Aura["beforeFrameworkInit"] = Aura["beforeFrameworkInit"] || [];
+            Aura["beforeFrameworkInit"].push(clearRefreshTimeout);
+            Aura["afterFrameworkInit"] = Aura["afterFrameworkInit"] || [];
+            Aura["afterFrameworkInit"].push(clearRefreshTimeout);
+            
             return;
         }
 
@@ -898,9 +908,7 @@ AuraClientService.prototype.handleAppCache = function() {
             // fallback for inline.js and app.js failures
             || Aura["appJsStatus"] === "failed"
             // see above note for BB10
-            || acs.isBB10()
-            // if there is no application cache, best thing we can do is reload or we'll be stuck
-            || window.applicationCache.status === window.applicationCache.UNCACHED) {
+            || acs.isBB10()) {
             // force a server trip to allow for a server-side redirect or get a new manifest.
             acs.hardRefresh();
         } else {
