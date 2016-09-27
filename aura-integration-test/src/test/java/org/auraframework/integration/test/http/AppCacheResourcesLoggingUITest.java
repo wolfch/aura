@@ -208,23 +208,23 @@ public class AppCacheResourcesLoggingUITest extends AbstractLoggingUITest {
         List<Request> logs = loadMonitorAndValidateApp(app, TOKEN, TOKEN, "", TOKEN);
         List<Request> expectedChange = Lists.newArrayList();
         expectedChange.add(new Request("/auraResource", "manifest", 404));  // reset
-        expectedChange.add(new Request("/auraResource", "css", 200));
-        // FIXME: we need to differentiate here... our test mechanism hasn't kept up with our implementation
-        // there should be an app.js and an inline.js here.
-        // expectedChange.add(new Request("/auraResource", "js", 200));
+        expectedChange.add(new Request("/auraResource", "css", 200));       // app.css
+        expectedChange.add(new Request(2, "/auraResource", "js", 200));     // app.js, inline.js, aura.js
+        expectedChange.add(new Request(getUrl(app), null, 302));            // hard refresh
+        expectedChange.add(new Request(2, "/auraResource", "manifest", 200));
         expectedChange.add(new Request(2, "/auraResource", "js", 200));
         switch (getBrowserType()) {
         case GOOGLECHROME:
-            expectedChange.add(new Request(1, getUrl(app), null, 200));
+            expectedChange.add(new Request(2, getUrl(app), null, 200));
             break;
         default:
-            expectedChange.add(new Request(getUrl(app), null, 200));
+            expectedChange.add(new Request(1, getUrl(app), null, 200));
         }
         assertRequests(expectedChange, logs);
-        assertAppCacheStatus(Status.UNCACHED);
+        assertAppCacheStatus(Status.IDLE);
         // There may be a varying number of requests, depending on when the initial manifest response is received.
         Cookie cookie = getDriver().manage().getCookieNamed(cookieName);
-        assertNull("No manifest cookie should be present", cookie);
+        assertFalse("Manifest cookie was not changed " + cookie.getValue(), "error".equals(cookie.getValue()));
     }
 
     /**
