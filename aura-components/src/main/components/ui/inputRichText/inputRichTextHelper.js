@@ -45,7 +45,9 @@
                 //use a flag here prevent the component rerender every time the value is changed
                 //It is also used to prevent the editor content getting set again in the value change handler
                 //change event still fires even if "ignoreChange"(third argument) is set to true if v.value is an expression
+                cmp.getConcreteComponent()._updatingValue = true;
                 cmp.set('v.value', content);
+                cmp.getConcreteComponent()._updatingValue = false;
             }
         }
 	},
