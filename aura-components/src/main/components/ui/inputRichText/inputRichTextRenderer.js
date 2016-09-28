@@ -23,8 +23,9 @@
 	},
 
 	rerender: function (cmp, helper) {
-		if (cmp.getConcreteComponent()._updatingValue) {
-			//don't rerender when updating value
+		var neverRerender = $A.util.getBooleanValue(cmp.get('v.neverRerender'));
+		if (neverRerender || cmp.getConcreteComponent()._updatingValue) {
+			//don't rerender in these cases
 			return;
 		}
 		var shouldRender = false;

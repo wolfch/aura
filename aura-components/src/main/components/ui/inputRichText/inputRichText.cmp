@@ -26,7 +26,9 @@
 	<aura:attribute access="GLOBAL" name="width" type="String"  description="The editor UI outer width. This can be an integer, for pixel sizes, or any CSS-defined unit. If isRichText is set to false, use the cols attribute instead." />
 	<aura:attribute access="GLOBAL" name="height" type="String" default="200" description="The height of the editing area (that includes the editor content). This can be an integer, for pixel sizes, or any CSS-defined length unit." />
 	
-	<aura:attribute name="isRichText" type="Boolean" default="true" description="Indicates if the input is in rich text or plain text. If set to false, a text area replaces the rich text editor." />	
+	<aura:attribute name="isRichText" type="Boolean" default="true" description="Indicates if the input is in rich text or plain text. If set to false, a text area replaces the rich text editor." />
+
+    <aura:attribute name="neverRerender" type="Boolean" default="false" description="Prevent this component from re-rendering. For internal use only." access="INTERNAL" />	
 	
  	<aura:handler event="ui:toggleRichText" action="{!c.toggle}" description="Handler for ui:toggleRichText event" />
      
