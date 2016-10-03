@@ -370,13 +370,9 @@ public class ServletUtilAdapterImpl implements ServletUtilAdapter {
     public List<String> getFrameworkFallbackScripts(AuraContext context, boolean safeInlineJs, Map<String,Object> attributes)
         throws QuickFixException {
         List<String> ret = Lists.newArrayList();
-        // TODO W-3269340 use fallback url for all required files to boot aura: aura_*.js, libs_*.js
-        // Failures with aura_*.js and libs_*.js are less likely because they are static resource files.
+        // appcache fallback can only use for items NOT listed in the CACHE section of the manifest
         ret.add(getBootstrapUrl(context, attributes) + " " + getBootstrapFallbackUrl(context, attributes));
         ret.add(configAdapter.getEncryptionKeyURL(true) + " " + configAdapter.getEncryptionKeyFallbackURL(true));
-        ret.add(getInlineJsUrl(context, attributes) + " " + getJsFallbackUrl(context));
-        ret.add(getAppJsUrl(context, attributes) + " " + getJsFallbackUrl(context));
-
         return ret;
     }
 
@@ -432,13 +428,6 @@ public class ServletUtilAdapterImpl implements ServletUtilAdapter {
     @Override
     public String getInlineJsUrl(AuraContext context, Map<String,Object> attributes) {
         return commonJsUrl("/inline.js", context, attributes);
-    }
-
-    @Override
-    public String getJsFallbackUrl(AuraContext context) {
-        String contextPath = context.getContextPath();
-        String nonce = context.getFrameworkUID();
-        return String.format("%s/auraFW/resources/%s/aura/fallback/fallback.resource.js", contextPath, nonce);
     }
 
     @Override

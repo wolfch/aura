@@ -879,7 +879,7 @@ AuraClientService.prototype.handleAppCache = function() {
             // then hardRefresh if those variables for not set. They are set in the valid response.
             var checkJsTimeout = window.setTimeout(function() {
                 var bootstrap = Aura["bootstrap"];
-                if ((!Aura["inlineJsReady"] && bootstrap && !bootstrap["execInlineJs"]) || Aura["appJsStatus"] === "failed") {
+                if ((!Aura["inlineJsReady"] && bootstrap && !bootstrap["execInlineJs"])) {
                     acs.hardRefresh();
                 }
             }, 9800);
@@ -921,12 +921,8 @@ AuraClientService.prototype.handleAppCache = function() {
             return;
         }
 
-        // if server bootstrap and cached bootstrap failed
-        if ((Aura["appBootstrapStatus"] === "failed" && Aura["appBootstrapCacheStatus"] === "failed")
-            // fallback for inline.js and app.js failures
-            || Aura["appJsStatus"] === "failed"
-            // see above note for BB10
-            || acs.isBB10()) {
+        // if server bootstrap and cached bootstrap failed or is BB10 (see note above)
+        if ((Aura["appBootstrapStatus"] === "failed" && Aura["appBootstrapCacheStatus"] === "failed") || acs.isBB10()) {
             // force a server trip to allow for a server-side redirect or get a new manifest.
             acs.hardRefresh();
         }
@@ -970,8 +966,7 @@ AuraClientService.prototype.handleAppCache = function() {
         // if the boot sequence is beyond bootstrap.js and fallback directives have been used then
         // reload the page to get the non-fallback values. must do only location.reload();
         // appcache.swapCache() nor hardRefresh() create the desired behavior.
-        if ((Aura["appBootstrapStatus"] === "failed" && Aura["appBootstrapCacheStatus"] === "failed")
-            || Aura["appJsStatus"] === "failed") {
+        if (Aura["appBootstrapStatus"] === "failed" && Aura["appBootstrapCacheStatus"] === "failed") {
             window.location.reload();
         }
     }
