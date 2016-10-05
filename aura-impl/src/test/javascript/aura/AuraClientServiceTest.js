@@ -1398,12 +1398,13 @@ Test.Aura.AuraClientServiceTest = function() {
                 };
 
                 try {
+                    var expected = false;
+                    target.dumpCachesAndReload = function() {
+                        expected = true;
+                    }
                     target.setParallelBootstrapLoad(false);
                     actual = target.getAppBootstrap();
-                    Assert.fail("Expecting an error.");
-                } catch(e) {
-                    var expected = "AuraClientService.getAppBootstrap: bootstrap.js failed to load from network or cache";
-                    Assert.Equal(expected, e.message);
+                    Assert.True(expected);
                 } finally {
                     delete window["applicationCache"];
                     delete Aura["appBootstrapStatus"];
