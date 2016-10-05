@@ -682,7 +682,8 @@ AuraClientService.prototype.hardRefresh = function() {
     var url = location.href;
 
     if (this.shouldPreventReload()) {
-        throw new $A.auraError("Please reload the page.");
+        this.showErrorDialogWithReload(new AuraError("We got stuck in a loop while loading the page. Please click Refresh."));
+        return;
     }
 
     if (!this.isManifestPresent() || url.indexOf("?nocache=") > -1) {
@@ -763,7 +764,8 @@ AuraClientService.prototype.dumpCachesAndReload = function() {
 
     if (this.reloadPointPassed) {
         if (this.shouldPreventReload()) {
-            throw new $A.auraError("Please reload the page.");
+            this.showErrorDialogWithReload(new AuraError("We got stuck in a loop while loading the page. Please click Refresh."));
+            return;
         }
         this.reloadFunction();
     }
@@ -811,6 +813,22 @@ AuraClientService.prototype.clearReloadCount = function() {
     document.cookie = this._reloadCountKey + "=0; expires=Thu, 01 Jan 1970 00:00:00 GMT";
 };
 
+/**
+ * Shows error dialog with reload button
+ *
+ * @param {AuraError} e error object
+ * @private
+ */
+AuraClientService.prototype.showErrorDialogWithReload = function(e) {
+    if (e && e.message) {
+        $A.message(e.message, e, true);
+        $A.logger.reportError(e);
+    }
+};
+
+/**
+ * Sets up listeners for appcache.
+ */
 AuraClientService.prototype.handleAppCache = function() {
 
     var acs = this;

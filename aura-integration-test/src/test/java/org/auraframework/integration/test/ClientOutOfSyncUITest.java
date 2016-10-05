@@ -66,7 +66,7 @@ public class ClientOutOfSyncUITest extends WebDriverTestCase {
                         baseComponentTag,
                         "controller='java://org.auraframework.components.test.java.controller.JavaTestController' "
                                 + attrs,
-                        "<button onclick='{!c.post}'>post</button>" + body));
+                        "<button class='button' onclick='{!c.post}'>post</button>" + body));
         DefDescriptor<?> controllerDesc = definitionService
                 .getDefDescriptor(cmpDesc, DefDescriptor.JAVASCRIPT_PREFIX,
                         ControllerDef.class);
@@ -106,7 +106,7 @@ public class ClientOutOfSyncUITest extends WebDriverTestCase {
         if (isIE()) {
             waitFor(3);
         }
-        getAuraUITestingUtil().findDomElement(By.cssSelector("button")).click();
+        getAuraUITestingUtil().findDomElement(By.cssSelector("button.button")).click();
         if (isIE()) {
             waitFor(3);
         }
@@ -323,7 +323,7 @@ public class ClientOutOfSyncUITest extends WebDriverTestCase {
         assertEquals("free", getText(By.cssSelector("#sample")));
         updateStringSource(cmpDesc, String.format(baseComponentTag,
                 "controller='java://org.auraframework.components.test.java.controller.JavaTestController'",
-                "<button onclick='{!c.post}'>post</button><div id='sample'>deposit</div>"));
+                "<button class='button' onclick='{!c.post}'>post</button><div id='sample'>deposit</div>"));
         triggerServerAction();
         getAuraUITestingUtil().waitForElementText(By.cssSelector("#sample"), "deposit", true);
     }
@@ -422,7 +422,7 @@ public class ClientOutOfSyncUITest extends WebDriverTestCase {
                 String.format(
                         baseComponentTag,
                         "controller='java://org.auraframework.components.test.java.controller.JavaTestController'",
-                        "<button onclick='{!c.post}'>post</button><div id='click' onclick='{!c.clicked}'>click</div>"));
+                        "<button class='button' onclick='{!c.post}'>post</button><div id='click' onclick='{!c.clicked}'>click</div>"));
         DefDescriptor<?> controllerDesc = definitionService
                 .getDefDescriptor(cmpDesc, DefDescriptor.JAVASCRIPT_PREFIX,
                         ControllerDef.class);
@@ -473,7 +473,7 @@ public class ClientOutOfSyncUITest extends WebDriverTestCase {
                         String.format(
                                 "controller='java://org.auraframework.components.test.java.controller.JavaTestController' provider='%s'",
                                 providerDesc.getQualifiedName()),
-                        "<button onclick='{!c.post}'>post</button><aura:attribute name='given' type='string' default=''/><div id='result'>{!v.given}</div>"));
+                        "<button class='button' onclick='{!c.post}'>post</button><aura:attribute name='given' type='string' default=''/><div id='result'>{!v.given}</div>"));
         DefDescriptor<?> controllerDesc = definitionService
                 .getDefDescriptor(cmpDesc, DefDescriptor.JAVASCRIPT_PREFIX,
                         ControllerDef.class);

@@ -72,6 +72,8 @@ public abstract class BaseComponentDefHTMLFormatAdapter<T extends BaseComponentD
                 attributes.put("auraInlineStyle", styleDefDesc.getDef().getCode());
             }
 
+            attributes.put("auraReloadNonce", System.currentTimeMillis());
+
             String contextPath = context.getContextPath();
             Mode mode = context.getMode();
 
@@ -87,7 +89,7 @@ public abstract class BaseComponentDefHTMLFormatAdapter<T extends BaseComponentD
                 if (manifestUtil.isManifestEnabled()) {
                     attributes.put("manifest", Aura.getServletUtilAdapter().getManifestUrl(context, componentAttributes));
                 }
-                
+
                 sb.setLength(0);
                 writeHtmlScripts(context, Aura.getServletUtilAdapter().getFrameworkScripts(context, true/*inlineJS*/, false/*dontIgnoreBootstrap*/, componentAttributes), false/*async*/, sb);
                 attributes.put("auraNamespacesScriptTags", sb.toString());
@@ -108,7 +110,7 @@ public abstract class BaseComponentDefHTMLFormatAdapter<T extends BaseComponentD
                 auraInit.put("descriptor", value.getDescriptor());
                 auraInit.put("deftype", value.getDescriptor().getDefType());
                 auraInit.put("host", contextPath);
-                
+
                 String lockerWorkerURL = configAdapter.getLockerWorkerURL();
                 if (lockerWorkerURL != null) {
                 	auraInit.put("safeEvalWorker", lockerWorkerURL);

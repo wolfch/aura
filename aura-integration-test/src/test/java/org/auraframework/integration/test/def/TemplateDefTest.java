@@ -197,7 +197,7 @@ public class TemplateDefTest extends AuraImplTestCase {
 
     /**
      * Valid usage of script tags.
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -228,7 +228,7 @@ public class TemplateDefTest extends AuraImplTestCase {
 
     /**
      * Invalid usage of script tags.
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -274,7 +274,7 @@ public class TemplateDefTest extends AuraImplTestCase {
         Pattern scriptPattern = Pattern.compile("<script src=\"firstThingDefault\" type=\"text/javascript\"|<script type=\"text/javascript\" src=\"firstThingDefault\"");
         Pattern stylePattern = Pattern.compile("<script src=\"readonly\" type=\"text/javascript\"|<script type=\"text/javascript\" src=\"readonly\"");
         Pattern metaPattenr = Pattern.compile("<meta content=\"testtest\" name=\"firstThingDefault\"|<meta name=\"firstThingDefault\" content=\"testtest\"");
-        
+
         assertTrue("extraScriptTags attribute on aura:template could not retrieve value off model", scriptPattern.matcher(result).find());
         assertTrue("extraStyleTags attribute on aura:template could not retrieve value off model",stylePattern.matcher(result).find());
         assertTrue("extraMetaTags attribute on aura:template could not retrieve value off model",metaPattenr.matcher(result).find());
@@ -296,26 +296,26 @@ public class TemplateDefTest extends AuraImplTestCase {
             }
         }
     }
-    
+
     /**
      * Verify the new errorTitle attribute, with default error message.
      */
     @Test
-    public void testDefaultErrorTitleAttributeInTemplate() throws Exception {    	       
+    public void testDefaultErrorTitleAttributeInTemplate() throws Exception {
         DefDescriptor<ComponentDef> errorTitleIntemplate = addSourceAutoCleanup(
                 ComponentDef.class,
                 String.format(
                         baseComponentTag,
                         "isTemplate='true' extends='aura:template' ",
                         ""));
-        
+
         StringBuffer sb = new StringBuffer();
         Component template = Aura.getInstanceService().getInstance(errorTitleIntemplate);
         Aura.getRenderingService().render(template, sb);
         String result = sb.toString();
         assertTrue("errorTitle attribute on aura:template has wrong text: "+result,
-                result.contains("Looks like there's a problem:"));
-        
+                result.contains("Sorry to interrupt"));
+
     }
 
     /**
@@ -323,19 +323,19 @@ public class TemplateDefTest extends AuraImplTestCase {
      */
     @Test
     public void testCustomErrorTitleAttributeInTemplate() throws Exception {
-    	String errorTitle = "<aura:set attribute='errorTitle' value='Looks like theres a problem.'></aura:set>";        
+    	String errorTitle = "<aura:set attribute='errorTitle' value='Looks like theres a problem.'></aura:set>";
         DefDescriptor<ComponentDef> errorTitleIntemplate = addSourceAutoCleanup(
                 ComponentDef.class,
                 String.format(
                         baseComponentTag,
                         "isTemplate='true' extends='aura:template' ",
                         errorTitle));
-        
+
         StringBuffer sb = new StringBuffer();
         Component template = Aura.getInstanceService().getInstance(errorTitleIntemplate);
         Aura.getRenderingService().render(template, sb);
         String result = sb.toString();
         assertTrue("errorTitle attribute on aura:template has wrong text",
-                result.contains("Looks like theres a problem."));              
+                result.contains("Looks like theres a problem."));
     }
 }

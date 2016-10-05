@@ -816,7 +816,7 @@ AuraInstance.prototype.addDefaultErrorHandler = function (app) {
         "globalId": app.getGlobalId(),
         "handler": function(event) {
             if (event["handled"]) { return; }
-            $A.message(event.getParam("message"));
+            $A.message(event.getParam("message"), event.getParam("auraError"));
             event["handled"] = true;
         }
     });
@@ -897,13 +897,10 @@ AuraInstance.prototype.handleError = function(message, e) {
             e.severity = e.severity || this.severity.QUIET;
             evtArgs = {"message":e["message"],"error":e["name"],"auraError":e};
         } else if (e instanceof $A.auraError) {
-            var format = "Something has gone wrong. {0}.\nPlease try again.\n";
-            var displayMessage = e.message || e.name;
+            var format = "This page has an error. You might just need to refresh it.\n{0}";
             e.severity = e.severity || this.severity["ALERT"];
+            var displayMessage = e.message || e.name;
             displayMessage += "\n" + (e.component ? "Failing descriptor: {" + e.component + "}" : "");
-            //#if {"excludeModes" : ["PRODUCTION", "PRODUCTIONDEBUG"]}
-            displayMessage += "\n" + e.stackTrace;
-            //#end
             dispMsg = $A.util.format(format, displayMessage);
             // use null error string to specify non auraFriendlyError type.
             evtArgs = {"message":dispMsg,"error":null,"auraError":e};
@@ -917,7 +914,7 @@ AuraInstance.prototype.handleError = function(message, e) {
         }, 0);
     } else {
         if ($A.showErrors()) {
-            $A.message(dispMsg);
+            $A.message(dispMsg, e);
         }
     }
 };
@@ -976,8 +973,10 @@ AuraInstance.prototype.warning = function(w, e) {
  *
  * @public
  * @param {String} msg The message to display.
+ * @param {Error} error object
+ * @param {Boolean} showReload whether to show reload button in dialog
  */
-AuraInstance.prototype.message = function(msg) {
+AuraInstance.prototype.message = function(msg, error, showReload) {
     if (!this.displayErrors) {
         return;
     }
@@ -986,8 +985,31 @@ AuraInstance.prototype.message = function(msg) {
     message.innerHTML = "";
     message.appendChild(document.createTextNode(msg));
 
+    //#if {"excludeModes" : ["PRODUCTION", "PRODUCTIONDEBUG"]}
+    if (error && error.stackTrace) {
+        var auraErrorStack = $A.util.getElement("auraErrorStack");
+        auraErrorStack.innerHTML = "";
+        var stack = error.stackTrace;
+
+        if (stack.trim) {
+            stack = stack.trim();
+        } else if ($A.util.isArray(stack)) {
+            for (var i = 0; i < stack.length; i++) {
+                stack[i] = stack[i].trim();
+            }
+            stack = stack.join("\n");
+        }
+        auraErrorStack.appendChild(document.createTextNode(stack));
+    }
+    //#end
+
     $A.util.removeClass(document.body, "loading");
-    $A.util.addClass(document.body, "auraError");
+
+    if (showReload) {
+        $A.util.addClass($A.util.getElement("auraErrorReload"), "show");
+    }
+
+    $A.util.addClass($A.util.getElement("auraErrorMask"), "auraForcedErrorBox");
 };
 
 /**

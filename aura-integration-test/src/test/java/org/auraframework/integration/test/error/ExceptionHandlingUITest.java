@@ -43,7 +43,7 @@ public class ExceptionHandlingUITest extends WebDriverTestCase {
 
     private static final String baseAppTag = "<aura:application access='GLOBAL' %s>%s</aura:application>";
 
-    private static final String errorBoxPath = "//div[@class='auraMsgMask auraForcedErrorBox']//div[@id='auraErrorMessage']";
+    private static final String errorBoxPath = "div.auraForcedErrorBox div#auraErrorMessage";
 
     private void setProdConfig() throws Exception {
         ServletConfigController.setProductionConfig(true);
@@ -72,7 +72,7 @@ public class ExceptionHandlingUITest extends WebDriverTestCase {
      * exception message. W-1308475 - Never'd removal/change of duplicate div#auraErrorMessage
      */
     private void assertNoStacktraceServerRendering() throws Exception {
-        WebElement elem = findDomElement(By.xpath(errorBoxPath));
+        WebElement elem = findDomElement(By.cssSelector(errorBoxPath));
         if (elem == null) {
             fail("error message not found");
         }
@@ -90,7 +90,7 @@ public class ExceptionHandlingUITest extends WebDriverTestCase {
      * exception message. W-1308475 - Never'd removal/change of duplicate div#auraErrorMessage
      */
     private void assertStacktraceServerRendering(String messageStartsWith, String... causeStartsWith) throws Exception {
-        WebElement elem = findDomElement(By.xpath(errorBoxPath));
+        WebElement elem = findDomElement(By.cssSelector(errorBoxPath));
         if (elem == null) {
             fail("error message not found");
         }
