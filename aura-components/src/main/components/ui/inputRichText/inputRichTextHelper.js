@@ -100,35 +100,6 @@
 				}
 			}));
 		}
-	},
-
-	// waitForCKEditor does not preserve context, make sure to use $A.getCallback on it
-    NO_OF_RETRIES : 5,
-    waitForCKEditor: function(cmp, callback) {
-        var nonTestModes = ["PROD", "PRODDEBUG", "DEV", "PTEST"];
-        var currentMode = $A.getContext().getMode();
-        if (nonTestModes.indexOf(currentMode) !== -1){
-            var retryCounter = this.NO_OF_RETRIES;
-            var intervalID = setInterval(function() {
-                if (retryCounter-- === 0) {
-                    $A.warning("Richtext editor library could not be loaded");
-                    clearInterval(intervalID);
-                    return;
-                }
-
-                if (!this.isLibraryLoaded(cmp)) {
-                    // need to retry again
-                    $A.warning("Richtext editor library is not loaded yet. Retrying");
-                } else {
-                    // library loaded
-                    clearInterval(intervalID);
-                    callback();
-                }
-            }, 100);
-        } else {
-            // prod mode, just run it
-            callback();
-        }
     },
 
 	isLibraryLoaded: function() {
