@@ -96,7 +96,7 @@ public class LockerServiceAPIShapeUITest extends WebDriverTestCase {
 
 		ContextService contextService = Aura.getContextService();
         contextService.startContext(Mode.FTEST, Format.JSON, Authentication.UNAUTHENTICATED);
-        JsonSerializationContext jsonSerializationContext = getJsonSerializationContext();
+        JsonSerializationContext jsonSerializationContext = contextService.getCurrentContext().getJsonSerializationContext();
         
         // Convert from map to json string and then back again to end up with a mutable map (the map returned from getEval() is immutable)
         StringBuilder json = new StringBuilder();

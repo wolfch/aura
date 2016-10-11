@@ -1,4 +1,4 @@
-markup://ui:outputNumber : uUUU5f6rYXX_5l-Shq7otQ
+markup://ui:outputNumber : SjtRIyQVTMu9n9zhGTEzZw
 aura://Boolean : null
 aura://Integer : null
 aura://String : null

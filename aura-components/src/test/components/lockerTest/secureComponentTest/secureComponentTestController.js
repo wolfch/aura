@@ -104,7 +104,7 @@
         testUtils.assertStartsWith("SecureAction", clientAction.toString(), "Expected to receive a SecureAction" +
             "when requesting a client action using component.get()");
 
-        var serverAction = cmp.get("c.getNamedComponent")
+        var serverAction = cmp.get("c.doSomething")
         testUtils.assertStartsWith("SecureAction", serverAction.toString(), "Expected to receive a SecureAction" +
             "when requesting a server action using component.get()");
     },
