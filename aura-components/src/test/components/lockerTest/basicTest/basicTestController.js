@@ -178,13 +178,11 @@
         testUtils.assertUndefined(this, "'this' in controller method should be undefined");
     },
     
-    testCtorAannotation: function(cmp) {
-    	var message = "Hi from LS";
-    	var text = new Text(message);
-
+    testCtorAnnotation: function(cmp) {
         var testUtils = cmp.get("v.testUtils");
-        testUtils.assertStartsWith("SecureElement", text.toString(), "Expected result of new Text() to be a SecureElement");
-        testUtils.assertEquals(message, text.textContent);
+        var audio = new Audio();
+        testUtils.assertStartsWith("SecureElement", audio.toString(), "Expected result of new Audio() to be a SecureElement");
+        testUtils.assertTrue(audio.toString().indexOf("HTMLAudioElement") > 0, "Expected result of new Audio() to be an HTMLAudioElement");
     },
     
     testSecureElementPrototypeCounterMeasures: function(cmp) {
