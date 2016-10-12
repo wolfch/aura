@@ -22,7 +22,9 @@
 		// we give the browser enough time to set the focus on another element and fire the change event
 		window.requestAnimationFrame($A.getCallback(function() {
 			// now we finally have the new value!
-			this._submit(cmp);
+			if (cmp.isValid()) {
+			    this._submit(cmp);
+			}
 		}.bind(this)));
 	},
 
