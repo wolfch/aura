@@ -54,7 +54,6 @@
     <aura:attribute name="manifest"                 type="String"                  description="Specifies the location of the document's cache manifest. Works with HTML5 only."/>
     <aura:attribute name="lastMod"                  type="String"                  description="The last modified date."/>
     <aura:attribute name="afterAuraInit"            type="String"                  description="Not used."/>
-    <aura:attribute name="auraReloadNonce"          type="String"                  description="Bootstrap reload cache-busting nonce"/>
 
     <!-- Default initial CSS -->
     <aura:attribute name="inlineStyle" type="Aura.Component[]" description="The CSS style used to display inline elements">
@@ -103,7 +102,7 @@ var pageStartTime = (new Date()).getTime();</script>
             <div id="auraErrorMessage">{!v.errorMessage}</div>
             <div id="auraErrorStack"></div>
             <div class="auraErrorFooter">
-                <a href="{!'?nocache=' + v.auraReloadNonce}" id="auraErrorReload">Refresh</a>
+                <a href="?" id="auraErrorReload">Refresh</a>
             </div>
         </div>
     </div>

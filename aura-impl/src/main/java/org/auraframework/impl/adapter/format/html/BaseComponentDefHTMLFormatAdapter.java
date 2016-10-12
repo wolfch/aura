@@ -72,8 +72,6 @@ public abstract class BaseComponentDefHTMLFormatAdapter<T extends BaseComponentD
                 attributes.put("auraInlineStyle", styleDefDesc.getDef().getCode());
             }
 
-            attributes.put("auraReloadNonce", System.currentTimeMillis());
-
             String contextPath = context.getContextPath();
             Mode mode = context.getMode();
 
