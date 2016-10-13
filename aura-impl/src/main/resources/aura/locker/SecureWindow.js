@@ -575,7 +575,7 @@ SecureWindow.metadata = {
             "WebGLTexture":                         FUNCTION,
             "WebGLUniformLocation":                 FUNCTION,
             "WebKitAnimationEvent":                 FUNCTION,
-            "WebKitCSSMatrix":                      FUNCTION,
+            "WebKitCSSMatrix":                      CTOR,
             "WebKitMutationObserver":               FUNCTION,
             "WebKitTransitionEvent":                FUNCTION,
             "WebSocket":                            FUNCTION,
