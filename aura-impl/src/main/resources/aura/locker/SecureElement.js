@@ -35,7 +35,7 @@ function trustChildNodes(node) {
     }
 }
 
-var KEY_TO_PROTOTYPES = new Map();
+var KEY_TO_PROTOTYPES = typeof Map !== "undefined" ? new Map() : undefined;
 
 function SecureElement(el, key) {
     "use strict";
