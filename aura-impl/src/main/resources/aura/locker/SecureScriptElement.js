@@ -24,7 +24,7 @@ function SecureScriptElement(el, key) {
     }
 
 	function getAttributeName(name) {
-		return name.toLowerCase() === "src" ? "data-locker-src" : name;
+		return name.toLowerCase() === "src" ? "data-src" : name;
 	}
 
 	var eventListeners = {};
