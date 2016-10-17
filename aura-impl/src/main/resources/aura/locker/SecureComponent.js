@@ -61,10 +61,6 @@ function SecureComponent(component, key) {
         }
     });
     
-    var filterOpaque = {	
-    	filterOpaque : true
-	};
-    
     Object.defineProperties(o, {
         // these four super* methods are exposed as a temporary solution until we figure how to re-arrange the render flow
         "superRender": SecureObject.createFilteredMethod(o, component, "superRender"),
@@ -82,17 +78,17 @@ function SecureComponent(component, key) {
         "isRendered": SecureObject.createFilteredMethod(o, component, "isRendered"),
         "getGlobalId": SecureObject.createFilteredMethod(o, component, "getGlobalId"),
         "getLocalId": SecureObject.createFilteredMethod(o, component, "getLocalId"),
-        "getSuper": SecureObject.createFilteredMethod(o, component, "getSuper", filterOpaque),
-        "getReference": SecureObject.createFilteredMethod(o, component, "getReference", filterOpaque),
+        "getSuper": SecureObject.createFilteredMethod(o, component, "getSuper"),
+        "getReference": SecureObject.createFilteredMethod(o, component, "getReference"),
         "getVersion": SecureObject.createFilteredMethod(o, component, "getVersion"),
         "clearReference": SecureObject.createFilteredMethod(o, component, "clearReference"),
         "autoDestroy": SecureObject.createFilteredMethod(o, component, "autoDestroy"),
         "isConcrete": SecureObject.createFilteredMethod(o, component, "isConcrete"),
-        "getConcreteComponent": SecureObject.createFilteredMethod(o, component, "getConcreteComponent", filterOpaque),
-        "find": SecureObject.createFilteredMethod(o, component, "find", filterOpaque),
+        "getConcreteComponent": SecureObject.createFilteredMethod(o, component, "getConcreteComponent"),
+        "find": SecureObject.createFilteredMethod(o, component, "find"),
         "set": SecureObject.createFilteredMethod(o, component, "set"),
-        "getElement": SecureObject.createFilteredMethod(o, component, "getElement", filterOpaque),
-        "getElements": SecureObject.createFilteredMethod(o, component, "getElements", filterOpaque)
+        "getElement": SecureObject.createFilteredMethod(o, component, "getElement"),
+        "getElements": SecureObject.createFilteredMethod(o, component, "getElements")
     });
     
     // The shape of the component depends on the methods exposed in the definitions:
