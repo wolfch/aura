@@ -15,7 +15,7 @@
     limitations under the License.
 
 -->
-<aura:application extensible="true" abstract="true" template="lockerApiTest:template">
+<aura:application extensible="true" abstract="true">
 
     <aura:import library="lockerApiTest:utils" property="utils"/>
 

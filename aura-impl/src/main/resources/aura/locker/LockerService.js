@@ -346,7 +346,6 @@ function LockerService() {
 		return util;
 	})();
 
-	// Exports
 	service["createForDef"] = service.createForDef;
 	service["getEnvForSecureObject"] = service.getEnvForSecureObject;
 	service["trust"] = service.trust;
