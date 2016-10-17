@@ -16,12 +16,7 @@
 
 function SecureIFrameElement(el, key) {
     "use strict";
-
-    var o = ls_getFromCache(el, key);
-    if (o) {
-        return o;
-    }
-
+    
     function SecureIFrameContentWindow(w) {
     	var sicw = Object.create(null, {
             toString: {
@@ -30,22 +25,22 @@ function SecureIFrameElement(el, key) {
                 }
             }
         });
-
+    	
     	Object.defineProperties(sicw, {
             postMessage: SecureObject.createFilteredMethod(sicw, w, "postMessage")
     	});
-
+    	
     	return sicw;
     }
 
-    o = Object.create(null, {
+    var o = Object.create(null, {
         toString: {
             value: function() {
                 return "SecureIFrameElement: " + el + "{ key: " + JSON.stringify(key) + " }";
             }
         }
     });
-
+    
     Object.defineProperties(o, {
         // Standard HTMLElement methods
         // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement#Methods
@@ -57,18 +52,18 @@ function SecureIFrameElement(el, key) {
         	}
         }
     });
-
+    
     // Standard list of iframe's properties from:
     // https://developer.mozilla.org/en-US/docs/Web/API/HTMLIFrameElement
     // Note: ignoring 'contentDocument', 'sandbox' and 'srcdoc' from the list above.
     ["height", "width", "name", "src"].forEach(function (name) {
 		Object.defineProperty(o, name, SecureObject.createFilteredProperty(o, el, name));
 	});
-
+    
     SecureObject.addPrototypeMethodsAndProperties(SecureElement.metadata, o, el, key);
 
-    ls_setRef(o, el, key);
-    ls_addToCache(el, o, key);
-
+    setLockerSecret(o, "key", key);
+    setLockerSecret(o, "ref", el);
+    
     return o;
 }

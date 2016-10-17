@@ -24,13 +24,14 @@ function SecureAuraEvent(event, key) {
             }
         }
     });
-
+    
 	[ "fire", "getName", "getParam", "getParams", "getSource", "setParam", "setParams", "stopPropagation" ]
 	.forEach(function(name) {
 		Object.defineProperty(o, name, SecureObject.createFilteredMethod(o, event, name));
 	});
 
-    ls_setRef(o, event, key);
+    setLockerSecret(o, "key", key);
+    setLockerSecret(o, "ref", event);
 
     return Object.seal(o);
 }

@@ -42,7 +42,7 @@ function SecureDOMEvent(event, key) {
         view: {
             get: function() {
             	var swin = $A.lockerService.getEnvForSecureObject(o);
-            	var win = ls_getRef(swin, key);
+            	var win = getLockerSecret(swin, "ref");
                 return win === event.view ? swin : undefined;
             }
         }
@@ -63,7 +63,8 @@ function SecureDOMEvent(event, key) {
         }
     }
 
-    ls_setRef(o, event, key);
+    setLockerSecret(o, "key", key);
+    setLockerSecret(o, "ref", event);
 
     return o;
 }

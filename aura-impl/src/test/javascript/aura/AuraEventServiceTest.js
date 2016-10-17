@@ -73,9 +73,6 @@ Test.Aura.AuraEventServiceTest = function() {
 
         var mockA = Mocks.GetMocks(Object.Global(), {
             "$A": {
-                lockerService: {
-                    trust: function() {}
-                },
                 assert: function(value, msg) {
                     if (!value) {
                         throw new Error(msg);
@@ -93,7 +90,7 @@ Test.Aura.AuraEventServiceTest = function() {
         [Fact]
         function AcceptsStringEventDefinition() {
             var expectedEvtDef = {
-                getEventType: function() {}
+                getEventType: function() {},
             };
 
             var actual;

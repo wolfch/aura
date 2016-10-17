@@ -19,22 +19,6 @@
 function LockerService() {
 	"use strict";
 
-    //#include aura.locker.LockerKeyManager
-    //#include aura.locker.SecureObject
-    //#include aura.locker.SecureDOMEvent
-    //#include aura.locker.SecureIFrameElement
-    //#include aura.locker.SecureElement
-    //#include aura.locker.SecureScriptElement
-    //#include aura.locker.SecureDocument
-    //#include aura.locker.SecureAura
-    //#include aura.locker.SecureNavigator
-    //#include aura.locker.SecureXMLHttpRequest
-    //#include aura.locker.SecureWindow
-    //#include aura.locker.SecureAuraEvent
-    //#include aura.locker.SecureAction
-    //#include aura.locker.SecureComponent
-    //#include aura.locker.SecureComponentRef
-
 	var lockers = [];
 	var keyToEnvironmentMap = {};
 	var lockerShadows;
@@ -110,22 +94,71 @@ function LockerService() {
 	];
 
 	var nsKeys = {};
+	var validLockSet = typeof WeakSet !== "undefined" ? new WeakSet() : {
+			/*WeakSet dummy polyfill that does not enforce any verification on the locks */
+			"add": function () {},
+			"has": function () {
+				return true;
+			}
+		};
 
+	function masterKey() {/*lexical master key*/}
+
+	getLockerSecret = function (st, type) {
+		if (typeof st !== "object" && typeof st !== "function") {
+			throw new TypeError("Secrets can only be stored in Objects and Functions.");
+		}
+		var lock = st["$ls" + type];
+		if (lock && validLockSet["has"](lock)) {
+			return lock(masterKey);
+		} else if (lock) {
+			throw new ReferenceError('Invalid Secure Object');
+		}
+	};
+
+	setLockerSecret = function(st, type, secret) {
+		function lock(mk) {
+			if (mk !== masterKey) {
+				throw new Error("Access denied");
+			}
+			return secret;
+		}
+		
+		if (typeof st !== "object" && typeof st !== "function") {
+			throw new TypeError("Secrets can only be retrieved from Objects and Functions.");
+		}
+		
+		if (typeof st["$ls" + type] === 'function') {
+			var existingSecret = getLockerSecret(st, type);
+			if (existingSecret === secret) {
+				// We allow NOOPs
+				return;
+			}
+			
+			throw new Error("Re-setting of " + type + " is prohibited");
+		}
+		
+		validLockSet["add"](lock);
+		Object.defineProperty(st, "$ls" + type, {
+			value : lock
+		});
+	};
+	
 	// defining LockerService as a service
 	var service = {
 		isEnabled : function() {
 			return $A.getContext().isLockerServiceEnabled;
 		},
-
+		
 		createForDef : function(code, def) {
 			var descriptor = def.getDescriptor();
 			var namespace = descriptor.getNamespace();
 			var name = descriptor.getName();
 			var descriptorDebuggableURL = "components/" + namespace + "/" + name + ".js";
-			var key = this.getKeyForNamespace(namespace);
+			var key = $A.lockerService.util.getKeyForNamespace(namespace);
 
 			// Key this def so we can transfer the key to component instances
-			ls_setKey(def, key);
+			$A.lockerService.util.applyKey(def, key);
 			return this.create(code, key, descriptorDebuggableURL);
 		},
 
@@ -139,21 +172,9 @@ function LockerService() {
 			return env;
 		},
 
-        getKeyForNamespace : function(namespace) {
-            // Get the locker key for this namespace
-            var key = nsKeys[namespace];
-            if (!key) {
-                key = nsKeys[namespace] = Object.freeze({
-                    namespace: namespace
-                });
-            }
-
-            return key;
-        },
-
 		getEnvForSecureObject : function(st, doNotCreate) {
-			var key = ls_getKey(st);
-			return key ? this.getEnv(key, doNotCreate) : undefined;
+			var key = getLockerSecret(st, "key");
+			return key && key !== masterKey ? this.getEnv(key, doNotCreate) : undefined;
 		},
 
 		create : function(code, key, optionalSourceURL) {
@@ -202,12 +223,12 @@ function LockerService() {
 			if (!$A.lockerService.isEnabled()) {
 				return component;
 			}
-
+			
 			if (typeof component !== "object") {
 				return component;
 			}
 
-            var key = ls_getKey(component);
+			var key = getLockerSecret(component, "key");
 			if (!key) {
 				return component;
 			}
@@ -224,30 +245,49 @@ function LockerService() {
 			if (!$A.lockerService.isEnabled()) {
 				return event;
 			}
-
-			if (typeof event !== "object" || typeof component !== "object") {
+			
+			if (typeof event !== "object" || typeof component !== "object" || !$A.lockerService.util.isKeyed(component)) {
 				return event;
 			}
-
-            var key = ls_getKey(component);
-            if (!key) {
-                return event;
-            }
-
+			
 			// if the component is secure, the event have to be secure.
+			var key = getLockerSecret(component, "key");
 			return event instanceof Aura.Event.Event ? SecureAuraEvent(event, key) : SecureDOMEvent(event, key);
 		},
 
-		unwrap : ls_unwrap,
+		unwrap : function(st) {
+			if (Array.isArray(st)) {
+				return st.map(function (o) {
+					return typeof o === 'object' && $A.lockerService.util.isKeyed(o) ? getLockerSecret(o, "ref") : o;
+				});
+			}
+			return (typeof st === 'object' && getLockerSecret(st, "ref")) || st;
+		},
 
-		trust : ls_trust,
+		trust : function(from) {
+			var key = getLockerSecret(from, "key");
+			if (key) {
+				for (var n = 1; n < arguments.length; n++) {
+					$A.lockerService.util.applyKey(arguments[n], key);
+				}
+			}
+		},
+
+		markOpaque : function(st) {
+			setLockerSecret(st, "opaque", true);
+		},
+
+		isOpaque : function(st) {
+			var t = typeof st;
+			return (t === "object" || t === "function") && getLockerSecret(st, "opaque") === true;
+		},
 
 		showLockedNodes : function showLockedNodes(root) {
 			if (!root) {
 				root = document;
 			}
 
-			if (ls_getKey(root)) {
+			if ($A.lockerService.util.isKeyed(root)) {
 				$A.util.addClass(root, "lockerizedNode");
 			}
 
@@ -258,6 +298,53 @@ function LockerService() {
 		}
 
 	};
+
+	service.util = (function() {
+		var util = {
+			getKeyForNamespace : function(namespace) {
+				// Get the locker key for this namespace
+				var key = nsKeys[namespace];
+				if (!key) {
+					key = nsKeys[namespace] = Object.freeze({
+						namespace: namespace
+					});
+				}
+
+				return key;
+			},
+
+			isKeyed : function(thing) {
+				return getLockerSecret(thing, "key") !== undefined;
+			},
+
+			hasAccess : function(from, to) {
+				var fromKey = getLockerSecret(from, "key");
+				var toKey = getLockerSecret(to, "key");
+
+				return (fromKey === masterKey) || (fromKey === toKey);
+			},
+
+			verifyAccess : function(from, to, options) {
+				if (!$A.lockerService.util.hasAccess(from, to) || (options && options.verifyNotOpaque && $A.lockerService.isOpaque(to))) {
+					var fromKey = getLockerSecret(from, "key");
+					var toKey = getLockerSecret(to, "key");
+
+					throw new Error("Access denied: " + JSON.stringify({
+						from : fromKey,
+						to : toKey
+					}));
+				}
+			},
+
+			applyKey : function(thing, key) {
+				setLockerSecret(thing, "key", key);
+			}
+		};
+
+		Object.freeze(util);
+
+		return util;
+	})();
 
 	// Exports
 	service["createForDef"] = service.createForDef;

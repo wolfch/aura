@@ -36,7 +36,10 @@ Aura.Event.Event = function(config) {
     this.eventHandlerIterator = null;
 
     // propagating locker key when possible
-    $A.lockerService.trust(this.source, this);
+    var key = this.source && getLockerSecret(this.source, "key");
+    if (key) {
+        setLockerSecret(this, "key", key);
+    }
 };
 
 /**
@@ -62,10 +65,10 @@ Aura.Event.Event.prototype.getDef = function(){
 /**
  * Gets the current phase of this event.
  * Returns undefined if the event has not yet been fired.
- * Possible return values for APPLICATION and COMPONENT events
+ * Possible return values for APPLICATION and COMPONENT events 
  * are "capture", "bubble", and "default" once fired.
  * VALUE events return "default" once fired.
- *
+ * 
  * @platform
  * @export
  */
@@ -74,7 +77,7 @@ Aura.Event.Event.prototype.getPhase = function(){
 };
 
 /**
- * Sets whether the event can bubble or not. This will throw
+ * Sets whether the event can bubble or not. This will throw 
  * an error if called in the "default" phase.
  * The default is false.
  * @platform
@@ -85,14 +88,14 @@ Aura.Event.Event.prototype.stopPropagation = function() {
 
     // stopPropagation was introduced before this assertion and may be used
     // in non-bubbling component events
-    $A.assert(eventExecutionType !== "COMPONENT" ||
+    $A.assert(eventExecutionType !== "COMPONENT" || 
         eventExecutionType !== "APPLICATION" ||
         this.getPhase() !== "default", "stopPropagation() is not supported in the 'default' phase");
     this.eventStopPropagation = true;
 };
 
 /**
- * Prevents the default phase execution for this event. This will throw
+ * Prevents the default phase execution for this event. This will throw 
  * an error if called in the "default" phase.
  * The default is true.
  * @platform
@@ -122,7 +125,7 @@ Aura.Event.Event.prototype.pause = function() {
 
 /**
  * Resumes event handling for this event from the same position in the event
- * handler processing sequence from which it was previously paused.
+ * handler processing sequence from which it was previously paused. 
  * If the event is not paused, calling this does nothing. This will throw an error
  * if called in the "default" phase.
  * This API does not define whether or not any remaining event handlers will
@@ -240,7 +243,7 @@ Aura.Event.Event.prototype.getEventExecutionType = function () {
         return "VALUE";
     }
     else if(this.eventName) {
-        return this.componentEvent ?
+        return this.componentEvent ? 
             "LEGACY_COMPONENT" :
             "COMPONENT";
     }
@@ -252,7 +255,7 @@ Aura.Event.Event.prototype.getEventExecutionType = function () {
 
             if (handlers) {
                 return def.getEventType() === "VALUE" ?
-                    "VALUE" :
+                    "VALUE" : 
                     "APPLICATION";
             }
             def = def.getSuperDef();
@@ -300,7 +303,7 @@ Aura.Event.Event.prototype.executeHandlerIterator = function(handlerIterator) {
 
             // update our phase
             this.phase = value.phase;
-
+            
             if(isSystemError) {
                 // Special case... only wrap in try-catch for this type of event
                 try {

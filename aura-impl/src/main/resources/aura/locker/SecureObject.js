@@ -25,7 +25,10 @@ function SecureObject(thing, key) {
 		}
 	});
 
-    ls_setRef(o, thing, key, true);
+	setLockerSecret(o, "key", key);
+	setLockerSecret(o, "ref", thing);
+
+	$A.lockerService.markOpaque(o);
 
 	return Object.seal(o);
 }
@@ -35,6 +38,37 @@ SecureObject.isDOMElementOrNode = function(el) {
 
 	return typeof el === "object"
 			&& ((typeof HTMLElement === "object" && el instanceof HTMLElement) || (typeof Node === "object" && el instanceof Node) || (typeof el.nodeType === "number" && typeof el.nodeName === "string"));
+};
+
+function newWeakMap() {
+	return typeof WeakMap !== "undefined" ? new WeakMap() : {
+		/* WeakMap dummy polyfill */
+		"get" : function() {
+			return undefined;
+		},
+		"set" : function() {
+		}
+	};
+}
+
+var rawToSecureObjectCaches = {};
+
+SecureObject.addToCache = function(raw, so, key) {
+	// Keep SecureObject's segregated by key
+	var psuedoKeySymbol = JSON.stringify(key);
+	var rawToSecureObjectCache = rawToSecureObjectCaches[psuedoKeySymbol];
+	if (!rawToSecureObjectCache) {
+		rawToSecureObjectCache = newWeakMap();
+		rawToSecureObjectCaches[psuedoKeySymbol] = rawToSecureObjectCache;
+	}
+
+	rawToSecureObjectCache.set(raw, so);
+};
+
+SecureObject.getCached = function(raw, key) {
+	var psuedoKeySymbol = JSON.stringify(key);
+	var rawToSecureObjectCache = rawToSecureObjectCaches[psuedoKeySymbol];
+	return rawToSecureObjectCache ? rawToSecureObjectCache.get(raw) : undefined;
 };
 
 SecureObject.filterEverything = function(st, raw, options) {
@@ -47,7 +81,7 @@ SecureObject.filterEverything = function(st, raw, options) {
 
 	var t = typeof raw;
 	if (t === "object") {
-		if (raw instanceof File || raw instanceof FileList || raw instanceof CSSStyleDeclaration || raw instanceof TimeRanges ||
+		if (raw instanceof File || raw instanceof FileList || raw instanceof CSSStyleDeclaration || raw instanceof TimeRanges || 
 				(window.ValidityState && raw instanceof ValidityState)) {
 			// Pass thru for objects without privileges.
 			return raw;
@@ -55,11 +89,11 @@ SecureObject.filterEverything = function(st, raw, options) {
 	}
 
 	function filterOpaque(opts, so) {
-		return opts && opts.filterOpaque === true && ls_isOpaque(so);
+		return opts && opts.filterOpaque === true && $A.lockerService.isOpaque(so);
 	}
 
-	var key = ls_getKey(st);
-	var cached = ls_getFromCache(raw, key);
+	var key = getLockerSecret(st, "key");
+	var cached = SecureObject.getCached(raw, key);
 	if (cached) {
 		return !filterOpaque(options, cached) ? cached : undefined;
 	}
@@ -74,7 +108,7 @@ SecureObject.filterEverything = function(st, raw, options) {
 			return SecureObject.filterEverything(st, fnReturnedValue);
 		};
 		mutated = true;
-        ls_setRef(swallowed, raw, key);
+		setLockerSecret(swallowed, "ref", raw);
 	} else if (t === "object") {
 		if (raw === window) {
 			return $A.lockerService.getEnv(key);
@@ -97,7 +131,7 @@ SecureObject.filterEverything = function(st, raw, options) {
 				mutated = mutated || (newValue !== raw[n]);
 			}
 
-            ls_setRef(swallowed, raw, key);
+			setLockerSecret(swallowed, "ref", raw);
 
 			// Decorate with .item() to preserve NodeList shape
 			if (isNodeList) {
@@ -108,8 +142,7 @@ SecureObject.filterEverything = function(st, raw, options) {
 				});
 			}
 		} else {
-            var rawKey = ls_getKey(raw);
-            var hasAccess = rawKey === key;
+			var hasAccess = $A.lockerService.util.hasAccess(st, raw);
 			$A.assert(key, "A secure object should always have a key.");
 			if ($A.util.isAction(raw)) {
 				swallowed = hasAccess ? SecureAction(raw, key) : SecureObject(raw, key);
@@ -133,13 +166,15 @@ SecureObject.filterEverything = function(st, raw, options) {
 			} else if (raw instanceof Event) {
 				swallowed = SecureDOMEvent(raw, key);
 				mutated = true;
-			} else if (rawKey) {
+			} else if ($A.lockerService.util.isKeyed(raw)) {
 				swallowed = SecureObject(raw, key);
 				mutated = true;
 			} else {
 				swallowed = {};
 				mutated = true;
-				ls_setRef(swallowed, raw, key);
+				setLockerSecret(swallowed, "key", key);
+				setLockerSecret(swallowed, "ref", raw);
+				SecureObject.addToCache(raw, swallowed, key);
 
 				for ( var name in raw) {
 					if (typeof raw[name] === "function") {
@@ -157,7 +192,7 @@ SecureObject.filterEverything = function(st, raw, options) {
 	}
 
 	if (mutated) {
-		ls_addToCache(raw, swallowed, key);
+		SecureObject.addToCache(raw, swallowed, key);
 		return swallowed;
 	} else {
 		return raw;
@@ -186,8 +221,7 @@ SecureObject.unfilterEverything = function(st, value, visited) {
 
 	var isArray = Array.isArray(value);
 
-    var key = ls_getKey(value);
-	var raw = ls_getRef(value, key);
+	var raw = getLockerSecret(value, "ref");
 	if (raw) {
 		// If this is an array make sure that the backing array is updated to match the system mode proxy that might have been manipulated
 		if (isArray) {
@@ -209,7 +243,7 @@ SecureObject.unfilterEverything = function(st, value, visited) {
 			return previous;
 		}
 	} else {
-		visited = new WeakMap();
+		visited = newWeakMap();
 	}
 
 	if (t === "function") {
@@ -299,7 +333,7 @@ SecureObject.createFilteredProperty = function(st, raw, propertyName, options) {
 		// Continue from the current object until we find an acessible object.
 		if (options && options.skipOpaque === true) {
 			while (value) {
-                var hasAccess = ls_hasAccess(st, value);
+				var hasAccess = $A.lockerService.util.hasAccess(st, value);
 				if (hasAccess || value === document.body || value === document.head || value === document.documentElement) {
 					break;
 				}
@@ -356,7 +390,7 @@ function getSupportedInterfaces(o) {
 		var cls = window[className];
 		return cls && obj instanceof cls;
 	}
-
+	
 	var interfaces = [];
 	if (o instanceof Window) {
 		interfaces.push("Window", "EventTarget");
@@ -380,7 +414,7 @@ function getSupportedInterfaces(o) {
 				} else if (o instanceof HTMLVideoElement) {
 					interfaces.push("HTMLVideoElement");
 				}
-
+				
 				interfaces.push("HTMLMediaElement");
 			} else if (o instanceof HTMLBaseElement) {
 				interfaces.push("HTMLBaseElement");
@@ -446,14 +480,14 @@ function getSupportedInterfaces(o) {
 				interfaces.push("HTMLTextAreaElement");
 			} else if (o instanceof HTMLTrackElement) {
 				interfaces.push("HTMLTrackElement");
-			}
-
+			} 
+			
 			interfaces.push("HTMLElement");
 		}
-
+		
 		interfaces.push("Element", "Node", "EventTarget");
 	}
-
+	
 	return interfaces;
 }
 
@@ -462,16 +496,16 @@ SecureObject.addPrototypeMethodsAndProperties = function(metadata, so, raw, key)
 
 	function worker(name) {
 		var item = prototype[name];
-
+		
 		if (!(name in so) && (name in raw)) {
 			var options = {
                 filterOpaque : item.filterOpaque || true,
 	            skipOpaque : item.skipOpaque || false,
 	            defaultValue : item.defaultValue || null
             };
-
+			
 			if (item.type === "function") {
-				SecureObject.addMethodIfSupported(so, raw, name, options);
+				SecureObject.addMethodIfSupported(so, raw, name, options);						
 			} else if (item.type === "@raw") {
 				Object.defineProperty(so, name, {
         			// Does not currently secure proxy the actual class
@@ -498,7 +532,7 @@ SecureObject.addPrototypeMethodsAndProperties = function(metadata, so, raw, key)
 		        	get: function() {
 		        		return SecureObject.filterEverything(so, raw[name]);
 		        	},
-
+		        	
 		            set: function(callback) {
 		                raw[name] = function(e) {
 		                    callback.call(so, SecureDOMEvent(e, key));
@@ -508,16 +542,16 @@ SecureObject.addPrototypeMethodsAndProperties = function(metadata, so, raw, key)
 			} else {
 				// Properties
 				var descriptor = SecureObject.createFilteredProperty(so, raw, name, options);
-
+				
 				if (descriptor) {
 					Object.defineProperty(so, name, descriptor);
 				}
 			}
 		}
 	}
-
+	
 	var supportedInterfaces = getSupportedInterfaces(raw);
-
+	
 	var prototypes = metadata["prototypes"];
 	supportedInterfaces.forEach(function(name) {
 		prototype = prototypes[name];
@@ -527,3 +561,5 @@ SecureObject.addPrototypeMethodsAndProperties = function(metadata, so, raw, key)
 
 SecureObject.FunctionPrototypeBind = Function.prototype.bind;
 SecureObject.ArrayPrototypeSlice = Array.prototype.slice;
+
+Aura.Locker.SecureObject = SecureObject;

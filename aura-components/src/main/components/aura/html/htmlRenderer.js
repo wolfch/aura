@@ -21,13 +21,13 @@
 		}
 
 		var HTMLAttributes = component.get("v.HTMLAttributes");
-
+				
 		var element = document.createElement(tag);
 
 		for ( var attribute in HTMLAttributes) {
 			helper.createHtmlAttribute(component, element, attribute, HTMLAttributes[attribute]);
 		}
-
+		
 		helper.processJavascriptHref(element);
 
 		if (helper.canHaveBody(component)) {
@@ -45,8 +45,7 @@
             owner = owner.getOwner();
             ownerName = owner.getName();
         }
-        $A.lockerService.trust(owner, component);
-        $A.lockerService.trust(owner, element);
+        $A.lockerService.trust(owner, component, element);
 
     	return element;
 	},

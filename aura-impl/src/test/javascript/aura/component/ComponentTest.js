@@ -44,6 +44,7 @@ Test.Aura.Component.ComponentTest=function(){
             "Component": Aura.Component.Component,
             "InvalidComponent": Aura.Component.InvalidComponent,
             "AttributeSet": Aura.Attribute.AttributeSet,
+            "getLockerSecret": function () {},
             "$A": {
                 assert:function(condition,message){if(!condition)throw new Error(message)},
                 error:function(message){throw new Error(message)},
@@ -123,7 +124,6 @@ Test.Aura.Component.ComponentTest=function(){
                     }
                 },
                 lockerService: {
-                    trust: function() {},
                     unwrap: function(elements) {
                         return elements;
                     },

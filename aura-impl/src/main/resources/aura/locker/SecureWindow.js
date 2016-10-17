@@ -30,12 +30,7 @@
 function SecureWindow(win, key, globalAttributeWhitelist) {
 	"use strict";
 
-    var o = ls_getFromCache(win, key);
-    if (o) {
-        return o;
-    }
-
-	o = Object.create(null, {
+	var o = Object.create(null, {
 		document: {
 			enumerable: true,
 			value: SecureDocument(win.document, key)
@@ -98,6 +93,9 @@ function SecureWindow(win, key, globalAttributeWhitelist) {
 		SecureObject.addPropertyIfSupported(o, win, name);
 	});
 
+	setLockerSecret(o, "key", key);
+	setLockerSecret(o, "ref", win);
+
 	// Has to happen last because it depends on the secure getters defined above that require the object to be keyed
 	globalAttributeWhitelist.forEach(function(name) {
 		// These are direct passthrough's and should never be wrapped in a SecureObject
@@ -108,9 +106,6 @@ function SecureWindow(win, key, globalAttributeWhitelist) {
 	});
 
     SecureObject.addPrototypeMethodsAndProperties(SecureWindow.metadata, o, win, key);
-
-    ls_setRef(o, win, key);
-    ls_addToCache(win, o, key);
 
 	return o;
 }

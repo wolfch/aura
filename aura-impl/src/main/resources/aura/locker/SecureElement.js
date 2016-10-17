@@ -18,11 +18,6 @@
 function SecureElement(el, key) {
     "use strict";
 
-    var o = ls_getFromCache(el, key);
-    if (o) {
-        return o;
-    }
-
     function isSharedElement(element) {
         return element === document.body || element === document.head || element === document.documentElement;
     }
@@ -37,30 +32,37 @@ function SecureElement(el, key) {
         return isRunnable;
     }
 
-    function trustChildNodes(node) {
-        var children = node.childNodes;
+    function trustNodes(node, children) {
+        if (node) {
+            $A.lockerService.trust(o, node);
+        }
+
         for (var i = 0; i < children.length; i++) {
             var child = children[i];
-            ls_setKey(child, key);
-            trustChildNodes(child);
+            trustNodes(child, child.childNodes);
         }
     }
-
+    
     function copyKeys(from, to) {
     	// Copy keys from the original to the cloned tree
-        var fromKey = ls_getKey(from);
+        var fromKey = getLockerSecret(from, "key");
         if (fromKey) {
-        	ls_setKey(to, fromKey);
+        	setLockerSecret(to, "key", fromKey);
         }
-
+        
         var toChildren = to.childNodes;
         var length = toChildren.length;
         if (length > 0) {
             var fromChildren = from.childNodes;
-            for (var i = 0; i < length; i++) {
+            for (var i = 0; i < length; i++) {                    
                 copyKeys(fromChildren[i], toChildren[i]);
             }
         }
+    }
+
+    var o = SecureObject.getCached(el, key);
+    if (o) {
+        return o;
     }
 
     // A secure element can have multiple forms, this block allows us to apply
@@ -71,10 +73,17 @@ function SecureElement(el, key) {
         throw new $A.auraError("The deprecated FRAME element is not supported in LockerService!");
 
     case "IFRAME":
-        return SecureIFrameElement(el, key);
+        o = SecureIFrameElement(el, key);
+        break;
 
     case "SCRIPT":
-        return SecureScriptElement(el, key);
+        o = SecureScriptElement(key, el);
+        break;
+    }
+
+    if (o) {
+        SecureObject.addToCache(el, o, key);
+        return o;
     }
 
     // SecureElement is it then!
@@ -87,9 +96,12 @@ function SecureElement(el, key) {
 
         appendChild : {
             value : function(child) {
+                $A.lockerService.util.verifyAccess(o, child, {
+                    verifyNotOpaque : true
+                });
 
                 if (!runIfRunnable(child)) {
-                    el.appendChild(ls_getRef(child, key, true));
+                    el.appendChild(getLockerSecret(child, "ref"));
                 }
 
                 return child;
@@ -98,9 +110,15 @@ function SecureElement(el, key) {
 
         replaceChild : {
             value : function(newChild, oldChild) {
+                $A.lockerService.util.verifyAccess(o, newChild, {
+                    verifyNotOpaque : true
+                });
+                $A.lockerService.util.verifyAccess(o, oldChild, {
+                    verifyNotOpaque : true
+                });
 
                 if (!runIfRunnable(newChild)) {
-                    el.replaceChild(ls_getRef(newChild, key, true), ls_getRef(oldChild, key, true));
+                    el.replaceChild(getLockerSecret(newChild, "ref"), getLockerSecret(oldChild, "ref"));
                 }
 
                 return oldChild;
@@ -109,21 +127,30 @@ function SecureElement(el, key) {
 
         insertBefore : {
             value : function(newNode, referenceNode) {
+                $A.lockerService.util.verifyAccess(o, newNode, {
+                    verifyNotOpaque : true
+                });
+
+                if (referenceNode) {
+                    $A.lockerService.util.verifyAccess(o, referenceNode, {
+                        verifyNotOpaque : true
+                    });
+                }
 
                 if (!runIfRunnable(newNode)) {
-                    el.insertBefore(ls_getRef(newNode, key, true), referenceNode ? ls_getRef(referenceNode, key, true) : null);
+                    el.insertBefore(getLockerSecret(newNode, "ref"), referenceNode ? getLockerSecret(referenceNode, "ref") : null);
                 }
 
                 return newNode;
             }
         },
-
+        
         querySelector: {
             value: function(selector) {
-                return SecureElement.secureQuerySelector(el, key, selector);
+                return SecureElement.secureQuerySelector(o, el, key, selector);
             }
         },
-
+        
         insertAdjacentHTML: {
             value: function(position, text) {
 
@@ -137,7 +164,9 @@ function SecureElement(el, key) {
                 } else if (position === "beforebegin" || position === "afterend") {
                     // Prevent writing outside secure node.
                     parent = el.parentNode;
-                    ls_verifyAccess(o, parent, true);
+                    $A.lockerService.util.verifyAccess(o, parent, {
+                        verifyNotOpaque : true
+                    });
                 } else {
                     throw new $A.auraError("SecureElement.insertAdjacentHTML requires position 'beforeBegin', 'afterBegin', 'beforeEnd', or 'afterEnd'.");
                 }
@@ -149,9 +178,7 @@ function SecureElement(el, key) {
 
                 el.insertAdjacentHTML(position, DOMPurify["sanitize"](text, config));
 
-                if (key) {
-                    trustChildNodes(parent || el);
-                }
+                trustNodes(undefined, parent ? parent.childNodes : el.childNodes);
             }
         }
     });
@@ -160,29 +187,29 @@ function SecureElement(el, key) {
         removeChild : SecureObject.createFilteredMethod(o, el, "removeChild", {
             beforeCallback : function(child) {
                 // Verify that the passed in child is not opaque!
-                ls_verifyAccess(o, child, true);
+                $A.lockerService.util.verifyAccess(o, child, {
+                    verifyNotOpaque : true
+                });
             }
         }),
 
         cloneNode : {
             value : function(deep) {
                 var root = el.cloneNode(deep);
-
+                
                 // Maintain the same ownership in the cloned subtree
                 copyKeys(el, root);
-
+                
                 return SecureElement(root, key);
             }
         },
 
         textContent : SecureObject.createFilteredProperty(o, el, "textContent", {
             afterGetCallback : function() {
-                return ls_getRef(o.cloneNode(true), key).textContent;
+                return getLockerSecret(o.cloneNode(true), "ref").textContent;
             },
             afterSetCallback : function() {
-                if (key) {
-                    trustChildNodes(el);
-                }
+                trustNodes(undefined, el.childNodes);
             }
         })
     });
@@ -207,18 +234,16 @@ function SecureElement(el, key) {
 
     SecureObject.addPropertyIfSupported(o, el, "innerText", {
         afterGetCallback : function() {
-            return ls_getRef(o.cloneNode(true), key).innerText;
+            return getLockerSecret(o.cloneNode(true), "ref").innerText;
         },
         afterSetCallback : function() {
-            if (key) {
-                trustChildNodes(el);
-            }
+            trustNodes(undefined, el.childNodes);
         }
     });
 
     SecureObject.addPropertyIfSupported(o, el, "innerHTML", {
         afterGetCallback : function() {
-            return ls_getRef(o.cloneNode(true), key).innerHTML;
+            return getLockerSecret(o.cloneNode(true), "ref").innerHTML;
         },
         beforeSetCallback : function(value) {
             // Do not allow innerHTML on shared elements (body/head)
@@ -234,9 +259,7 @@ function SecureElement(el, key) {
             return DOMPurify["sanitize"](value, config);
         },
         afterSetCallback : function() {
-            if (key) {
-                trustChildNodes(el);
-            }
+            trustNodes(undefined, el.childNodes);
         }
     });
 
@@ -245,14 +268,16 @@ function SecureElement(el, key) {
     SecureElement.addEventTargetMethods(o, el, key);
 
     SecureObject.addPrototypeMethodsAndProperties(SecureElement.metadata, o, el, key);
-
+    
     // DCHASMAN TODO Remove this - needs to be into the shape metadata!!! Special handling for SVG elements
     if (el.namespaceURI === "http://www.w3.org/2000/svg") {
         SecureObject.addMethodIfSupported(o, el, "getBBox");
     }
+    
+    setLockerSecret(o, "key", key);
+    setLockerSecret(o, "ref", el);
 
-    ls_setRef(o, el, key);
-    ls_addToCache(el, o, key);
+    SecureObject.addToCache(el, o, key);
 
     return o;
 }
@@ -267,7 +292,7 @@ SecureElement.addEventTargetMethods = function(se, raw, key) {
         // was actually wired up originally
         removeEventListener : {
             value : function(type, listener, options) {
-                var sCallback = ls_getFromCache(listener, key);
+                var sCallback = getLockerSecret(listener, "sCallback");
                 raw.removeEventListener(type, sCallback, options);
             }
         }
@@ -282,17 +307,21 @@ SecureElement.createAddEventListenerDescriptor = function(st, el, key) {
                 // just ignores it.
             }
 
-            var sCallback = ls_getFromCache(callback, key);
+            var sCallback = getLockerSecret(callback, "sCallback");
             if (!sCallback) {
                 sCallback = function(e) {
-                    ls_verifyAccess(st, callback, true);
+                    $A.lockerService.util.verifyAccess(st, callback, {
+                        verifyNotOpaque : true
+                    });
+
                     var se = SecureDOMEvent(e, key);
                     callback.call(st, se);
                 };
 
                 // Back reference for removeEventListener() support
-                ls_addToCache(callback, sCallback, key);
-                ls_setKey(callback, key);
+                setLockerSecret(callback, "sCallback", sCallback);
+
+                $A.lockerService.trust(st, callback);
             }
 
             el.addEventListener(event, sCallback, useCapture);
@@ -1065,18 +1094,28 @@ SecureElement.metadata = {
 	}
 };
 
-SecureElement.secureQuerySelector = function(el, key, selector) {
+SecureElement.secureQuerySelector = function(st, el, key, selector) {
     var rawAll = el.querySelectorAll(selector);
     for (var n = 0; n < rawAll.length; n++) {
         var raw = rawAll[n];
-        var rawKey = ls_getKey(raw);
-        if (rawKey === key || raw === document.body || raw === document.head || raw === document.documentElement) {
-            return SecureElement(raw, key);
+        var hasAccess = $A.lockerService.util.hasAccess(st, raw);
+        if (hasAccess || raw === document.body || raw === document.head || raw === document.documentElement) {
+
+            var cached = SecureObject.getCached(raw, key);
+            if (cached) {
+                return cached;
+            }
+
+            var swallowed = SecureElement(raw, key);
+            SecureObject.addToCache(raw, swallowed, key);
+            return swallowed;
         }
     }
 
     return null;
 };
 
+
+Aura.Locker.SecureElement = SecureElement;
 
 

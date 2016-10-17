@@ -79,7 +79,10 @@ function Action(def, suffix, method, paramDefs, background, cmp, caboose) {
     this.callingCmp = ctx ? ctx.getCurrentAccess() : null;
 
     // propagating locker key when possible
-    $A.lockerService.trust(cmp, this);
+    var key = cmp && getLockerSecret(cmp, "key");
+    if (key) {
+        setLockerSecret(this, "key", key);
+    }
 }
 
 // Static methods:

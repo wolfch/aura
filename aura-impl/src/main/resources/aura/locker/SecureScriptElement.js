@@ -15,27 +15,22 @@
  */
 
 
-function SecureScriptElement(el, key) {
+function SecureScriptElement(key, el) {
 	"use strict";
-
-    var o = ls_getFromCache(el, key);
-    if (o) {
-        return o;
-    }
 
 	function getAttributeName(name) {
 		return name.toLowerCase() === "src" ? "data-src" : name;
 	}
 
 	var eventListeners = {};
-
+	
 	// Create a placeholder script element in the doc
-	el = el || document.createElement("script");
+	var script = el ? el : document.createElement("script");
 
-	o = Object.create(null, {
+	var o = Object.create(null, {
 		src : {
 			enumerable: true,
-			get: function () {
+			get: function () {				
 				return o.getAttribute("src");
 			},
 			set: function (value) {
@@ -45,30 +40,30 @@ function SecureScriptElement(el, key) {
 
 		getAttribute : {
 			value: function(name) {
-				return el.getAttribute(getAttributeName(name));
+				return script.getAttribute(getAttributeName(name));
 			}
 		},
-
+		
 		setAttribute : {
 			value: function(name, value) {
-				el.setAttribute(getAttributeName(name), value);
+				script.setAttribute(getAttributeName(name), value);
 			}
 		},
 
 		removeAttribute : {
 			value: function(name, value) {
-				el.removeAttribute(getAttributeName(name), value);
+				script.removeAttribute(getAttributeName(name), value);
 			}
 		},
-
+		
 		$run : {
 			value : function() {
 				var src = o.getAttribute("src");
 				if (!src) {
 					return;
 				}
-
-				document.head.appendChild(el);
+								
+				document.head.appendChild(script);
 
 				// XHR in source and secure it using $A.lockerService.create()
 				var xhr = $A.services.client.createXHR();
@@ -115,9 +110,12 @@ function SecureScriptElement(el, key) {
 			}
 		}
 	});
+	
+	setLockerSecret(o, "key", key);
 
-    ls_setRef(o, el, key);
-    ls_addToCache(el, o, key);
+	if (!el) {
+		$A.lockerService.trust(o, script);
+	}
 
 	return o;
 }
