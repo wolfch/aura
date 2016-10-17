@@ -29,10 +29,9 @@
         }
     },
 
-    // W-3329556: There is a bug around here. The element created by the inner component's facet is returning a SecureObject
-    _testGetElementsReturnsArrayOfSecureElements: {
+    testGetElementsReturnsArrayOfSecureElement: {
         test: function(cmp) {
-            cmp.testGetElementsReturnsArrayOfSecureElements();
+            cmp.testGetElementsReturnsArrayOfSecureElement();
         }
     },
 
@@ -96,32 +95,8 @@
     },
 
     testGet_ComponentEventReturnsSecureAuraEvent: {
-        test: function (cmp) {
+        test: function(cmp){
             cmp.testGet_ComponentEventReturnsSecureAuraEvent();
-        }
-    },
-
-    testGet_InvalidAction: {
-        test: function(cmp) {
-            cmp.testGet_InvalidAction();
-        }
-    },
-
-    testGet_InvalidAttr: {
-        test: function(cmp) {
-            cmp.testGet_InvalidAttr();
-        }
-    },
-
-    testGet_InvalidEvent: {
-        test: function(cmp) {
-            cmp.testGet_InvalidEvent();
-        }
-    },
-
-    testGetEvent_InvalidEvent: {
-        test: function(cmp) {
-            cmp.testGetEvent_InvalidEvent();
         }
     }
 })
