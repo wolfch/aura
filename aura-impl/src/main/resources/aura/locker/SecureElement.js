@@ -66,16 +66,8 @@ function SecureElement(el, key) {
     // SecureElement is it then!
         
     // Lazily create and cache tag name specific prototype
-    switch (el.nodeType) {
-    	case Node.TEXT_NODE:
-    		tagName = "#text";
-    		break;
-    		
-    	case Node.DOCUMENT_FRAGMENT_NODE:
-    		tagName = "#fragment";
-    		break;
-    }
-    
+    tagName = el.nodeType === Node.TEXT_NODE ? "#text" : tagName;
+
     // Segregate prototypes by their locker
     var prototypes = KEY_TO_PROTOTYPES.get(key);
     if (!prototypes) {
@@ -310,7 +302,7 @@ function SecureElement(el, key) {
 
 SecureElement.addEventTargetMethods = function(se, raw, key) {
     Object.defineProperties(se, {
-        addEventListener : SecureElement.createAddEventListenerDescriptor(se, raw, key),
+        addEventListener : SecureElement.createAddEventListenerDescriptor(),
         dispatchEvent : SecureObject.createFilteredMethod(se, raw, "dispatchEvent"),
 
         // removeEventListener() is special in that we do not want to
