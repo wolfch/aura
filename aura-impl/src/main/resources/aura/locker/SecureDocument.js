@@ -32,6 +32,23 @@ function SecureDocument(doc, key) {
         return o;
     }
 
+    function trust(st, el) {
+        $A.lockerService.trust(st, el);
+        return SecureElement(el, key);
+    }
+
+    function createElement(tag, namespace) {
+    	// Insure that no object to string coercion tricks can be applied to evade tag name based logic
+        tag = tag + "";
+        switch (tag.toLowerCase()) {
+            case "script":
+                return SecureScriptElement(null, key);
+
+            default:
+                return trust(o, namespace ? doc.createElementNS(namespace, tag) : doc.createElement(tag));
+        }
+    }
+
     o = Object.create(null, {
         toString: {
             value: function() {
@@ -40,45 +57,27 @@ function SecureDocument(doc, key) {
         },
         createElement: {
             value: function(tag) {
-                if (String.prototype.toUpperCase.apply(tag || "") === "SCRIPT") {
-                    return SecureScriptElement(null, key);
-                } else {
-                    var el = doc.createElement(tag);
-                    ls_setKey(el, key);
-                    return SecureElement(el, key);
-                }
+                return createElement(tag);
             }
         },
         createElementNS: {
             value: function(namespace, tag) {
-                if (String.prototype.toUpperCase.apply(tag || "") === "SCRIPT") {
-                    return SecureScriptElement(null, key);
-                } else {
-                    var el = doc.createElementNS(namespace, tag);
-                    ls_setKey(el, key);
-                    return SecureElement(el, key);
-                }
+                return createElement(tag, namespace);
             }
         },
         createDocumentFragment: {
             value: function() {
-                var el = doc.createDocumentFragment();
-                ls_setKey(el, key);
-                return SecureElement(el, key);
+                return trust(o, doc.createDocumentFragment());
             }
         },
         createTextNode: {
             value: function(text) {
-                var el = doc.createTextNode(text);
-                ls_setKey(el, key);
-                return SecureElement(el, key);
+                return trust(o, doc.createTextNode(text));
             }
         },
         createComment: {
             value: function(data) {
-                var el = doc.createComment(data);
-                ls_setKey(el, key);
-                return SecureElement(el, key);
+                return trust(o, doc.createComment(data));
             }
         },
         querySelector: {
