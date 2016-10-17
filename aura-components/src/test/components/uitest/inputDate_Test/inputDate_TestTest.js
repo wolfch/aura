@@ -27,14 +27,14 @@
             // so use tagName to get the input element
             var inputElm = $A.test.select("input")[0];
             $A.test.assertEquals(expected, inputElm.value,
-                "Initially input should be " + expected);
+                    "Initially input should be " + expected);
             // clear button sets v.value to ""
             var clearBtn = cmp.find("clearBtn").getElement();
             $A.test.clickOrTouch(clearBtn);
         }, function(cmp) {
             var inputElm = $A.test.select("input")[0];
             $A.test.assertEquals("", inputElm.value,
-                "Input should be clear");
+                    "Input should be clear");
         }]
     },
 
@@ -324,12 +324,12 @@
                 return inputDateElement.value == "01-21-2016";
             });
         },
-            function (cmp) {
-                this.openDatePicker(cmp);
-            }, function (cmp) {
-                var curDate = $A.test.getElementByClass("selectedDate")[0];
-                $A.test.assertEquals("21", $A.util.getText(curDate), "Date picker did not open to the correct day");
-            }]
+        function (cmp) {
+            this.openDatePicker(cmp);
+        }, function (cmp) {
+            var curDate = $A.test.getElementByClass("selectedDate")[0];
+            $A.test.assertEquals("21", $A.util.getText(curDate), "Date picker did not open to the correct day");
+        }]
     },
 
     iterateCal: function (monthIter, yearIter, monthButton, yearButton) {
@@ -383,7 +383,7 @@
         }
 
         var months = [ "January", "February", "March", "April", "May", "June", "July",
-            "August", "September", "October", "November", "December" ];
+                       "August", "September", "October", "November", "December" ];
 
         return months[intMonth];
     }
