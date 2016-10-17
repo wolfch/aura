@@ -160,11 +160,5 @@
         test: function(cmp) {
             cmp.testThisVariableNotLeakedFromMarkup();
         }
-    },
-    
-    testCtorAannotation: {
-        test: function(cmp) {
-            cmp.testCtorAannotation();
-        }
     }
 })
