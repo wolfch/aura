@@ -19,10 +19,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.auraframework.Aura;
 import org.auraframework.integration.test.util.WebDriverTestCase;
 import org.auraframework.integration.test.util.WebDriverTestCase.TargetBrowsers;
-import org.auraframework.service.ContextService;
 import org.auraframework.system.AuraContext.Authentication;
 import org.auraframework.system.AuraContext.Format;
 import org.auraframework.system.AuraContext.Mode;
@@ -94,7 +92,6 @@ public class LockerServiceAPIShapeUITest extends WebDriverTestCase {
         
         Map<String, Object> raw = (Map<String, Object>) auraUITestingUtil.getEval("return window.__lsTesterReport;");
 
-		ContextService contextService = Aura.getContextService();
         contextService.startContext(Mode.FTEST, Format.JSON, Authentication.UNAUTHENTICATED);
         JsonSerializationContext jsonSerializationContext = getJsonSerializationContext();
         
