@@ -504,11 +504,5 @@
         test: function(cmp) {
             cmp.testLinkElement();
         }
-    },
-
-    testCloneNodeShallow: {
-        test: function(cmp) {
-            cmp.testCloneNodeShallow();
-        }
     }
 })
