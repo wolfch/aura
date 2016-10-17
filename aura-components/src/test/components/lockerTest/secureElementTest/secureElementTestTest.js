@@ -510,23 +510,5 @@
         test: function(cmp) {
             cmp.testCloneNodeShallow();
         }
-    },
-
-    testCloneNodeDeep: {
-        test: function(cmp) {
-            cmp.testCloneNodeDeep();
-        }
-    },
-
-    testCloneNodeDeep_VerifyAccess: {
-        test: function(cmp) {
-            cmp.testCloneNodeDeep_VerifyAccess();
-        }
-    },
-
-    testCloneNodeDeep_VerifyBlockedAccess: {
-        test: function(cmp) {
-            cmp.testCloneNodeDeep_VerifyBlockedAccess();
-        }
     }
 })
