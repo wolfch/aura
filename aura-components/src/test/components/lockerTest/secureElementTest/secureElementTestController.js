@@ -260,6 +260,7 @@
     },
 
     testCloneNodeShallow: function(cmp) {
+        debugger;
         var testUtils = cmp.get("v.testUtils");
         var table = cmp.find("table").getElement();
         var tableClone = table.cloneNode();
