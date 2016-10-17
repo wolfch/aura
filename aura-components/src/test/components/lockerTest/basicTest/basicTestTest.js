@@ -162,9 +162,9 @@
         }
     },
 
-    testCtorAnnotation: {
+    testCtorAannotation: {
         test: function(cmp) {
-            cmp.testCtorAnnotation();
+            cmp.testCtorAannotation();
         }
     },
 
