@@ -12,8 +12,8 @@ function tester() {
 			testSystem(object);
 		},
 
-		testSecure : function(object, raw) {
-			testSecure(object, raw);
+		testSecure : function(object) {
+			testSecure(object);
 		},
 
 		showResults : function(cmp) {
@@ -56,19 +56,15 @@ function tester() {
 
 	// Test all properties in flat set to avoid the differences
 	// in object prototype hierarchy between system and locker.
-	function testSecure(object, raw) {
+	function testSecure(object) {
 		var props = findAllProps(object);
 		Object.keys(testResults).forEach(function(proto) {
-			// Only execute tests for interfaces that object actually implements
-			var p = window[proto];
-			if (p && raw instanceof p) {			
-				Object.keys(testResults[proto]).forEach(function(prop) {
-					var index = props.indexOf(prop);
-					if (index >= 0) {
-						executeTests(object, proto, prop, "locker");
-					}
-				});
-			}
+			Object.keys(testResults[proto]).forEach(function(prop) {
+				var index = props.indexOf(prop);
+				if (index >= 0) {
+					executeTests(object, proto, prop, "locker");
+				}
+			});
 		});
 	}
 
@@ -298,8 +294,6 @@ function tester() {
 					return "HTMLTrackElement";
 				case HTMLVideoElement.prototype:
 					return "HTMLVideoElement";
-				case SVGElement.prototype:
-					return "SVGElement";
 			}
 			
 			// These types have browser compatibility issues currently and have to be guarded
