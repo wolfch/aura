@@ -17,9 +17,11 @@
 ({
 
 	afterRender: function (cmp, helper) {
-		helper.initEditor(cmp);
-		helper.setContent(cmp, cmp.get("v.value"));
-		this.superAfterRender();
+		helper.waitForCKEditor(cmp, $A.getCallback(function() {
+			helper.initEditor(cmp);
+			helper.setContent(cmp, cmp.get("v.value"));
+			this.superAfterRender();
+		}.bind(this)));
 	},
 
 	rerender: function (cmp, helper) {

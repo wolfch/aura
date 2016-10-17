@@ -2105,18 +2105,18 @@ TestInstance.prototype.executeAfterCkEditorIsReady = function(inputRichTextCompo
         this.fail("The component has to be an instance of ui:inputRichText or extend it");
     }
 
-    var editorReady = false;
-    var instance = $A.util.lookup(window, "CKEDITOR", "instances", inputRichTextComponent.getGlobalId());
-
-    if (instance === undefined) {
-        this.fail("CKEDITOR instance was not found.");
-    }
-
-    instance["on"]("instanceReady", function() {
-        editorReady = true;
-    });
-
     this.addWaitForWithFailureMessage(true, function() {
+    	
+    	var editorReady = false;
+        var instance = $A.util.lookup(window, "CKEDITOR", "instances", inputRichTextComponent.getGlobalId());
+        
+        if (instance === undefined) {
+            return false;
+        }
+        
+        instance["on"]("instanceReady", function() {
+            editorReady = true;
+        });
         // In case the test missed the instanceReady event, we can check
         // status of the instance.
         return instance.status === "ready" || editorReady;
