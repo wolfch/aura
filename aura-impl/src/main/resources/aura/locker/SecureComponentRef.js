@@ -17,12 +17,7 @@
 function SecureComponentRef(component, key) {
     "use strict";
 
-    var o = ls_getFromCache(component, key);
-    if (o) {
-        return o;
-    }
-
-    o = Object.create(null, {
+    var o = Object.create(null, {
         toString: {
             value: function() {
                 return "SecureComponentRef: " + component + "{ key: " + JSON.stringify(key) + " }";
@@ -66,7 +61,6 @@ function SecureComponentRef(component, key) {
     }
 
     ls_setRef(o, component, key);
-    ls_addToCache(component, o, key);
 
     return Object.seal(o);
 }

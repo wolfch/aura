@@ -17,12 +17,7 @@
 function SecureObject(thing, key) {
 	"use strict";
 
-    var o = ls_getFromCache(thing, key);
-    if (o) {
-        return o;
-    }
-
-	o = Object.create(null, {
+	var o = Object.create(null, {
 		toString : {
 			value : function() {
 				return "SecureObject: " + thing + "{ key: " + JSON.stringify(key) + " }";
@@ -31,7 +26,6 @@ function SecureObject(thing, key) {
 	});
 
     ls_setRef(o, thing, key, true);
-    ls_addToCache(thing, o, key);
 
 	return Object.seal(o);
 }
@@ -130,7 +124,6 @@ SecureObject.filterEverything = function(st, raw, options) {
 					swallowed = SecureObject(raw, key);
 				} else {
 					swallowed = options.defaultValue;
-					ls_addToCache(raw, swallowed, key);
 				}
 
 				mutated = true;
@@ -159,12 +152,16 @@ SecureObject.filterEverything = function(st, raw, options) {
 						}));
 					}
 				}
-				ls_addToCache(raw, swallowed, key);
 			}
 		}
 	}
 
-	return mutated ? swallowed : raw;
+	if (mutated) {
+		ls_addToCache(raw, swallowed, key);
+		return swallowed;
+	} else {
+		return raw;
+	}
 };
 
 SecureObject.unfilterEverything = function(st, value, visited) {
