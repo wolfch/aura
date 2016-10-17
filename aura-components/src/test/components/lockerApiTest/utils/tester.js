@@ -238,12 +238,6 @@ function tester() {
 					return "HTMLCanvasElement";
 				case HTMLTableColElement.prototype:
 					return "HTMLTableColElement";
-				case HTMLTableElement.prototype:
-					return "HTMLTableElement";
-				case HTMLTableRowElement.prototype:
-					return "HTMLTableRowElement";
-				case HTMLTableSectionElement.prototype:
-					return "HTMLTableSectionElement";
 				case HTMLModElement.prototype:
 					return "HTMLModElement";
 				case HTMLEmbedElement.prototype:

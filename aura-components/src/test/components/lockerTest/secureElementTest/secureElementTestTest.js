@@ -481,12 +481,6 @@
             cmp.testScalarExpression();
         }
     },
-    
-    testTableAPI: {
-        test: function(cmp) {
-            cmp.testTableAPI();
-        }
-    },    
 
     testElementCache: {
         test: function(cmp) {
