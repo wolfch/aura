@@ -236,7 +236,7 @@ SecureWindow.metadata = {
             "HTMLDataListElement":                  RAW,
             "HTMLDetailsElement":                   RAW,
             "HTMLDialogElement":                    RAW,
-            "HTMLDirectoryElement":                 RAW,
+            "HTMLDireRAWyElement":                 RAW,
             "HTMLDivElement":                       RAW,
             "HTMLDocument":                         RAW,
             "HTMLElement":                          RAW,
