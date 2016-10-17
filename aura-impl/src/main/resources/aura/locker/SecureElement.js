@@ -19,7 +19,7 @@ function SecureElement(el, key) {
     "use strict";
 
     function isSharedElement(element) {
-        return element === document.body || element === document.head || element === document.documentElement;
+        return element === document.body || element === document.head;
     }
 
     function runIfRunnable(st) {
@@ -1100,7 +1100,7 @@ SecureElement.secureQuerySelector = function(st, el, key, selector) {
     for (var n = 0; n < rawAll.length; n++) {
         var raw = rawAll[n];
         var hasAccess = $A.lockerService.util.hasAccess(st, raw);
-        if (hasAccess || raw === document.body || raw === document.head || raw === document.documentElement) {
+        if (hasAccess || raw === document.body || raw === document.head) {
 
             var cached = SecureObject.getCached(raw, key);
             if (cached) {
