@@ -212,4 +212,9 @@ public interface MasterDefRegistry {
      * @return
      */
     Boolean getClientClassLoaded(DefDescriptor<?> componentClassDef);
+
+    /**
+     * TOTAL HACK!!!! Warm up component caches.
+     */
+    void warmCaches();
 }

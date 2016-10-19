@@ -103,27 +103,27 @@ public class FakeRegistry implements MasterDefRegistry {
         return null;
     }
 
-	@Override
+    @Override
     public String getCachedString(String uid, DefDescriptor<?> descriptor, String key) {
         return null;
     }
 
-	@Override
+    @Override
     public String getAltCachedString(String uid, DefDescriptor<?> descriptor, String key) {
         return null;
     }
 
-	@Override
-	public String getCachedString(String uid, DefDescriptor<?> descriptor, String key, Callable<String> loader)
-			throws QuickFixException, IOException {
-		return null;
-	}    
+    @Override
+    public String getCachedString(String uid, DefDescriptor<?> descriptor, String key, Callable<String> loader)
+            throws QuickFixException, IOException {
+        return null;
+    }    
 
-	@Override
-	public String getAltCachedString(String uid, DefDescriptor<?> descriptor, String key, Callable<String> loader)
-			throws QuickFixException, IOException {
-		return null;
-	}    
+    @Override
+    public String getAltCachedString(String uid, DefDescriptor<?> descriptor, String key, Callable<String> loader)
+            throws QuickFixException, IOException {
+        return null;
+    }    
 
     @Override
     public void putCachedString(String uid, DefDescriptor<?> descriptor, String key, String value) {
@@ -134,20 +134,22 @@ public class FakeRegistry implements MasterDefRegistry {
         return null;
     }
 
-	@Override
-	public <D extends Definition> String hasAccess(
-			DefDescriptor<?> referencingDescriptor, D def) {
-		return null;
-	}
-	
-	@Override
+    @Override
+    public <D extends Definition> String hasAccess(
+            DefDescriptor<?> referencingDescriptor, D def) {
+        return null;
+    }
+    
+    @Override
     public void setClientClassLoaded(DefDescriptor<?> componentClass, Boolean isLoaded) {
-		
     }
     
-	@Override
+    @Override
     public Boolean getClientClassLoaded(DefDescriptor<?> componentClass) {
-    	return false;
+        return false;
     }
     
+    @Override
+    public void warmCaches() {
+    }
 }

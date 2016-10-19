@@ -797,6 +797,98 @@ public class MasterDefRegistryImpl implements MasterDefRegistry {
         }
     }
 
+    private void cleanupValidation(CompileContext cc) {
+        //
+        // !!!EXTREMELY HACKISH!!!!
+        // walk all defs, and if they are not validated, force a javascript validation.
+        // This is a last resort, attempting to catch anything that fails above. This is
+        // bad juju.
+        //
+        int iteration = 0;
+        List<CompilingDef<?>> compiling = null;
+        currentCC = cc;
+        try {
+            do {
+                compiling = Lists.newArrayList(cc.compiled.values());
+
+                for (CompilingDef<?> cd : compiling) {
+                    if (cd.def == null) {
+                        if (currentCC.compiled.containsKey(cd.descriptor)) {
+                            currentCC.compiled.remove(cd.descriptor);
+                        }
+                        continue;
+                    }
+                    cc.context.pushCallingDescriptor(cd.descriptor);
+                    try {
+                        if (cd.built && !cd.validated) {
+                            if (iteration != 0) {
+                                logger.warn("warmCaches: Nested add of " + cd.descriptor);
+                            }
+                            try {
+                                if (cd.def instanceof HasJavascriptReferences) {
+                                    ((HasJavascriptReferences) cd.def).validateReferences(true);
+                                } else {
+                                    cd.def.validateReferences();
+                                }
+                            } catch (QuickFixException qfe) {
+                                logger.error("warmCaches: Failed to validate "+cd.descriptor, qfe);
+                            }
+                            // Always mark as validated to avoid future complaints.
+                            cd.validated = true;
+                        }
+                    } finally {
+                        cc.context.popCallingDescriptor();
+                    }
+                }
+                iteration += 1;
+            } while (compiling.size() < cc.compiled.size());
+        } finally {
+            currentCC = null;
+        }
+    }
+    
+    @Override
+    public void warmCaches() {
+        DefRegistry<?> [] registries = delegateRegistries.getAllRegistries();
+        List<ClientLibraryDef> clientLibs = Lists.newArrayList();
+        CompileContext cc = new CompileContext(null, clientLibs);
+        cc.addMap(AuraStaticControllerDefRegistry.INSTANCE.getAll());
+        DefType [] types = new DefType [] { DefType.LIBRARY, DefType.COMPONENT, DefType.APPLICATION };
+
+        for (DefRegistry<?> registry : registries) {
+            if (registry instanceof CompilingDefRegistry) {
+                logger.info("warmCaches: PROCESSING CompilingDefRegistry with namespace="+registry.getNamespaces());
+                for (String namespace : registry.getNamespaces()) {
+                    for (DefType type : types) {
+                        //logger.info("warmCaches: compiling '"+namespace+"' for '"+type+"'");
+                        DescriptorFilter filter = new DescriptorFilter(namespace+":*", type);
+                        Set<DefDescriptor<?>> descriptors = registry.find(filter);
+
+                        for (DefDescriptor<?> descriptor : descriptors) {
+                            if (!hasLocalDef(descriptor)) {
+                                try {
+                                    //logger.info("warmCaches: compiling '"+descriptor);
+                                    compileDef(descriptor, cc);
+                                } catch (Throwable t) {
+                                    logger.error("warmCaches: Failed to compile "+descriptor, t);
+                                    // we totally ignore errors, we are just trying to warm the caches.
+                                    cleanupValidation(cc);
+                                }
+                            } else {
+                                //logger.info("warmCaches: found compiled '"+descriptor);
+                            }
+                        }
+                    }
+                }
+            } else {
+                logger.warn("warmCaches: SKIP "+registry.getClass().getSimpleName()
+                            +" with prefixes="+registry.getPrefixes()
+                            +" with namespace="+registry.getNamespaces()
+                            +" with defTypes="+registry.getDefTypes());
+            }
+        }
+    }
+
     /**
      * Internal routine to compile and return a DependencyEntry.
      *
