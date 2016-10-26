@@ -107,6 +107,12 @@
         var nonTestModes = ["PROD", "PRODDEBUG", "DEV", "PTEST"];
         var currentMode = $A.getContext().getMode();
         if (nonTestModes.indexOf(currentMode) === -1){
+
+        	//run immediately if library is already loaded 
+        	if (this.isLibraryLoaded(cmp)) {
+        		callback();
+        		return;
+        	}
             var retryCounter = this.NO_OF_RETRIES;
             var intervalID = setInterval($A.getCallback(function() {
                 if (retryCounter-- === 0) {
