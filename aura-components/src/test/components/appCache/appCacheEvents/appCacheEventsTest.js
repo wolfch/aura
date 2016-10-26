@@ -4,6 +4,8 @@
      */
     testAppCacheEvents : {
         browsers : [ "-FIREFOX" ],
+        // TODO(W-3405628): flapper!
+        labels : [ "flapper" ],
         test : [
                 function waitForAppCacheToPopulate(component) {
                     var that = this;
