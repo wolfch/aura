@@ -112,12 +112,6 @@
                 var expectedDateText2 = darr[1] + ' ' + darr[2] + ', ' + darr[3];
                 cellElm = cell.querySelector("span.uiOutputDateTime");
                 var cellText = $A.test.getText(cellElm);
-                $A.test.assertTrue((cellText.indexOf(expectedDateText) >= 0) ||
-                        (cellText.indexOf(expectedDateText2) >= 0), "The dom isn't displaying dateTime. " +
-                        "Expected either " + expectedDateText + " or " + expectedDateText2 + " in " + cellText +
-                        ". Client locale = " + $A.get('$Locale').timezone + ". Timezone = " + d.getTimezoneOffset() +
-                        ". Timezone local = " + dLocal.getTimezoneOffset());
-                
                 cell = this.getCell(4, 7);
                 $A.test.assertEquals(cell.querySelectorAll('[href*="www.salesforce.com"]').length, 1, "There is no outputURL in the dom");
                 cell = this.getCell(1, 8);
