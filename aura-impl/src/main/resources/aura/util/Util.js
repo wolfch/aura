@@ -1219,6 +1219,7 @@ Aura.Utils.Util.prototype.on = (function() {
  * @export
  */
 Aura.Utils.Util.prototype.removeOn = function(element, eventName, listener, useCapture) {
+    $A.assert(element, "we cannot remove event listener from a no-longer-exist DOM element, eventName:"+eventName);
     if (listener.registeredAuraHandler) {
         listener = listener.registeredAuraHandler;
     }
