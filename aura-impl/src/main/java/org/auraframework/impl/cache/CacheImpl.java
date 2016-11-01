@@ -26,89 +26,21 @@ import org.auraframework.impl.AuraImpl;
 import org.auraframework.system.LoggingContext;
 
 import com.google.common.cache.CacheStats;
-import com.google.common.cache.RemovalCause;
-import com.google.common.cache.RemovalListener;
-import com.google.common.cache.RemovalNotification;
 
 public class CacheImpl<K, T> implements Cache<K, T> {
 
     /** A default name string */
     private static final String UNNAMED = "(unnamed)";
 
-    private static class EvictionListener<K, T> implements RemovalListener<K, T> {
+    /** Longest interval at which to log cache stats in "normal" operation */
+    private static final long ONE_HOUR = 1000 * 60 * 60;
 
-        /** Interval at which to log cache stats in "normal" operation */
-        private static final long ONE_DAY = 1000 * 60 * 60 * 24;
+    /** Shortest interval at which to log cache stats in "normal" operation */
+    private static final long ONE_MINUTE = 1000 * 60;
 
-        /** A name for the cache being listened to, to clarifiy in logs which one evicted */
-        private final String name;
+    private com.google.common.cache.Cache<K, T> cache;
 
-        /** The cache for this listener, to fetch statistics. */
-        private com.google.common.cache.Cache<K, T> cache;
-
-        /** Count of log-worth evictions, to avoid spamming the log*/
-        private int evictions = 0;
-
-        /** Log threshold for next actual emission to logs */
-        private int nextLogThreshold = 1;
-
-        /** Log the entire stats once a day, regardless of evictions. */
-        private long lastFull = System.currentTimeMillis();
-
-        EvictionListener(String name) {
-            this.name = name == null ? UNNAMED : name;
-        }
-
-        void setCache(com.google.common.cache.Cache<K, T> cache) {
-            this.cache = cache;
-        }
-
-        @Override
-        public void onRemoval(RemovalNotification<K, T> notification) {
-            LoggingAdapter adapter = AuraImpl.getLoggingAdapter();
-            boolean dayHasPassed = (System.currentTimeMillis() >= lastFull + ONE_DAY);
-
-            if (notification.getCause() == RemovalCause.SIZE) {
-                // If there is size pressure, log about it occasionally, more often in dev envs
-                // (where numbers are "small") and less often in production (where they are "large").
-                evictions++;
-                boolean emit = dayHasPassed;
-                if (evictions >= nextLogThreshold) {
-                    emit = true;
-                    // We want to log every 10 until 100, every 100 until 1000, every 1000 thereafter
-                    if (nextLogThreshold == 1) {
-                        nextLogThreshold = 10;
-                    } else if (nextLogThreshold < 100) {
-                        nextLogThreshold += 10;
-                    } else if (nextLogThreshold < 1000) {
-                        nextLogThreshold += 100;
-                    } else {
-                        nextLogThreshold += 1000;
-                    }
-                }
-                if (emit && adapter != null && adapter.isEstablished()) {
-                    LoggingContext loggingCtx = adapter.getLoggingContext();
-                    CacheStats stats = cache.stats();
-                    loggingCtx.logCacheInfo(name,
-                            String.format("evicted %d entries for size pressure, hit rate=%.3f",
-                                    evictions, stats.hitRate()),
-                                    cache.size(), stats);
-                    lastFull = System.currentTimeMillis();
-                }
-            } else if (dayHasPassed) {
-                // Even without size pressure, we want to
-                LoggingContext loggingCtx = adapter.getLoggingContext();
-                CacheStats stats = cache.stats();
-                loggingCtx.logCacheInfo(name,
-                        String.format("cache has little size pressure, hit rate=%.3f", stats.hitRate()),
-                        cache.size(), stats);
-                lastFull = System.currentTimeMillis();
-            }
-        }
-    };
-
-    private final com.google.common.cache.Cache<K, T> cache;
-    private final String name;
+    private String name;
 
     CacheImpl(com.google.common.cache.Cache<K, T> cache) {
         this.cache = cache;
@@ -141,11 +73,17 @@ public class CacheImpl<K, T> implements Cache<K, T> {
         if (builder.softValues) {
             cb = cb.softValues();
         }
+        if (builder.name == null) {
+            name = UNNAMED;
+        } else {
+            name = builder.name;
+        }
 
-        EvictionListener<K, T> listener = new EvictionListener<>(builder.name);
+        CacheEvictionListenerImpl<K, T> listener;
+       
+        listener = new CacheEvictionListenerImpl<>(name, AuraImpl.getLoggingAdapter(), ONE_MINUTE, ONE_HOUR, 1000);
         cb.removalListener(listener);
         cache = cb.build();
-        name = builder.name;
         listener.setCache(cache);
     }
 
@@ -213,8 +151,7 @@ public class CacheImpl<K, T> implements Cache<K, T> {
         return cache;
     }
 
-    public static class Builder<K, T> implements
-    org.auraframework.builder.CacheBuilder<K, T> {
+    public static class Builder<K, T> implements org.auraframework.builder.CacheBuilder<K, T> {
         // builder defaults
         int initialCapacity = 128;
         int concurrencyLevel = 4;
