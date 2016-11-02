@@ -28,130 +28,141 @@ import org.auraframework.throwable.quickfix.QuickFixException;
 import org.auraframework.util.AuraTextUtil;
 
 public class JavascriptIncludeClass extends BaseJavascriptClass {
-	private static final long serialVersionUID = -5018742964727407807L;
+    private static final long serialVersionUID = -5018742964727407807L;
 
-	public JavascriptIncludeClass(Builder builder) {
-		super(builder);
-	}
-
-	public static String getClientDescriptor(DefDescriptor<?> descriptor) {
-    	if (descriptor == null) {
-    		return null;
-    	}
-    	String prefix = descriptor.getPrefix();
-    	String namespace = descriptor.getNamespace();
-    	DefDescriptor<?> bundle = descriptor.getBundle();
-    	String bundleName = bundle != null ? bundle.getName() : null;
-    	String name = descriptor.getName();
-    	return String.format("%s://%s.%s.%s", prefix, namespace, bundleName, name);
+    public JavascriptIncludeClass(Builder builder) {
+        super(builder);
     }
 
-	public static class Builder extends BaseJavascriptClass.Builder {
+    public static String getClientDescriptor(DefDescriptor<?> descriptor) {
+        if (descriptor == null) { return null; }
+        String prefix = descriptor.getPrefix();
+        String namespace = descriptor.getNamespace();
+        DefDescriptor<?> bundle = descriptor.getBundle();
+        String bundleName = bundle != null ? bundle.getName() : null;
+        String name = descriptor.getName();
+        return String.format("%s://%s.%s.%s", prefix, namespace, bundleName, name);
+    }
 
-		private IncludeDefRef includeDefRef;
-		private IncludeDef includeDef;
-		private boolean hasCode = false;
-				
+    public static class Builder extends BaseJavascriptClass.Builder {
+
+        private IncludeDefRef includeDefRef;
+        private IncludeDef includeDef;
+        private boolean hasCode = false;
+        private String jsDescriptor;
+
         public Builder setDefinition(IncludeDefRef includeDefRef) throws QuickFixException {
-        	this.includeDefRef = includeDefRef;
-        	this.includeDef = includeDefRef.getDescriptor().getDef();
-        	return this;
+            this.includeDefRef = includeDefRef;
+            this.includeDef = includeDefRef.getDescriptor().getDef();
+            return this;
         }
-                
-    	@Override
-	    protected boolean hasCode() {
-	    	return hasCode;
-	    }
 
-    	@Override
-    	protected Location getLocation() {
-    		return includeDef.getLocation();
-    	}
+        @Override
+        protected boolean hasCode() {
+            return hasCode;
+        }
 
-    	@Override
-    	protected String getFilename() {
+        @Override
+        protected Location getLocation() {
+            return includeDef.getLocation();
+        }
+
+        @Override
+        protected String getFilename() {
             return includeDef.getDescriptor().getQualifiedName();
-    	}
+        }
 
-		@Override
-		protected String generate() throws QuickFixException {
+        @Override
+        protected String generate() throws QuickFixException {
 
-			String jsDescriptor = getClientDescriptor(includeDefRef.getDescriptor());
-			if (AuraTextUtil.isNullEmptyOrWhitespace(jsDescriptor)) {
-	            throw new InvalidDefinitionException("Include classes require a non empty fully qualified name", null);
-			}
-			
-	    	StringBuilder out = new StringBuilder();
-	
-	    	out.append("$A.componentService.addLibraryInclude(");
-	    	out.append('"').append(jsDescriptor).append('"');
-	    	out.append(',');
-	        writeImports(out);
-	        out.append(',');
-	        writeExporter(out);
-	        out.append(");\n");
-	
-	    	return out.toString();
-	    }
+            jsDescriptor = getClientDescriptor(includeDefRef.getDescriptor());
+            if (AuraTextUtil.isNullEmptyOrWhitespace(jsDescriptor)) { throw new InvalidDefinitionException(
+                    "Include classes require a non empty fully qualified name", null); }
+
+            StringBuilder out = new StringBuilder();
+
+            out.append("$A.componentService.addLibraryInclude(");
+            out.append('"').append(jsDescriptor).append('"');
+            out.append(',');
+            writeImports(out);
+            out.append(',');
+            writeExporter(out);
+            out.append(");\n");
+
+            return out.toString();
+        }
 
         @Override
         public JavascriptIncludeClass build() throws QuickFixException {
-        	finish();
+            finish();
             return new JavascriptIncludeClass(this);
         }
 
-	    private void writeImports(StringBuilder out) {
-	
-	    	out.append('[');
-	
-			List<DefDescriptor<IncludeDef>> imports = includeDefRef.getImports();
-	        if (imports != null && !imports.isEmpty()) {
-	        	boolean first = true;
-	        	for (DefDescriptor<IncludeDef> desc : imports) {
-	        		if (first) {
-	        			first = false;
-	        		} else {
-	        			out.append(", ");
-	        		}
-	        		out.append('"').append(getClientDescriptor(desc)).append('"');
-	        	}
-	        }
-	
-	        out.append(']');
-	    }
-	
-	    private void writeExporter(StringBuilder out) {
+        @Override
+        public String getSourceUrl() {
+            String desc = jsDescriptor.split("://")[1];
+            String[] parts = desc.split("[.]");
+            StringBuilder sb = new StringBuilder();
+            sb.append("//# sourceURL=libraries");
+            for (String part : parts) {
+                sb.append('/');
+                sb.append(part);
+            }
+            sb.append(".js\n");
+            return sb.toString();
+        }
 
-			List<String> aliases = includeDefRef.getAliases();
-			String export = includeDefRef.getExport();
-			String include = includeDef.getCode();
+        private void writeImports(StringBuilder out) {
 
-	        boolean hasAliases = aliases != null && !aliases.isEmpty();
-	        boolean hasExport = !AuraTextUtil.isNullEmptyOrWhitespace(export);
-	        hasCode = !AuraTextUtil.isNullEmptyOrWhitespace(include);
-	
-	        if (hasAliases || hasExport || !hasCode) {
-		        out.append("function lib(");
-		        if (hasAliases) {
-		        	out.append(String.join(", ", aliases));
-		        }
-		    	out.append("){\n");
-	        }
+            out.append('[');
 
-	        if (hasCode) {
-	        	out.append(include);
-	        	out.append("\n");
-	        }
-	
-	        if (hasAliases || hasExport || !hasCode) {
-		        // add the return statement if required
-		        if (hasExport) {
-		        	out.append(";\n").append("return ").append(export).append(";\n");
-		        }
-	
-		        out.append("}");
-	        }
-	    }
+            List<DefDescriptor<IncludeDef>> imports = includeDefRef.getImports();
+            if (imports != null && !imports.isEmpty()) {
+                boolean first = true;
+                for (DefDescriptor<IncludeDef> desc : imports) {
+                    if (first) {
+                        first = false;
+                    } else {
+                        out.append(", ");
+                    }
+                    out.append('"').append(getClientDescriptor(desc)).append('"');
+                }
+            }
+
+            out.append(']');
+        }
+
+        private void writeExporter(StringBuilder out) {
+
+            List<String> aliases = includeDefRef.getAliases();
+            String export = includeDefRef.getExport();
+            String include = includeDef.getCode();
+
+            boolean hasAliases = aliases != null && !aliases.isEmpty();
+            boolean hasExport = !AuraTextUtil.isNullEmptyOrWhitespace(export);
+            hasCode = !AuraTextUtil.isNullEmptyOrWhitespace(include);
+
+            if (hasAliases || hasExport || !hasCode) {
+                out.append("function lib(");
+                if (hasAliases) {
+                    out.append(String.join(", ", aliases));
+                }
+                out.append("){\n");
+            }
+
+            if (hasCode) {
+                out.append(include);
+                out.append("\n");
+            }
+
+            if (hasAliases || hasExport || !hasCode) {
+                // add the return statement if required
+                if (hasExport) {
+                    out.append(";\n").append("return ").append(export).append(";\n");
+                }
+
+                out.append("}");
+            }
+        }
     }
- }
-
+}

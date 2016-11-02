@@ -162,6 +162,7 @@ public class LibraryDefTest extends DefinitionTest<LibraryDef> {
         Writer writer = new StringWriter();
         Aura.getServerService().writeDefinitions(descs, writer);
         String actual = writer.toString();
+        actual = actual.replaceFirst("//# sourceURL=libraries/string/thing[0-9]+/uncompressed[0-9]+\\.js\n", "");
         String expected = "function(){var a=\"truth\";window.blah&&(a+=\" hurts\");return a}";
         if (!actual.contains(expected)) {
             fail(String.format("library code was not compressed - expected <%s> but got <%s>", expected, actual));
@@ -169,21 +170,21 @@ public class LibraryDefTest extends DefinitionTest<LibraryDef> {
     }
 
     private void assertInclude(IncludeDefRef include, String name, String importList, String export) {
-      assertEquals("Unexpected name for include", name, include.getName());
-      assertEquals("Unexpected export for " + name, export, include.getExport());
+        assertEquals("Unexpected name for include", name, include.getName());
+        assertEquals("Unexpected export for " + name, export, include.getExport());
 
-      List<DefDescriptor<IncludeDef>> actualImports = include.getImports();
-      if (actualImports == null) {
-          assertNull("Unexpected imports for " + name, importList);
-      } else {
-         String actualList = String.join(",",
-                 Lists.transform(actualImports, new Function<DefDescriptor<IncludeDef>, String>() {
-                     @Override
-                     public String apply(DefDescriptor<IncludeDef> input) {
-                         return input.getName();
-                     }
-                 }));
-         assertEquals(importList, actualList);
-      }
-  }
+        List<DefDescriptor<IncludeDef>> actualImports = include.getImports();
+        if (actualImports == null) {
+            assertNull("Unexpected imports for " + name, importList);
+        } else {
+            String actualList = String.join(",",
+                    Lists.transform(actualImports, new Function<DefDescriptor<IncludeDef>, String>() {
+                        @Override
+                        public String apply(DefDescriptor<IncludeDef> input) {
+                            return input.getName();
+                        }
+                    }));
+            assertEquals(importList, actualList);
+        }
+    }
 }
