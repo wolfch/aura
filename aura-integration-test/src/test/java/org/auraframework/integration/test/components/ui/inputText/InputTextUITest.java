@@ -18,6 +18,7 @@ package org.auraframework.integration.test.components.ui.inputText;
 import org.auraframework.def.ComponentDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.integration.test.util.WebDriverTestCase;
+import org.auraframework.integration.test.util.WebDriverTestCase.Flapper;
 import org.auraframework.test.util.WebDriverUtil.BrowserType;
 import org.auraframework.util.test.annotation.PerfTest;
 import org.auraframework.util.test.annotation.UnAdaptableTest;
@@ -39,6 +40,7 @@ public class InputTextUITest extends WebDriverTestCase {
 
     @ExcludeBrowsers({ BrowserType.ANDROID_PHONE, BrowserType.ANDROID_TABLET })
     @Test
+    @Flapper
     public void testUpdateOnAttribute_UsingStringSource() throws Exception {
         String event = "blur";
         String baseTag = "<aura:component  model=\"java://org.auraframework.components.test.java.model.TestJavaModel\"> "
@@ -62,6 +64,7 @@ public class InputTextUITest extends WebDriverTestCase {
             BrowserType.SAFARI, BrowserType.IPHONE })
     // Change event not picked up on IOS devices
     @Test
+    @Flapper
     public void testUpdateOnAttributeForNonIosAndroidDevice() throws Exception {
         doTestUpdateOnAttributeForNonIosAndroidDevice(TEST_CMP);
     }
@@ -87,6 +90,7 @@ public class InputTextUITest extends WebDriverTestCase {
     @UnAdaptableTest
     @ExcludeBrowsers({ BrowserType.ANDROID_PHONE, BrowserType.ANDROID_TABLET })
     @Test
+    @Flapper
     public void testUpdateOnAttribute() throws Exception {
         doTestUpdateOnAttribute(TEST_CMP);
     }
@@ -94,6 +98,7 @@ public class InputTextUITest extends WebDriverTestCase {
     @UnAdaptableTest
     @ExcludeBrowsers({ BrowserType.ANDROID_PHONE, BrowserType.ANDROID_TABLET })
     @Test
+    @Flapper
     public void testUpdateOnAttributeWithLabels() throws Exception {
         doTestUpdateOnAttribute(TEST_CMP_WITH_LABELS);
     }
@@ -149,12 +154,14 @@ public class InputTextUITest extends WebDriverTestCase {
 
     @TargetBrowsers({ BrowserType.GOOGLECHROME })
     @Test
+    @Flapper
     public void testUpdateOnAttributeWithCertainEventsChrome() throws Exception {
         doTestUpdateOnAttributeWithCertainEventsChrome(TEST_CMP);
     }
 
     @TargetBrowsers({ BrowserType.GOOGLECHROME })
     @Test
+    @Flapper
     public void testUpdateOnAttributeWithLabelsWithCertainEventsChrome() throws Exception {
         doTestUpdateOnAttributeWithCertainEventsChrome(TEST_CMP_WITH_LABELS);
     }
@@ -220,12 +227,14 @@ public class InputTextUITest extends WebDriverTestCase {
      * Android driver sends a mousedown event when clearing the text field.
      */
     @Test
+    @Flapper
     public void testUpdateOnAttributeWithCertainEventsAllBrowsers() throws Exception {
         doTestUpdateOnAttributeWithCertainEventsAllBrowsers(TEST_CMP);
     }
 
     @PerfTest
     @Test
+    @Flapper
     public void testUpdateOnAttributeWithLabelsWithCertainEventsAllBrowsers() throws Exception {
         doTestUpdateOnAttributeWithCertainEventsAllBrowsers(TEST_CMP_WITH_LABELS);
     }
@@ -253,6 +262,7 @@ public class InputTextUITest extends WebDriverTestCase {
     @ExcludeBrowsers({ BrowserType.IPAD, BrowserType.IPHONE, BrowserType.ANDROID_PHONE, BrowserType.ANDROID_TABLET,
             BrowserType.SAFARI })
     @Test
+    @Flapper
     public void testMaxLength() throws Exception {
         open("/uitest/inputText_MaxLength.cmp");
         WebElement input = findDomElement(By.cssSelector("input.uiInputText.uiInput"));
@@ -262,6 +272,7 @@ public class InputTextUITest extends WebDriverTestCase {
     }
 
     @Test
+    @Flapper
     public void testNoMaxLength() throws Exception {
         open("/uitest/inputText_NoMaxLength.cmp");
         WebElement input = findDomElement(By.cssSelector("input.uiInputText.uiInput"));
@@ -320,6 +331,7 @@ public class InputTextUITest extends WebDriverTestCase {
     }
 
     @Test
+    @Flapper
     public void testBaseKeyboardEventValue() throws Exception {
         open(TEST_CMP);
         String inputText = "z";
@@ -341,6 +353,7 @@ public class InputTextUITest extends WebDriverTestCase {
     @ExcludeBrowsers({ BrowserType.IPAD, BrowserType.IPHONE, BrowserType.SAFARI, BrowserType.ANDROID_PHONE,
             BrowserType.ANDROID_TABLET })
     @Test
+    @Flapper
     public void testBaseMouseClickEventValue() throws Exception {
         open(TEST_CMP);
         WebElement input = findDomElement(By.cssSelector(".keyup2"));
@@ -362,6 +375,7 @@ public class InputTextUITest extends WebDriverTestCase {
      * Test Case for W-1689213
      */
     @Test
+    @Flapper
     public void testInputTextWithLabel() throws Exception {
         open(TEST_CMP);
         WebElement div = findDomElement(By.id("inputwithLabel"));
@@ -385,6 +399,7 @@ public class InputTextUITest extends WebDriverTestCase {
 
     @ExcludeBrowsers({ BrowserType.ANDROID_PHONE, BrowserType.ANDROID_TABLET })
     @Test
+    @Flapper
     public void testInputTextWithEmptyLabel() throws Exception {
         open(TEST_CMP_WITH_LABELS);
         String value = getCurrentModelValue();

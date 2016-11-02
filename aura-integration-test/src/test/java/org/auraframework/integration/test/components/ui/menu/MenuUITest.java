@@ -16,6 +16,7 @@
 package org.auraframework.integration.test.components.ui.menu;
 
 import org.auraframework.integration.test.util.WebDriverTestCase;
+import org.auraframework.integration.test.util.WebDriverTestCase.Flapper;
 import org.auraframework.integration.test.util.WebDriverTestCase.TargetBrowsers;
 import org.auraframework.test.util.WebDriverUtil.BrowserType;
 import org.auraframework.util.test.annotation.PerfTest;
@@ -36,6 +37,7 @@ import org.openqa.selenium.interactions.Actions;
  * Excluding it from touch browsers due to to W-1478819 and mouse over related issues
  */
 @TargetBrowsers({BrowserType.GOOGLECHROME, BrowserType.FIREFOX, BrowserType.IE11})
+@Flapper
 public class MenuUITest extends WebDriverTestCase {
 
     public static final String MENUTEST_APP = "/uitest/menu_Test.app";

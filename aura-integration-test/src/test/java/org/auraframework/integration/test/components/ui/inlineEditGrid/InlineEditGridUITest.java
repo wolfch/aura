@@ -20,6 +20,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 import org.auraframework.integration.test.util.WebDriverTestCase;
+import org.auraframework.integration.test.util.WebDriverTestCase.Flapper;
 import org.auraframework.integration.test.util.WebDriverTestCase.TargetBrowsers;
 import org.auraframework.test.util.WebDriverUtil.BrowserType;
 import org.junit.Test;
@@ -48,6 +49,7 @@ public class InlineEditGridUITest extends WebDriverTestCase {
     private final String INPUT_TXT_SELECTOR = ".inputTxt";
     
     @Test
+    @Flapper
     public void testTabIntoInlineEditGrid() throws Exception {
         open(inlineURL);
         WebDriver driver = getDriver();
@@ -64,6 +66,7 @@ public class InlineEditGridUITest extends WebDriverTestCase {
     }
     
     @Test
+    @Flapper
     public void testUpDownArrow() throws Exception {
         open(inlineURL);
         WebDriver driver = getDriver();
@@ -83,6 +86,7 @@ public class InlineEditGridUITest extends WebDriverTestCase {
     }
     
     @Test
+    @Flapper
     public void testLeftRightArrow() throws Exception {
         open(inlineURL);
         WebDriver driver = getDriver();
@@ -101,6 +105,7 @@ public class InlineEditGridUITest extends WebDriverTestCase {
     }
     
     @Test
+    @Flapper
     public void testEnterEditCell() throws Exception {
         open(inlineURL);
         WebDriver driver = getDriver();
@@ -114,6 +119,7 @@ public class InlineEditGridUITest extends WebDriverTestCase {
      * Test tabing out of edit panel.
      */
     @Test
+    @Flapper
     public void testTabOutOfEditPanel() throws Exception {
     	verifyKeypressEventOnEditPanel(Keys.TAB);
     }
@@ -122,6 +128,7 @@ public class InlineEditGridUITest extends WebDriverTestCase {
      * Test shift-tab out of edit panel.
      */
     @Test
+    @Flapper
     public void testShiftTabOutOfEditPanel() throws Exception {
     	verifyKeypressEventOnEditPanel(Keys.SHIFT);
     }
@@ -156,6 +163,7 @@ public class InlineEditGridUITest extends WebDriverTestCase {
      * Test click out of panel
      */
     @Test
+    @Flapper
     public void testClickOutOfEditPanel() throws Exception {
     	open(inlineURL);
         WebDriver driver = getDriver();
