@@ -14,70 +14,15 @@
  * limitations under the License.
  */
 ({
-    /**
-     * assign interactive.js's functions to helper to keep
-     * this patch change close to the original implementation
-     * NOTE: This fix is for label access check and only for 204/patch
-     */
-    initInteractiveLib: function() {
-        $A.util.apply(this, this.lib.interactive, false);
-    },
-
-    /**
-     * This function is a copy from interactiveHelper.js because
-     * interactive.js's domEventHandler does thing a little bit differently
-     * NOTE: This fix is for label access check and only for 204/patch
-     * 
-     * Handles a DOM-level event and throws the Aura-level equivalent.
-     *
-     * This same function is used for all DOM->Aura event wireup on components, which has multiple benefits:
-     * - decreased memory footprint
-     * - no need to protect against a handler being added more than once
-     * - no need to track event->handler function mappings for later removal
-     */
-    domEventHandler: function (event) {
-        var element = event.currentTarget || event.target;
-        var htmlCmp = $A.componentService.getRenderingComponentForElement(element);
-
-        // cmp might be destroyed, just ignore this event.
-        if (!htmlCmp) {
-            return;
-        }
-
-        var component = htmlCmp.getComponentValueProvider().getConcreteComponent();
-        var helper = component.helper;
-
-        if (!helper || component._recentlyClicked) {
-            return;
-        }
-
-        // extended components can do some event processing before the Aura event gets fired
-        if (helper.preEventFiring) {
-            helper.preEventFiring(component, event);
-        }
-
-        // fire the equivalent Aura event
-        if (helper.fireEvent) {
-            helper.fireEvent(component, event, helper);
-        }
-
-        if (event.type === "click" 
-                && component.getDef().getAttributeDefs().getDef("disableDoubleClicks") 
-                && component.get("v.disableDoubleClicks")) {
-            component._recentlyClicked = true;
-            window.setTimeout(function() { component._recentlyClicked = false; }, 350);
-        }
-    },
-
-    addTriggerDomEvents: function(component) {
+    addTriggerDomEvents : function(component) {
         var events = ["click", "keydown"];
         for (var i=0, len=events.length; i < len; i++) {
             if (!component.hasEventHandler(events[i])) {
                 this.addDomHandler(component, events[i]);
-            }
+            }           
         }
     },
-
+    
     /*
      * preEventFiring is a method from ui:interactive that is meant to be overridden
      * it allows developers to respond to dome events that are registered by addTriggerDomeEvents (see above)
@@ -97,7 +42,7 @@
                     event: event
                 });
             }
-
+            
             this.firePopupEvent(component, "e.popupKeyboardEvent", {
                 event : event
             });
@@ -107,24 +52,24 @@
     handleClick: function(component) {
         this.handleTriggerPress(component);
     },
-
+    
     handleTriggerPress: function(component) {
         this.firePopupEvent(component, "e.popupTriggerPress");
     },
-
+    
     showTarget: function(component) {
         this.firePopupEvent(component, "e.popupTargetShow");
     },
-
+    
     hideTarget: function(component) {
         this.firePopupEvent(component, "e.popupTargetHide");
     },
-
+    
     handlePopupToggle: function(component, event) {
         var triggerParams = event.getParams(),
             localTriggerDiv = component.find('popupTriggerElement').getElement(),
             eventTriggerDiv = triggerParams.component.getElement();
-
+        
         if (localTriggerDiv == null) {
             return;
         }
@@ -136,7 +81,7 @@
             }
         }
     },
-
+    
     firePopupEvent: function(component, eventName, params) {
         if (component.get("v.disabled")) {
             return;
