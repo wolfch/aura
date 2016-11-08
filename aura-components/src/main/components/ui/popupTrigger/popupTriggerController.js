@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 ({
+    init: function(component, event, helper) {
+        helper.initInteractiveLib();
+    },
+
     focus: function(component) {
     	var concreteCmp = component.getConcreteComponent();
         //var _helper = concreteCmp.getDef().getHelper();

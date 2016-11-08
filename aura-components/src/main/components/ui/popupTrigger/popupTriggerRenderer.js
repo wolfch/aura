@@ -16,10 +16,16 @@
 ({
     afterRender: function(component, helper) {
         helper.addTriggerDomEvents(component);
+        helper.addDomEvents(component);
         return this.superAfterRender();
     },
     rerender: function(component, helper) {
         helper.addTriggerDomEvents(component);
+        helper.addDomEvents(component);
         return this.superRerender();
+    },
+    unrender: function(component, helper) {
+        helper.removeDomEventsFromMap(component);
+        return this.superUnrender();
     }
 })// eslint-disable-line semi
