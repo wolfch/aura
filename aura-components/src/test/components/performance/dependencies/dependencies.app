@@ -17,9 +17,7 @@
 -->
 <aura:application
     controller="java://org.auraframework.components.perf.DependenciesController"
-    access="GLOBAL"
     useAppcache="false">
-
 
     <aura:handler name="init" value="{!this}" action="{!c.init}"/>
     <aura:handler name="press" event="ui:press" action="{!c.getCmpDependency}"/>
