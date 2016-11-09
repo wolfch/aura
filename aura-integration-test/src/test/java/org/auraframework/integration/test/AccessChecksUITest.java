@@ -17,6 +17,7 @@ package org.auraframework.integration.test;
 
 import org.auraframework.integration.test.util.WebDriverTestCase;
 import org.auraframework.util.test.annotation.ThreadHostileTest;
+import org.auraframework.util.test.annotation.UnAdaptableTest;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
@@ -30,7 +31,7 @@ public class AccessChecksUITest extends WebDriverTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        
+
         // TODO: remove when $A.createComponent is exposed in the locker
         getMockConfigAdapter().setLockerServiceEnabled(false);
     }
@@ -161,6 +162,7 @@ public class AccessChecksUITest extends WebDriverTestCase {
         doAttributeAccessTest("undefined");
     }
 
+    @UnAdaptableTest("testCustomNS1 is marked as internal.")
     @Test
     public void testAccessInternalMarkupOnInternalNamespaceFromExternal() throws Exception {
         open("/testCustomNS1/accessExternalNamespace.cmp?cmpToCreate=auratest:accessInternalAttribute");
@@ -170,6 +172,7 @@ public class AccessChecksUITest extends WebDriverTestCase {
     /**
      * Setting an attribute to have access level INTERNAL in a non-Internal namespace will error.
      */
+    @UnAdaptableTest("testCustomNS1 is marked as internal.")
     @Test
     public void testAccessInternalMarkupOnExternalNamespace() throws Exception {
         openNoAura("/testCustomNS1/accessInternalAttribute.cmp");
@@ -217,6 +220,7 @@ public class AccessChecksUITest extends WebDriverTestCase {
                 getDriver().findElement(By.className("accessGlobalComponent")), "auratest:accessGlobalComponent");
     }
 
+    @UnAdaptableTest("testCustomNS1 is marked as internal.")
     @Test
     public void testAccessInternalProvidesPublicComponent() throws Exception {
         open("/componentTest/accessGlobalProvidesCustom.cmp");
@@ -244,14 +248,14 @@ public class AccessChecksUITest extends WebDriverTestCase {
 //    private void verifyComponentCreated(String expected) {
 //        waitForElementTextPresent(getDriver().findElement(By.className("output")), expected);
 //    }
-    
+
     private void verifyComponentCreated(String expected, boolean exactMatch) {
     	if(exactMatch == true) {
     		waitForElementTextPresent(getDriver().findElement(By.className("output")), expected);
     	} else {
     		this.waitForElementTextContains(getDriver().findElement(By.className("output")), expected);
     	}
-        
+
     }
 
     private void verifyComponentNotCreated() {
