@@ -67,7 +67,7 @@
                 var iconElements = $A.test.select("label.uiLabel");
                 var iconElement;
                 for(var i = 0; i < iconElements.length; i++) {
-                    if(iconElements[i].innerText === ' icon ') { 
+                	if($A.test.getText(iconElements[i]) === ' icon ') { 
                         iconElement = iconElements[i];
                     }
                 }
