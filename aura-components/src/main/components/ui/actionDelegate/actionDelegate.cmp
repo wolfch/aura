@@ -17,5 +17,5 @@
 
 -->
 <aura:component access="PRIVILEGED" description="Fires and handles the onaction event for the ui:dataGrid component.">
-	<aura:registerEvent name="onaction" type="ui:actionEvent"/>
+	<aura:registerEvent name="onaction" type="ui:actionEvent" access="PRIVILEGED"/>
 </aura:component>
