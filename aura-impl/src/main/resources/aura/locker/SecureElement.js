@@ -25,7 +25,7 @@ function runIfRunnable(st) {
 }
 
 function trustChildNodes(node) {
-	var key = ls_getKey(node);
+    var key = ls_getKey(node);
 
     var children = node.childNodes;
     for (var i = 0; i < children.length; i++) {

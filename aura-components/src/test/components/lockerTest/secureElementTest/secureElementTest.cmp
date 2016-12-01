@@ -67,6 +67,8 @@
     <aura:method name="testCloneNodeDeep_VerifyBlockedAccess" action="{!c.testCloneNodeDeep_VerifyBlockedAccess}"/>
     <aura:method name="testTextNodeApi" action="{!c.testTextNodeApi}"/>
     <aura:method name="testTextNodeSplitText" action="{!c.testTextNodeSplitText}"/>
+    <aura:method name="testAriaAttributesAccessible" action="{!c.testAriaAttributesAccessible}"/>
+    <aura:method name="testAttributesPropertyContainsData" action="{!c.testAttributesPropertyContainsData}"/>
 
     <lockerTest:facet/>
 
@@ -89,6 +91,7 @@
             <td aura:id="td">td</td>
         </tr>
     </table>
+    <div id="attributesTester" foo="meep" data-foo="data-foo data" ng-repeat="x in names"/>
 
     <div aura:id="scalarExpression">{!v.scalarExpression}</div>
 

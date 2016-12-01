@@ -550,5 +550,11 @@
         test: function(cmp) {
             cmp.testTextNodeSplitText();
         }
+    },
+
+    testAttributesPropertyContainsData: {
+        test: function(cmp) {
+            cmp.testAttributesPropertyContainsData();
+        }
     }
 })
