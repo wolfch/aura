@@ -29,8 +29,8 @@
 	<aura:attribute name="ascLabel" type="String" default="Sorted Ascending" description="Accessibility label to use when column is ascending"/>
 	<aura:attribute name="descLabel" type="String" default="Sorted Descending" description="Accessibility label to use when column is descending"/>
 	<aura:attribute name="order" type="Integer" default="0" description="The ordering of the sort (non-zero applies to multilevel sort only)."/>
-	<aura:attribute name="scope" type="String" default="col" description="{ col, row, colgroup, rowgroup }"/>
-    <aura:attribute name="onsortchange" type="Aura.Action"/>
+	<aura:attribute name="scope" type="String" default="col" description="Specifies whether a header cell is a header for a column, row, or group of columns or rows. Possible values include col, row, colgroup, rowgroup. The default is col."/>
+    <aura:attribute name="onsortchange" type="Aura.Action" access="PRIVILEGED" description="The action to run when the column is sorted."/>
     <aura:attribute name="assistiveSortText" type="String" default="Sort" description="Accessibility label for sort trigger links"/>
 	
 	<aura:attribute name="width" type="Integer" default="-1" description="Fixed width of the column in pixels."/>
