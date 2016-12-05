@@ -133,6 +133,14 @@
 
         // Snapshot the DOM
         clonedItem = rowTmpl.firstChild.cloneNode(true);
+        
+        // SVG IE11 workaround
+        if ($A.get("$Browser.isIE11")) {
+            var svgElements = clonedItem.querySelectorAll('svg');
+            for (var i = 0; i < svgElements.length; i++) {
+                this.svgLib.stamper.stamp(svgElements[i]);
+            }
+        }
 
         // Attach the data to the element
         this._attachItemToElement(clonedItem, item);
