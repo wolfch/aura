@@ -125,11 +125,21 @@ function lib(w) { //eslint-disable-line no-unused-vars
         _addEventHandlers: function(){
             this._registeredEventsMap = {};
             for (var eventName in this.EVENT_HANDLERS) {
-                var methodName = this.EVENT_HANDLERS[eventName],
-                    handler = this[methodName].bind(this);
+                var handler = this._generateEventHandler(eventName);
+                
                 this.grid.addEventListener(eventName, handler, true);
                 this._registeredEventsMap[eventName] = handler;
             }
+        },
+        
+        /**
+         * Generate a properly wrapped and scoped event handler
+         */
+        _generateEventHandler: function(eventName) {
+            var methodName = this.EVENT_HANDLERS[eventName],
+                handler = this[methodName].bind(this);
+
+            return $A.getCallback(function(e) { handler(e); });
         },
 
         /**
@@ -471,7 +481,7 @@ function lib(w) { //eslint-disable-line no-unused-vars
                 if (element.classList.contains("keyboardMode--pauseOnFocus")) {
                     this.pauseKeyboardMode();
                     this._onAutoResumeKeyboardModeHandler = this._onAutoResumeKeyboardMode.bind(this);
-                    element.addEventListener("blur", this._onAutoResumeKeyboardModeHandler, true);
+                    element.addEventListener("blur", $A.getCallback(function(e) { this._onAutoResumeKeyboardModeHandler(e); }.bind(this)), true);
                 }
                 return (document.activeElement === element);
             }
