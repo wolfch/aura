@@ -29,7 +29,7 @@
 
     <aura:method name="setFocus" action="{!c.focus}"/>
 
-    <aura:locator target="link" alias="menu-trigger-link" description="Menu trigger link" />
+    <aura:locator target="link" alias="menu-trigger-link" isPrimitive="true" description="Menu trigger link" />
 
     <aura:set attribute="trigger">
         <div aura:id="menuTrigger">
