@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -38,7 +39,6 @@ import org.auraframework.test.TestContext;
 import org.auraframework.test.TestContextAdapter;
 import org.auraframework.test.adapter.MockConfigAdapter;
 import org.auraframework.test.source.StringSourceLoader;
-import org.auraframework.throwable.InvalidSessionException;
 import org.auraframework.util.FileMonitor;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
@@ -54,7 +54,6 @@ import com.google.common.collect.Sets;
  */
 public class MockConfigAdapterImpl extends ConfigAdapterImpl implements MockConfigAdapter {
     
-	
 	@Configuration
     public static class TestConfiguration {
         private final static MockConfigAdapter mockConfigAdapter = new MockConfigAdapterImpl();
@@ -189,7 +188,8 @@ public class MockConfigAdapterImpl extends ConfigAdapterImpl implements MockConf
     private Boolean isAuraJSStatic = null;
     private Boolean validateCss = null;
     private ContentSecurityPolicy csp;
-    private String csrfToken = null;
+    private Runnable csrfValidationFunction = null;
+    private Supplier<String> csrfTokenFunction = null;
     private Boolean isLockerServiceEnabledGlobally;
 
     public MockConfigAdapterImpl() {
@@ -206,7 +206,8 @@ public class MockConfigAdapterImpl extends ConfigAdapterImpl implements MockConf
         isProduction = null;
         isAuraJSStatic = null;
         validateCss = null;
-        csrfToken = null;
+        csrfValidationFunction = null;
+        csrfTokenFunction = null;
         isLockerServiceEnabledGlobally = null;
     }
 
@@ -333,24 +334,54 @@ public class MockConfigAdapterImpl extends ConfigAdapterImpl implements MockConf
 
     @Override
     public void validateCSRFToken(String token) {
-        if ("invalid".equalsIgnoreCase(token)) {
-            throw new InvalidSessionException(new Exception("token was invalid"));
+        if (this.csrfValidationFunction != null) {
+        	this.csrfValidationFunction.run();
         }
         super.validateCSRFToken(token);
     }
 
     @Override
     public void setValidateCSRFTokenException(RuntimeException exception) {
+    	if(exception == null){
+    		this.csrfValidationFunction = null;
+    		return;
+    	}
+    	TestContext expectedTestContext = this.testContextAdapter.getTestContext();
+		if (expectedTestContext != null) {
+	    	this.setValidateCSRFToken(()->{
+	        	TestContext testContext = this.testContextAdapter.getTestContext();
+				if (testContext != null && testContext.equals(expectedTestContext)) {
+					// Throw only once, since the app should reload and we don't
+					// want to throw again on the next calls.
+					this.csrfValidationFunction = null;
+					throw exception;
+				}
+	    	});
+		}
+    }
+
+	@Override
+	public void setValidateCSRFToken(Runnable validationFunction) {
+		this.csrfValidationFunction = validationFunction;
+	}
+	
+    @Override
+    public void setCSRFToken(String token) {
+        this.csrfTokenFunction = () -> token;
     }
 
     @Override
-    public void setCSRFToken(String token) {
-        this.csrfToken = token;
+    public void setCSRFToken(Supplier<String> tokenFunction) {
+        this.csrfTokenFunction = tokenFunction;
     }
 
     @Override
     public String getCSRFToken() {
-        return (this.csrfToken == null) ? super.getCSRFToken() : this.csrfToken;
+    	if(this.csrfTokenFunction != null) {
+    		return csrfTokenFunction.get();
+    	} else {
+    		return super.getCSRFToken();
+    	}
     }
 
     @Override

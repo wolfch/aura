@@ -865,17 +865,119 @@ Test.Aura.AuraClientServiceTest = function() {
     function setToken() {
 
         [Fact]
-        function RepectsTokenParam() {
+        function AcceptsTokenWithoutTimestamp() {
             var expected = "myToken";
             var targetService;
             mockGlobal(function() {
                 targetService = new Aura.Services.AuraClientService();
                 targetService.saveTokenToStorage = function(){};
 
-                targetService.setToken(expected, true);
+                targetService.setToken(expected);
             });
 
-            var actual = targetService._token;
+            var actual = targetService._token.value;
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        function DoesNotUpdateTimestampWithoutTimestamp() {
+            var expected = 3;
+            var targetService;
+            mockGlobal(function() {
+                targetService = new Aura.Services.AuraClientService();
+                targetService.saveTokenToStorage = function(){};
+                targetService._token.value = "myToken";
+                targetService._token.lastServerTime = expected;
+
+                targetService.setToken("updated");
+            });
+
+            var actual = targetService._token.lastServerTime;
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        function IgnoresTokenWithOlderTimestamp() {
+            var expected = "myToken";
+            var targetService;
+            mockGlobal(function() {
+                targetService = new Aura.Services.AuraClientService();
+                targetService.saveTokenToStorage = function(){};
+                targetService._token.value = expected;
+                targetService._token.lastServerTime = 2;
+
+                targetService.setToken("updated", 1);
+            });
+
+            var actual = targetService._token.value;
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        function IgnoresOlderTimestamp() {
+            var expected = 3;
+            var targetService;
+            mockGlobal(function() {
+                targetService = new Aura.Services.AuraClientService();
+                targetService.saveTokenToStorage = function(){};
+                targetService._token.value = "myToken";
+                targetService._token.lastServerTime = expected;
+
+                targetService.setToken("updated", 1);
+            });
+
+            var actual = targetService._token.lastServerTime;
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        function IgnoresTokenWithSameTimestamp() {
+            var expected = "myToken";
+            var targetService;
+            mockGlobal(function() {
+                targetService = new Aura.Services.AuraClientService();
+                targetService.saveTokenToStorage = function(){};
+                targetService._token.value = expected;
+                targetService._token.lastServerTime = 2;
+
+                targetService.setToken("updated", 2);
+            });
+
+            var actual = targetService._token.value;
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        function AcceptsTokenWithNewerTimestamp() {
+            var expected = "myToken";
+            var targetService;
+            mockGlobal(function() {
+                targetService = new Aura.Services.AuraClientService();
+                targetService.saveTokenToStorage = function(){};
+                targetService._token.value = "original";
+                targetService._token.lastServerTime = 2;
+
+                targetService.setToken(expected, 3);
+            });
+
+            var actual = targetService._token.value;
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        function UpdatesTimestampWithNewerTimestamp() {
+            var expected = 4;
+            var targetService;
+            mockGlobal(function() {
+                targetService = new Aura.Services.AuraClientService();
+                targetService.saveTokenToStorage = function(){};
+                targetService._token.value = "original";
+                targetService._token.lastServerTime = 2;
+
+                targetService.setToken("any", 4);
+            });
+
+            var actual = targetService._token.lastServerTime;
             Assert.Equal(expected, actual);
         }
 
@@ -905,7 +1007,7 @@ Test.Aura.AuraClientServiceTest = function() {
             mockGlobal(function() {
                 mockAction(function() {
                     var targetService = new Aura.Services.AuraClientService();
-                    targetService.setToken(expected, true);
+                    targetService.setToken(expected);
                 });
             });
 
@@ -940,7 +1042,7 @@ Test.Aura.AuraClientServiceTest = function() {
             mockGlobal(function() {
                 mockAction(function() {
                     var targetService = new Aura.Services.AuraClientService();
-                    targetService.setToken(expected, true);
+                    targetService.setToken(expected);
                 });
             });
 
@@ -971,13 +1073,29 @@ Test.Aura.AuraClientServiceTest = function() {
         }
 
         [Fact]
+        function ResetTokenCallsSetTokenWithoutTimestamp() {
+            var actual;
+            var targetService;
+            mockGlobal(function() {
+                targetService = new Aura.Services.AuraClientService();
+                targetService.setToken = function(newToken, timestamp) {
+                    actual = timestamp;
+                };
+
+                targetService.resetToken("someToken");
+            });
+
+            Assert.Equal(undefined, actual);
+        }
+
+        [Fact]
         function ResetTokenStoresToken() {
             var targetService;
             var actual;
             mockGlobal(function() {
                 targetService = new Aura.Services.AuraClientService();
-                targetService.setToken = function(newToken, store) {
-                    actual = store;
+                targetService.saveTokenToStorage = function() {
+                    actual = true;
                 };
 
                 targetService.resetToken("anything");

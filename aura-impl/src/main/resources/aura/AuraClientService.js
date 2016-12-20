@@ -132,7 +132,7 @@ Aura.Services.AuraClientService$AuraActionCollector = function AuraActionCollect
  */
 function AuraClientService () {
     this._host = "";
-    this._token = null;
+    this._token = { value:null, lastServerTime:null };
     this._isDisconnected = false;
     this._parallelBootstrapLoad = true;
     this.auraStack = [];
@@ -1318,7 +1318,7 @@ AuraClientService.prototype.saveTokenToStorage = function() {
     // update the persisted CSRF token so it's accessible when the app is launched while offline.
     // fire-and-forget style, matching action response persistence.
     var storage = Action.getStorage();
-    if (storage && storage.isPersistent() && this._token) {
+    if (storage && storage.isPersistent() && this._token.value) {
         var token = this._token;
 
         // satisfy the adapter API shape requirements; see AuraStorage.setItems().
@@ -1326,11 +1326,14 @@ AuraClientService.prototype.saveTokenToStorage = function() {
         var tuple = [
              AuraClientService.TOKEN_KEY,
              {
-                 "value": { "token": this._token },
+                 "value": { 
+                     "token": token.value,
+                     "lastServerTime": token.lastServerTime 
+                 },
                  "expires": now + 15768000000, // 1/2 year
                  "created": now
              },
-             $A.util.estimateSize(AuraClientService.TOKEN_KEY) + $A.util.estimateSize(this._token)
+             $A.util.estimateSize(AuraClientService.TOKEN_KEY) + $A.util.estimateSize(token)
          ];
 
         return storage.adapter.setItems([tuple]).then(
@@ -1342,7 +1345,7 @@ AuraClientService.prototype.saveTokenToStorage = function() {
         );
     }
 
-    return Promise["resolve"](this._token);
+    return Promise["resolve"](this._token.value);
 };
 
 /**
@@ -1352,10 +1355,14 @@ AuraClientService.prototype.saveTokenToStorage = function() {
 AuraClientService.prototype.loadTokenFromStorage = function() {
     var storage = Action.getStorage();
     if (storage && storage.isPersistent()) {
+        var token = this._token;
         return storage.adapter.getItems([AuraClientService.TOKEN_KEY])
             .then(function(items) {
                 if (items[AuraClientService.TOKEN_KEY]) {
-                    return items[AuraClientService.TOKEN_KEY]["value"];
+                    var stored = items[AuraClientService.TOKEN_KEY]["value"];
+                    token.value = stored["token"];
+                    token.lastServerTime = stored["lastServerTime"];
+                    return token.value;
                 }
                 return undefined;
             });
@@ -1409,7 +1416,7 @@ AuraClientService.prototype.init = function(config, token, container) {
         //#end
 
         if (token) {
-            this._token = token;
+            this._token.value = token;
         }
 
         var context=$A.getContext();
@@ -2667,7 +2674,7 @@ AuraClientService.prototype.send = function(auraXHR, actions, method, options) {
         if (method === "GET") {
             params["aura.access"] = "UNAUTHENTICATED";
         } else {
-            params["aura.token"] = this._token;
+            params["aura.token"] = this._token.value;
         }
         qs = this.buildParams(params);
     } catch (e) {
@@ -2767,7 +2774,7 @@ AuraClientService.prototype.sendBeacon = function(action) {
             var params = {
                 "message"      : $A.util.json.encode({ "actions" : [action] }),
                 "aura.context" : $A.getContext().encodeForServer(true),
-                "aura.token"   : this._token
+                "aura.token"   : this._token.value
             };
             var blobObj = new Blob([this.buildParams(params)], {
                 "type" : "application/x-www-form-urlencoded; charset=ISO-8859-13"
@@ -2976,8 +2983,7 @@ AuraClientService.prototype.processResponses = function(auraXHR, responseMessage
     var action, actionResponses, response, dupes;
     var token = responseMessage["token"];
     if (token) {
-        this._token = token;
-        this.saveTokenToStorage(); // async fire-and-forget
+        this.setToken(token);
     }
     var context=$A.getContext();
     var priorAccess=context.getCurrentAccess();
@@ -3133,15 +3139,22 @@ AuraClientService.prototype.parseAndFireEvent = function(evtObj) {
  * Set the token.
  *
  * @param {String} token The new token.
- * @param {Boolean} saveToStorage True to save the token to storage, false to not save.
+ * @param {Number} serverTime The time when token was generated.
  * @memberOf AuraClientService
  * @private
  */
-AuraClientService.prototype.setToken = function(newToken, saveToStorage) {
-    this._token = newToken;
-    if (saveToStorage) {
-       this.saveTokenToStorage();
+AuraClientService.prototype.setToken = function(newToken, serverTime) {
+    // If the provided serverTime is the same or older than what we have, don't update our token.
+    if (serverTime && this._token.lastServerTime && serverTime <= this._token.lastServerTime) {
+        return;
     }
+    
+    // The serverTime is expected from sources that may be cached.
+    this._token.value = newToken;
+    if (serverTime) {
+        this._token.lastServerTime = serverTime;
+    }
+    this.saveTokenToStorage();
 };
 
 /**
@@ -3152,7 +3165,7 @@ AuraClientService.prototype.setToken = function(newToken, saveToStorage) {
  * @export
  */
 AuraClientService.prototype.resetToken = function(newToken) {
-    this.setToken(newToken, true);
+    this.setToken(newToken);
 };
 
 
@@ -3692,7 +3705,7 @@ AuraClientService.prototype.invalidSession = function(token) {
     // if new token provided then persist to storage and reload. if persisting
     // fails then we must go to the server for bootstrap.js to get a new token.
     if (token && token["newToken"]) {
-        this._token = token["newToken"];
+        this._token.value = token["newToken"];
         this.saveTokenToStorage()
             .then(refresh.bind(null, false), refresh.bind(null, true))
             .then(undefined, function(err) {
