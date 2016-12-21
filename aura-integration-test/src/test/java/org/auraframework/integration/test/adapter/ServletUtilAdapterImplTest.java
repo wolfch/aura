@@ -28,13 +28,12 @@ import org.apache.http.HttpStatus;
 import org.auraframework.Aura;
 import org.auraframework.adapter.ConfigAdapter;
 import org.auraframework.adapter.ExceptionAdapter;
-import org.auraframework.adapter.ServletUtilAdapter;
 import org.auraframework.def.ApplicationDef;
 import org.auraframework.def.DefDescriptor;
 import org.auraframework.http.ManifestUtil;
 import org.auraframework.impl.adapter.ServletUtilAdapterImpl;
 import org.auraframework.instance.InstanceStack;
-import org.auraframework.integration.test.util.IntegrationTestCase;
+import org.auraframework.impl.AuraImplTestCase;
 import org.auraframework.service.ContextService;
 import org.auraframework.service.SerializationService;
 import org.auraframework.system.AuraContext;
@@ -51,7 +50,7 @@ import com.google.common.collect.Lists;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 
-public class ServletUtilAdapterImplTest extends IntegrationTestCase {
+public class ServletUtilAdapterImplTest extends AuraImplTestCase {
 
     @Inject
     private ContextService contextService;
