@@ -1411,6 +1411,11 @@ function lib(w) { //eslint-disable-line no-unused-vars
          * @protected
          */
         _resetPositionIfOutOfBound: function (time) {
+            // native scrolling already handles the position correctly
+            if (this.opts.useNativeScroller) {
+                return false;
+            }
+
             time || (time = 0);
 
             var x = this.x,
