@@ -32,7 +32,7 @@ Test.Aura.Component.ComponentTest=function(){
         "Aura": Aura,
         "Component": function(){}, // Prevent Global
         "InvalidComponent": function(){}, // Prevent Global
-        "AttributeSet": function(){} // Prevent Global
+        "AttributeSet": function(){}, // Prevent Global
     })(function(){
         [Import("aura-impl/src/main/resources/aura/component/Component.js"),
          Import("aura-impl/src/main/resources/aura/component/EventValueProvider.js"),
@@ -100,7 +100,8 @@ Test.Aura.Component.ComponentTest=function(){
                             getSuperDef:function(){},
                             getValueHandlerDefs:function(){},
                             isAbstract:function(){},
-                            isInstanceOf:function(){}
+                            isInstanceOf:function(){},
+                            hasInit:function(){}
                         };
                     },
                     index:function(){},
@@ -533,4 +534,43 @@ Test.Aura.Component.ComponentTest=function(){
             Assert.Equal(expected, actual);
         }
     }//end of [Fixture]function GetDef()
+
+    [Fixture]
+    function toJSON() {
+        [Fact]
+        function ReturnsObjectWithFalseIsValidForInvalidComponent() {
+            // Arrange
+            var target = null;
+            mockFramework(function() {
+                target = new Aura.Component.Component({},true);
+                target.isValid = function() {
+                    return false;
+                };
+            });
+
+            // Act
+            var actual = target.toJSON().isValid;
+
+            // Assert
+            Assert.False(actual);
+        }
+
+        [Fact]
+        function ReturnsObjectWithTrueIsValidForValidComponent() {
+            // Arrange
+            var target = null;
+            mockFramework(function() {
+                target = new Aura.Component.Component({},true);
+                target.isValid = function() {
+                    return true;
+                };
+            });
+
+            // Act
+            var actual = target.toJSON().isValid;
+
+            // Assert
+            Assert.True(actual);
+        }
+    }
 }
