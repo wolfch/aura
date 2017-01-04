@@ -248,6 +248,11 @@
     },
 
     onMenuItemSelected: function(component, event) {
+        if (!component.isValid()) {
+            $A.warning("WARNING: Menu item selection handler attached from a non-valid menu list");
+            return;
+        }
+
     	var concrete = component.getConcreteComponent();
 
         var deselectSiblings = event.getParam("deselectSiblings");
