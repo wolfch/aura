@@ -204,11 +204,13 @@ function lib() { //eslint-disable-line no-unused-vars
          fireEvent : function (component, event) {
              // As the result as another event
              // this component could become invalid, so guard just in-case
-             if(component.isValid()) {
-                var e = component.getEvent(event.type);
-                lib.setEventParams(e, event);
-                e.fire();
-             }
+        	 if(component.isValid()) {
+                 var e = component.getEvent(event.type);
+                 if (!$A.util.isUndefinedOrNull(e)) {
+                     lib.setEventParams(e, event);
+                     e.fire();
+                 }
+              }
          },
 
         /**
