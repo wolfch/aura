@@ -15,26 +15,24 @@
  */
 package org.auraframework.integration.test;
 
-import static org.auraframework.integration.test.http.AuraRequest.*;
-
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletResponse;
 
-import org.auraframework.adapter.ServletUtilAdapter;
-import org.auraframework.http.AuraBaseServlet;
 import org.auraframework.http.AuraTestFilter;
-import org.auraframework.http.CapturingResponseWrapper;
 import org.auraframework.http.HttpFilter;
+import org.auraframework.integration.test.http.WebDriverFilter;
 import org.auraframework.integration.test.util.WebDriverTestCase;
 import org.auraframework.integration.test.util.WebDriverTestCase.ExcludeBrowsers;
-import org.auraframework.system.AuraContext.Format;
+import org.auraframework.test.adapter.MockConfigAdapter;
 import org.auraframework.test.util.WebDriverUtil.BrowserType;
 import org.auraframework.throwable.InvalidSessionException;
 import org.auraframework.util.test.annotation.FreshBrowserInstance;
 import org.auraframework.util.test.annotation.ThreadHostileTest;
+import org.auraframework.util.test.annotation.UnAdaptableTest;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
@@ -48,22 +46,24 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 // CSRF is only stored in persistent storage. indexedDB is not supported on Safari,
 // so persistent storage is not able to be created on Safari.
 @ExcludeBrowsers({ BrowserType.SAFARI, BrowserType.IPAD, BrowserType.IPHONE })
+@UnAdaptableTest
+@Ignore("Injected AuraTestFilter is not the same as the embedded Jetty instance")
 public class AuraClientServiceUITest extends WebDriverTestCase {
 	@Inject
 	private AuraTestFilter auraTestFilter;
 	
 	@Inject
-    private ServletUtilAdapter servletUtilAdapter;
-
+	private MockConfigAdapter configAdapter;
+	
 	@FreshBrowserInstance
     @ThreadHostileTest("ConfigAdapter modified, can't tolerate other tests.")
     @Test
-    public void testCsrfTokenSavedOnInit() throws Exception {
+    public void testCsrfTokenSetOnInit() throws Exception {
 		String target = "/clientServiceTest/csrfTokenStorage.app";
 		
 		AtomicLong counter = new AtomicLong();
     	String expectedBase = "expectedTestToken";
-		getMockConfigAdapter().setCSRFToken(() -> {
+		configAdapter.setCSRFToken(() -> {
 			return expectedBase + counter.incrementAndGet();
 		});
 		
@@ -71,120 +71,90 @@ public class AuraClientServiceUITest extends WebDriverTestCase {
         
         // .app generates a token internally since the HTML write is part 1, and inline.js is part 2
         String expectedToken = expectedBase + "2";
-
-        waitForText(By.className("output"), expectedToken);
-        
-        String storedToken = getStoredToken();
-		assertEquals(expectedToken, storedToken);
+        String actual = getTokenReceivedAtServer();
+        assertEquals(expectedToken, actual);
     }
 
 	@FreshBrowserInstance
     @ThreadHostileTest("ConfigAdapter modified, can't tolerate other tests.")
     @Test
     public void testCsrfTokenLoadedFromStorageOnInit() throws Exception {
-		// OnePageApp allows caching of inline.js
-		String target = "/clientServiceTest/csrfTokenStorageOnePageApp.app";
-
-		String initialToken = "initialToken";
-        getMockConfigAdapter().setCSRFToken(initialToken);
+		String target = "/clientServiceTest/csrfTokenStorage.app";
+		configAdapter.setCSRFToken("initialToken");
 
 		open(target);
 		
-        waitForText(By.className("output"), initialToken);
+        // Manually set the token in storage. To reduce flappiness, verify that it got stored before reloading.
+        String expectedToken = "updatedToken";
+		getAuraUITestingUtil().getEval("$A.clientService.resetToken('" + expectedToken + "')");
+        String storedToken = getStoredToken();
+		assertEquals(expectedToken, storedToken);
+
+		open(target);
         
-        // Manually set the token in storage
-		getAuraUITestingUtil().getEval("$A.clientService.resetToken('updatedToken')");
-		
-		// Reload with caching so that the stored token will not get overwritten by newer server token
-        getAuraUITestingUtil().getEval("location.href = location.href;");
-        waitForAuraFrameworkReady();
+        waitForText(By.className("output"), expectedToken);
         
-        waitForText(By.className("output"), "updatedToken");
+        String actual = getTokenReceivedAtServer();
+        assertEquals(expectedToken, actual);
     }
 
 	@FreshBrowserInstance
     @ThreadHostileTest("ConfigAdapter modified, can't tolerate other tests.")
     @Test
-    public void testCsrfTokenReplacedWithUpdatedToken() throws Exception {
-		// OnePageApp allows caching of inline.js
-		String target = "/clientServiceTest/csrfTokenStorageOnePageApp.app";
-
-		AtomicLong counter = new AtomicLong();
-    	String expectedBase = "expectedTestToken";
-		getMockConfigAdapter().setCSRFToken(() -> {
-			return expectedBase + counter.incrementAndGet();
-		});
-
-		open(target);
-		
-        // .app generates a token internally since the HTML write is part 1, and inline.js is part 2
-        String expectedToken = expectedBase + "2";
-        waitForText(By.className("output"), expectedToken);
-        
-        // Manually set the token in storage
-		getAuraUITestingUtil().getEval("$A.clientService.resetToken('updatedToken')");
-		
-		open(target);
-        
-        expectedToken = expectedBase + "4";
-        waitForText(By.className("output"), expectedToken);
-
-        String storedToken = getStoredToken();
-		assertEquals(expectedToken, storedToken);
-	}
-
-	@FreshBrowserInstance
-    @ThreadHostileTest("ConfigAdapter modified, can't tolerate other tests.")
-    @Test
-    @Ignore("IN_DEV")
     public void testCsrfTokenSavedFromInvalidSessionException() throws Exception {
 		String target = "/clientServiceTest/csrfTokenStorage.app";
 		
-    	String initialToken = "initialTestToken";
-        getMockConfigAdapter().setCSRFToken(initialToken);
-        
         open(target);
 
         String expectedToken = "errorToken";
         Throwable cause = new RuntimeException("intentional");
 		RuntimeException expectedException = new InvalidSessionException(cause, expectedToken);
-		getMockConfigAdapter().setValidateCSRFTokenException(expectedException );		
-		
-		// When the app reloads, overwrite the server-provided timestamp so that
-		// the stored token will not get overwritten
-		addFilter(INLINE.andThen((request, response, chain) -> {
-	        CapturingResponseWrapper responseWrapper = new CapturingResponseWrapper((HttpServletResponse) response);
-			chain.doFilter(request, responseWrapper);
-			String responseString = responseWrapper.getCapturedResponseString();
-			responseString = responseString.replaceFirst(",\"time\":(\\d+),", ",\"time\":-1,");
-            servletUtilAdapter.setNoCache(response);
-            response.setContentType(servletUtilAdapter.getContentType(Format.JS));
-            response.setCharacterEncoding(AuraBaseServlet.UTF_ENCODING);
-            response.getWriter().write(responseString);
-		}));
+		configAdapter.setValidateCSRFTokenException(expectedException );		
 		
         WebElement trigger = getDriver().findElement(By.className("trigger"));
         trigger.click();
 		
         WebDriverWait wait = new WebDriverWait(getDriver(), getAuraUITestingUtil().getTimeout());
-        wait.withMessage("token wasn't updated").until(
+        wait.withMessage("token wasn't updated").ignoring(StaleElementReferenceException.class).until(
     		new ExpectedCondition<Boolean>() {
                 @Override
                 public Boolean apply(WebDriver d) {
-					try {
-						WebElement e = d.findElement(By.className("output"));
-	                    return expectedToken.equals(e.getText());
-					} catch (StaleElementReferenceException ignoreWhilePageReloading) {
-						return false;
-					}
+					WebElement e = d.findElement(By.className("output"));
+                    return expectedToken.equals(e.getText());
                 }
             }
         );
 
         String storedToken = getStoredToken();
 		assertEquals(expectedToken, storedToken);
-    }
 
+        String actual = getTokenReceivedAtServer();
+        assertEquals(expectedToken, actual);
+	}
+
+	private String getTokenReceivedAtServer() throws InterruptedException {
+		// Look only at requests coming from this client
+        CountDownLatch latch = new CountDownLatch(1);
+		AtomicReference<String> receivedToken = new AtomicReference<>();
+        HttpFilter filter = new WebDriverFilter(getDriver()).andThen((request, response, chain)->{
+    		configAdapter.setValidateCSRFToken((token)->{
+    			receivedToken.set(token);
+    			latch.countDown();
+    		});
+    		chain.doFilter(request, response);
+        });
+		addFilter(filter);
+		
+        WebElement trigger = getDriver().findElement(By.className("trigger"));
+        trigger.click();
+        
+		long timeout = getAuraUITestingUtil().getTimeout();
+		if (!latch.await(timeout, TimeUnit.SECONDS)) {
+			fail("Timed out waiting for token at server");
+		}
+        return receivedToken.get();
+	}
+	
 	private String getStoredToken() {
         String script =
     		"var callback = arguments[arguments.length - 1];" +

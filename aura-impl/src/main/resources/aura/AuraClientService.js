@@ -132,7 +132,7 @@ Aura.Services.AuraClientService$AuraActionCollector = function AuraActionCollect
  */
 function AuraClientService () {
     this._host = "";
-    this._token = { value:null, lastServerTime:null };
+    this._token = null;
     this._isDisconnected = false;
     this._parallelBootstrapLoad = true;
     this.auraStack = [];
@@ -143,8 +143,8 @@ function AuraClientService () {
     this.namespaces={internal:{},privileged:{}};
     this.lastSendTime = Date.now();
 
-    // TODO: @dval We should send this from the server, but for LithgnigoutOut apps is a non-trivial change,
-    // so for the time being I hardcoded the resource path here to ensure we can lazu fetch them.
+    // TODO: @dval We should send this from the server, but for LightningOut apps is a non-trivial change,
+    // so for the time being I hard-coded the resource path here to ensure we can lazy fetch them.
     this.clientLibraries = {
         "walltime" : { resourceUrl : "/auraFW/resources/{fwuid}/walltime-js/walltime.min.js" },
         "ckeditor" : { resourceUrl : "/auraFW/resources/{fwuid}/ckeditor/ckeditor-4.x/rel/ckeditor.js" }
@@ -1318,7 +1318,7 @@ AuraClientService.prototype.saveTokenToStorage = function() {
     // update the persisted CSRF token so it's accessible when the app is launched while offline.
     // fire-and-forget style, matching action response persistence.
     var storage = Action.getStorage();
-    if (storage && storage.isPersistent() && this._token.value) {
+    if (storage && storage.isPersistent() && this._token) {
         var token = this._token;
 
         // satisfy the adapter API shape requirements; see AuraStorage.setItems().
@@ -1326,14 +1326,11 @@ AuraClientService.prototype.saveTokenToStorage = function() {
         var tuple = [
              AuraClientService.TOKEN_KEY,
              {
-                 "value": { 
-                     "token": token.value,
-                     "lastServerTime": token.lastServerTime 
-                 },
+                 "value": { "token": this._token },
                  "expires": now + 15768000000, // 1/2 year
                  "created": now
              },
-             $A.util.estimateSize(AuraClientService.TOKEN_KEY) + $A.util.estimateSize(token)
+             $A.util.estimateSize(AuraClientService.TOKEN_KEY) + $A.util.estimateSize(this._token)
          ];
 
         return storage.adapter.setItems([tuple]).then(
@@ -1345,7 +1342,7 @@ AuraClientService.prototype.saveTokenToStorage = function() {
         );
     }
 
-    return Promise["resolve"](this._token.value);
+    return Promise["resolve"](this._token);
 };
 
 /**
@@ -1355,16 +1352,12 @@ AuraClientService.prototype.saveTokenToStorage = function() {
 AuraClientService.prototype.loadTokenFromStorage = function() {
     var storage = Action.getStorage();
     if (storage && storage.isPersistent()) {
-        var token = this._token;
         return storage.adapter.getItems([AuraClientService.TOKEN_KEY])
             .then(function(items) {
                 if (items[AuraClientService.TOKEN_KEY]) {
-                    var stored = items[AuraClientService.TOKEN_KEY]["value"];
-                    token.value = stored["token"];
-                    token.lastServerTime = stored["lastServerTime"];
-                    return token.value;
+                    return items[AuraClientService.TOKEN_KEY]["value"]["token"];
                 }
-                return undefined;
+                return Promise["reject"](new Error("no token found in storage"));
             });
     }
     return Promise["reject"](new Error("no Action storage"));
@@ -1416,7 +1409,7 @@ AuraClientService.prototype.init = function(config, token, container) {
         //#end
 
         if (token) {
-            this._token.value = token;
+            this._token = token;
         }
 
         var context=$A.getContext();
@@ -2674,7 +2667,7 @@ AuraClientService.prototype.send = function(auraXHR, actions, method, options) {
         if (method === "GET") {
             params["aura.access"] = "UNAUTHENTICATED";
         } else {
-            params["aura.token"] = this._token.value;
+            params["aura.token"] = this._token;
         }
         qs = this.buildParams(params);
     } catch (e) {
@@ -2774,7 +2767,7 @@ AuraClientService.prototype.sendBeacon = function(action) {
             var params = {
                 "message"      : $A.util.json.encode({ "actions" : [action] }),
                 "aura.context" : $A.getContext().encodeForServer(true),
-                "aura.token"   : this._token.value
+                "aura.token"   : this._token
             };
             var blobObj = new Blob([this.buildParams(params)], {
                 "type" : "application/x-www-form-urlencoded; charset=ISO-8859-13"
@@ -2983,7 +2976,7 @@ AuraClientService.prototype.processResponses = function(auraXHR, responseMessage
     var action, actionResponses, response, dupes;
     var token = responseMessage["token"];
     if (token) {
-        this.setToken(token);
+        this.setToken(token, true);
     }
     var context=$A.getContext();
     var priorAccess=context.getCurrentAccess();
@@ -3139,22 +3132,15 @@ AuraClientService.prototype.parseAndFireEvent = function(evtObj) {
  * Set the token.
  *
  * @param {String} token The new token.
- * @param {Number} serverTime The time when token was generated.
+ * @param {Boolean} saveToStorage True to save the token to storage, false to not save.
  * @memberOf AuraClientService
  * @private
  */
-AuraClientService.prototype.setToken = function(newToken, serverTime) {
-    // If the provided serverTime is the same or older than what we have, don't update our token.
-    if (serverTime && this._token.lastServerTime && serverTime <= this._token.lastServerTime) {
-        return;
+AuraClientService.prototype.setToken = function(newToken, saveToStorage) {
+    this._token = newToken;
+    if (saveToStorage) {
+       this.saveTokenToStorage();
     }
-    
-    // The serverTime is expected from sources that may be cached.
-    this._token.value = newToken;
-    if (serverTime) {
-        this._token.lastServerTime = serverTime;
-    }
-    this.saveTokenToStorage();
 };
 
 /**
@@ -3165,7 +3151,7 @@ AuraClientService.prototype.setToken = function(newToken, serverTime) {
  * @export
  */
 AuraClientService.prototype.resetToken = function(newToken) {
-    this.setToken(newToken);
+    this.setToken(newToken, true);
 };
 
 
@@ -3705,7 +3691,7 @@ AuraClientService.prototype.invalidSession = function(token) {
     // if new token provided then persist to storage and reload. if persisting
     // fails then we must go to the server for bootstrap.js to get a new token.
     if (token && token["newToken"]) {
-        this._token.value = token["newToken"];
+        this._token = token["newToken"];
         this.saveTokenToStorage()
             .then(refresh.bind(null, false), refresh.bind(null, true))
             .then(undefined, function(err) {

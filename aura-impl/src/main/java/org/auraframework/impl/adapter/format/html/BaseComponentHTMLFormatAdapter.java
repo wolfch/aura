@@ -139,7 +139,6 @@ public abstract class BaseComponentHTMLFormatAdapter<T extends BaseComponent<?, 
 
                 auraInit.put("instance", value);
                 auraInit.put("token", configAdapter.getCSRFToken());
-                auraInit.put("time", System.currentTimeMillis());
 
                 StringBuilder contextWriter = new StringBuilder();
                 serializationService.write(context, null, AuraContext.class, contextWriter, "JSON");

@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import javax.inject.Inject;
@@ -188,7 +189,7 @@ public class MockConfigAdapterImpl extends ConfigAdapterImpl implements MockConf
     private Boolean isAuraJSStatic = null;
     private Boolean validateCss = null;
     private ContentSecurityPolicy csp;
-    private Runnable csrfValidationFunction = null;
+    private Consumer<String> csrfValidationFunction = null;
     private Supplier<String> csrfTokenFunction = null;
     private Boolean isLockerServiceEnabledGlobally;
 
@@ -335,7 +336,7 @@ public class MockConfigAdapterImpl extends ConfigAdapterImpl implements MockConf
     @Override
     public void validateCSRFToken(String token) {
         if (this.csrfValidationFunction != null) {
-        	this.csrfValidationFunction.run();
+        	this.csrfValidationFunction.accept(token);
         }
         super.validateCSRFToken(token);
     }
@@ -348,7 +349,7 @@ public class MockConfigAdapterImpl extends ConfigAdapterImpl implements MockConf
     	}
     	TestContext expectedTestContext = this.testContextAdapter.getTestContext();
 		if (expectedTestContext != null) {
-	    	this.setValidateCSRFToken(()->{
+	    	this.setValidateCSRFToken((token)->{
 	        	TestContext testContext = this.testContextAdapter.getTestContext();
 				if (testContext != null && testContext.equals(expectedTestContext)) {
 					// Throw only once, since the app should reload and we don't
@@ -361,7 +362,7 @@ public class MockConfigAdapterImpl extends ConfigAdapterImpl implements MockConf
     }
 
 	@Override
-	public void setValidateCSRFToken(Runnable validationFunction) {
+	public void setValidateCSRFToken(Consumer<String> validationFunction) {
 		this.csrfValidationFunction = validationFunction;
 	}
 	

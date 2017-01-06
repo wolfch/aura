@@ -321,7 +321,6 @@ public class IntegrationImpl implements Integration {
 
             auraInit.put("instance", instance);
             auraInit.put("token", configAdapter.getCSRFToken());
-            auraInit.put("time", System.currentTimeMillis());
             auraInit.put("host", context.getContextPath());
             Map<String, Object> namespaces = Maps.newHashMap();
             namespaces.put("internal", configAdapter.getInternalNamespaces());

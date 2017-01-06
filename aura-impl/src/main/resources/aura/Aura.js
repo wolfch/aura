@@ -702,12 +702,21 @@ AuraInstance.prototype.initAsync = function(config) {
         }
 
         $A.clientService.initHost(config["host"]);
+        $A.clientService.setToken(config["token"]);
         $A.metricsService.initialize();
         
         function reportError (e) {
             $A.reportError("Error initializing the application", e);
         }
 
+        function loadStoredToken () {
+            return $A.clientService.loadTokenFromStorage().then(function setStoredToken(token){
+                $A.clientService.setToken(token);
+            }, function tokenNotFound(reason){
+                $A.log("Aura.initAsync(): token not loaded from storage: " + reason);
+            });
+        }
+        
         function initializeApp () {
             return $A.clientService.initializeApplication().then(function (bootConfig) {
                 $A.run(function () {
@@ -716,39 +725,33 @@ AuraInstance.prototype.initAsync = function(config) {
             }, reportError);
         }
 
-        // If the load succeeds, check if the provided token is newer.
-        // If the load fails, fall back to the provided token.
-        var setToken = $A.clientService.setToken.bind($A.clientService, config["token"], config["time"]);
-        $A.clientService.loadTokenFromStorage().then(setToken, setToken).then(
-            function(){
-                // Actions depend on defs depend on GVP (labels). so load them in dependency order and skip
-                // loading depending items if anything fails to load.
+        // Actions depend on defs depend on GVP (labels). so load them in dependency order and skip
+        // loading depending items if anything fails to load.
 
-                // Start by enabling the actions filter if relevant. populatePersistedActionsFilter() populates it,
-                // called only if GVP + defs are loaded.
-                $A.clientService.setupPersistedActionsFilter();
+        // Start by enabling the actions filter if relevant. populatePersistedActionsFilter() populates it,
+        // called only if GVP + defs are loaded.
+        $A.clientService.setupPersistedActionsFilter();
 
-                //  do not modify - used by bootstrapRobustness() and instrumentation
-                $A.clientService.gvpsFromStorage = context.globalValueProviders.LOADED_FROM_PERSISTENT_STORAGE;
+        //  do not modify - used by bootstrapRobustness() and instrumentation
+        $A.clientService.gvpsFromStorage = context.globalValueProviders.LOADED_FROM_PERSISTENT_STORAGE;
 
-                if (!$A.clientService.gvpsFromStorage) {
-                    $A.log("Aura.initAsync: GVP not loaded from storage so not loading defs or actions either");
-                    initializeApp().then(undefined, reportError);
-                } else {
-                    Promise["all"]([
-                        $A.clientService.loadBootstrapFromStorage(),
-                        $A.componentService.restoreDefsFromStorage(context),
-                        $A.clientService.populatePersistedActionsFilter()
-                    ])
-                    .then(initializeApp, function (err) {
-                        $A.log("Aura.initAsync: failed to load defs, get bootstrap or actions from storage", err);
-                        $A.clientService.clearPersistedActionsFilter();
-                        return initializeApp();
-                    })
-                    .then(undefined, reportError);
-                }
-            }
-        );
+        if (!$A.clientService.gvpsFromStorage) {
+            $A.log("Aura.initAsync: GVP not loaded from storage so not loading defs or actions either");
+            loadStoredToken().then(initializeApp).then(undefined, reportError);
+        } else {
+            Promise["all"]([
+                loadStoredToken(),
+                $A.clientService.loadBootstrapFromStorage(),
+                $A.componentService.restoreDefsFromStorage(context),
+                $A.clientService.populatePersistedActionsFilter()
+            ])
+            .then(initializeApp, function (err) {
+                $A.log("Aura.initAsync: failed to load defs, get bootstrap or actions from storage", err);
+                $A.clientService.clearPersistedActionsFilter();
+                return initializeApp();
+            })
+            .then(undefined, reportError);
+        }
     });
 
     this.clientService.initDefs();

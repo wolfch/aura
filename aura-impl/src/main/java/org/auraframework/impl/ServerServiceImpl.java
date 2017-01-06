@@ -631,7 +631,6 @@ public class ServerServiceImpl implements ServerService {
             auraInit.put("host", context.getContextPath());
             auraInit.put("pathPrefix", context.getPathPrefix());
             auraInit.put("token", configAdapter.getCSRFToken());
-            auraInit.put("time", System.currentTimeMillis());
             
             String lockerWorkerURL = configAdapter.getLockerWorkerURL();
             if (lockerWorkerURL != null) {
