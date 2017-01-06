@@ -639,7 +639,9 @@ SecureObject.addPrototypeMethodsAndProperties = function(metadata, so, raw, key)
 
 		            set: function(callback) {
 		            	raw[name] = function(e) {
-		                    callback.call(so, SecureDOMEvent(e, key));
+		            	    if (callback) {
+		            	        callback.call(so, SecureDOMEvent(e, key));
+		            	    }
 		                };
 		            }
 		        });
@@ -715,7 +717,9 @@ SecureObject.addPrototypeMethodsAndPropertiesStateless = function(metadata, prot
 		            set: function(callback) {
 		            	var so = this;
 		            	SecureObject.getRaw(so, prototypeForValidation)[name] = function(e) {
-		                    callback.call(so, SecureDOMEvent(e, ls_getKey(so)));
+		            	    if (callback) {
+		            	        callback.call(so, SecureDOMEvent(e, ls_getKey(so)));
+		            	    }
 		                };
 		            }
 		        };
@@ -743,7 +747,8 @@ SecureObject.addPrototypeMethodsAndPropertiesStateless = function(metadata, prot
 
 SecureObject.isUnfilteredType = function(raw) {
 	return (raw instanceof File || raw instanceof FileList || raw instanceof CSSStyleDeclaration || raw instanceof TimeRanges ||
-			raw instanceof Date || (typeof ValidityState !== "undefined" && raw instanceof ValidityState) || raw instanceof Promise);
+			raw instanceof Date || (typeof ValidityState !== "undefined" && raw instanceof ValidityState) || raw instanceof Promise ||
+			raw instanceof MessagePort || raw instanceof MessageChannel || raw instanceof MessageEvent);
 };
 
 
