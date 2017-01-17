@@ -13,18 +13,14 @@
             testUtils.assertFalse(name in iframe);
         });
 
-        function verifySrcdocBlocked(frame, name, f) {
-        	try {
-        		f();
-        		testUtils.fail("SecureIFrameElement should have blocked setting of src doc attribute");
-    		} catch (e) {
-    			testUtils.assertEquals("SecureElement: [object HTMLIFrameElement]{ key: {\"namespace\":\"lockerTest\"} } does not permit setting the srcdoc attribute!", e.toString());
-    		}
-
+        // Update: we don't block invalid attributes anymore, setting an invalid attribute is a no-op, getting will return null
+        function verifySrcdocBlocked(frame, attrName, f) {
+       		f();
     		// Try to access the attribute via SecureElement.attributes
     		frame.attributes.forEach(function(attr) {
-    			testUtils.assertTrue(attr.name.toLowerCase() !== name.toLowerCase(), "SecureElement.attributes should not have contained: " + name);
+    			testUtils.assertTrue(attr.name.toLowerCase() !== attrName.toLowerCase(), "SecureElement.attributes should not have contained: " + name);
 			});
+            testUtils.assertNull(frame.getAttribute(attrName), "getAttribute() on an invalid attribute should return null");
         }
 
         // Check to insure that SecureIFrameElement.setAttribute[NS]("srcdoc", value) is blocked
